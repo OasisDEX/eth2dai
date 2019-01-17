@@ -1067,39 +1067,6 @@ test('place direct sell order using all of the balance which is zero', () => {
   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
 });
 
-test('place direct sell order using all of the balance which is undefined', () => {
-  const newDefParams = {
-    ...defParams,
-    balances$: of(undefined),
-  };
-
-  const controller = createFormController$(newDefParams, tradingPair);
-  const { change } = unpack(controller);
-
-  change({
-    kind: FormChangeKind.kindChange,
-    newKind: OfferType.sell,
-  });
-
-  change({
-    kind: FormChangeKind.matchTypeChange,
-    matchType: OfferMatchType.direct,
-  });
-
-  expect(unpack(controller).amount).toEqual(undefined);
-  expect(unpack(controller).price).toEqual(undefined);
-  expect(unpack(controller).total).toEqual(undefined);
-  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(5));
-  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
-
-  change({ kind: FormChangeKind.setMaxChange });
-
-  expect(unpack(controller).amount).toEqual(undefined);
-  expect(unpack(controller).price).toEqual(undefined);
-  expect(unpack(controller).total).toEqual(undefined);
-  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
-});
-
 test('place direct sell order that matches more than one order', () => {
   const buys = [
     { price: 3, amount: 1 }, // 4
