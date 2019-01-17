@@ -1,0 +1,111 @@
+@import "../Variables";
+@import "../Mixins";
+
+$padding-vertical: 8px;
+$padding-horizontal: 15px;
+$padding-horizontal-edges-mod: 15px;
+
+.table {
+
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+
+  thead {
+    @extend .trHighlighted;
+  }
+
+  th {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.43px;
+  }
+
+  td {
+    font-family: Lato, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: $padding-vertical $padding-horizontal;
+    &:first-child {
+      padding-left: $padding-horizontal + $padding-horizontal-edges-mod;
+    }
+    &:last-child {
+      padding-right: $padding-horizontal + $padding-horizontal-edges-mod;
+    }
+  }
+}
+
+// Extend full width table to be even a bit wider
+// Stretches table by 1px to the left and 1px to the right
+// In Panel component it covers Panel's border
+.extendOnBorders {
+  margin-left: -1px;
+  width: calc(100% + 2px);
+}
+
+
+// Align text
+//
+@mixin textAlign($align) {
+  td.#{$align},
+  th.#{$align},
+  .#{$align} td,
+  .#{$align} th {
+    text-align: $align;
+  }
+}
+
+@include tableTextAlign(right);
+@include tableTextAlign(center);
+@include tableTextAlign(left);
+
+.trHighlighted {
+  background-color: $grey-dark;
+  th, td {
+    border-top: 1px solid $grey-darken-darkest;
+    border-bottom: 1px solid $grey-darken-darkest;
+  }
+}
+
+// Clickable row
+.clickable {
+  cursor: pointer;
+  &:hover {
+    background-color: darken($grey-dark, 2.5%);
+  }
+  &:active {
+    background-color: lighten($grey-dark, 2.5%);
+  }
+}
+
+// With scrollable tbody
+.scrollable {
+  // table
+  display: flex;
+  flex-direction: column;
+
+  thead {
+    display: table;
+    width: 100%;
+  }
+
+  tbody {
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  tr {
+    display: flex;
+  }
+
+  //td, th {
+  //  &:last-child {
+  //    padding-right: $padding-horizontal;
+  //  }
+  //}
+}

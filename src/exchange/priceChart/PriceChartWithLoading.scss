@@ -1,0 +1,14 @@
+.btn {
+  height: 30px;
+  width: 42px;
+}
+
+.btnActive {
+  font-weight: 600;
+  opacity: 0.99;
+
+  &,
+  &:hover:enabled:not(.disabled) {
+    border-color: white;
+  }
+}

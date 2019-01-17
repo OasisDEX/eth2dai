@@ -1,0 +1,18 @@
+@import "../Variables";
+@import "../Mixins";
+
+.inputBase {
+  background: none;
+  border: 1px solid transparent;
+  color: rgba(white, 0.6);
+  @include fontLatoBold;
+  letter-spacing: 0.5px;
+  padding-left: 1em;
+  padding-right: 1em;
+  text-align: right;
+  width: 100%;
+}
+
+.inputBase:disabled {
+  color: $grey-light; // as in InputGroup.scss
+}

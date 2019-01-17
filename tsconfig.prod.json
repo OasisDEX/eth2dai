@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.compiler.json",
+  "compilerOptions": {
+    "types": []
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "*.d.ts", "./node_modules/web3-typescript-typings/index.d.ts"],
+  "exclude": ["src/**/*.test.ts"]
+}

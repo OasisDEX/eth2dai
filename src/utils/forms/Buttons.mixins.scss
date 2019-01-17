@@ -1,0 +1,24 @@
+@import "../Mixins";
+@import "../Variables";
+
+@mixin button($map) {
+
+  color: map-get($map, color);
+  border-color: map-get($map, border-color);
+  background-color: map-get($map, bg);
+
+  &:hover:enabled:not(.disabled),
+  &:focus:enabled:not(.disabled),
+  &:active:enabled:not(.disabled) {
+    color: map-get($map, color-hover);
+    background-color: map-get($map, bg-hover);
+    border-color: map-get($map, border-color-hover);
+  }
+
+  &[disabled]:hover,
+  &[disabled],
+  &.disabled:hover,
+  &.disabled {
+    opacity: 0.5;
+  }
+}

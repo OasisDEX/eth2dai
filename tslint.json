@@ -1,0 +1,21 @@
+{
+  "extends": ["typestrict", "tslint:recommended", "tslint-react", "tslint-config-prettier", "tslint-config-airbnb"],
+  "linterOptions": {
+    "exclude": ["config/**/*.js", "node_modules/**/*.ts"]
+  },
+  "rules": {
+    "jsx-no-lambda": false,
+    "no-parameter-reassignment": false,
+    "function-name": false,
+    "variable-name": false,
+    "trailing-comma": false,
+    "interface-name": [true, "never-prefix"],
+    "object-literal-sort-keys": false,
+    "no-console": false,
+    "no-debugger": false,
+    "max-classes-per-file": false,
+    "ter-arrow-parens": false,
+    "no-default-export": true,
+    "prefer-array-literal": [true, { "allow-type-parameters": true }]
+  }
+}

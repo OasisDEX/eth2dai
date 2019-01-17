@@ -1,0 +1,19 @@
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50px;
+  background-image: url('./LoadingIndicatorDark.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.inline {
+  display: inline-block;
+  width: 20px;
+  min-height: 20px;
+  //margin-top: -4px;
+  background-size: contain;
+}
+.light {
+  background-image: url('./LoadingIndicatorLight.gif');
+}

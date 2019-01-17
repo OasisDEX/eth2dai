@@ -1,0 +1,39 @@
+@import "../Variables";
+
+.Tabs {
+    margin: 0 10px;
+
+    text-align: center;
+    padding: 0;
+    list-style: none;
+    display: flex;
+
+    li {
+        flex-grow: 1;
+    }
+}
+
+
+.button {
+    //width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    background-color: $grey-dark;
+    border: 1px solid $grey-darken-darkest;
+    border-radius: $border-radius/2;
+    color: $font-color-base;
+    cursor: pointer;
+    font-size: $font-size-base;
+    font-weight: 600;
+    text-transform: uppercase;
+
+    &:hover {
+        background-color: $grey-darkest;
+    }
+
+    &:global(.active) {
+        background-color: $green;
+    }
+}

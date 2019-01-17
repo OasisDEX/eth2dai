@@ -1,0 +1,77 @@
+@import "../Variables";
+
+.radio {
+  position: relative;
+  display: block;
+
+  input[type="radio"]
+  //input[type="checkbox"]
+  {
+    display: none;
+    margin-right: 0;
+    margin-top: 0;
+    position: relative;
+
+    &[disabled],
+    &[readonly] {
+      & + span:before {
+        border-color: $disabledColor;
+        opacity: 1; // iOS fix for unreadable disabled content
+      }
+
+      & + span:after {
+        background-color: $disabledColor;
+      }
+      & + span {
+        color: lighten($disabledColor, 15%);
+      }
+    }
+
+    $leftPosition: -30px;
+    $topPosition: 2px;
+    $bigSize: 16px;
+    $smallSize: 8px;
+
+    // own checkbox or radio border
+    & + span:before {
+      content: "";
+      position: absolute;
+      left: $leftPosition;
+      top: $topPosition;
+
+      box-sizing: border-box;
+      width: $bigSize;
+      height: $bigSize;
+
+      border: 1.49px solid white;
+      background-color: transparent;
+    }
+
+    // checked
+    &:checked + span:after {
+      position: absolute;
+      left: $leftPosition + ($bigSize - $smallSize)/2;
+      top: $topPosition + ($bigSize - $smallSize)/2;
+      z-index: 2;
+
+      content: '';
+      width: $smallSize;
+      height: $smallSize;
+
+      background-color: white;
+      border: none;
+    }
+
+  }
+
+  input[type="radio"] {
+    + span:before,
+    + span:after {
+      border-radius: 50%;
+    }
+  }
+}
+
+.hasError {
+  background-color: red;
+}

@@ -1,0 +1,317 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`click buy button 1`] = `
+Object {
+  "amount": "3",
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 20,
+  "gasEstimationEth": "2e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "2e-19",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "matchType": "limitOrder",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [],
+    "sell": Array [],
+    "spread": undefined,
+  },
+  "pickerOpen": false,
+  "price": "2",
+  "quoteToken": "DAI",
+  "sellAllowance": true,
+  "slippageLimit": "5",
+  "stage": "waitingForApproval",
+  "submit": [Function],
+  "total": "6",
+}
+`;
+
+exports[`click buy button canceled 1`] = `
+Object {
+  "amount": "3",
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 20,
+  "gasEstimationEth": "2e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "2e-19",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "matchType": "limitOrder",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [],
+    "sell": Array [],
+    "spread": undefined,
+  },
+  "pickerOpen": false,
+  "price": "2",
+  "quoteToken": "DAI",
+  "sellAllowance": true,
+  "slippageLimit": "5",
+  "stage": "readyToProceed",
+  "submit": [Function],
+  "total": "6",
+}
+`;
+
+exports[`click buy button confirmed 1`] = `
+Object {
+  "amount": undefined,
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimationStatus": "unset",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "matchType": "limitOrder",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [],
+    "sell": Array [],
+    "spread": undefined,
+  },
+  "pickerOpen": false,
+  "price": undefined,
+  "quoteToken": "DAI",
+  "sellAllowance": true,
+  "slippageLimit": "5",
+  "stage": "editing",
+  "submit": [Function],
+  "total": undefined,
+}
+`;
+
+exports[`initial state 1`] = `
+Object {
+  "amount": undefined,
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimationStatus": "unset",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "matchType": "limitOrder",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [],
+    "sell": Array [],
+    "spread": undefined,
+  },
+  "pickerOpen": false,
+  "price": undefined,
+  "quoteToken": "DAI",
+  "sellAllowance": true,
+  "slippageLimit": "5",
+  "stage": "editing",
+  "submit": [Function],
+  "total": undefined,
+}
+`;
+
+exports[`set amount and price in buy and change to sell 1`] = `
+Object {
+  "amount": "3",
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 20,
+  "gasEstimationEth": "2e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "2e-19",
+  "gasPrice": "0.01",
+  "kind": "sell",
+  "matchType": "limitOrder",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [],
+    "sell": Array [],
+    "spread": undefined,
+  },
+  "pickerOpen": false,
+  "price": "2",
+  "quoteToken": "DAI",
+  "sellAllowance": true,
+  "slippageLimit": "5",
+  "stage": "readyToProceed",
+  "submit": [Function],
+  "total": "6",
+}
+`;
+
+exports[`set amount and price in sell 1`] = `
+Object {
+  "amount": "3",
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 20,
+  "gasEstimationEth": "2e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "2e-19",
+  "gasPrice": "0.01",
+  "kind": "sell",
+  "matchType": "limitOrder",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [],
+    "sell": Array [],
+    "spread": undefined,
+  },
+  "pickerOpen": false,
+  "price": "2",
+  "quoteToken": "DAI",
+  "sellAllowance": true,
+  "slippageLimit": "5",
+  "stage": "readyToProceed",
+  "submit": [Function],
+  "total": "6",
+}
+`;
+
+exports[`set price and amount 1`] = `
+Object {
+  "amount": "3",
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 20,
+  "gasEstimationEth": "2e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "2e-19",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "matchType": "limitOrder",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [],
+    "sell": Array [],
+    "spread": undefined,
+  },
+  "pickerOpen": false,
+  "price": "2",
+  "quoteToken": "DAI",
+  "sellAllowance": true,
+  "slippageLimit": "5",
+  "stage": "readyToProceed",
+  "submit": [Function],
+  "total": "6",
+}
+`;
+
+exports[`validation - allowance not given 1`] = `
+Object {
+  "0": Object {
+    "field": "total",
+    "kind": "noAllowance",
+    "priority": 100,
+    "token": "DAI",
+  },
+}
+`;
+
+exports[`validation - not enough money 1`] = `
+Object {
+  "0": Object {
+    "field": "total",
+    "kind": "insufficientAmount",
+    "priority": 1,
+    "token": "DAI",
+  },
+}
+`;
+
+exports[`validation - too big amount 1`] = `
+Object {
+  "0": Object {
+    "field": "total",
+    "kind": "incredibleAmount",
+    "priority": 2,
+    "token": "DAI",
+  },
+  "1": Object {
+    "field": "amount",
+    "kind": "incredibleAmount",
+    "priority": 1,
+    "token": "WETH",
+  },
+}
+`;
+
+exports[`validation - too small amount 1`] = `
+Object {
+  "0": Object {
+    "amount": "0.1",
+    "field": "total",
+    "kind": "dustAmount",
+    "priority": 2,
+    "token": "DAI",
+  },
+}
+`;
+
+exports[`validation - too small amount with unknown token dustLimits 1`] = `
+Object {
+  "0": Object {
+    "amount": "0",
+    "field": "total",
+    "kind": "dustAmount",
+    "priority": 2,
+    "token": "DAI",
+  },
+}
+`;

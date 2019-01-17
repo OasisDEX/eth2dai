@@ -1,0 +1,36 @@
+@import "../../utils/Variables";
+
+// ---------border box --------------
+.borderBox {
+  border: 1px solid $grey-light;
+  border-radius: $border-radius;
+}
+
+.smPadding {
+  padding: 10px 12px;
+}
+
+.mdPadding {
+  padding: 14px;
+}
+
+.nonePadding {
+  padding: 0;
+}
+
+// ------- hr ----------------
+.hr {
+  border: none;
+  border-bottom: 1px solid;
+  clear: both;
+  width: 100%;
+  margin: 0;
+}
+
+.lightHr {
+  border-color: rgba($white, 0.2);
+}
+
+.darkHr {
+  border-color: $grey-dark;
+}

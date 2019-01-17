@@ -1,0 +1,61 @@
+@import "../utils/Variables";
+
+.nav {
+    display: flex;
+    padding: 0;
+
+    li {
+        display: inline-block;
+    }
+
+    li + li {
+        margin-left: -1px;
+    }
+
+    // left and right item border radius
+    li:first-child > * {
+        border-bottom-left-radius: $border-radius;
+        border-top-left-radius: $border-radius;
+    }
+
+    li:last-child > * {
+        border-bottom-right-radius: $border-radius;
+        border-top-right-radius: $border-radius;
+    }
+}
+
+.navElement {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 40px;
+
+    border: 1px solid rgba($white, 0.1);
+    color: $white;
+    border-radius: 0;
+}
+
+.navLink {
+    @extend .navElement;
+    text-decoration: none;
+    width: 108px;
+    color: $grey-lightest;
+    &:hover {
+        background-color: rgba($white, 0.1);
+        cursor: pointer;
+    }
+}
+
+.activeNavLink {
+    &,
+    &:hover {
+        color: white;
+        border-color: $grey-lightest;
+        background: initial;
+    }
+}
+
+.account {
+  width: 196px;
+}

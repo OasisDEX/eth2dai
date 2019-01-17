@@ -1,0 +1,73 @@
+@import "../utils/Variables";
+@import "../utils/forms/Buttons.mixins";
+
+.table {
+  th {
+    text-transform: unset;
+  }
+
+  .center {
+    text-align: center;
+  }
+
+  .amount {
+    text-align: right;
+  }
+
+  // align tokens icons so they look like they
+  // aligned to left with column name "Asset"
+  td:nth-child(2) {
+    padding-left: 8px;
+  }
+
+  // those columns contains tall elements,
+  // so they must have smaller padding
+  // to have row height about 32px
+  td:nth-child(2),
+  td:nth-child(3) {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  td:nth-child(4) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.centeredAsset {
+  display: inline-flex;
+  align-items: center;
+}
+
+.transferBtn {
+  background-color: transparent;
+  border: 1px solid $grey-light;
+  border-radius: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-content: center;
+  padding: 0;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:hover[disabled],
+  &:hover.disabled {
+    cursor: default;
+  }
+
+  @include button((
+          color: $font-color-base,
+          bg: $grey-darkest,
+          border-color: $grey-light,
+          color-hover: $font-color-base,
+          border-color-hover: lighten($grey-darkest, 5%),
+          bg-hover: lighten($grey-light, 5%)
+  ));
+}
+
+.transferBtnLeft {
+  transform: rotate(180deg);
+  margin-right: 5px;
+}

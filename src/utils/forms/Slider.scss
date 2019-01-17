@@ -1,0 +1,85 @@
+@import "../Variables";
+
+.wrapper {
+  background-color: $grey-light;
+  border-radius: 10px;
+  width: 34px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  padding: 0;
+  position: relative;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+// common button
+.pointer {
+  background-color: white;
+  border-radius: 100%;
+  height: 16px;
+  width: 16px;
+  margin: 2px;
+  transition: all 0.5s ease-in-out;
+}
+
+// disabled
+.disabled {
+
+  &.wrapper {
+    cursor: default;
+  }
+
+  .pointer {
+    background-color: #bbb;
+  }
+}
+
+
+// blocked / unblocked
+
+@mixin blocked() {
+  margin-left: 34px - 16px - 2px;
+  background: white url("./switch-disabled.svg") no-repeat 13% center;
+}
+
+@mixin unblocked() {
+  margin-left: 2px;
+  background: white url("./switch-active.svg") no-repeat 85% center;
+}
+
+.pointerBlocked {
+  @include blocked;
+}
+
+.pointerUnblocked {
+  @include unblocked;
+}
+
+.moveOnHover:not(.disabled):hover {
+  .pointerBlocked {
+    @include unblocked;
+  }
+  .pointerUnblocked {
+    @include blocked;
+  }
+}
+
+.inProgress {
+  background-image: none;
+}
+
+.progressIcon {
+  position: absolute;
+}
+
+.progressBlocked {
+  right: 4px;
+}
+
+.progressUnblocked {
+  left: 4px;
+}

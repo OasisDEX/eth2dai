@@ -1,0 +1,25 @@
+@import "../../utils/Mixins";
+
+.allTradesTable {
+  max-height: 254px;
+  @include tableColumnsWidth(152px 152px 135px);
+
+  td, th {
+    &:last-child {
+      flex-grow: 1;
+    }
+  }
+
+}
+
+.loader {
+  display: inline-block;
+  width: 16px;
+  min-height: 16px;
+  margin-right: 4px;
+  background-size: contain;
+  background-image: url('../../utils/loadingIndicator/LoadingIndicatorLight.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.5;
+}

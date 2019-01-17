@@ -1,0 +1,48 @@
+@import "../Mixins";
+@import "../Variables";
+
+.inputGroup {
+  display: flex;
+  border: 1px solid $grey-light;
+  background-color: $grey-darkest;
+  border-radius: 2px;
+}
+
+.addon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 20px;
+  font-size: 14px;
+}
+
+// ----------- sizes
+@include formInputHeights();
+.sm, .md {
+  .addon, input {
+    font-size: 12px;
+  }
+}
+
+.inputGroupAddonBorderRight {
+  border-right: 1px solid;
+  border-color: inherit;
+}
+
+.inputGroupAddonBorderLeft {
+  border-left: 1px solid;
+  border-color: inherit;
+}
+
+.grey {
+  border-color: $grey-light;
+}
+
+.red {
+  border-color: $red;
+}
+
+.disabled {
+  border-color: $disabledBorderColor;
+  color: $disabledColor;
+}

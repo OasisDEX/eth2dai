@@ -1,0 +1,65 @@
+@import "../utils/Mixins";
+
+@include modal();
+@include checklistBorderBox();
+
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.infoRowMargin {
+  margin-top: 13px;
+  margin-bottom: 13px;
+}
+
+.hrMargin {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+// warning panel - (i) with text about unwrap/wrap
+.warning {
+  display: flex;
+  align-items: stretch;
+}
+
+.warningIcon {
+  flex-basis: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.warningText {
+  font-size: 14px;
+}
+
+// footer with buttons
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// ---------- input group modifiers
+.inputHeader {
+  flex-basis: 94px;
+  flex-grow: 2;
+  flex-shrink: 0;
+  padding: 10px 16px;
+}
+
+.inputCurrencyAddon {
+  flex-basis: 82px;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: start;
+  padding: 10px 16px;
+  white-space: nowrap;
+}

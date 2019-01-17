@@ -1,0 +1,170 @@
+@import "Variables";
+
+// Format table cell in $column column the width
+// For scrollable tables
+@mixin tableColumnWidth($column, $width) {
+  th, td {
+    &:nth-child(#{$column}) {
+      width: $width;
+      flex-basis: $width;
+    }
+  }
+}
+
+// For scrollable tables
+// Shorthand for tableColumnWidth
+// $widths: list of widths ordered from 1
+// sample:
+// @include tableColumnsWidth(150px 150px 132px);
+@mixin tableColumnsWidth($widths) {
+  @for $i from 1 through length($widths) {
+    $width: nth($widths, $i);
+    @include tableColumnWidth($i, $width);
+  }
+}
+
+// Table aligns
+// Align text
+//
+@mixin tableTextAlign($align) {
+  td.#{$align},
+  th.#{$align},
+  .#{$align} td,
+  .#{$align} th {
+    text-align: $align;
+  }
+}
+
+
+// input heights list to be consistent across universe
+// key is input height name, value is height value
+$inputHeight: (
+  sm: 26px,
+  md: 32px,
+  lg: 38px,
+  unsized: auto,
+);
+
+// generate class for input heights
+// If $name is given, generate only this one given class (f.e. .lg)
+// otherwise generate all possible classes.
+// Generation base on $inputHeight map
+@mixin formInputHeights($name: null) {
+  @if($name) {
+    @if map-has-key($inputHeight, $name) {
+      .#{$name} {
+        height: map-get($inputHeight, $name);
+      }
+    }
+  } @else {
+    @each $name, $value in $inputHeight {
+      .#{$name} {
+        height: $value;
+      }
+    }
+  }
+}
+
+@mixin modal() {
+  .modal {
+    $margin: 20px;
+    position: absolute;
+    left: $margin;
+    top: $margin;
+    bottom: $margin;
+    right: $margin;
+
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    padding: 5px;
+    outline: none;
+    overflow: auto;
+
+    &:after {
+      content: '';
+      display: block;
+      height: 25px;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      background: linear-gradient(to bottom, rgba(#1f1f27,0) 0%, #1f1f27 25%);
+    }
+
+    &:before {
+      content: '';
+      display: block;
+      height: 25px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      background: linear-gradient(to top, rgba(#1f1f27, 0) 0%, #1f1f27 25%);
+    }
+  }
+
+  .modalChild {
+    margin: auto;
+  }
+
+  .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(#15151d, 0.8);
+  }
+}
+
+@mixin checklistBorderBox() {
+
+  .checklistBox {
+    //font-size: 12px;
+    //position: inherit;
+  }
+
+  .checklistLine {
+    display: flex;
+    align-content: center;
+    justify-content: space-between;
+  }
+
+  .checklistTitle {
+    font-weight: 600; // semi bold
+    letter-spacing: 0.1px;
+  }
+
+  .checklistSummary {
+    font-weight: 500; // medium
+    letter-spacing: 0.4px;
+  }
+
+  .checklistHrMargin {
+    margin-top: 11px;
+    margin-bottom: 11px;
+  }
+}
+
+
+// Fonts standard sets helpers
+@mixin fontMontserratSemibold() {
+  font-family: $font-main;
+  font-weight: 600;
+}
+
+@mixin fontMontserratMedium() {
+  font-family: $font-main;
+  font-weight: 500;
+}
+
+@mixin fontLatoBold() {
+  font-family: $font-additional;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@mixin fontLatoMedium() {
+  font-family: $font-additional;
+  font-weight: 500;
+}

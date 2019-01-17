@@ -1,0 +1,15 @@
+// this file is mostly for IDE to pick it up. It combines tsconfig.prod with tsconfig.test
+// to validate setup you should run tsc with tsconfig.prod and tsconfig.test separetely
+// splitting config like this ensures, for example, that you won't use JEST in production files (same with cypress)
+{
+  "extends": "./tsconfig.compiler",
+  "compilerOptions": {
+    "types": ["jest"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "*.d.ts",
+    "./node_modules/web3-typescript-typings/index.d.ts"
+  ]
+}

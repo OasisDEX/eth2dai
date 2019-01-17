@@ -1,0 +1,13 @@
+@import "../Variables";
+
+// errors
+.errors {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  color: $red;
+  font-size: 11px;
+  height: 24px;
+  text-align: right;
+}

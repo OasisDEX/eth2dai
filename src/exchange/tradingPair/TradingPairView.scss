@@ -1,0 +1,124 @@
+@import "../../utils/Variables";
+
+.container {
+    display: flex;
+    //justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+    padding: 0 30px 0 0;
+}
+
+
+// ---------- dropdown ---------------
+.dropdown {
+    position: relative;
+}
+
+.dropdownBtn {
+    $width: 220px;
+    height: 48px;
+    width: $width;
+    border-right: 1px solid rgba(white, 0.1);
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    background: url("./icon_arrow_down.svg") no-repeat ($width - 34px) center;
+}
+
+.dropdownBtnDisabled {
+    cursor: default;
+    background-image: none;
+}
+
+.dropdownBtnActive {
+    box-shadow: inset 1px 1px 7px 2px rgba(0, 0, 0, 0.3);
+}
+
+.dropdownList {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: 48px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    background-color: $grey-darkest;
+    border: 1px solid $grey-darken-darkest;
+    border-top: none;
+    box-shadow: 0 0 4px 1px rgba(black, 0.20);
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
+.dropdownItem {
+    display: block;
+}
+
+.dropdownItem:not(:last-child) {
+    border-bottom: 1px solid $grey-darken-darkest;
+}
+
+.dropdownItemLink {
+    display: flex;
+    color: white;
+    text-decoration: none;
+
+    &:hover {
+        background-color: $grey-dark;
+        cursor: pointer;
+    }
+}
+
+
+// ------------------
+
+
+
+// ------------ Pair view -----------------
+
+.pairView {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 26px 12px 12px;
+    width: 100%;
+}
+
+.pairViewCurrency {
+    flex-basis: 50px;
+    flex-grow: 1;
+}
+
+.pairViewIcon {
+    flex-basis: 45px;
+    display: flex;
+    align-items: center;
+}
+
+// ---------------------
+
+
+.active {
+    font-weight: bold;
+}
+.passive {
+    font-weight: normal;
+}
+
+
+// style of box with info like current or yesterday price
+.pairInfo {
+    padding: 0 16px;
+    flex-grow: 1;
+}
+
+.pairInfoLabel {
+    margin-left: 7px;
+}

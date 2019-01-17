@@ -1,0 +1,37 @@
+@import "../../utils/Variables";
+@import "../../utils/Mixins";
+
+.spreadRow {
+  background-color: rgba(white, 0.02);
+}
+
+.orderbookTable {
+  max-height: 400px;
+  @include tableColumnsWidth(146px 146px 146px);
+
+  td, th {
+    &:last-child {
+      flex-grow: 1;
+    }
+  }
+
+}
+
+// ------------------ animations for table -----------------------
+:global(.order-enter) {
+  opacity: 0.01;
+}
+
+:global(.order-enter.order-enter-active) {
+  opacity: 1;
+  transition: opacity 1000ms ease-in;
+}
+
+:global(.order-leave) {
+  opacity: 1;
+}
+
+:global(.order-leave.order-leave-active) {
+  opacity: 0.01;
+  transition: opacity 600ms ease-in;
+}

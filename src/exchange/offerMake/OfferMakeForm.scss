@@ -1,0 +1,171 @@
+@import "../../utils/Variables";
+@import "../../utils/Mixins";
+
+.ownedResourcesInfoBox {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btnGroup {
+  margin-left: auto;
+}
+
+.btn {
+  height: 28px;
+  width: 72px;
+}
+
+.balanceBtn {
+  align-items: center;
+  display: flex;
+  @include fontLatoBold;
+  justify-content: center;
+  letter-spacing: 0.4px;
+  width: 150px;
+  flex-basis: 150px;
+  flex-grow: 1;
+
+  &:disabled,
+  &:disabled:hover {
+    background-color: transparent;
+    border-color: rgba($grey-light, 0.2);
+    color: $font-color-base;
+    opacity: 1;
+  }
+
+  &:first-child {
+    margin-right: 10px;
+  }
+
+  &:last-child {
+    margin-left: 10px;
+  }
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.confirmButton {
+  font-size: $font-size-base;
+  height: 35px;
+  margin-top: 2px;
+  width: 100%;
+}
+
+// ---------- horizontal lines spaces
+.hrMargin {
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+
+// ---------- input group modifiers
+.inputHeader {
+  flex-basis: 94px;
+  flex-grow: 2;
+  flex-shrink: 0;
+  padding: 10px 16px;
+  white-space: nowrap;
+}
+
+.input {
+  flex-basis: 180px;
+  flex-grow: 4;
+  flex-shrink: 1;
+}
+
+.inputCurrencyAddon {
+  flex-basis: 82px;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: start;
+  padding: 10px 16px;
+  white-space: nowrap;
+}
+
+.inputPercentAddon {
+  flex-basis: 36px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding: 10px 6px;
+  white-space: nowrap;
+}
+
+// errors
+.errors {
+  display: flex;
+  align-items: start;
+  justify-content: flex-end;
+
+  color: $red;
+  font-size: 11px;
+  height: 22px;
+  text-align: right;
+}
+
+.directSummary {
+  border: 1px solid $grey-dark;
+  border-radius: $border-radius;
+
+  display: flex;
+  align-items: stretch;
+  justify-items: center;
+
+  height: 63px;
+
+  margin-bottom: 20px;
+  margin-top: 18px;
+
+  font-size: 14px;
+}
+
+.directSummaryRight,
+.directSummaryLeft {
+  flex-basis: 50%;
+  padding: 12px;
+}
+
+.directSummaryRight {
+  border-left: 1px solid $grey-dark;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.directSummaryLeft {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.directSummaryHorizontal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// order type picker
+.picker {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pickerBody {
+  flex-grow: 1;
+}
+
+.pickerOrderType {
+  margin: 13px 20px 13px 32px;
+}
+
+.pickerDescription {
+  font-size: 14px;
+  display: block;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}

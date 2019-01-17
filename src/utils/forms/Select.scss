@@ -1,0 +1,59 @@
+@import "../Mixins";
+@import "../Variables";
+
+.select {
+  $padding-vertical: 5px;
+  $padding-horizontal: 20px;
+  $padding-right-extra: 6px;
+
+  @include fontMontserratMedium;
+  border: none;
+  background-color: transparent;
+  color: $font-color-base;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  padding: $padding-vertical $padding-horizontal+$padding-right-extra $padding-vertical $padding-horizontal;
+  text-transform: uppercase;
+  width: 100%;
+
+  &:not(:disabled) {
+    cursor: pointer;
+  }
+
+  &:disabled {
+    color: $grey-lightest;
+  }
+
+  -moz-appearance: none;
+  -webkit-appearance: none;
+
+  option {
+    background-color: $grey-dark;
+  }
+}
+
+.wrapperBordered {
+  border: 1px solid $grey-light;
+  border-radius: 2px;
+}
+
+.wrapper {
+
+  position: relative;
+  display: flex;
+  justify-content: stretch;
+  align-items: stretch;
+
+  background: url("./icon_arrow_down.svg") no-repeat center right;
+}
+
+.disabled {
+  // .wrapper
+  background-image: url("./icon_arrow_down_grey.svg");
+  // .wrapperBordered
+  border-color: $grey-dark;
+
+}
+
+@include formInputHeights();

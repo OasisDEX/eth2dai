@@ -1,0 +1,103 @@
+version: 2
+
+# @todo we could split this into multiple different jobs and make some things in parallel
+# - build 
+# - (in parallel) tests, e2e-test
+# - deploy
+# To accomplish this we need to figure out passing build between jobs as well as installed deps
+# i think for now it's not worth the trouble but in future, when ci pipeline slows done it can be nice (KK)
+
+jobs:
+  test:
+    machine:
+      enabled: true
+      image: circleci/classic:edge
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v3-dependencies-{{ checksum "package.json" }}
+      - run: .circleci/install-yarn.sh
+      - run: source /opt/circleci/.nvm/nvm.sh && yarn install --frozen-lockfile
+      - save_cache:
+          paths:
+            - node_modules
+            - ~/.cache
+          key: v3-dependencies-{{ checksum "package.json" }}
+      - run: 
+          name: Run linting & tests
+          command: source /opt/circleci/.nvm/nvm.sh && yarn test
+      - run: 
+          name: Get & run localnode image
+          command: |
+            LOCALNODE_SHA=8e36f81989cd0e17c9e6de035c4dde58f0f12bd5
+            docker login -u $DOCKER_USER -p $DOCKER_PASS && docker pull oasisdex/localnode:$LOCALNODE_SHA
+            docker run -d -p 8545:8545 oasisdex/localnode:$LOCALNODE_SHA master
+      - run:
+          name: Run visual regression
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            yarn storybook:vis-reg || true # ignore failures here. We should reject PRs during review process if change is not valid.
+      - run: 
+          name: Wait for localnode to be up
+          command: |
+            ./.circleci/wait-for-it.sh localhost:8545 -t 10
+            sleep 10
+      - run: 
+          name: Run build & e2e tests
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            yarn build:ci
+            ./.circleci/run-e2e.sh
+
+  deploy_dev:
+    docker:
+      - image: circleci/node:8.11.2-stretch
+    steps:
+      - checkout
+      - restore_cache:
+            keys:
+            - v3-dependencies-{{ checksum "package.json" }}
+      - run: yarn run deploy:dev
+
+  deploy_prod:
+    docker:
+      - image: circleci/node:8.11.2-stretch
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "2d:ec:2f:f5:b6:10:8c:8a:e7:9f:f3:c9:77:25:b7:0b"
+      - checkout
+      - restore_cache:
+            keys:
+            - v3-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Configure git defaults
+          command:  git config user.email "circleci@makerdao.com" && git config user.name "CircleCI"
+      - run:
+          name: Deploying to production
+          command: yarn run deploy:prod
+
+workflows:
+  version: 2
+
+  mainflow:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - deploy_dev:
+          requires:
+            - test
+          filters:
+            branches:
+              only: dev
+      - deploy_prod:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master

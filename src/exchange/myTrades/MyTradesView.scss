@@ -1,0 +1,36 @@
+@import "../../utils/Mixins";
+
+.container {
+  min-height: 230px;
+}
+
+@include tableTextAlign(right);
+
+.myTradesTable {
+  max-height: 400px;
+
+  td, th {
+    flex-grow: 1;
+  }
+}
+
+.myOpenTradesTable {
+  @include tableColumnsWidth(100px 165px 165px 165px 165px 165px);
+}
+
+.myCloseTradesTable {
+  @include tableColumnsWidth(100px 165px 165px 165px 165px);
+}
+
+.statusText {
+  display: inline-block;
+  margin-right: 1em;
+  text-transform: uppercase;
+
+}
+
+.statusProgress {
+  display: inline-block;
+  position: relative;
+  top: 2px;
+}

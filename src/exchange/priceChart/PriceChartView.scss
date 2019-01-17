@@ -1,0 +1,112 @@
+@import "../../utils/Variables";
+@import "../../utils/Mixins";
+
+// chart colors
+.fallBar,
+.fallStick {
+  fill: $red;
+  background-color: $red;
+}
+
+.riseStick {
+  fill: $green;
+  background-color: $green;
+}
+
+.riseBar {
+  fill: #2c3d3f; // equals rgba($green, 0.1), but without opacity;
+  background-color: #2c3d3f; // equals rgba($green, 0.1), but without opacity;
+  stroke: $green;
+  stroke-width: 1;
+}
+
+.equal {
+  fill: $grey-lightest;
+  background-color: $grey-lightest;
+}
+
+.volume {
+  fill: $grey-dark;
+  background-color: $grey-dark;
+}
+
+// bands
+.bands rect {
+  fill: darkgrey;
+  fill-opacity: 0.3;
+  stroke-opacity: 0;
+  pointer-events: all;
+  shape-rendering: crispEdges;
+}
+.bands .hoved {
+  fill-opacity: .6;
+}
+
+:global(.candles) .hoved {
+  stroke-width: 2;
+  &.riseBar {
+    stroke: saturate($green, 30%);
+  }
+  &.fallBar {
+    stroke: #ffa799;
+  }
+  &.equal {
+    stroke: $grey-lightest;
+  }
+}
+
+:global(.sticks) .hoved {
+  &.riseStick {
+    stroke: saturate($green, 20%);
+  }
+  &.fallStick {
+    stroke: #ffa799;
+  }
+}
+
+:global(.volume) .hoved {
+  fill: $grey-light;
+}
+
+// Axis main label class is uased as equivalent of
+// :global(.tick)
+.axisYMainLabel {
+  @include fontLatoBold;
+  color: $grey-lightest;
+}
+
+.axisXMainLabel {
+  @include fontMontserratMedium;
+  color: $white;
+  font-size: 14px;
+}
+
+.axisLineMain {
+  stroke: #636369;
+  stroke-width: 2px;
+}
+
+.axisLineGrid {
+  stroke: #383842;
+  stroke-width: 1px;
+}
+
+// Info box for price chart
+.infoBox {
+  position: absolute;
+  left: 10px;
+  top: 0;
+
+  background-color: rgba($grey-darkest, 0.5);
+  //border: 1px solid $grey-light;
+  font-size: 10px;
+  padding: 2px 3px;
+
+  display: flex;
+  justify-content: space-between;
+  width: 75%;
+}
+
+.infoBoxItem {
+  width: 200px;
+}

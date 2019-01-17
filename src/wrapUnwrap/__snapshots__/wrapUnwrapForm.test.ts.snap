@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Unwrapping initial state 1`] = `
+Object {
+  "cancel": [Function],
+  "change": [Function],
+  "ethBalance": "1000",
+  "etherPriceUsd": "1",
+  "gasEstimationStatus": "unset",
+  "gasPrice": "0.01",
+  "kind": "unwrap",
+  "messages": Array [],
+  "proceed": [Function],
+  "readyToProceed": undefined,
+  "wethBalance": "1000",
+}
+`;
+
+exports[`Wrapping initial state 1`] = `
+Object {
+  "cancel": [Function],
+  "change": [Function],
+  "ethBalance": "1000",
+  "etherPriceUsd": "1",
+  "gasEstimationStatus": "unset",
+  "gasPrice": "0.01",
+  "kind": "wrap",
+  "messages": Array [],
+  "proceed": [Function],
+  "readyToProceed": undefined,
+  "wethBalance": "1000",
+}
+`;

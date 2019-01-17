@@ -1,0 +1,43 @@
+
+$body-bg: #444451;
+
+$white: #fff; // text colors
+$grey-lightest: #87878C; // muted text colors
+$grey-light: #58585F;
+$grey-dark: #393942; // table header bg, input bg, order subsection bg
+$grey-darkest: #2F2F38; // components bg
+$grey-darken-darkest: #2B2B33; // panel border
+
+$green: #1CBA80 ; // button bg, buy color
+$green-dark: #22906A; // depth chart buy dark color
+$red: #FF6951; // sell color
+$red-dark: #C15849; // depth chart sell dark color
+$orange: #f7a600; //
+
+$etherColor: #4f6cb1;
+$makerColor: #3ab493;
+$daiColor: #f7a600;
+$dgxColor: #be9e57;
+
+$font-color-base: $white;
+
+$disabledColor: $grey-light;
+$disabledBorderColor: $grey-dark;
+
+// Font weights for Montserrat
+// semiBold = 600,
+// medium = 500
+// normal = 400
+$font-main: Montserrat, sans-serif;
+
+// Font weights for Lato
+// regular = 400
+// bold = 700
+$font-additional: Lato, sans-serif;
+
+$font-size-base: 16px;
+
+$border-radius: 4px;
+
+
+$breakpoint-md: 1024px;

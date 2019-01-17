@@ -1,0 +1,69 @@
+@import "../Variables";
+
+$panel-padding-horizontal: 16px;
+
+
+// panel
+.panel {
+  background-color: $grey-darkest;
+  border: 1px solid $grey-darken-darkest;
+  box-shadow: 0 0 4px 1px rgba(black, 0.20);
+  border-radius: $border-radius;
+}
+
+.panelWithFooterBordered {
+  $paddingFooterBottom: 18px;
+  padding-bottom: $paddingFooterBottom + 1px;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: $paddingFooterBottom;
+    width: 100%;
+    height: 0;
+    border-top: 1px solid $grey-dark;
+  }
+}
+
+// panel header
+.panelHeader {
+  display: flex;
+  align-items: center;
+  padding: 12px $panel-padding-horizontal;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.36px;
+  min-height: 64px;
+}
+
+.panelHeaderBordered {
+  border-bottom: 1px solid $grey-dark;
+}
+
+// panel body
+.panelBodyHorizontal {
+  padding-left: $panel-padding-horizontal;
+  padding-right: $panel-padding-horizontal;
+}
+
+.panelBodyBottom {
+  padding-bottom: $panel-padding-horizontal;
+}
+
+.panelBodyTop {
+  padding-top: $panel-padding-horizontal;
+}
+
+.panelBodyScrollable {
+  overflow-x: auto;
+}
+
+// panel footer
+.panelFooter {
+  padding: 10px $panel-padding-horizontal $panel-padding-horizontal;
+}
+
+.panelFooterBordered {
+  border-top: 1px solid $grey-dark;
+}

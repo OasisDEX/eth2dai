@@ -1,0 +1,139 @@
+@import "../../utils/Variables";
+@import "../../utils/Mixins";
+
+// general depth chart style
+.depthChart {
+  position: relative;
+}
+
+// chart colors
+.sellChart {
+  fill: $red;
+  background-color: $red;
+}
+
+.sellChartDark {
+  fill: $red-dark;
+  background-color: $red-dark;
+}
+
+.buyChart {
+  fill: $green;
+  background-color: $green;
+}
+
+.buyChartDark {
+  fill: $green-dark;
+  background-color: $green-dark;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+// Axis main label class is uased as equivalent of
+// :global(.tick)
+.axisMainLabel {
+  @include fontLatoBold;
+}
+
+.axisLineMain {
+  stroke: #636369;
+  stroke-width: 2px;
+}
+
+.axisLineAdditional {
+  stroke: #444;
+  stroke-width: 1px;
+}
+
+.axisYLineAdditional {
+  stroke: #444;
+  stroke-width: 0.5;
+}
+
+.axisYTokenLabel {
+  @include fontMontserratSemibold;
+  color: $grey-lightest;
+  font-size: 10px;
+}
+
+// info box styles
+.infoBox {
+  background-color: $grey-darkest;
+  border: 1px solid $red;
+  display: table;
+  font-size: 10px;
+  padding: 8px;
+  position: absolute;
+}
+
+.infoBoxRed {
+  border-color: #D55D4C;
+  stroke: #D55D4C;
+}
+
+.infoBoxGreen {
+  border-color: #1F9E71;
+  stroke: #1F9E71;
+}
+
+.sellText {
+  color: $red;
+}
+
+.buyText {
+  color: $green;
+}
+
+.infoSummary {
+  display: table-row;
+}
+
+.infoSummaryLine {
+  //width: 50%;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  display: table-cell;
+  white-space: nowrap;
+
+  &:first-child {
+    padding-right: 10px;
+  }
+}
+
+.infoSummaryLegendImg {
+  margin-right: 8px;
+  margin-top: 3px;
+}
+
+.legendImg {
+  height: 9px;
+  width: 12px;
+}
+
+.smallLegend {
+  align-items: center;
+  background-color: $grey-darkest;
+  display: inline-flex;
+  justify-content: flex-end;
+  font-size: 10px;
+  padding: 4px 6px;
+  position: absolute;
+}
+
+.dotGlow {
+  fill: rgba(white, 0.1);
+}
+
+.dotSell {
+  fill: #F06856;
+  stroke-width: 1;
+  stroke: white;
+}
+
+.dotBuy {
+  fill: $green;
+  stroke-width: 1;
+  stroke: white;
+}

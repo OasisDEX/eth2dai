@@ -1,0 +1,54 @@
+@import "../Variables";
+
+.infoIcon {
+  $iconSize: 22px;
+
+  color: $grey-lightest;
+
+  border: 1px solid $grey-lightest;
+  border-radius: 100%;
+
+  width: $iconSize;
+  height: $iconSize;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+// progress icon with spin animation
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform:rotate(360deg);
+  }
+}
+
+.progressIcon {
+  $iconSize: 16px;
+
+  display: inline-block;
+
+  border: 2px solid $grey-light;
+  border-right-color: white;
+  border-radius: 100%;
+
+  width: $iconSize;
+  height: $iconSize;
+
+  animation: spin 3s linear infinite;
+}
+
+.progressIconLight {
+  border-color: #eee;
+  border-right-color: #448AFF;
+}
+
+.progressIconSm {
+  $size: 12px;
+  width: $size;
+  height: $size;
+}

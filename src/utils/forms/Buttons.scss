@@ -1,0 +1,156 @@
+@import "../Mixins";
+@import "../Variables";
+@import "./Buttons.mixins";
+
+.button {
+  @include fontMontserratMedium;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: $border-radius/2;
+  cursor: pointer;
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 5px 0.833em;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:hover[disabled],
+  &:hover.disabled {
+    cursor: default;
+  }
+
+  &[disabled],
+  &.disabled {
+    color: $grey-lightest;
+    border-color: rgba($grey-light, 0.2);
+    background-color: $grey-dark;
+  }
+}
+
+.buttonGroup {
+  > .button:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  > .button:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+// --------------- color -----------
+
+@mixin button($map) {
+
+  color: map-get($map, color);
+  border-color: map-get($map, border-color);
+  background-color: map-get($map, bg);
+
+  &:hover:enabled:not(.disabled),
+  &:focus:enabled:not(.disabled),
+  &:active:enabled:not(.disabled) {
+    color: map-get($map, color-hover);
+    background-color: map-get($map, bg-hover);
+    border-color: map-get($map, border-color-hover);
+  }
+
+  &[disabled]:hover,
+  &[disabled],
+  &.disabled:hover,
+  &.disabled {
+    opacity: 0.5;
+  }
+}
+
+
+.grey {
+  @include button((
+          color: $font-color-base,
+          bg: $grey-darkest,
+          border-color: $grey-light,
+          color-hover: $font-color-base,
+          border-color-hover: lighten($grey-darkest, 5%),
+          bg-hover: lighten($grey-light, 5%)
+  ));
+}
+
+.green {
+  @include button((
+          color: $font-color-base,
+          bg: $green,
+          border-color: $green,
+          color-hover: $font-color-base,
+          border-color-hover: darken($green, 5%),
+          bg-hover: darken($green, 5%)
+  ));
+}
+
+
+.red {
+  @include button((
+          color: $font-color-base,
+          bg: $red,
+          border-color: $red,
+          color-hover: $font-color-base,
+          border-color-hover: darken($red, 5%),
+          bg-hover: darken($red, 5%)
+  ));
+}
+
+
+.white {
+  @include button((
+          color: black,
+          bg: $white,
+          border-color: $white,
+          color-hover: #333,
+          border-color-hover: #ddd,
+          bg-hover: #ddd
+  ));
+  font-weight: 600; //semibold
+}
+
+// ----- size ------
+@include formInputHeights();
+.lg {
+  font-size: 14px;
+}
+
+.block {
+  display: block;
+  width: 100%;
+}
+
+// ----------------------- action button ----------------
+.actionButton {
+  border: none;
+  background: none;
+  color: $white;
+  line-height: 0.5;
+  padding: 6px;
+  margin: 0;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.close {
+  $size: 16px;
+  width: $size;
+  height: $size;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+  color: $grey-dark;
+  line-height: 0;
+
+  background: white;
+  border-radius: 100%;
+}
