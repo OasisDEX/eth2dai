@@ -8,6 +8,7 @@
     "build": "node scripts/build.js",
     "build:ci": "REACT_APP_ENV='test' node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
+    "test:coverage": "node scripts/test.js --env=jsdom --coverage",
     "tslint": "tslint --project .",
     "tslint:fix": "tslint --project . --format stylish --fix",
     "postinstall": "rm -f node_modules/web3/index.d.ts",
@@ -129,6 +130,9 @@
     "webpack-manifest-plugin": "1.3.2"
   },
   "jest": {
+    "coverageReporters": [
+      "lcov"
+    ],
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}"
     ],
