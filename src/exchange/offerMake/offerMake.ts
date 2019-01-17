@@ -310,6 +310,14 @@ function applyChange(
               gasEstimationStatus: GasEstimationStatus.unset
             };
           }
+
+          if (state.matchType === OfferMatchType.direct) {
+            return applyChange(
+              state,
+              { kind: FormChangeKind.amountFieldChange, value:state.balances[state.baseToken]
+              }
+            );
+          }
           return {
             ...state,
             amount: state.balances[state.baseToken],

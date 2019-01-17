@@ -13,18 +13,20 @@ import { FormChangeKind, GasEstimationStatus, OfferMatchType } from '../../utils
 import { unpack } from '../../utils/testHelpers';
 import { createFakeOrderbook, emptyOrderBook } from '../depthChart/fakeOrderBook';
 import { Offer, OfferType } from '../orderbook/orderbook';
-import { createFormController$, FormStage } from './offerMake';
+import { createFormController$, FormStage, MessageKind, OfferMakeChangeKind } from './offerMake';
 
 function snapshotify(object: any): any {
   return omit(object, 'change');
 }
+
+const tradingPair = { base: 'WETH', quote: 'DAI' };
 
 const defaultCalls = {
   offerMakeEstimateGas: () => of(20),
   offerMake: null as any,
   cancelOffer: null as any,
   offerMakeDirect: null as any,
-  offerMakeDirectEstimateGas: null as any,
+  offerMakeDirectEstimateGas: () => of(30),
   setupMTProxy: null as any,
   setupMTProxyEstimateGas: null as any,
   approve: null as any,
@@ -47,8 +49,21 @@ const defParams = {
   calls$: of(defaultCalls) as Calls$,
 };
 
+const controllerWithFakeOrderBook = (buys: any = [], sells: any = []) => {
+  const orderbook = createFakeOrderbook(buys, sells);
+  orderbook.buy.forEach((v, i) => v.offerId = new BigNumber(i + 1));
+  orderbook.sell.forEach((v, i) => v.offerId = new BigNumber(i + 1));
+  return createFormController$(
+    {
+      ...defParams,
+      orderbook$: of(orderbook),
+    },
+    tradingPair
+  );
+};
+
 test('initial state', done => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   controller.subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
     done();
@@ -56,7 +71,7 @@ test('initial state', done => {
 });
 
 test('set price and amount', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
@@ -86,7 +101,7 @@ test('estimate gas calculation', () => {
         offerMakeEstimateGas: estimateGasMock,
       })
     },
-    { base: 'WETH', quote: 'DAI' }
+    tradingPair
   );
 
   const { change } = unpack(controller);
@@ -104,9 +119,9 @@ test('estimate gas calculation', () => {
   // buy
   expect(estimateGasMock.mock.calls[0][0]).toEqual({
     buyAmount: new BigNumber(3),
-    buyToken: 'WETH',
+    buyToken: tradingPair.base,
     sellAmount: new BigNumber(6),
-    sellToken: 'DAI',
+    sellToken: tradingPair.quote,
     matchType: OfferMatchType.limitOrder,
     kind: OfferType.buy,
     gasPrice: new BigNumber(0.01),
@@ -116,9 +131,9 @@ test('estimate gas calculation', () => {
   // sell
   expect(estimateGasMock.mock.calls[1][0]).toEqual({
     buyAmount: new BigNumber(6),
-    buyToken: 'DAI',
+    buyToken: tradingPair.quote,
     sellAmount: new BigNumber(3),
-    sellToken: 'WETH',
+    sellToken: tradingPair.base,
     matchType: OfferMatchType.limitOrder,
     kind: OfferType.sell,
     gasPrice: new BigNumber(0.01),
@@ -135,16 +150,7 @@ test('calculate position in order book for buy', () => {
     { price: 2, amount: 4 }, // 4
     { price: 1, amount: 4 }, // 5
   ];
-  const orderbook = createFakeOrderbook(buys, []);
-  orderbook.buy.forEach((v, i) => v.offerId = new BigNumber(i + 1));
-
-  const controller = createFormController$(
-    {
-      ...defParams,
-      orderbook$: of(orderbook),
-    },
-    { base: 'WETH', quote: 'DAI' });
-
+  const  controller = controllerWithFakeOrderBook(buys);
   const { change } = unpack(controller);
   expect(unpack(controller).position).toBeUndefined();
 
@@ -165,14 +171,7 @@ test('calculate position in order book for buy', () => {
 });
 
 test('calculate undefined position in empty order book for buy', () => {
-  const orderbook = createFakeOrderbook([], []);
-
-  const controller = createFormController$(
-    { ...defParams,
-      orderbook$: of(orderbook),
-    },
-    { base: 'WETH', quote: 'DAI' });
-
+  const controller = controllerWithFakeOrderBook();
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(3) });
@@ -189,15 +188,8 @@ test('calculate position in orderbook for sell', () => {
     { price: 4, amount: 3 }, // 3
     { price: 5, amount: 4 }, // 4
   ];
-  const orderbook = createFakeOrderbook([], sells);
-  orderbook.sell.forEach((v, i) => v.offerId = new BigNumber(i + 1));
 
-  const controller = createFormController$(
-    { ...defParams,
-      orderbook$: of(orderbook),
-    },
-    { base: 'WETH', quote: 'DAI' });
-
+  const controller = controllerWithFakeOrderBook([], sells);
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.kindChange, newKind: OfferType.sell });
@@ -234,7 +226,7 @@ test('click buy button', () => {
         offerMake: offerMakeMock
       }),
     },
-    { base: 'WETH', quote: 'DAI' });
+    tradingPair);
 
   const { change } = unpack(controller);
 
@@ -246,9 +238,9 @@ test('click buy button', () => {
   expect(offerMakeMock.mock.calls.length).toBe(1);
   expect(offerMakeMock.mock.calls[0][0]).toEqual({
     buyAmount: new BigNumber(3),
-    buyToken: 'WETH',
+    buyToken: tradingPair.base,
     sellAmount: new BigNumber(6),
-    sellToken: 'DAI',
+    sellToken: tradingPair.quote,
     matchType: OfferMatchType.limitOrder,
     kind: OfferType.buy,
     gasPrice: new BigNumber(0.01),
@@ -260,8 +252,8 @@ test('click buy button', () => {
 
 test('click sell button...', () => {
   const offerMakeMock = jest.fn(() => of({
-    status: TxStatus.WaitingForApproval
-  } as TxState),
+      status: TxStatus.WaitingForApproval
+    } as TxState),
   ).mockName('offerMake');
   const controller = createFormController$(
     {
@@ -271,7 +263,7 @@ test('click sell button...', () => {
         offerMake: offerMakeMock,
       }),
     },
-    { base: 'WETH', quote: 'DAI' });
+    tradingPair);
 
   const { change } = unpack(controller);
 
@@ -291,9 +283,9 @@ test('click sell button...', () => {
   expect(offerMakeMock.mock.calls.length).toBe(1);
   expect(offerMakeMock.mock.calls[0][0]).toEqual({
     buyAmount: new BigNumber(6),
-    buyToken: 'DAI',
+    buyToken: tradingPair.quote,
     sellAmount: new BigNumber(3),
-    sellToken: 'WETH',
+    sellToken: tradingPair.base,
     matchType: OfferMatchType.limitOrder,
     kind: OfferType.sell,
     gasPrice: new BigNumber(0.01),
@@ -309,13 +301,14 @@ test('click buy button confirmed', () => {
   )).mockName('offerMake');
 
   const controller = createFormController$(
-    { ...defParams,
+    {
+      ...defParams,
       calls$: of({
         ...defaultCalls,
         offerMake: offerMakeMock,
       }),
     },
-    { base: 'WETH', quote: 'DAI' });
+    tradingPair);
 
   const { change } = unpack(controller);
 
@@ -332,9 +325,9 @@ test('click buy button confirmed', () => {
   expect(offerMakeMock.mock.calls.length).toBe(1);
   expect(offerMakeMock.mock.calls[0][0]).toEqual({
     buyAmount: new BigNumber(3),
-    buyToken: 'WETH',
+    buyToken: tradingPair.base,
     sellAmount: new BigNumber(6),
-    sellToken: 'DAI',
+    sellToken: tradingPair.quote,
     matchType: OfferMatchType.limitOrder,
     kind: OfferType.buy,
     gasPrice: new BigNumber(0.01),
@@ -354,7 +347,7 @@ test('click buy button canceled', () => {
         } as TxState),
       }),
     },
-    { base: 'WETH', quote: 'DAI' });
+    tradingPair);
 
   const { change } = unpack(controller);
 
@@ -376,7 +369,7 @@ test('validation - allowance not given', () => {
       ...defParams,
       allowance$: () => of(false),
     },
-    { base: 'WETH', quote: 'DAI' });
+    tradingPair);
 
   const { change } = unpack(controller);
 
@@ -390,7 +383,7 @@ test('validation - allowance not given', () => {
 });
 
 test('validation - not enough money', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
 
   const { change } = unpack(controller);
 
@@ -404,7 +397,7 @@ test('validation - not enough money', () => {
 });
 
 test('validation - too small amount', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
 
   const { change } = unpack(controller);
 
@@ -423,7 +416,7 @@ test('validation - too small amount with unknown token dustLimits', () => {
       ...defParams,
       dustLimits$: of({ WETH: new BigNumber(0.1) }),
     },
-    { base: 'WETH', quote: 'DAI' });
+    tradingPair);
 
   const { change } = unpack(controller);
 
@@ -447,22 +440,24 @@ test('validation - too big amount', () => {
       ...defParams,
       balances$: of({ DAI: new BigNumber(20000000000000000) }),
     },
-    { base: 'WETH', quote: 'DAI' });
+    tradingPair);
 
   const { change } = unpack(controller);
 
   expect(unpack(controller).messages).toEqual([]);
   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
   expect(unpack(controller).messages).toEqual([]);
-  change({ kind: FormChangeKind.amountFieldChange,
-    value: new BigNumber(10000000000000000) });
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(10000000000000000)
+  });
   expect(unpack(controller).messages).not.toEqual([]);
 
   expect(snapshotify(unpack(controller).messages)).toMatchSnapshot();
 });
 
 test('init sell', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   expect(unpack(controller).kind).toEqual(OfferType.buy);
@@ -471,7 +466,7 @@ test('init sell', () => {
 });
 
 test('init buy after sell', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   expect(unpack(controller).kind).toEqual(OfferType.buy);
@@ -482,7 +477,7 @@ test('init buy after sell', () => {
 });
 
 test('set amount and price in sell', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   expect(unpack(controller).kind).toEqual(OfferType.buy);
@@ -494,7 +489,7 @@ test('set amount and price in sell', () => {
 });
 
 test('set amount and price in buy and change to sell', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
@@ -515,7 +510,7 @@ test('set amount and price in buy and change to sell', () => {
 });
 
 test('set max when buy and nothing is filled', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
   expect(unpack(controller).price).toBeUndefined();
   expect(unpack(controller).amount).toBeUndefined();
@@ -529,7 +524,7 @@ test('set max when buy and nothing is filled', () => {
 });
 
 test('set max when buy and amount is filled', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.amountFieldChange, value: new BigNumber(2) });
@@ -544,7 +539,7 @@ test('set max when buy and amount is filled', () => {
 });
 
 test('set max when buy and price is filled', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
@@ -559,7 +554,7 @@ test('set max when buy and price is filled', () => {
 });
 
 test('set max when buy and amount and price is filled', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
@@ -575,7 +570,7 @@ test('set max when buy and amount and price is filled', () => {
 });
 
 test('set max when sell and nothing is filled', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.kindChange, newKind: OfferType.sell });
@@ -590,7 +585,7 @@ test('set max when sell and nothing is filled', () => {
 });
 
 test('set max when sell and amount and price is filled', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.kindChange, newKind: OfferType.sell });
@@ -607,14 +602,14 @@ test('set max when sell and amount and price is filled', () => {
 });
 
 test('pick sell offer', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
   const offer: Offer = {
     offerId: new BigNumber(1),
     baseAmount: new BigNumber(2),
-    baseToken: 'WETH',
+    baseToken: tradingPair.base,
     quoteAmount: new BigNumber(6),
-    quoteToken: 'DAI',
+    quoteToken: tradingPair.quote,
     price: new BigNumber(3),
     ownerId: '',
     timestamp: new Date(),
@@ -631,14 +626,14 @@ test('pick sell offer', () => {
 });
 
 test('pick buy offer', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
   const offer: Offer = {
     offerId: new BigNumber(1),
     baseAmount: new BigNumber(2),
-    baseToken: 'WETH',
+    baseToken: tradingPair.base,
     quoteAmount: new BigNumber(6),
-    quoteToken: 'DAI',
+    quoteToken: tradingPair.quote,
     price: new BigNumber(3),
     ownerId: '',
     timestamp: new Date(),
@@ -655,13 +650,15 @@ test('pick buy offer', () => {
 });
 
 test('change match type', () => {
-  const controller = createFormController$(defParams, { base: 'WETH', quote: 'DAI' });
+  const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
   expect(unpack(controller).matchType).toEqual(OfferMatchType.limitOrder);
 
-  change({ kind: FormChangeKind.matchTypeChange,
-    matchType: OfferMatchType.direct });
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct
+  });
   expect(unpack(controller).matchType).toEqual(OfferMatchType.direct);
 });
 
@@ -674,7 +671,7 @@ test('estimation gas error', () => {
         offerMakeEstimateGas: () => throwError('test estimation gas error'),
       })
     },
-    { base: 'WETH', quote: 'DAI' });
+    tradingPair);
   const { change } = unpack(controller);
 
   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
@@ -684,113 +681,457 @@ test('estimation gas error', () => {
   expect(unpack(controller).total).toEqual(new BigNumber(6));
   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.error);
 });
-//
-// test('gas price error', () => {
-//   const controller = createFormController$(
-//     {
-//       ...defParams,
-//       gasPrice$: throwError('test gas price error')
-//     },
-//     { base: 'WETH', quote: 'DAI' });
-//
-//   console.warn(unpack(controller));
-//
-//   const { change } = unpack(controller);
-//   expect(unpack(controller).gasPrice).toBeUndefined();
-//
-//   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
-//   change({ kind: FormChangeKind.amountFieldChange, value: new BigNumber(3) });
-//   expect(unpack(controller).total).toEqual(new BigNumber(6));
-//
-//   expect(unpack(controller).gasEstimationEth).toBeUndefined();
-//   // expect((unpack(controller).gasEstimationEth as BigNumber).toNumber()).toBeNaN();
-// });
-//
-// test('allowance error', () => {
-//   const controller = createFormController$(
-//     {
-//       ...defParams,
-//       allowance$: () => throwError('test allowance error')
-//     },
-//     { base: 'WETH', quote: 'DAI' });
-//
-//   const { change } = unpack(controller);
-//
-//   expect(unpack(controller).messages).toEqual([]);
-//   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
-//   expect(unpack(controller).messages).toEqual([]);
-//   change({ kind: FormChangeKind.amountFieldChange, value: new BigNumber(3) });
-//   expect(unpack(controller).messages).not.toEqual([]);
-//
-//   expect(unpack(controller).buyAllowance).toBeUndefined();
-//   expect(unpack(controller).sellAllowance).toBeUndefined();
-//   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
-//
-//   expect(snapshotify(unpack(controller).messages)).toMatchSnapshot();
-// });
-//
-// test('base allowance error', () => {
-//   const controller = createFormController$(
-//     {
-//       ...defParams,
-//       allowance$: (token) =>
-//         token === 'DAI' ? of(true) : throwError('test base allowance error')
-//     },
-//     { base: 'WETH', quote: 'DAI' });
-//
-//   const { change } = unpack(controller);
-//
-//   expect(unpack(controller).messages).toEqual([]);
-//   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
-//   expect(unpack(controller).messages).toEqual([]);
-//   change({ kind: FormChangeKind.amountFieldChange, value: new BigNumber(3) });
-//
-//   expect(unpack(controller).buyAllowance).toBeUndefined();
-//   expect(unpack(controller).sellAllowance).toBeTruthy();
-//   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.calculated);
-//   expect(unpack(controller).messages).toEqual([]);
-//
-//   change({ kind: FormChangeKind.kindChange, newKind: OfferType.sell });
-//
-//   expect(unpack(controller).buyAllowance).toBeUndefined();
-//   expect(unpack(controller).sellAllowance).toBeTruthy();
-//   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
-//
-//   expect(unpack(controller).messages).not.toEqual([]);
-//   expect(snapshotify(unpack(controller).messages)).toMatchSnapshot();
-//
-// });
-//
-// test('min sell error', () => {
-//   const controller = createFormController$(
-//     {
-//       ...defParams,
-//       dustLimits$: throwError('test min sell error')
-//     },
-//     { base: 'WETH', quote: 'DAI' });
-//
-//   const { change } = unpack(controller);
-//
-//   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
-//   change({ kind: FormChangeKind.amountFieldChange, value: new BigNumber(0.00) });
-//   expect(unpack(controller).total).toEqual(new BigNumber(0.00));
-//
-//   expect(unpack(controller).messages).toEqual([]);
-// });
-//
-// test('current orderbook error', () => {
-//   const controller = createFormController$(
-//     {
-//       ...defParams,
-//       loadOrderbook: (_tp: TradingPair) => throwError('current orderbook')
-//     },
-//     { base: 'WETH', quote: 'DAI' });
-//
-//   const { change } = unpack(controller);
-//
-//   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(2) });
-//   change({ kind: FormChangeKind.amountFieldChange, value: new BigNumber(3) });
-//   expect(unpack(controller).total).toEqual(new BigNumber(6));
-//
-//   expect(unpack(controller).position).toBeUndefined();
-// });
+
+// FOK order
+
+test('place direct buy order', () => {
+  const sells = [
+    { price: 3, amount: 3 }, // 4
+    { price: 4, amount: 4 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook([], sells);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  expect(unpack(controller).amount).toEqual(undefined);
+  expect(unpack(controller).price).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(5));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(2),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(2));
+  expect(unpack(controller).price).toEqual(new BigNumber(3));
+  expect(unpack(controller).total).toEqual(new BigNumber(6));
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(5));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.calculated);
+});
+
+test('place direct buy order that matches more than one order', () => {
+  const sells = [
+    { price: 3, amount: 1 }, // 4
+    { price: 4, amount: 1 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook([], sells);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(2),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(2));
+  expect(unpack(controller).price).toEqual(new BigNumber(3.5));
+  expect(unpack(controller).total).toEqual(new BigNumber(7));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.calculated);
+});
+
+test('place direct buy order that exceeds the order book side', () => {
+  const controller = createFormController$(defParams, tradingPair);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(2),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(2));
+  expect(unpack(controller).price).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('place direct buy order that exceeds the balance', () => {
+  const sells = [
+    { price: 3, amount: 3 }, // 4
+    { price: 4, amount: 4 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook([], sells);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(5),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(5));
+  expect(unpack(controller).price).toEqual(new BigNumber(3.4));
+  expect(unpack(controller).total).toEqual(new BigNumber(17));
+  expect(unpack(controller).messages.length).toBe(1);
+  expect(unpack(controller).messages[0].kind).toBe(MessageKind.insufficientAmount);
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('place direct buy order and calculate price impact', () => {
+  const sells = [
+    { price: 3, amount: 0.5 }, // 4
+    { price: 4, amount: 0.5 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook([], sells);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(1),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(1));
+  expect(unpack(controller).price).toEqual(new BigNumber(3.5));
+  expect(unpack(controller).total).toEqual(new BigNumber(3.5));
+  expect(unpack(controller).priceImpact).toEqual(new BigNumber('16.666666666666666667'));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.calculated);
+});
+
+test('place direct buy order below dust limit', () => {
+  const sells = [
+    { price: 3, amount: 0.5 }, // 4
+    { price: 4, amount: 0.5 }, // 5
+  ];
+  const controller = controllerWithFakeOrderBook([], sells);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(0.01),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(0.01));
+  expect(unpack(controller).price).toEqual(new BigNumber(3));
+  expect(unpack(controller).total).toEqual(new BigNumber(0.03));
+  expect(unpack(controller).messages.length).toBe(1);
+  expect(unpack(controller).messages[0].kind).toBe(MessageKind.dustAmount);
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('setting slippage limit', () => {
+  const controller = createFormController$(defParams, tradingPair);
+  const { change } = unpack(controller);
+
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(5));
+
+  change({
+    kind: OfferMakeChangeKind.slippageLimitChange,
+    value: new BigNumber(10),
+  });
+
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(10));
+});
+
+test('placing direct buy order with slippage limit too high', () => {
+  const sells = [
+    { price: 3, amount: 0.5 }, // 4
+    { price: 4, amount: 0.5 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook([], sells);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(1),
+  });
+  change({
+    kind: OfferMakeChangeKind.slippageLimitChange,
+    value: new BigNumber(25),
+  });
+
+  expect(unpack(controller).messages.length).toEqual(1);
+  expect(unpack(controller).messages[0].kind).toEqual(MessageKind.slippageLimitToHigh);
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(25));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('place direct sell order', () => {
+  const buys = [
+    { price: 3, amount: 3 }, // 4
+    { price: 4, amount: 4 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook(buys);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  expect(unpack(controller).amount).toEqual(undefined);
+  expect(unpack(controller).price).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(5));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(2),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(2));
+  expect(unpack(controller).price).toEqual(new BigNumber(3));
+  expect(unpack(controller).total).toEqual(new BigNumber(6));
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(5));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.calculated);
+});
+
+test('place direct sell order using all of your balance', () => {
+  const buys = [
+    { price: 2, amount: 10 },
+  ];
+
+  const controller = controllerWithFakeOrderBook(buys);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  expect(unpack(controller).amount).toEqual(undefined);
+  expect(unpack(controller).price).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(5));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+
+  change({ kind: FormChangeKind.setMaxChange });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(10));
+  expect(unpack(controller).price).toEqual(new BigNumber(2));
+  expect(unpack(controller).total).toEqual(new BigNumber(20));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.calculated);
+});
+
+test('place direct sell order that matches more than one order', () => {
+  const buys = [
+    { price: 3, amount: 1 }, // 4
+    { price: 4, amount: 1 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook(buys);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(2),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(2));
+  expect(unpack(controller).price).toEqual(new BigNumber(3.5));
+  expect(unpack(controller).total).toEqual(new BigNumber(7));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.calculated);
+});
+
+test('place direct sell order that exceeds the order book side', () => {
+  const controller = createFormController$(defParams, tradingPair);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(2),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(2));
+  expect(unpack(controller).price).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('place direct sell order that exceeds the balance', () => {
+  const buys = [
+    { price: 0.2, amount: 10 }, // 4
+    { price: 0.1, amount: 10 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook(buys);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(12),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(12));
+  expect(unpack(controller).price).toEqual(new BigNumber('0.18333333333333333333'));
+  expect(unpack(controller).total).toEqual(new BigNumber('2.19999999999999999996'));
+  expect(unpack(controller).messages.length).toBe(1);
+  expect(unpack(controller).messages[0].kind).toBe(MessageKind.insufficientAmount);
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('place direct sell order and calculate price impact', () => {
+  const buys = [
+    { price: 3, amount: 0.5 }, // 4
+    { price: 4, amount: 0.5 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook(buys);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(1),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(1));
+  expect(unpack(controller).price).toEqual(new BigNumber(3.5));
+  expect(unpack(controller).total).toEqual(new BigNumber(3.5));
+  expect(unpack(controller).priceImpact).toEqual(new BigNumber('16.666666666666666667'));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.calculated);
+});
+
+test('place direct sell order below dust limit', () => {
+  const buys = [
+    { price: 3, amount: 0.5 }, // 4
+    { price: 4, amount: 0.5 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook(buys);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(0.01),
+  });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(0.01));
+  expect(unpack(controller).price).toEqual(new BigNumber(3));
+  expect(unpack(controller).total).toEqual(new BigNumber(0.03));
+  expect(unpack(controller).messages.length).toBe(1);
+  expect(unpack(controller).messages[0].kind).toBe(MessageKind.dustAmount);
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('placing direct sell order with slippage limit too high', () => {
+  const buys = [
+    { price: 3, amount: 0.5 }, // 4
+    { price: 4, amount: 0.5 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook(buys);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(1),
+  });
+  change({
+    kind: OfferMakeChangeKind.slippageLimitChange,
+    value: new BigNumber(25),
+  });
+
+  expect(unpack(controller).messages.length).toEqual(1);
+  expect(unpack(controller).messages[0].kind).toEqual(MessageKind.slippageLimitToHigh);
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(25));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
