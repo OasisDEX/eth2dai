@@ -683,6 +683,31 @@ test('estimation gas error', () => {
 });
 
 // FOK order
+test('switch from direct to limit order', () => {
+  const controller = createFormController$(defParams, tradingPair);
+  const { change } = unpack(controller);
+
+  expect(unpack(controller).matchType).toEqual(OfferMatchType.limitOrder);
+
+  change({ kind:  FormChangeKind.matchTypeChange, matchType: OfferMatchType.direct });
+  expect(unpack(controller).matchType).toEqual(OfferMatchType.direct);
+
+  change({ kind:  FormChangeKind.matchTypeChange, matchType: OfferMatchType.limitOrder });
+  expect(unpack(controller).matchType).toEqual(OfferMatchType.limitOrder);
+});
+
+test('open offer type picker and close it', () => {
+  const controller = createFormController$(defParams, tradingPair);
+  const { change } = unpack(controller);
+
+  expect(unpack(controller).pickerOpen).toBeFalsy();
+
+  change({ kind:  OfferMakeChangeKind.pickerOpenChange });
+  expect(unpack(controller).pickerOpen).toBeTruthy();
+
+  change({ kind:  OfferMakeChangeKind.pickerOpenChange });
+  expect(unpack(controller).pickerOpen).toBeFalsy();
+});
 
 test('place direct buy order', () => {
   const sells = [
@@ -854,7 +879,64 @@ test('setting slippage limit', () => {
   expect(unpack(controller).slippageLimit).toEqual(new BigNumber(10));
 });
 
-test('placing direct buy order with slippage limit too high', () => {
+test('place direct buy order without slippage limit', () => {
+  const sells = [
+    { price: 3, amount: 0.5 }, // 4
+    { price: 4, amount: 0.5 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook([], sells);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(1),
+  });
+  change({
+    kind: OfferMakeChangeKind.slippageLimitChange,
+  });
+
+  expect(unpack(controller).messages.length).toEqual(1);
+  expect(unpack(controller).messages[0].kind).toEqual(MessageKind.slippageLimitNotSet);
+  expect(unpack(controller).slippageLimit).toEqual(undefined);
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('place direct buy order with slippage limit too low', () => {
+  const sells = [
+    { price: 3, amount: 0.5 }, // 4
+    { price: 4, amount: 0.5 }, // 5
+  ];
+
+  const controller = controllerWithFakeOrderBook([], sells);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(1),
+  });
+  change({
+    kind: OfferMakeChangeKind.slippageLimitChange,
+    value: new BigNumber(-1),
+  });
+
+  expect(unpack(controller).messages.length).toEqual(1);
+  expect(unpack(controller).messages[0].kind).toEqual(MessageKind.slippageLimitToLow);
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(-1));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('place direct buy order with slippage limit too high', () => {
   const sells = [
     { price: 3, amount: 0.5 }, // 4
     { price: 4, amount: 0.5 }, // 5
@@ -950,6 +1032,72 @@ test('place direct sell order using all of your balance', () => {
   expect(unpack(controller).price).toEqual(new BigNumber(2));
   expect(unpack(controller).total).toEqual(new BigNumber(20));
   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.calculated);
+});
+
+test('place direct sell order using all of the balance which is zero', () => {
+  const newDefParams = {
+    ...defParams,
+    balances$: of({ DAI: new BigNumber(10), WETH: new BigNumber(0) }),
+  };
+
+  const controller = createFormController$(newDefParams, tradingPair);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  expect(unpack(controller).amount).toEqual(undefined);
+  expect(unpack(controller).price).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(5));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+
+  change({ kind: FormChangeKind.setMaxChange });
+
+  expect(unpack(controller).amount).toEqual(new BigNumber(0));
+  expect(unpack(controller).price).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+});
+
+test('place direct sell order using all of the balance which is undefined', () => {
+  const newDefParams = {
+    ...defParams,
+    balances$: of(undefined),
+  };
+
+  const controller = createFormController$(newDefParams, tradingPair);
+  const { change } = unpack(controller);
+
+  change({
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
+  });
+
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+
+  expect(unpack(controller).amount).toEqual(undefined);
+  expect(unpack(controller).price).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).slippageLimit).toEqual(new BigNumber(5));
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
+
+  change({ kind: FormChangeKind.setMaxChange });
+
+  expect(unpack(controller).amount).toEqual(undefined);
+  expect(unpack(controller).price).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
 });
 
 test('place direct sell order that matches more than one order', () => {
@@ -1102,7 +1250,7 @@ test('place direct sell order below dust limit', () => {
   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
 });
 
-test('placing direct sell order with slippage limit too high', () => {
+test('place direct sell order with slippage limit too high', () => {
   const buys = [
     { price: 3, amount: 0.5 }, // 4
     { price: 4, amount: 0.5 }, // 5
@@ -1112,13 +1260,13 @@ test('placing direct sell order with slippage limit too high', () => {
   const { change } = unpack(controller);
 
   change({
-    kind: FormChangeKind.kindChange,
-    newKind: OfferType.sell,
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
   });
 
   change({
-    kind: FormChangeKind.matchTypeChange,
-    matchType: OfferMatchType.direct,
+    kind: FormChangeKind.kindChange,
+    newKind: OfferType.sell,
   });
 
   change({
