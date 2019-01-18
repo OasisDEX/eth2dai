@@ -16,6 +16,7 @@
     "max-classes-per-file": false,
     "ter-arrow-parens": false,
     "no-default-export": true,
-    "prefer-array-literal": [true, { "allow-type-parameters": true }]
+    "prefer-array-literal": [true, { "allow-type-parameters": true }],
+    "max-line-length": [true, {"limit": 100, "ignore-pattern": "^[\t\\s]*(.+)$"}]
   }
 }

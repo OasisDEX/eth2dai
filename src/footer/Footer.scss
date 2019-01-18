@@ -1,0 +1,39 @@
+@import "../utils/Variables";
+
+.textSeparator {
+  display: inline-block;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  color: rgba(255, 255, 255, 0.1);
+}
+
+.footerSeparator {
+  margin-block-start: 4em;
+  margin-block-end: 2em;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.footer {
+  text-align: center;
+  font-family: $font-main;
+  font-size: 14px;
+  color: #B3B3B9;
+  letter-spacing: 0.2px;
+  margin-bottom: 2em;
+
+  a {
+    text-decoration: none;
+    color: #B3B3B9;
+
+    &:hover{
+      color:#FFF;
+    }
+
+    &.iconLink {
+      display: inline-block;
+      margin-right: 0.5em;
+      height: 16px;
+      vertical-align: middle;
+    }
+  }
+}

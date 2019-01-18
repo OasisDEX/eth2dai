@@ -76,8 +76,8 @@ import {
   PriceChartWithLoading
 } from './exchange/priceChart/PriceChartWithLoading';
 import { TradingPairView } from './exchange/tradingPair/TradingPairView';
+import { createFooter$, TheFooter } from './footer/Footer';
 import { Network } from './header/Network';
-import { createFooter$, TheFooter } from './TheFooter';
 import { createTransactionNotifier$ } from './transactionNotifier/transactionNotifier';
 import { TransactionNotifierView } from './transactionNotifier/TransactionNotifierView';
 import { connect } from './utils/connect';
