@@ -25,14 +25,13 @@ export class Main extends React.Component {
             <Route path={'/balances'} component={BalancesView} />
             <Redirect from={'/'} to={'/exchange'}/>
           </Switch>
+          <theAppContext.Consumer>
+            { ({ TheFooterTxRx }) =>
+              <TheFooterTxRx/>
+            }
+          </theAppContext.Consumer>
         </div>
       </Router>
-      <theAppContext.Consumer>
-        { ({ TheFooterTxRx }) =>
-          <TheFooterTxRx/>
-        }
-      </theAppContext.Consumer>
-
       </theAppContext.Provider>);
   }
 }
