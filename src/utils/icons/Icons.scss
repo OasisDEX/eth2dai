@@ -52,3 +52,15 @@
   width: $size;
   height: $size;
 }
+
+.socialIcon {
+  path {
+    fill: #B3B3B9;
+  }
+}
+
+.socialIcon:hover {
+  path {
+    fill: #FFF;
+  }
+}
