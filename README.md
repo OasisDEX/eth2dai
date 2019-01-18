@@ -1,12 +1,28 @@
-# Oasis Dex Playground
+# Eth2Dai
 
-[![CircleCI](https://circleci.com/gh/OasisDEX/oasis-dex.svg?style=svg&circle-token=4f9ebeca16d3e08d7650dfe420432cf0f1f508d7)](https://circleci.com/gh/OasisDEX/oasis-dex)
+[![CircleCI](https://circleci.com/gh/OasisDEX/eth2dai.svg?style=svg)](https://circleci.com/gh/OasisDEX/eth2dai)
 
-## Deployment
+**Eth2Dai** is a marketplace that allows fully on-chain exchange of **ETH** and **DAI** tokens. It uses the [**matching_market**](https://etherscan.io/address/0xb7ac09c2c0217b07d7c103029b4918a2c401eecb) smart contract on the Ethereum blockchain. 
+
+## Installation
+
+To run `eth2dai` locally, clone the respository and then run from the command line: 
+```
+yarn
+yarn start
+```
+
+## Development
 
 [dev branch](http://eth2dai-dev.surge.sh/)
 
-## Storybook
+### Unit tests
+
+```
+yarn test
+```
+
+### Storybook
 
 ```
 yarn storybook
@@ -23,7 +39,7 @@ Run (you will need `CHROMATIC_APP_CODE` env):
 yarn storybook:vis-reg
 ```
 
-## E2E tests
+### E2E tests
 ```
 yarn cypress:dev  # to develop tests
 ```
