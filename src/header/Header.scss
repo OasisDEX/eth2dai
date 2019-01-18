@@ -1,12 +1,20 @@
 @import "../utils/Variables";
 
-.nav {
-    display: flex;
-    padding: 0;
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
 
-    li {
-        display: inline-block;
-    }
+section {
+  display: inline-flex;
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
 
     li + li {
         margin-left: -1px;
@@ -21,6 +29,10 @@
     li:last-child > * {
         border-bottom-right-radius: $border-radius;
         border-top-right-radius: $border-radius;
+    }
+
+    li:last-child {
+      margin-right: 0;
     }
 }
 
@@ -58,4 +70,34 @@
 
 .account {
   width: 196px;
+  border-radius: $border-radius;
+  margin-right: 12px;
+}
+
+.networkIndicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 79px;
+  height: 40px;
+
+  background: transparent;
+  border-radius: $border-radius;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 1.4px;
+
+  text-transform: capitalize;
+}
+
+.networkIndicator.kovan {
+  color: $moderate-violet;
+  border: 1px solid $moderate-violet;
+}
+
+.networkIndicator.main{
+  color: $soft-cyan;
+  border: 1px solid $soft-cyan;
 }
