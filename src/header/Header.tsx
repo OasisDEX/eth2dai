@@ -26,15 +26,17 @@ class Header extends React.Component<HeaderProps, any> {
           <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange" />
           <HeaderNavLink path={matchUrl.concat('balances')} name="Balances" />
         </ul>
-        <theAppContext.Consumer>
-          { ({ NetworkTxRx }) =>
-            // @ts-ignore
-            <NetworkTxRx/>
-          }
-        </theAppContext.Consumer>
         <ul className={styles.nav} style={{ marginLeft: 'auto' }}>
           <li>
             <StatusTxRx />
+          </li>
+          <li>
+            <theAppContext.Consumer>
+              { ({ NetworkTxRx }) =>
+                // @ts-ignore
+                <NetworkTxRx/>
+              }
+            </theAppContext.Consumer>
           </li>
         </ul>
       </div>
