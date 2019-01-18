@@ -13,7 +13,7 @@ import { LoadableWithTradingPair } from '../../utils/loadable';
 import { getTrades, Trade } from '../trades';
 import { TradingPair } from '../tradingPair/tradingPair';
 
-export type IntervalUnit = 'hours' | 'days' | 'weeks' | 'months';
+export type IntervalUnit = 'hour' | 'day' | 'week' | 'month';
 
 export interface AllTradesProps extends LoadableWithTradingPair<TradesBrowser> {
   etherscan: EtherscanConfig;

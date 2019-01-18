@@ -108,7 +108,7 @@ export const getTrades = (
     } : {},
   };
 
-  return vulcan0x(context.oasisDataService.url, 'allOasisTrades', filter, fields, order).pipe(
+  return vulcan0x(context.oasisDataService.url, 'allOasisTrades', {}, filter, fields, order).pipe(
     map(trades => trades.map(parseTrade(accountVal, quoteToken, baseToken, quoteToken)))
   );
 };

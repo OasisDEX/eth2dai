@@ -1,10 +1,12 @@
-import { toPairs } from 'lodash';
+import { fromPairs, toPairs } from 'lodash';
 import { Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map } from 'rxjs/operators';
 
 function filterize(filter: any): string {
   switch (typeof(filter)) {
+    case 'number':
+      return `${filter}`;
     case 'string':
       return `"${filter}"`;
     case 'object':
@@ -17,9 +19,14 @@ function filterize(filter: any): string {
 }
 
 export function vulcan0x(
-  url: string, resource: string,
-  filter: any, fields: string[], order: string
+  url: string, resource: string, params: {[key: string]: any},
+  filter: any, fields: string[], order: string|undefined
 ): Observable<any[]> {
+  const options = toPairs({
+    ...fromPairs(toPairs(params).map(([k, v]) => [k, filterize(v)]) as any),
+    filter: filterize(filter),
+    ...order ? { orderBy: order } : {} }
+  ).map(([k, v]) => `${k}: ${v}`).join('\n');
   return ajax({
     url,
     method: 'POST',
@@ -29,10 +36,7 @@ export function vulcan0x(
     body: {
       query:
       '{\n' +
-      `    ${resource}(\n` +
-      `      filter: ${filterize(filter)}\n` +
-      `      orderBy: ${order}\n` +
-      '    ){\n' +
+      `    ${resource}(\n${options}\n){\n` +
       `      nodes { ${fields.join(' ')} }\n` +
       '    }\n' +
       '}'
