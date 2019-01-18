@@ -71,7 +71,7 @@ export type Message = {
   priority: number;
   token: string;
 } | {
-  kind: MessageKind.dustAmount ;
+  kind: MessageKind.dustAmount;
   field: string;
   priority: number;
   token: string;
@@ -172,8 +172,10 @@ function offerMakeData(state: OfferFormState): OfferMakeData {
 }
 
 function offerMakeDirectData(state: OfferFormState): OfferMakeDirectData {
-  const { amount, total, baseToken, quoteToken, price,
-    kind, slippageLimit, matchType, gasPrice } = state;
+  const {
+    amount, total, baseToken, quoteToken, price,
+    kind, slippageLimit, matchType, gasPrice
+  } = state;
   return {
     baseToken,
     quoteToken,
@@ -181,12 +183,12 @@ function offerMakeDirectData(state: OfferFormState): OfferMakeDirectData {
     kind,
     baseAmount: amount as BigNumber,
     quoteAmount: (total as BigNumber)
-    .times(new BigNumber(1)
-    .plus((slippageLimit as BigNumber)
-      .dividedBy(
-        kind === 'buy' ? 100 : -100
-      )
-    )),
+      .times(new BigNumber(1)
+        .plus((slippageLimit as BigNumber)
+          .dividedBy(
+            kind === 'buy' ? 100 : -100
+          )
+        )),
     price: price as BigNumber,
     gasPrice: gasPrice as BigNumber,
   };
@@ -213,11 +215,9 @@ function directMatchPrice(amount: BigNumber | undefined, orders: Offer[]): BigNu
   return amount.isZero() || !baseAmount.isZero() ? undefined : quoteAmount.dividedBy(amount);
 }
 
-function directMatchState(
-  state: OfferFormState,
-  change: { amount: BigNumber } | { kind: OfferType } | {},
-  orderbook: Orderbook,
-) {
+function directMatchState(state: OfferFormState,
+                          change: { amount: BigNumber } | { kind: OfferType } | {},
+                          orderbook: Orderbook) {
   const amount = change.hasOwnProperty('amount') ? (change as any).amount : state.amount;
   const kind = change.hasOwnProperty('kind') ? (change as any).kind : state.kind;
   const orders = kind === 'buy' ? orderbook.sell : orderbook.buy;
@@ -229,7 +229,7 @@ function directMatchState(
     price,
     total: price && amount && amount.times(price),
     priceImpact: price && orders[0] &&
-      (price.minus(orders[0].price).dividedBy(orders[0].price)).times(100),
+    (price.minus(orders[0].price).dividedBy(orders[0].price)).times(100),
     matchType: OfferMatchType.direct,
     gasEstimationStatus: GasEstimationStatus.unset
   };
@@ -239,10 +239,8 @@ function directMatchState(
 //   throw new Error('Didn\'t expect to get here');
 // }
 
-function applyChange(
-  state: OfferFormState,
-  change: OfferFormChange,
-): OfferFormState {
+function applyChange(state: OfferFormState,
+                     change: OfferFormChange): OfferFormState {
   switch (change.kind) {
     case FormChangeKind.kindChange:
       if (state.matchType === OfferMatchType.direct && state.orderbook) {
@@ -298,7 +296,7 @@ function applyChange(
       };
     case FormChangeKind.setMaxChange:
       if (state.balances === undefined) {
-        return { ...state };
+        return state;
       }
       switch (state.kind) {
         case OfferType.sell:
@@ -310,11 +308,12 @@ function applyChange(
               gasEstimationStatus: GasEstimationStatus.unset
             };
           }
-          return {
-            ...state,
-            amount: state.balances[state.baseToken],
-            gasEstimationStatus: GasEstimationStatus.unset
-          };
+
+          return applyChange(
+            state,
+            { kind: FormChangeKind.amountFieldChange, value:state.balances[state.baseToken]
+            }
+          );
         case OfferType.buy:
           if (state.price) {
             return {
@@ -338,7 +337,8 @@ function applyChange(
         gasEstimationStatus: GasEstimationStatus.unset
       };
     case FormChangeKind.etherPriceUSDChange:
-      return { ...state,
+      return {
+        ...state,
         etherPriceUsd: change.value,
         gasEstimationStatus: GasEstimationStatus.unset
       };
@@ -358,19 +358,25 @@ function applyChange(
         gasEstimationStatus: GasEstimationStatus.unset
       };
     case FormChangeKind.dustLimitChange:
-      return { ...state,
+      return {
+        ...state,
         dustLimitBase: change.dustLimitBase,
         dustLimitQuote: change.dustLimitQuote
       };
     case FormChangeKind.orderbookChange:
-      return { ...state,
-        orderbook: change.orderbook };
+      return {
+        ...state,
+        orderbook: change.orderbook
+      };
     case FormChangeKind.balancesChange:
-      return { ...state,
+      return {
+        ...state,
         balances: change.balances,
-        gasEstimationStatus: GasEstimationStatus.unset };
+        gasEstimationStatus: GasEstimationStatus.unset
+      };
     case OfferMakeChangeKind.slippageLimitChange:
-      return { ...state,
+      return {
+        ...state,
         slippageLimit: change.value
       };
   }
@@ -378,10 +384,8 @@ function applyChange(
   // return state;
 }
 
-function addGasEstimation(
-  theCalls$: Calls$,
-  state: OfferFormState
-): Observable<OfferFormState> {
+function addGasEstimation(theCalls$: Calls$,
+                          state: OfferFormState): Observable<OfferFormState> {
   return doGasEstimation(theCalls$, state, (calls: Calls) =>
     state.messages.length !== 0 ||
     !state.amount ||
@@ -393,9 +397,7 @@ function addGasEstimation(
         calls.offerMakeEstimateGas(offerMakeData(state)));
 }
 
-function preValidate(
-  state: OfferFormState,
-): OfferFormState {
+function preValidate(state: OfferFormState): OfferFormState {
 
   if (state.stage !== FormStage.editing) {
     return state;
@@ -485,9 +487,7 @@ function preValidate(
   } as OfferFormState;
 }
 
-function addPositionGuess(
-  { position, ...state }: OfferFormState,
-): OfferFormState {
+function addPositionGuess({ position, ...state }: OfferFormState): OfferFormState {
   if (!state.price || !state.orderbook) {
     return state;
   }
@@ -496,12 +496,12 @@ function addPositionGuess(
 
   const offer: Offer | undefined = state.kind === 'sell' ? (
     orderBook.sell.length === 0 ? undefined :
-    (orderBook.sell.find(order => order.price.gt(state.price as BigNumber)) ||
-      orderBook.sell[orderBook.sell.length - 1])
+      (orderBook.sell.find(order => order.price.gt(state.price as BigNumber)) ||
+        orderBook.sell[orderBook.sell.length - 1])
   ) : (
     orderBook.buy.length === 0 ? undefined :
-    (orderBook.buy.find(order => order.price.lt(state.price as BigNumber)) ||
-      orderBook.buy[orderBook.buy.length - 1])
+      (orderBook.buy.find(order => order.price.lt(state.price as BigNumber)) ||
+        orderBook.buy[orderBook.buy.length - 1])
   );
 
   return offer ?
@@ -521,9 +521,8 @@ function postValidate(state: OfferFormState): OfferFormState {
   return { ...state, stage: FormStage.editing };
 }
 
-function prepareSubmit(
-  calls$: Calls$
-): [(state: OfferFormState) => void, Observable<StageChange | FormResetChange>]  {
+function prepareSubmit(calls$: Calls$): [
+  (state: OfferFormState) => void, Observable<StageChange | FormResetChange>] {
 
   const stageChange$ = new Subject<StageChange>();
 
@@ -533,10 +532,10 @@ function prepareSubmit(
       first(),
       switchMap((calls: Calls) => {
         return (
-            state.matchType === OfferMatchType.direct ?
+          state.matchType === OfferMatchType.direct ?
             calls.offerMakeDirect(offerMakeDirectData(state)) :
             calls.offerMake(offerMakeData(state)
-          ))
+            ))
           .pipe(
             switchMap((transactionState: TxState) => {
               switch (transactionState.status) {
@@ -557,18 +556,16 @@ function prepareSubmit(
   return [submit, stageChange$];
 }
 
-export function createFormController$(
-  params: {
-    gasPrice$: Observable<BigNumber>;
-    allowance$: (token: string) => Observable<boolean>;
-    balances$: Observable<Balances>;
-    dustLimits$: Observable<DustLimits>;
-    orderbook$: Observable<Orderbook>,
-    calls$: Calls$;
-    etherPriceUsd$: Observable<BigNumber>
-  },
-  tradingPair: TradingPair
-): Observable<OfferFormState> {
+export function createFormController$(params: {
+  gasPrice$: Observable<BigNumber>;
+  allowance$: (token: string) => Observable<boolean>;
+  balances$: Observable<Balances>;
+  dustLimits$: Observable<DustLimits>;
+  orderbook$: Observable<Orderbook>,
+  calls$: Calls$;
+  etherPriceUsd$: Observable<BigNumber>
+},
+                                      tradingPair: TradingPair): Observable<OfferFormState> {
 
   const manualChange$ = new Subject<ManualChange>();
 
@@ -604,16 +601,16 @@ export function createFormController$(
   };
 
   return merge(
-      manualChange$,
-      submitChange$,
-      environmentChange$
-    ).pipe(
-      scan(applyChange, initialState),
-      map(preValidate),
-      map(addPositionGuess),
-      switchMap(curry(addGasEstimation)(params.calls$)),
-      map(postValidate),
-      firstOfOrTrue(s => s.gasEstimationStatus === GasEstimationStatus.calculating),
-      shareReplay(1),
+    manualChange$,
+    submitChange$,
+    environmentChange$
+  ).pipe(
+    scan(applyChange, initialState),
+    map(preValidate),
+    map(addPositionGuess),
+    switchMap(curry(addGasEstimation)(params.calls$)),
+    map(postValidate),
+    firstOfOrTrue(s => s.gasEstimationStatus === GasEstimationStatus.calculating),
+    shareReplay(1),
   );
 }
