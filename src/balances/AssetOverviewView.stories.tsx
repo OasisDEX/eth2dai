@@ -1,7 +1,6 @@
 import { storiesOf } from '@storybook/react';
-import * as React from 'react';
-
 import { BigNumber } from 'bignumber.js';
+import * as React from 'react';
 import { of } from 'rxjs';
 import { TxState } from '../blockchain/transactions';
 import { Panel, PanelHeader } from '../utils/panel/Panel';
