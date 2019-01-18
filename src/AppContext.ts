@@ -135,14 +135,14 @@ export function setupAppContext() {
   );
 
   const tradeHistory = memoizeTradingPair(
-    curry(loadAllTrades)(1, 'days', context$, onEveryBlock$)
+    curry(loadAllTrades)(1, 'day', context$, onEveryBlock$)
   );
   const currentTradeHistory$ = currentTradingPair$.pipe(
     switchMap(tradeHistory),
   );
   const currentTradesBrowser$ = loadablifyPlusTradingPair(
     currentTradingPair$,
-    curry(createTradesBrowser$)(1, 'days', context$, tradeHistory),
+    curry(createTradesBrowser$)(1, 'day', context$, tradeHistory),
   );
 
   const allTrades$ = createAllTrades$(currentTradesBrowser$, context$);
@@ -156,25 +156,25 @@ export function setupAppContext() {
     byMonth: loadablifyPlusTradingPair(
       currentTradingPair$,
       memoizeTradingPair(
-        curry(loadAggregatedTrades)(12, 'months', context$, onEveryBlock$.pipe(first()))
+        curry(loadAggregatedTrades)(12, 'month', context$, onEveryBlock$.pipe(first()))
       )
     ),
     byWeek: loadablifyPlusTradingPair(
       currentTradingPair$,
       memoizeTradingPair(
-        curry(loadAggregatedTrades)(12, 'weeks', context$, onEveryBlock$.pipe(first()))
+        curry(loadAggregatedTrades)(12, 'week', context$, onEveryBlock$.pipe(first()))
       )
     ),
     byDay: loadablifyPlusTradingPair(
       currentTradingPair$,
       memoizeTradingPair(
-        curry(loadAggregatedTrades)(7, 'days', context$, onEveryBlock$.pipe(first()))
+        curry(loadAggregatedTrades)(7, 'day', context$, onEveryBlock$.pipe(first()))
       )
     ),
     byHour: loadablifyPlusTradingPair(
       currentTradingPair$,
       memoizeTradingPair(
-        curry(loadAggregatedTrades)(24, 'hours', context$, onEveryBlock$)
+        curry(loadAggregatedTrades)(24, 'hour', context$, onEveryBlock$)
       )
     ),
   };

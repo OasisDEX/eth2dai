@@ -31,10 +31,10 @@ export function loadAggregatedTrades(
   onEveryBlock$$: Observable<number>,
   { base, quote }: TradingPair,
 ): Observable<PriceChartDataPoint[]> {
-  const view = `allTradesAggregated${unit[0].toUpperCase()}${unit.substr(1)}`;
+  const view = 'tradesAggregated';
+  const options = { timeUnit: unit, tzOffset: { minutes: -new Date().getTimezoneOffset() } };
   const borderline = moment().subtract(interval, unit).startOf('day').toDate();
   const fields = ['date', 'open', 'close', 'min', 'max', 'volumeBase'];
-  const order = 'DATE_ASC';
   const filter = {
     market: { equalTo: `${base}${quote}` },
     date: { greaterThan: borderline.toISOString() },
@@ -42,7 +42,7 @@ export function loadAggregatedTrades(
 
   return combineLatest(context$$, onEveryBlock$$).pipe(
     switchMap(([context]) =>
-      vulcan0x(context.oasisDataService.url, view, filter, fields, order)
+      vulcan0x(context.oasisDataService.url, view, options, filter, fields, undefined)
     ),
     map(aggrs => aggrs.map(parseAggregatedData)),
   );
