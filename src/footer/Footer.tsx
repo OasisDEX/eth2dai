@@ -23,8 +23,8 @@ export class TheFooter extends React.Component<FooterProps> {
         <hr className={styles.footerSeparator}/>
         <div className={styles.footer}>
           <div>
-            Market closing time - <WithLoadingIndicatorInline loadable={expirationDate}>
-            {(expDate) => <>{expDate.toLocaleDateString('en-US')}</>}
+            Market Closing Time - <WithLoadingIndicatorInline loadable={expirationDate}>
+            {(expDate) => <>{moment(expDate).format('DD.MM.YYYY')}</>}
           </WithLoadingIndicatorInline>
             <span className={styles.textSeparator}>/</span>
 
@@ -36,8 +36,10 @@ export class TheFooter extends React.Component<FooterProps> {
               Legal
             </a><span className={styles.textSeparator}>/</span>
 
-            <a target="_blank" rel="noopener noreferrer" href="https://github.com/OasisDEX/eth2dai/issues">
-              Report issue
+            <a target="_blank"
+               rel="noopener noreferrer"
+               href="https://github.com/OasisDEX/eth2dai/issues">
+              Report Issues
             </a><span className={styles.textSeparator}>/</span>
 
             <a target="_blank" className={styles.iconLink}
@@ -57,10 +59,10 @@ export class TheFooter extends React.Component<FooterProps> {
             </a>
           </div>
           <br/>
-          <br/>
           <div>
-          <span>{process.env.__NAME__} - {process.env.__VERSION__} - <a
-            href={`https://github.com/OasisDEX/eth2dai/tree/${process.env.__BRANCH__}`} target="_blank"
+          <span>{process.env.__NAME__} Version {process.env.__VERSION__} - <a
+            href={`https://github.com/OasisDEX/eth2dai/tree/${process.env.__BRANCH__}`}
+            target="_blank"
             rel="noopener noreferrer">
               {process.env.__HASH__}
             </a>
