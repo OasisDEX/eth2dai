@@ -1,13 +1,20 @@
 @import "../utils/Variables";
 
-.nav {
-    display: flex;
-    padding: 0;
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
 
-    li {
-        display: inline-block;
-        margin-right: 12px;
-    }
+section {
+  display: inline-flex;
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
 
     li + li {
         margin-left: -1px;
@@ -63,6 +70,8 @@
 
 .account {
   width: 196px;
+  border-radius: $border-radius;
+  margin-right: 12px;
 }
 
 .networkIndicator {
@@ -74,7 +83,7 @@
   height: 40px;
 
   background: transparent;
-  border-radius: 4px;
+  border-radius: $border-radius;
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 16px;

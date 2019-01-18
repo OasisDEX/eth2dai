@@ -20,26 +20,26 @@ class Header extends React.Component<HeaderProps, any> {
   public render() {
     const matchUrl = this.props.match.url;
     return (
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-        <img src={LogoSvg} />
-        <ul className={styles.nav} style={{ marginLeft: '20px' }}>
-          <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange" />
-          <HeaderNavLink path={matchUrl.concat('balances')} name="Balances" />
-        </ul>
-        <ul className={styles.nav} style={{ marginLeft: 'auto' }}>
-          <li>
-            <StatusTxRx />
-          </li>
-          <li>
-            <theAppContext.Consumer>
-              { ({ NetworkTxRx }) =>
-                // @ts-ignore
-                <NetworkTxRx/>
-              }
-            </theAppContext.Consumer>
-          </li>
-        </ul>
-      </div>
+      <header>
+        <section>
+          <img src={LogoSvg} />
+          <nav>
+            <ul>
+              <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange" />
+              <HeaderNavLink path={matchUrl.concat('balances')} name="Balances" />
+            </ul>
+          </nav>
+        </section>
+        <section>
+          <StatusTxRx />
+          <theAppContext.Consumer>
+            { ({ NetworkTxRx }) =>
+              // @ts-ignore
+              <NetworkTxRx/>
+            }
+          </theAppContext.Consumer>
+        </section>
+      </header>
     );
   }
 }
