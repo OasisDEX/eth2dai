@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 
-import {
-  TxState,
-  TxStatus
-} from '../blockchain/transactions';
+import { TxState, TxStatus } from '../blockchain/transactions';
+import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import * as styles from './TransactionNotifier.scss';
 
 const VISIBILITY_TIMEOUT: number = 5;
@@ -52,3 +50,21 @@ export const Notification: React.SFC<TxState> = transaction => {
     </div>
   );
 };
+
+export function describeTxStatus(status: TxStatus) {
+  switch (status) {
+    case TxStatus.Success:
+      return 'Confirmed';
+    case TxStatus.Error:
+    case TxStatus.Failure:
+      return 'Failed';
+    case TxStatus.WaitingForApproval:
+      return 'Singing Transaction';
+    case TxStatus.WaitingForConfirmation:
+      return 'Unconfirmed';
+    case TxStatus.CancelledByTheUser:
+      return 'Rejected';
+    default:
+      throw new UnreachableCaseError(status);
+  }
+}

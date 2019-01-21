@@ -20,7 +20,7 @@ export const wrap = {
   prepareArgs: (_: WrapUnwrapData) => [],
   description: ({ amount }: WrapUnwrapData) =>
     <React.Fragment>
-      Wrap <Money value={amount} token={'ETH'}/>/>
+      Wrap <Money value={amount} token={'ETH'}/>
     </React.Fragment>
 };
 
