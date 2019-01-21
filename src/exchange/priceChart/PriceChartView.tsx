@@ -12,7 +12,7 @@ import * as styles from './PriceChartView.scss';
 const margin = { top: 5, right: 45, bottom: 40, left: 10 };
 const width = 450;
 const height = 270;
-const bars = { width: 8, padding: 2, delta: -4 };
+const bars = { width: 7, padding: 2, delta: -4 };
 
 const chartSize = {
   width: width - margin.left - margin.right, // chart's width
