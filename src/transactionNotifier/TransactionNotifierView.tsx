@@ -27,25 +27,28 @@ export class TransactionNotifierView extends React.Component<{
           {this.props.transactions
             .filter(
               transaction =>
-                transaction.status === TxStatus.Success &&
-                transaction.confirmations < transaction.safeConfirmations ||
+                (transaction.status === TxStatus.Success &&
+                  transaction.confirmations < transaction.safeConfirmations) ||
                 !transaction.end ||
-                now - transaction.lastChange.getTime() < VISIBILITY_TIMEOUT * 1000
+                now - transaction.lastChange.getTime() < VISIBILITY_TIMEOUT * 1000,
             )
             .map(transaction => (
-              <div key={transaction.txNo} className={styles.block}>
-                <div className={styles.title}>
-                  {transaction.meta.description(transaction.meta.args)}
-                </div>
-                <div>{transaction.status}</div>
-                {transaction.status === TxStatus.Success &&
-                <div>
-                  confirmations: {transaction.confirmations}
-                </div>}
-              </div>
+              <Notification {...transaction} />
             ))}
         </CSSTransitionGroup>
       </div>
     );
   }
 }
+
+export const Notification: React.SFC<TxState> = transaction => {
+  return (
+    <div key={transaction.txNo} className={styles.block}>
+      <div className={styles.title}>{transaction.meta.description(transaction.meta.args)}</div>
+      <div>{transaction.status}</div>
+      {transaction.status === TxStatus.Success && (
+        <div>confirmations: {transaction.confirmations}</div>
+      )}
+    </div>
+  );
+};
