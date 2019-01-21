@@ -27,21 +27,18 @@ export class TheFooter extends React.Component<FooterProps> {
             {(expDate) => <>{moment(expDate).format('DD.MM.YYYY')}</>}
           </WithLoadingIndicatorInline>
             <span className={styles.textSeparator}>/</span>
-
-            <a target="_blank" rel="noopener noreferrer" href={`${etherscan.url}/${address}`}>
+            <a target="_blank" rel="noopener noreferrer"
+               href={`${etherscan.url}/address/${address}`}>
               Market Contract
             </a><span className={styles.textSeparator}>/</span>
-
             <a target="_blank" rel="noopener noreferrer" href="/tos.pdf">
               Legal
             </a><span className={styles.textSeparator}>/</span>
-
             <a target="_blank"
                rel="noopener noreferrer"
                href="https://github.com/OasisDEX/eth2dai/issues">
               Report Issues
             </a><span className={styles.textSeparator}>/</span>
-
             <a target="_blank" className={styles.iconLink}
                rel="noopener noreferrer"
                href="https://chat.makerdao.com/channel/eth2dai">
@@ -60,12 +57,12 @@ export class TheFooter extends React.Component<FooterProps> {
           </div>
           <br/>
           <div>
-          <span>{process.env.__NAME__} Version {process.env.__VERSION__} - <a
-            href={`https://github.com/OasisDEX/eth2dai/tree/${process.env.__BRANCH__}`}
+          <span>
+            <a href={`https://github.com/OasisDEX/eth2dai/tree/${process.env.__BRANCH__}`}
             target="_blank"
             rel="noopener noreferrer">
-              {process.env.__HASH__}
-            </a>
+              {process.env.__NAME__} Version {process.env.__VERSION__} ({process.env.__HASH__})
+            </a> - Build Date { moment(process.env.__DATE__).format('DD.MM.YYYY HH:MM')}
           </span>
           </div>
         </div>
