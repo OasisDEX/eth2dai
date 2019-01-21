@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "AGPL-3.0-or-later",
+  "homepage" : "http://oasisdex.github.io/eth2dai",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
