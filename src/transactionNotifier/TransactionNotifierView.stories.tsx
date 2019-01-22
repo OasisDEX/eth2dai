@@ -11,11 +11,11 @@ import {
   OfferMakeDirectData,
 } from '../blockchain/calls/offerMake';
 import { unwrap, wrap } from '../blockchain/calls/wrapUnwrapCalls';
-import { TxState, TxStatus } from '../blockchain/transactions';
+import { TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { OfferMatchType } from '../utils/form';
 import { zero } from '../utils/zero';
-import { Notification } from './TransactionNotifierView';
+import { Notification, NotificationProps } from './TransactionNotifierView';
 
 const startTime = new Date();
 startTime.setSeconds(startTime.getSeconds() - 55);
@@ -27,15 +27,17 @@ const common = {
   start: startTime,
   lastChange: new Date('2019-01-21T11:26:30.834Z'),
   end: new Date('2019-01-21T11:26:30.834Z'),
+  dismissed: false,
+  onDismiss: () => ({}),
 };
 
-const cancelledByTheUserTx: TxState = {
+const cancelledByTheUserTx: NotificationProps = {
   ...common,
   status: TxStatus.CancelledByTheUser,
   error: {},
 };
 
-const successfulTx: TxState = {
+const successfulTx: NotificationProps = {
   ...common,
   status: TxStatus.Success,
   txHash: 'txhash',
@@ -45,7 +47,7 @@ const successfulTx: TxState = {
   safeConfirmations: 1,
 };
 
-const waitingForApprovalTx: TxState = {
+const waitingForApprovalTx: NotificationProps = {
   ...common,
   status: TxStatus.WaitingForApproval,
 };
@@ -126,7 +128,7 @@ stories.add('Wrap (waitingForApproval)', () => (
   <Notification {...{ ...waitingForApprovalTx, meta: { ...wrap, args: { amount: zero } } }} />
 ));
 
-const waitingForConfirmationTx: TxState = {
+const waitingForConfirmationTx: NotificationProps = {
   ...common,
   status: TxStatus.WaitingForConfirmation,
   txHash: 'abc',
@@ -135,7 +137,7 @@ stories.add('Wrap (WaitingForConfirmation)', () => (
   <Notification {...{ ...waitingForConfirmationTx, meta: { ...wrap, args: { amount: zero } } }} />
 ));
 
-const failureTx: TxState = {
+const failureTx: NotificationProps = {
   ...common,
   status: TxStatus.Failure,
   txHash: 'abc',

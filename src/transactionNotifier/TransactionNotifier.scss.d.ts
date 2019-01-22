@@ -5,3 +5,4 @@ export const close: string;
 export const icon: string;
 export const iconInner: string;
 export const description: string;
+export const cross: string;

@@ -5,9 +5,9 @@
     right: 1em;
     top: 1em;
     z-index: 10;
-}
-
-.block {
+  }
+  
+  .block {
     position: relative;
     padding: 18px 24px;
     margin: 10px 18px 24px 18px;
@@ -55,6 +55,24 @@
 .description {
   font-size: $font-size-smaller;
   color: $grey-light;
+}
+
+.cross {
+  border-radius: 100%;
+  background-color: $grey-dark;
+  height: 15px;
+  width: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  cursor: pointer;
+
+  &:hover,&:focus {
+    opacity: 0.8;
+  }
 }
 
 :global(.transaction-enter) {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 
-import { TxState, TxStatus } from '../blockchain/transactions';
+import { transactionObserver, TxState, TxStatus } from '../blockchain/transactions';
 import { SecondsTimer } from '../utils/Timer';
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import * as styles from './TransactionNotifier.scss';
@@ -16,6 +16,7 @@ export class TransactionNotifierView extends React.Component<{
       return null;
     }
     const now = new Date().getTime();
+    // debugger;
     return (
       <div className={styles.main}>
         <CSSTransitionGroup
@@ -25,22 +26,26 @@ export class TransactionNotifierView extends React.Component<{
         >
           {this.props.transactions
             .filter(
-              transaction =>
+              transaction => !transaction.dismissed && (
                 (transaction.status === TxStatus.Success &&
                   transaction.confirmations < transaction.safeConfirmations) ||
                 !transaction.end ||
-                now - transaction.lastChange.getTime() < VISIBILITY_TIMEOUT * 1000,
+                now - transaction.lastChange.getTime() < VISIBILITY_TIMEOUT * 1000)
             )
-            .map(transaction => (
-              <Notification {...transaction} />
-            ))}
+            .map(transaction =>
+              (
+                <Notification key={transaction.txNo} {...transaction} onDismiss={ () => transactionObserver.next({ kind: 'dismissed', txNo: transaction.txNo }) } />
+              )
+            )}
         </CSSTransitionGroup>
       </div>
     );
   }
 }
 
-export const Notification: React.SFC<TxState> = transaction => {
+export type NotificationProps = TxState & {onDismiss: () => void};
+
+export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...transaction }) => {
   const description = transaction.meta.description(transaction.meta.args);
   const icon =
     transaction.meta.descriptionIcon && transaction.meta.descriptionIcon(transaction.meta.args);
@@ -54,6 +59,7 @@ export const Notification: React.SFC<TxState> = transaction => {
       )}
       <div className={styles.title}>{description}</div>
       <div className={styles.description}>{describeTxStatus(transaction)}</div>
+      <a tabIndex={0} onClick={onDismiss} className={styles.cross}>&times;</a>
     </div>
   );
 };
