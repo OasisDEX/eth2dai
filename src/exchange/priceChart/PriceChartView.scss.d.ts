@@ -10,6 +10,7 @@ export const axisYMainLabel: string;
 export const axisYVolumeLabel: string;
 export const axisXMainLabel: string;
 export const axisLineMain: string;
+export const axisYVolumeLineMain: string;
 export const axisLineGrid: string;
 export const infoBox: string;
 export const infoBoxItem: string;

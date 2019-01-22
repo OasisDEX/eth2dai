@@ -162,7 +162,7 @@ function volumeChart(data: PriceChartDataPoint[],
   const svg = svgContainer
     .append('g')
     .attr('transform',
-          `translate(0, ${candleChartSize.height })`)
+          `translate(0, ${candleChartSize.height - 0.3 })`)
     .classed('volume', true);
 
   const mbar = svg.selectAll('.bar')
@@ -321,7 +321,8 @@ function axes(_data: PriceChartDataPoint[],
   yCandleDomainAxisGroup.selectAll('.domain')
     .classed(styles.axisLineMain, true);
   yVolumeDomainAxisGroup.selectAll('.domain')
-    .classed(styles.axisLineMain, true);
+    .classed(styles.axisLineMain, true)
+    .classed(styles.axisYVolumeLineMain, true);
 
   // ----- style text -------
   // style x labels
