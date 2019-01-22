@@ -156,25 +156,25 @@ export function setupAppContext() {
     byMonth: loadablifyPlusTradingPair(
       currentTradingPair$,
       memoizeTradingPair(
-        curry(loadAggregatedTrades)(12, 'month', context$, onEveryBlock$.pipe(first()))
+        curry(loadAggregatedTrades)(38, 'month', context$, onEveryBlock$.pipe(first()))
       )
     ),
     byWeek: loadablifyPlusTradingPair(
       currentTradingPair$,
       memoizeTradingPair(
-        curry(loadAggregatedTrades)(12, 'week', context$, onEveryBlock$.pipe(first()))
+        curry(loadAggregatedTrades)(38, 'week', context$, onEveryBlock$.pipe(first()))
       )
     ),
     byDay: loadablifyPlusTradingPair(
       currentTradingPair$,
       memoizeTradingPair(
-        curry(loadAggregatedTrades)(7, 'day', context$, onEveryBlock$.pipe(first()))
+        curry(loadAggregatedTrades)(38, 'day', context$, onEveryBlock$.pipe(first()))
       )
     ),
     byHour: loadablifyPlusTradingPair(
       currentTradingPair$,
       memoizeTradingPair(
-        curry(loadAggregatedTrades)(24, 'hour', context$, onEveryBlock$)
+        curry(loadAggregatedTrades)(38, 'hour', context$, onEveryBlock$)
       )
     ),
   };
