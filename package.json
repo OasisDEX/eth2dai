@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "license": "AGPL-3.0-or-later",
-  "homepage" : ".",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
@@ -15,7 +14,7 @@
     "postinstall": "rm -f node_modules/web3/index.d.ts",
     "deploy:dev": "yarn build && surge --project ./build --domain http://eth2dai-dev.surge.sh/",
     "deploy:stage": "yarn build && surge --project ./build --domain http://eth2dai-staging.surge.sh/",
-    "deploy:prod": "yarn build && gh-pages -d build/",
+    "deploy:prod": "sh ./deploy-prod.sh",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "cypress:run": "cypress run",
