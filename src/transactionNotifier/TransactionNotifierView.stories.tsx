@@ -17,24 +17,23 @@ import { OfferMatchType } from '../utils/form';
 import { zero } from '../utils/zero';
 import { Notification } from './TransactionNotifierView';
 
-const tx: TxState = {
+const common = {
   account: '0xe6ac5629b9ade2132f42887fbbc3a3860afbd07b',
   meta: { ...approveWallet, args: { token: 'WETH' } },
   txNo: 2,
   start: new Date('2019-01-21T11:26:27.644Z'),
   lastChange: new Date('2019-01-21T11:26:30.834Z'),
-  error: {},
   end: new Date('2019-01-21T11:26:30.834Z'),
+};
+
+const cancelledByTheUserTx: TxState = {
+  ...common,
   status: TxStatus.CancelledByTheUser,
+  error: {},
 };
 
 const successfulTx: TxState = {
-  account: '0xe6ac5629b9ade2132f42887fbbc3a3860afbd07b',
-  meta: { ...approveWallet, args: { token: 'WETH' } },
-  txNo: 2,
-  start: new Date('2019-01-21T11:26:27.644Z'),
-  lastChange: new Date('2019-01-21T11:26:30.834Z'),
-  end: new Date('2019-01-21T11:26:30.834Z'),
+  ...common,
   status: TxStatus.Success,
   txHash: 'txhash',
   blockNumber: 123,
@@ -43,20 +42,34 @@ const successfulTx: TxState = {
   safeConfirmations: 1,
 };
 
+const waitingForApprovalTx: TxState = {
+  ...common,
+  status: TxStatus.WaitingForApproval,
+};
+
 const stories = storiesOf('Notification', module);
 
-stories.add('Approve transfer', () => <Notification {...tx} />);
+stories.add('Approve transfer', () => <Notification {...cancelledByTheUserTx} />);
 
 stories.add('Disapprove transfer', () => (
-  <Notification {...{ ...tx, meta: { ...disapproveWallet, args: { token: 'WETH' } } }} />
+  <Notification
+    {...{ ...cancelledByTheUserTx, meta: { ...disapproveWallet, args: { token: 'WETH' } } }}
+  />
 ));
 
 stories.add('Disapprove transfer (DAI)', () => (
-  <Notification {...{ ...tx, meta: { ...disapproveWallet, args: { token: 'DAI' } } }} />
+  <Notification
+    {...{ ...cancelledByTheUserTx, meta: { ...disapproveWallet, args: { token: 'DAI' } } }}
+  />
 ));
 
 stories.add('Cancel offer', () => (
-  <Notification {...{ ...tx, meta: { ...cancelOffer, args: { offerId: zero } as CancelData } }} />
+  <Notification
+    {...{
+      ...cancelledByTheUserTx,
+      meta: { ...cancelOffer, args: { offerId: zero } as CancelData },
+    }}
+  />
 ));
 
 const offerMakeData: OfferMakeData = {
@@ -82,28 +95,50 @@ const offerMakeDirectData: OfferMakeDirectData = {
 };
 
 stories.add('Offer make', () => (
-  <Notification {...{ ...tx, meta: { ...offerMake, args: offerMakeData } }} />
+  <Notification {...{ ...cancelledByTheUserTx, meta: { ...offerMake, args: offerMakeData } }} />
 ));
 
 stories.add('Offer make direct', () => (
   <Notification
     {...{
-      ...tx,
+      ...cancelledByTheUserTx,
       meta: { ...offerMakeDirect, args: offerMakeDirectData },
     }}
   />
 ));
 
-stories.add('Wrap', () => (
-  <Notification {...{ ...tx, meta: { ...wrap, args: { amount: zero } } }} />
+stories.add('Unwrap', () => (
+  <Notification {...{ ...cancelledByTheUserTx, meta: { ...unwrap, args: { amount: zero } } }} />
+));
+
+stories.add('Wrap (CancelledByTheUser)', () => (
+  <Notification {...{ ...cancelledByTheUserTx, meta: { ...wrap, args: { amount: zero } } }} />
 ));
 
 stories.add('Wrap (success)', () => (
-  <Notification
-    {...{ ...successfulTx, meta: { ...wrap, args: { amount: zero } } }}
-  />
+  <Notification {...{ ...successfulTx, meta: { ...wrap, args: { amount: zero } } }} />
 ));
 
-stories.add('Unwrap', () => (
-  <Notification {...{ ...tx, meta: { ...unwrap, args: { amount: zero } } }} />
+stories.add('Wrap (waitingForApproval)', () => (
+  <Notification {...{ ...waitingForApprovalTx, meta: { ...wrap, args: { amount: zero } } }} />
+));
+
+const waitingForConfirmationTx: TxState = {
+  ...common,
+  status: TxStatus.WaitingForConfirmation,
+  txHash: 'abc',
+};
+stories.add('Wrap (WaitingForConfirmation)', () => (
+  <Notification {...{ ...waitingForConfirmationTx, meta: { ...wrap, args: { amount: zero } } }} />
+));
+
+const failureTx: TxState = {
+  ...common,
+  status: TxStatus.Failure,
+  txHash: 'abc',
+  blockNumber: 123,
+  receipt: {},
+};
+stories.add('Wrap (Failure)', () => (
+  <Notification {...{ ...failureTx, meta: { ...wrap, args: { amount: zero } } }} />
 ));
