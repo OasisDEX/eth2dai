@@ -299,7 +299,11 @@ const DataDetails = ({ data, timestampFormat, defaultData }: {
       <div className={styles.infoBoxItem}><Muted>O</Muted> {curr.open && curr.open.toFixed(2)}</div>
       <div className={styles.infoBoxItem}><Muted>H</Muted> {curr.high && curr.high.toFixed(2)}</div>
       <div className={styles.infoBoxItem}><Muted>L</Muted> {curr.low && curr.low.toFixed(2)}</div>
-      <div className={styles.infoBoxItem}><Muted>C</Muted> {curr.close && curr.close.toFixed(2)}
+      <div className={styles.infoBoxItem}>
+        <Muted>C</Muted> {curr.close && curr.close.toFixed(2)}
+      </div>
+      <div className={styles.infoBoxItem}>
+        <Muted>V</Muted> {curr.turnover && curr.turnover.toFixed(2)}
       </div>
       <div className={styles.infoBoxItem}>{curr.timestamp
                        && moment(curr.timestamp).format(timestampFormat)}</div>
