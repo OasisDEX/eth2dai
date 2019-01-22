@@ -10,7 +10,7 @@ import {
   startWith,
   take,
 } from 'rxjs/operators';
-import { UnreachableCaseError } from 'src/utils/UnreachableCaseError';
+import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import { account$, context$, onEveryBlock$ } from './network';
 import { web3 } from './web3';
 
