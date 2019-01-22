@@ -53,16 +53,16 @@ export const offerMake = {
   ],
   options: ({ gasPrice }: OfferMakeData) => ({ gasPrice: gasPrice.toFixed(0) }),
   kind: TxMetaKind.offerMake,
-  description: ({ buyAmount, buyToken, sellAmount, sellToken, kind }: OfferMakeData) =>
+  description: ({ buyAmount, buyToken, sellAmount, sellToken, kind }: OfferMakeData) => (
     kind === OfferType.sell ?
-      <React.Fragment>
-        Sell <Money value={sellAmount} token={sellToken}/>{' '}
-        for <Money value={buyAmount} token={buyToken}/>
-      </React.Fragment> :
-      <React.Fragment>
-        Buy <Money value={buyAmount} token={buyToken}/>{' '}
-        for <Money value={sellAmount} token={sellToken}/>
-      </React.Fragment>,
+    <>
+      Create  Sell order <Money value={sellAmount} token={sellToken}/>
+    </> :
+    <>
+      Create  Buy order <Money value={buyAmount} token={buyToken}/>
+    </>
+  )
+
 };
 
 export interface OfferMakeDirectData {
@@ -92,9 +92,11 @@ export const offerMakeDirect = {
   options: ({ gasPrice }: OfferMakeDirectData) => ({ gasPrice: gasPrice.toFixed(0) }),
   kind: TxMetaKind.offerMake,
   description: ({ baseAmount, baseToken, quoteAmount, quoteToken, kind }: OfferMakeDirectData) =>
-    <React.Fragment>
-      {(kind === OfferType.sell ? 'Sell ' : 'Buy ')}
-      <Money value={baseAmount} token={baseToken}/> for{' '}
-      <Money value={quoteAmount} token={quoteToken}/>
-    </React.Fragment>,
+  kind === OfferType.sell ?
+  <>
+    Create  Sell order <Money value={baseAmount} token={baseToken}/>
+  </> :
+  <>
+    Create  Buy order <Money value={quoteAmount} token={quoteToken}/>
+  </>,
 };
