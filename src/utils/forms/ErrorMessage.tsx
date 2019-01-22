@@ -8,14 +8,14 @@ type ErrorMessageProps =
   & {
     // array of error message strings, sorted from most important:
     // the first one will be visible, others are shown on hover as list in given order
-    messages: string[],
+    messages: React.ReactChild[],
   };
 
 export function ErrorMessage(props: ErrorMessageProps) {
   const { className, messages, ...otherProps } = props;
   return (
     <div className={classnames(styles.errors, className)}
-         title={messages.reduce((title, msg) => title + '\n– ' + msg, '')}
+         // title={messages.reduce((title, msg) => title + '\n– ' + msg, '')}
          {...otherProps}
     >
       { messages.length > 0 && messages[0] }
