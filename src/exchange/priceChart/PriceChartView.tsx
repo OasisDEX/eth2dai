@@ -10,7 +10,7 @@ import { GroupMode, groupModeMapper, PriceChartDataPoint } from './pricechart';
 import * as styles from './PriceChartView.scss';
 
 const margin = { top: 5, right: 45, bottom: 40, left: 10 };
-const width = 450;
+const width = 440;
 const height = 270;
 const bars = { width: 7, padding: 2, delta: -4 };
 const maxDataLength = 38;
@@ -91,7 +91,8 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
 
     const volumeMaximal = Math.ceil((d3.max(data, d => d.turnover) || 10) * 1.1);
     const yVolumeScale = d3.scaleLinear()
-      .domain([0, volumeMaximal])
+      .domain([0, volumeMaximal * 1.4]) // multiply to add space at top of volume
+                                                // in case the candle label is at the bottom
       .range([volumeChartSize.height, 0]);
 
     axes(data,
@@ -114,7 +115,11 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
         this.setState({ hoverId: -1 });
       });
 
-    return (<div style={{ position: 'relative' }}>
+    return (<div style={{
+      position: 'relative',
+      display: 'flex',
+      justifyContent: 'center',
+    }}>
         {chart.toReact()}
         <DataDetails data={this.state.hoverData}
                      timestampFormat={groupModeMap.format}

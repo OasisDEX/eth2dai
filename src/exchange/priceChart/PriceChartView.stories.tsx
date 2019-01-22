@@ -136,13 +136,23 @@ stories.add('Candle samples (daily data)', () => (
 ));
 
 ignoreDuringVisualRegression(() => {
-  stories.add('Degenerate data', () => (
+  stories.add('Degenerate data - empty', () => (
     <div>
       <h3>Empty data</h3>
       <small>Daily</small>
       <PriceChartWithPanel data={[]} />
       <small>Hourly</small>
       <PriceChartWithPanel data={[]} groupMode="byHour"/>
+      <small>Weekly</small>
+      <PriceChartWithPanel data={[]} groupMode="byWeek"/>
+      <small>Monthly</small>
+      <PriceChartWithPanel data={[]} groupMode="byMonth"/>
+    </div>
+  ));
+});
+
+stories.add('Degenerate data - few timestamps', () => (
+  <div>
       <h3>One timestamp</h3>
       <PriceChartWithPanel data={[
         {
@@ -212,8 +222,7 @@ ignoreDuringVisualRegression(() => {
         },
       ]} />
     </div>
-  ));
-});
+));
 
 ignoreDuringVisualRegression(() => {
   stories.add('Random daily and hourly data', () => {
@@ -249,7 +258,6 @@ stories.add('Big fake daily data (are cut)', () => {
 stories.add('High range with very close to 0 minimal price', () => {
   return (
       <div>
-        <h4>Daily</h4>
         <PriceChartWithPanel data={[
           {
             timestamp: new Date('2018-01-06T00:00:00.000Z'),
@@ -323,7 +331,6 @@ stories.add('High range with very close to 0 minimal price', () => {
 stories.add('Small range very close to 0', () => {
   return (
       <div>
-        <h4>Daily</h4>
         <PriceChartWithPanel data={[
           {
             timestamp: new Date('2018-01-06T00:00:00.000Z'),
@@ -389,6 +396,39 @@ stories.add('Small range very close to 0', () => {
             close: 0.006481992877895,
             turnover: 27.60478183605306
           }
+        ]} />
+      </div>
+  );
+});
+
+stories.add('Edge axis labels', () => {
+  return (
+      <div>
+        <PriceChartWithPanel data={[
+          {
+            timestamp: new Date('2018-01-06T00:00:00.000Z'),
+            open: 95.43,
+            high: 110.39,
+            low: 65.21,
+            close: 100.55,
+            turnover: 16751.34,
+          },
+          {
+            timestamp: new Date('2018-01-07T00:00:00.000Z'),
+            open: 134.90,
+            high: 164.00,
+            low: 130.01,
+            close: 141.00,
+            turnover: 30914.25,
+          },
+          {
+            timestamp: new Date('2018-01-08T00:00:00.000Z'),
+            open: 113.66,
+            high: 144.00,
+            low: 113.66,
+            close: 134.90,
+            turnover: 37586.66,
+          },
         ]} />
       </div>
   );
