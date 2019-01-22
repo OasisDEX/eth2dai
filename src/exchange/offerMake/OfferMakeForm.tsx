@@ -1,8 +1,8 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
 
-import * as ReactDOM from 'react-dom';
 import { tokens } from '../../blockchain/config';
 import { BigNumberInput } from '../../utils/bigNumberInput/BigNumberInput';
 import { FormChangeKind, OfferMatchType } from '../../utils/form';
@@ -511,19 +511,35 @@ const Error = ({ field, messages } : { field: string, messages?: Message[] }) =>
 function messageContent(msg: Message) {
   switch (msg.kind) {
     case MessageKind.noAllowance:
-      return `Trading of ${msg.token} tokens has not been enabled`;
+      return <>
+        {`Trading of ${msg.token} tokens has not been enabled.`}
+        {'\u00A0'}
+        <a href="/balances">Go to balances tab</a>
+      </>;
     case MessageKind.insufficientAmount:
-      return  `Your ${msg.token} balance is too low to fund this order`;
+      return  <>
+        {`Your ${msg.token} balance is too low to fund this order`}
+      </>;
     case MessageKind.dustAmount:
-      return `Order below ${msg.amount} ${msg.token} limit`;
+      return <>
+        {`Order below ${msg.amount} ${msg.token} limit`}
+      </>;
     case MessageKind.incredibleAmount:
-      return `Your order exceeds max amount for ${msg.token} token`;
+      return <>
+        {`Your order exceeds max amount for ${msg.token} token`}
+      </>;
     case MessageKind.slippageLimitToLow:
-      return `Slippage limit to low`;
+      return <>
+        `Slippage limit to low`
+      </>;
     case MessageKind.slippageLimitToHigh:
-      return `Slippage limit to high`;
+      return <>
+        `Slippage limit to high`
+      </>;
     case MessageKind.slippageLimitNotSet:
-      return `Slippage limit is necessary`;
+      return <>
+        `Slippage limit is necessary`
+      </>;
   }
 }
 

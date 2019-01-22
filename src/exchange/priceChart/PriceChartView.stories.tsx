@@ -136,13 +136,23 @@ stories.add('Candle samples (daily data)', () => (
 ));
 
 ignoreDuringVisualRegression(() => {
-  stories.add('Degenerate data', () => (
+  stories.add('Degenerate data - empty', () => (
     <div>
       <h3>Empty data</h3>
       <small>Daily</small>
       <PriceChartWithPanel data={[]} />
       <small>Hourly</small>
       <PriceChartWithPanel data={[]} groupMode="byHour"/>
+      <small>Weekly</small>
+      <PriceChartWithPanel data={[]} groupMode="byWeek"/>
+      <small>Monthly</small>
+      <PriceChartWithPanel data={[]} groupMode="byMonth"/>
+    </div>
+  ));
+});
+
+stories.add('Degenerate data - few timestamps', () => (
+  <div>
       <h3>One timestamp</h3>
       <PriceChartWithPanel data={[
         {
@@ -212,8 +222,7 @@ ignoreDuringVisualRegression(() => {
         },
       ]} />
     </div>
-  ));
-});
+));
 
 ignoreDuringVisualRegression(() => {
   stories.add('Random daily and hourly data', () => {
@@ -243,6 +252,185 @@ ignoreDuringVisualRegression(() => {
 stories.add('Big fake daily data (are cut)', () => {
   return (
   <PriceChartWithPanel data={bigFakeDailyData} />
+  );
+});
+
+stories.add('High range with very close to 0 minimal price', () => {
+  return (
+      <div>
+        <PriceChartWithPanel data={[
+          {
+            timestamp: new Date('2018-01-06T00:00:00.000Z'),
+            open: 333.37687112382446,
+            high: 933.37687112382446,
+            low: 314.1798860637972,
+            close: 914.1798860637972,
+            turnover: 11.066294066977633
+          },
+          {
+            timestamp: new Date('2018-01-07T00:00:00.000Z'),
+            open: 306.38102859719305,
+            high: 342.3116448015784,
+            low: 306.38102859719305,
+            close: 324.81012058948187,
+            turnover: 195.2536909025437
+          },
+          {
+            timestamp: new Date('2018-01-08T00:00:00.000Z'),
+            open: 1452.8701502697485,
+            high: 1542.34665685029915,
+            low: 726.0048461455915,
+            close: 1329.7209989169264,
+            turnover: 170.16115673608596
+          },
+          {
+            timestamp: new Date('2018-01-09T00:00:00.000Z'),
+            open: 337.8173090132458,
+            high: 846.1738401734291,
+            low: 320.37115759019997,
+            close: 746.1738401734291,
+            turnover: 86.50121854292108
+          },
+          {
+            timestamp: new Date('2018-01-10T00:00:00.000Z'),
+            open: 337.23899252132287,
+            high: 337.23899252132287,
+            low: 312.5302006531087,
+            close: 320.352156665352,
+            turnover: 127.6543306181675
+          },
+          {
+            timestamp: new Date('2018-01-11T00:00:00.000Z'),
+            open: 2313.7507974851636,
+            high: 2317.4403517015113,
+            low: 1294.19874715812136,
+            close: 1317.4403517015113,
+            turnover: 124.34906714176373
+          },
+          {
+            timestamp: new Date('2018-01-12T00:00:00.000Z'),
+            open: 313.0095334449359,
+            high: 1336.00498662090666,
+            low: 301.6250477028224,
+            close: 1317.06481992877895,
+            turnover: 27.60478183605306
+          },
+          {
+            timestamp: new Date('2018-01-13T00:00:00.000Z'),
+            open: 313.0095334449359,
+            high: 336.00498662090666,
+            low: 0,
+            close: 317.06481992877895,
+            turnover: 27.60478183605306
+          }
+        ]} />
+      </div>
+  );
+});
+
+stories.add('Small range very close to 0', () => {
+  return (
+      <div>
+        <PriceChartWithPanel data={[
+          {
+            timestamp: new Date('2018-01-06T00:00:00.000Z'),
+            open: 0.037687112382446,
+            high: 0.037687112382446,
+            low: 0.01798860637972,
+            close: 0.01798860637972,
+            turnover: 11.066294066977633
+          },
+          {
+            timestamp: new Date('2018-01-07T00:00:00.000Z'),
+            open: 0.0122058948187,
+            high: 0.03116448015784,
+            low: 0.0102859719305,
+            close: 0.028102859719305,
+            turnover: 195.2536909025437
+          },
+          {
+            timestamp: new Date('2018-01-08T00:00:00.000Z'),
+            open: 0.08701502697485,
+            high: 0.034665685029915,
+            low: 0.00048461455915,
+            close: 0.07209989169264,
+            turnover: 170.16115673608596
+          },
+          {
+            timestamp: new Date('2018-01-09T00:00:00.000Z'),
+            open: 0.017390132458,
+            high: 0.04738401734291,
+            low: 0.007115759019997,
+            close: 0.01738401734291,
+            turnover: 86.50121854292108
+          },
+          {
+            timestamp: new Date('2018-01-10T00:00:00.000Z'),
+            open: 0.023899252132287,
+            high: 0.023899252132287,
+            low: 0.05302006531087,
+            close: 0.0352156665352,
+            turnover: 127.6543306181675
+          },
+          {
+            timestamp: new Date('2018-01-11T00:00:00.000Z'),
+            open: 0.007974851636,
+            high: 0.04403517015113,
+            low: 0.0019874715812136,
+            close: 0.03403517015113,
+            turnover: 124.34906714176373
+          },
+          {
+            timestamp: new Date('2018-01-12T00:00:00.000Z'),
+            open: 0.00095334449359,
+            high: 0.013498662090666,
+            low: 0.00250477028224,
+            close: 0.006481992877895,
+            turnover: 27.60478183605306
+          },
+          {
+            timestamp: new Date('2018-01-13T00:00:00.000Z'),
+            open: 0.00095334449359,
+            high: 0.000498662090666,
+            low: 0.000001,
+            close: 0.006481992877895,
+            turnover: 27.60478183605306
+          }
+        ]} />
+      </div>
+  );
+});
+
+stories.add('Edge axis labels', () => {
+  return (
+      <div>
+        <PriceChartWithPanel data={[
+          {
+            timestamp: new Date('2018-01-06T00:00:00.000Z'),
+            open: 95.43,
+            high: 110.39,
+            low: 65.21,
+            close: 100.55,
+            turnover: 16751.34,
+          },
+          {
+            timestamp: new Date('2018-01-07T00:00:00.000Z'),
+            open: 134.90,
+            high: 164.00,
+            low: 130.01,
+            close: 141.00,
+            turnover: 30914.25,
+          },
+          {
+            timestamp: new Date('2018-01-08T00:00:00.000Z'),
+            open: 113.66,
+            high: 144.00,
+            low: 113.66,
+            close: 134.90,
+            turnover: 37586.66,
+          },
+        ]} />
+      </div>
   );
 });
 
