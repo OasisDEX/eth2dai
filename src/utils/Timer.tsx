@@ -36,3 +36,13 @@ export class Timer extends React.Component<TimerProps, { elapsed: number }> {
     });
   }
 }
+
+export class SecondsTimer extends Timer {
+  public render() {
+    const elapsed = Math.round(this.state.elapsed / 1000);
+    const minutes = Math.floor(elapsed / 60).toFixed(0);
+    const seconds = (elapsed % 60).toFixed(0).padStart(2, '0');
+
+    return <span>{minutes}:{seconds}</span>;
+  }
+}

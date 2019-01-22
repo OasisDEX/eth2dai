@@ -2,6 +2,7 @@ import * as React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 
 import { TxState, TxStatus } from '../blockchain/transactions';
+import { SecondsTimer } from '../utils/Timer';
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import * as styles from './TransactionNotifier.scss';
 
@@ -52,12 +53,12 @@ export const Notification: React.SFC<TxState> = transaction => {
         </div>
       )}
       <div className={styles.title}>{description}</div>
-      <div className={styles.description}>{describeTxStatus(transaction.status)}</div>
+      <div className={styles.description}>{describeTxStatus(transaction)}</div>
     </div>
   );
 };
 
-export function describeTxStatus(status: TxStatus) {
+export function describeTxStatus({ status, start }: TxState) {
   switch (status) {
     case TxStatus.Success:
       return 'Confirmed';
@@ -67,7 +68,11 @@ export function describeTxStatus(status: TxStatus) {
     case TxStatus.WaitingForApproval:
       return 'Singing Transaction';
     case TxStatus.WaitingForConfirmation:
-      return 'Unconfirmed';
+      return (
+        <>
+          Unconfirmed <SecondsTimer start={start} />
+        </>
+      );
     case TxStatus.CancelledByTheUser:
       return 'Rejected';
     default:
