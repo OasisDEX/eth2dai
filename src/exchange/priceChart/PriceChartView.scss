@@ -75,6 +75,13 @@
   color: $grey-lightest;
 }
 
+.axisYVolumeLabel {
+  font-family: $font-additional; // Lato
+  color: $grey-lightest;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 .axisXMainLabel {
   @include fontMontserratMedium;
   color: $white;
