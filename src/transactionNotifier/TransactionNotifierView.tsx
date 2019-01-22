@@ -40,9 +40,25 @@ export class TransactionNotifierView extends React.Component<{
 }
 
 export const Notification: React.SFC<TxState> = transaction => {
+  const description = transaction.meta.description(transaction.meta.args);
+  const icon =
+    transaction.meta.descriptionIcon && transaction.meta.descriptionIcon(transaction.meta.args);
+
+  if (icon) {
+    return (
+      <div key={transaction.txNo} className={styles.block}>
+        <div className={styles.icon}><div className={styles.iconInner}>{icon}</div></div>
+        <div className={styles.title}>{description}</div>
+        <div>{transaction.status}</div>
+        {transaction.status === TxStatus.Success && (
+          <div>confirmations: {transaction.confirmations}</div>
+        )}
+      </div>
+    );
+  }
   return (
     <div key={transaction.txNo} className={styles.block}>
-      <div className={styles.title}>{transaction.meta.description(transaction.meta.args)}</div>
+      <div className={styles.title}>{description}</div>
       <div>{transaction.status}</div>
       {transaction.status === TxStatus.Success && (
         <div>confirmations: {transaction.confirmations}</div>

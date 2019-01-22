@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import { Money } from '../../utils/formatters/Formatters';
+import { ETHicon } from '../coinIcons/coinIcons';
 import { NetworkConfig } from '../config';
 import { amountToWei } from '../utils';
 import { DEFAULT_GAS } from './callsHelpers';
@@ -21,7 +22,8 @@ export const wrap = {
   description: ({ amount }: WrapUnwrapData) =>
     <React.Fragment>
       Wrap <Money value={amount} token={'ETH'}/>
-    </React.Fragment>
+    </React.Fragment>,
+  descriptionIcon: () => <ETHicon />
 };
 
 export const unwrap = {

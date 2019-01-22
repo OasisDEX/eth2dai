@@ -22,6 +22,7 @@ export interface GasDef<A> extends BaseDef<A> {
 export interface TransactionDef<A> extends GasDef<A> {
   kind: TxMetaKind;
   description: (args: A) => JSX.Element;
+  descriptionIcon?: (args: A) => JSX.Element;
 }
 
 export function callCurried(context: NetworkConfig, account: string) {
