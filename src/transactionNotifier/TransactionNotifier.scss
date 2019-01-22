@@ -45,12 +45,10 @@
 }
 
 .icon-inner {
-  transform: scale(1.8);
   width: 30px;
   height: 30px;
   border: 1px solid white;
   border-radius: 50px;
-  padding-left: 1px;
 }
 
 :global(.transaction-enter) {
