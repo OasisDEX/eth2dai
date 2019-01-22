@@ -2,7 +2,7 @@ import * as React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 
 import { transactionObserver, TxState, TxStatus } from '../blockchain/transactions';
-import { SecondsTimer } from '../utils/Timer';
+import { Timer } from '../utils/Timer';
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import * as styles from './TransactionNotifier.scss';
 
@@ -34,7 +34,11 @@ export class TransactionNotifierView extends React.Component<{
             )
             .map(transaction =>
               (
-                <Notification key={transaction.txNo} {...transaction} onDismiss={ () => transactionObserver.next({ kind: 'dismissed', txNo: transaction.txNo }) } />
+                <Notification
+                  key={transaction.txNo}
+                  {...transaction}
+                  onDismiss={ () => transactionObserver.next({ kind: 'dismissed', txNo: transaction.txNo }) }
+                  />
               )
             )}
         </CSSTransitionGroup>
@@ -76,7 +80,7 @@ export function describeTxStatus({ status, start }: TxState) {
     case TxStatus.WaitingForConfirmation:
       return (
         <>
-          Unconfirmed <SecondsTimer start={start} />
+          Unconfirmed <Timer start={start} />
         </>
       );
     case TxStatus.CancelledByTheUser:
