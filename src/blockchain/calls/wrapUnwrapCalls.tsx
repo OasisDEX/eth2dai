@@ -36,5 +36,6 @@ export const unwrap = {
   description: ({ amount }: WrapUnwrapData) =>
     <React.Fragment>
       Unwrap <Money value={amount} token={'WETH'}/>
-    </React.Fragment>
+    </React.Fragment>,
+  descriptionIcon: () => <ETHicon />
 };

@@ -56,13 +56,14 @@ export function estimateGasCurried(context: NetworkConfig, account: string) {
 }
 
 export function sendTransactionCurried(context: NetworkConfig, account: string) {
-  return <D>({ kind, description, call, prepareArgs, options }: TransactionDef<D>) => {
+  return <D>({ kind, description, descriptionIcon, call, prepareArgs, options }: TransactionDef<D>) => {
     return (args: D) => {
       return send(
         account,
         {
           kind,
           description,
+          descriptionIcon,
           args
         },
         call(args, context, account).sendTransaction,

@@ -44,25 +44,15 @@ export const Notification: React.SFC<TxState> = transaction => {
   const icon =
     transaction.meta.descriptionIcon && transaction.meta.descriptionIcon(transaction.meta.args);
 
-  if (icon) {
-    return (
-      <div key={transaction.txNo} className={styles.block}>
-        <div className={styles.icon}><div className={styles.iconInner}>{icon}</div></div>
-        <div className={styles.title}>{description}</div>
-        <div>{transaction.status}</div>
-        {transaction.status === TxStatus.Success && (
-          <div>confirmations: {transaction.confirmations}</div>
-        )}
-      </div>
-    );
-  }
   return (
     <div key={transaction.txNo} className={styles.block}>
-      <div className={styles.title}>{description}</div>
-      <div>{transaction.status}</div>
-      {transaction.status === TxStatus.Success && (
-        <div>confirmations: {transaction.confirmations}</div>
+      {icon && (
+        <div className={styles.icon}>
+          <div className={styles.iconInner}>{icon}</div>
+        </div>
       )}
+      <div className={styles.title}>{description}</div>
+      <div className={styles.description}>{describeTxStatus(transaction.status)}</div>
     </div>
   );
 };

@@ -51,6 +51,10 @@ stories.add('Disapprove transfer', () => (
   <Notification {...{ ...tx, meta: { ...disapproveWallet, args: { token: 'WETH' } } }} />
 ));
 
+stories.add('Disapprove transfer (DAI)', () => (
+  <Notification {...{ ...tx, meta: { ...disapproveWallet, args: { token: 'DAI' } } }} />
+));
+
 stories.add('Cancel offer', () => (
   <Notification {...{ ...tx, meta: { ...cancelOffer, args: { offerId: zero } as CancelData } }} />
 ));

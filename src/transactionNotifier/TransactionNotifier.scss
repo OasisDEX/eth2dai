@@ -19,10 +19,10 @@
 }
 
 .title {
-  font-weight: 600;
-  font-size: $font-size-base;
+  font-size: $font-size-smaller;
   letter-spacing: 0.36px;
-  margin-bottom: 0.75em;
+  margin-bottom: 4px;
+  margin-top: 5px;
 }
 
 .close {
@@ -49,6 +49,12 @@
   height: 30px;
   border: 1px solid white;
   border-radius: 50px;
+  padding-left: 1px;
+}
+
+.description {
+  font-size: $font-size-smaller;
+  color: $grey-light;
 }
 
 :global(.transaction-enter) {
