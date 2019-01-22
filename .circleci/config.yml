@@ -61,6 +61,16 @@ jobs:
             - v3-dependencies-{{ checksum "package.json" }}
       - run: yarn run deploy:dev
 
+  deploy_stage:
+    docker:
+      - image: circleci/node:8.11.2-stretch
+    steps:
+      - checkout
+      - restore_cache:
+            keys:
+            - v3-dependencies-{{ checksum "package.json" }}
+      - run: yarn run deploy:stage
+
   deploy_prod:
     docker:
       - image: circleci/node:8.11.2-stretch
@@ -95,6 +105,12 @@ workflows:
           filters:
             branches:
               only: dev
+      - deploy_stage:
+          requires:
+            - test
+          filters:
+            branches:
+              only: staging
       - deploy_prod:
           requires:
             - test
