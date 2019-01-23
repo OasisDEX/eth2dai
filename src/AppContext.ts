@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BehaviorSubject, interval, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, interval, Observable } from 'rxjs';
 import { first, flatMap, shareReplay, switchMap } from 'rxjs/operators';
 
 import { curry } from 'ramda';
@@ -37,7 +37,9 @@ import {
   memoizeTradingPair,
 } from './exchange/tradingPair/tradingPair';
 
+import { map } from 'rxjs/internal/operators';
 import { transactions$ } from './blockchain/transactions';
+import { createVulcan0xDelay$ } from './blockchain/vulcan0x';
 import {
   createAllTrades$, createTradesBrowser$, loadAllTrades
 } from './exchange/allTrades/allTrades';
@@ -106,7 +108,15 @@ export function setupAppContext() {
     shareReplay(1)
   );
 
-  const wethBalance$ = createWethBalances$(context$, initializedAccount$, onEveryBlock$);
+  const vulcan0xDelay$ = createVulcan0xDelay$(context$, onEveryBlock$);
+
+  // it is a hacky way of subscribing to vulcan0xDelay$
+  const wethBalance$ = combineLatest(
+    createWethBalances$(context$, initializedAccount$, onEveryBlock$),
+    vulcan0xDelay$
+  ).pipe(
+    map(([balances]) => balances)
+  );
 
   const wrapUnwrapForm$ =
     curry(createWrapUnwrapForm$)(gasPrice$, etherPriceUsd$, etherBalance$, wethBalance$, calls$);
