@@ -114,7 +114,7 @@ export const gasPrice$: Observable<BigNumber> = web3Ready$.pipe(
       })),
       retryWhen(errors => errors.pipe(delayWhen(() => onEveryBlock$.pipe(skip(1))))),
       map(({ response }) =>
-        new BigNumber(response.average).times(new BigNumber(10).pow(8))
+        new BigNumber(response.average).times(1.1).times(new BigNumber(10).pow(8))
       ),
     )
   ).pipe(

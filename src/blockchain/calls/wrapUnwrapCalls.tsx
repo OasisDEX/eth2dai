@@ -4,7 +4,6 @@ import { Money } from '../../utils/formatters/Formatters';
 import { ETHicon } from '../coinIcons/coinIcons';
 import { NetworkConfig } from '../config';
 import { amountToWei } from '../utils';
-import { DEFAULT_GAS } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
 export interface WrapUnwrapData {
@@ -16,6 +15,7 @@ export const wrap = {
     context.tokens.WETH.contract.deposit,
   options: ({ amount }: WrapUnwrapData) => ({
     value: amountToWei(amount, 'ETH').toFixed(0),
+    gas: 100000,
   }),
   kind: TxMetaKind.wrap,
   prepareArgs: (_: WrapUnwrapData) => [],
@@ -29,7 +29,7 @@ export const wrap = {
 export const unwrap = {
   call: (_: WrapUnwrapData, context: NetworkConfig) =>
     context.tokens.WETH.contract.withdraw,
-  options: () => ({ gas: DEFAULT_GAS }),
+  options: () => ({ gas: 100000 }),
   kind: TxMetaKind.unwrap,
   prepareArgs: ({ amount }: WrapUnwrapData) =>
     [amountToWei(amount, 'ETH').toFixed(0)],
