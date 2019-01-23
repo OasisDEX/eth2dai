@@ -309,6 +309,9 @@ function axes(_data: PriceChartDataPoint[],
     .attr('visibility', 'hidden');
   yVolumeAxisGroup.selectAll('.domain')
     .attr('visibility', 'hidden');
+  // hide volume ticks
+  yVolumeAxisGroup.selectAll('.tick')
+    .attr('visibility', 'hidden');
 
   // style x domain
   xDomainAxisGroup.selectAll('.tick line')
@@ -332,8 +335,9 @@ function axes(_data: PriceChartDataPoint[],
   // style y labels
   yCandleAxisGroup.selectAll('.tick text')
     .classed(styles.axisYMainLabel, true);
-  yVolumeAxisGroup.selectAll('.tick text')
-    .classed(styles.axisYVolumeLabel, true);
+  // style volume labels
+  // yVolumeAxisGroup.selectAll('.tick text')
+  //   .classed(styles.axisYVolumeLabel, true);
 }
 
 const DataDetails = ({ data, timestampFormat, defaultData }: {
