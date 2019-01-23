@@ -97,7 +97,6 @@ function loadOffersAllAtOnce(
     context.tokens[buyToken].address
   ).pipe(
     map(parseOffers(sellToken, buyToken, type, true)),
-    // map(({ offers }) => offers)
     expand(({ lastOfferId }) => lastOfferId.isZero() ?
       of() :
       bindNodeCallback(
@@ -135,6 +134,7 @@ export function loadOrderbook$(
         loadOffersAllAtOnce(context, base, quote, OfferType.sell)
       ).pipe(
         map(([buy, sell]) => {
+          console.log('orderbook for block:', blockNumber, buy, sell);
           const spread =
             !isEmpty(sell) && !isEmpty(buy)
               ? sell[0].price.minus(buy[0].price)
