@@ -1,6 +1,7 @@
 @import "../Variables";
 
 $panel-padding-horizontal: 16px;
+$panel-padding-vertical: 12px;
 
 
 // panel
@@ -30,7 +31,7 @@ $panel-padding-horizontal: 16px;
 .panelHeader {
   display: flex;
   align-items: center;
-  padding: 12px $panel-padding-horizontal;
+  padding: $panel-padding-vertical $panel-padding-horizontal;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.36px;
@@ -38,6 +39,8 @@ $panel-padding-horizontal: 16px;
 }
 
 .panelHeaderBordered {
+  padding-bottom: $panel-padding-vertical - 1px;  // adding border makes header 1px higher,
+                                                  // so subtract this 1px from bottom padding
   border-bottom: 1px solid $grey-dark;
 }
 

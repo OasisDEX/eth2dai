@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { map } from 'rxjs/operators';
 import { Button } from '../utils/forms/Buttons';
-import { Select } from '../utils/forms/Select';
 import { PanelHeader } from '../utils/panel/Panel';
 import { ZoomChange } from './depthChart/depthchart';
 
@@ -36,7 +35,12 @@ export class OrderbookPanel extends React.Component<OrderbookPanelProps & SubVie
     return (
       <div style={{ width: this.props.kind === OrderbookViewKind.depthChart ? '508px' : '452px' }}>
         <PanelHeader bordered={this.props.kind === OrderbookViewKind.depthChart}>
-          <span>Order book</span>
+          <span>
+            {
+              this.props.kind === OrderbookViewKind.depthChart ?
+              'Depth chart' : 'Order book'
+            }
+          </span>
           <div style={{ marginLeft: 'auto', display: 'flex' }}>
             {this.props.kind === OrderbookViewKind.depthChart &&
               <div>
@@ -44,17 +48,13 @@ export class OrderbookPanel extends React.Component<OrderbookPanelProps & SubVie
                 <Button style={btnStyles} onClick={this.zoomIn}><PlusBtn /></Button>
               </div>
             }
-            <Select data-test-id="orderbook-type"
-              onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                this.props.kindChange(event.target.value as OrderbookViewKind)}
-              value={this.props.kind}>
-              <option data-test-id="orders-depth-chart" value={OrderbookViewKind.depthChart}>
-                Depth chart
-              </option>
-              <option data-test-id="orders-list" value={OrderbookViewKind.list}>
-                List
-              </option>
-            </Select>
+            <Button
+              style={btnStyles}
+              onClick={this.changeChartListView}
+              data-test-id={`orderbook-type-${this.props.kind}`}
+            >
+              <ChartListSwitchBtn />
+            </Button>
           </div>
         </PanelHeader>
           {
@@ -72,6 +72,11 @@ export class OrderbookPanel extends React.Component<OrderbookPanelProps & SubVie
 
   private zoomOut = () => {
     this.props.zoomChange('zoomOut');
+  }
+
+  private changeChartListView = () => {
+    this.props.kindChange(this.props.kind === OrderbookViewKind.depthChart ?
+      OrderbookViewKind.list : OrderbookViewKind.depthChart);
   }
 }
 
@@ -91,6 +96,17 @@ export class PlusBtn extends React.PureComponent {
     return (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    );
+  }
+}
+
+export class ChartListSwitchBtn extends React.PureComponent {
+  public render() {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
         <path d="M0 0h24v24H0z" fill="none"/>
       </svg>
     );

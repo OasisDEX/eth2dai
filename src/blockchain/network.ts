@@ -111,6 +111,7 @@ export const gasPrice$: Observable<BigNumber> = web3Ready$.pipe(
         headers: {
           Accept: 'application/json',
         },
+        crossDomain: true,
       })),
       retryWhen(errors => errors.pipe(delayWhen(() => onEveryBlock$.pipe(skip(1))))),
       map(({ response }) =>
