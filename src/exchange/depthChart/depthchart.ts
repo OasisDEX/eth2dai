@@ -351,7 +351,7 @@ function sellsAfterForSellOffer(remaining: BigNumber, price: BigNumber, sells: O
   let remainingUnused = true;
   const sellsResult = sells.reduce(
     (result: Offer[], offer: Offer) => {
-      if (remainingUnused && price.isEqualTo(offer.price)) {
+      if (remainingUnused && price.eq(offer.price)) {
         const baseAmount = offer.baseAmount.plus(remaining);
         result.push({ ...offer, baseAmount });
         remainingUnused = false;
