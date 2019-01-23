@@ -335,9 +335,6 @@ function axes(_data: PriceChartDataPoint[],
   // style y labels
   yCandleAxisGroup.selectAll('.tick text')
     .classed(styles.axisYMainLabel, true);
-  // style volume labels
-  // yVolumeAxisGroup.selectAll('.tick text')
-  //   .classed(styles.axisYVolumeLabel, true);
 }
 
 const DataDetails = ({ data, timestampFormat, defaultData }: {
