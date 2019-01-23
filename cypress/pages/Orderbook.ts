@@ -50,8 +50,6 @@ export enum OrderType {
 
 export class Orderbook {
   public static list(type: OrderType) {
-    cy.wait(200);
-    cy.get(tid('orderbook-type'), { timeout: 5000 }).select('list', { timeout: 5000 });
     return new Orders(type);
   }
 }
