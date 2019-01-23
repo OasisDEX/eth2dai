@@ -7,7 +7,6 @@ import { OfferMatchType } from '../../utils/form';
 import { Money } from '../../utils/formatters/Formatters';
 import { NetworkConfig } from '../config';
 import { amountToWei } from '../utils';
-import { DEFAULT_GAS } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
 export interface CancelData {
@@ -19,7 +18,7 @@ export const cancelOffer = {
   prepareArgs: ({ offerId }: CancelData) => [
     offerId,
   ],
-  options: () => ({ gas: DEFAULT_GAS }),
+  options: () => ({ gas: 500000 }),
   kind: TxMetaKind.cancel,
   description: ({ offerId }: CancelData) =>
     <React.Fragment>Cancel offer {offerId.toString()}</React.Fragment>,
