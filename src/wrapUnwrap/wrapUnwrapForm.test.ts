@@ -63,7 +63,7 @@ describe('Wrapping' , () => {
 
     expect(unpack(controller).readyToProceed).toBeFalsy();
     expect(unpack(controller).messages.length).toBe(1);
-    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount });
+    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount, token: 'ETH' });
   });
 
   test('negative amount', () => {
@@ -135,7 +135,7 @@ describe('Unwrapping', () => {
 
     expect(unpack(controller).readyToProceed).toBeFalsy();
     expect(unpack(controller).messages.length).toBe(1);
-    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount });
+    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount, token: 'WETH' });
   });
 
   test('negative amount', () => {
