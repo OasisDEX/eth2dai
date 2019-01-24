@@ -22,7 +22,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
     return (
       <div className={styles.container}>
         <PanelHeader>
-          <span>My Trades</span>
+          <span>My Orders</span>
           <Select onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
                   this.props.changeKind(event.target.value as MyTradesKindKeys)}
                   style={{ marginLeft: 'auto' }}
