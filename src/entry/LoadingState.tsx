@@ -46,12 +46,14 @@ class AcceptTos extends React.Component<any, any> {
               </div>
             </div>
             <button disabled={!this.state.isChecked} className={classnames(button, styles.grey)}
+                    data-test-id="continue-with-app"
                     onClick={this.loadApp}>
               Continue
             </button>
           </div>
           <div className={styles.containerBottomHalf}>
             <Checkbox name="tos"
+                      data-test-id="accept-tos"
                       onChange={this.toggle}>
                          <span className={styles.label}>I accept the <a target="_blank" rel="noopener noreferrer"
                                                                         href="/tos.pdf">
@@ -106,12 +108,8 @@ export class LoadingState {
             <h4 style={{ color: '#8D8D96' }}>Available Desktop Client</h4>
           </div>
           <div className={styles.availableClients}>
-            <Client/>
-            <Client/>
-          </div>
-          <div className={styles.availableClients}>
-            <Client/>
-            <Client/>
+            <Client client="metamask"/>
+            <Client client="parity"/>
           </div>
         </div>
       </section>
