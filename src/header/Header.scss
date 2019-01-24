@@ -4,15 +4,22 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1em;
+  margin-top: 1em;
+  margin-bottom: 0.75em;
 
   .logo {
-    height: 42px;
-    width: 150px;
-    margin-top: 15px;
-    margin-right: 1em;
-  }
+    width: 132px;
+    max-height: 37px;
+    margin: auto 1.5em auto auto;
 
+    &:hover {
+      :global {
+        #Eth2Dai #logo #bg{
+          fill-opacity: 0.35;
+        }
+      }
+    }
+  }
 }
 
 section {
