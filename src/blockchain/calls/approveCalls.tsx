@@ -3,8 +3,8 @@ import * as React from 'react';
 import { Currency } from '../../utils/text/Text';
 import { DAIicon, ETHicon } from '../coinIcons/coinIcons';
 import { NetworkConfig } from '../config';
-import { TxMetaKind } from './txMeta';
 import { TransactionDef } from './callsHelpers';
+import { TxMetaKind } from './txMeta';
 
 export interface ApproveWalletData {
   token: string;

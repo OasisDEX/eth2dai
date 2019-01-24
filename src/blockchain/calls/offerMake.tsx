@@ -7,8 +7,8 @@ import { OfferMatchType } from '../../utils/form';
 import { Money } from '../../utils/formatters/Formatters';
 import { NetworkConfig } from '../config';
 import { amountToWei } from '../utils';
-import { TxMetaKind } from './txMeta';
 import { TransactionDef } from './callsHelpers';
+import { TxMetaKind } from './txMeta';
 
 export interface CancelData {
   offerId: BigNumber;

@@ -4,8 +4,8 @@ import { Money } from '../../utils/formatters/Formatters';
 import { ETHicon } from '../coinIcons/coinIcons';
 import { NetworkConfig } from '../config';
 import { amountToWei } from '../utils';
-import { TxMetaKind } from './txMeta';
 import { TransactionDef } from './callsHelpers';
+import { TxMetaKind } from './txMeta';
 
 export interface WrapUnwrapData {
   amount: BigNumber;
