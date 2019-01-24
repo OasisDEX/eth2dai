@@ -10,4 +10,9 @@
   font-size: 11px;
   height: 24px;
   text-align: right;
+
+  a {
+    color: $red;
+    font-weight: bolder;
+  }
 }
