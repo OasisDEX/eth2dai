@@ -33,6 +33,7 @@ export interface OfferMakeData {
   position?: BigNumber;
   kind: OfferType;
   gasPrice: BigNumber;
+  gasEstimation?: number;
 }
 
 export const offerMake = {
@@ -50,7 +51,10 @@ export const offerMake = {
     ...matchType === OfferMatchType.limitOrder ? [position || 0] : [],
     true,
   ],
-  options: ({ gasPrice }: OfferMakeData) => ({ gasPrice: gasPrice.toFixed(0) }),
+  options: ({ gasPrice, gasEstimation }: OfferMakeData) => ({
+    gasPrice: gasPrice.toFixed(0),
+    gas: gasEstimation,
+  }),
   kind: TxMetaKind.offerMake,
   description: ({ buyAmount, buyToken, sellAmount, sellToken, kind }: OfferMakeData) => (
     kind === OfferType.sell ?
@@ -73,6 +77,7 @@ export interface OfferMakeDirectData {
   price: BigNumber;
   kind: OfferType;
   gasPrice: BigNumber;
+  gasEstimation?: number;
 }
 
 export const offerMakeDirect = {
@@ -88,7 +93,10 @@ export const offerMakeDirect = {
     context.tokens[quoteToken].address,
     amountToWei(quoteAmount, quoteToken).toFixed(0),
   ],
-  options: ({ gasPrice }: OfferMakeDirectData) => ({ gasPrice: gasPrice.toFixed(0) }),
+  options: ({ gasPrice, gasEstimation }: OfferMakeDirectData) => ({
+    gasPrice: gasPrice.toFixed(0),
+    gas: gasEstimation
+  }),
   kind: TxMetaKind.offerMake,
   description: ({ baseAmount, baseToken, quoteAmount, quoteToken, kind }: OfferMakeDirectData) =>
   kind === OfferType.sell ?

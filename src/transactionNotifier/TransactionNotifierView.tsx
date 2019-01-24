@@ -76,7 +76,7 @@ export function describeTxStatus({ status, start }: TxState) {
     case TxStatus.Failure:
       return 'Failed';
     case TxStatus.WaitingForApproval:
-      return 'Singing Transaction';
+      return 'Signing Transaction';
     case TxStatus.WaitingForConfirmation:
       return (
         <>
