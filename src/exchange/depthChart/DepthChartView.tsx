@@ -74,7 +74,7 @@ function axes(svgContainer: any,
   const yAxis = svgContainer
     .append('g')
     .classed('yAxis', true);
-  const yTickAddon = 6;
+  const yTickAddon = 0;
   const yTokenMarginTop = 20;
   const yTokenMarginHorizontal = 8;
 
