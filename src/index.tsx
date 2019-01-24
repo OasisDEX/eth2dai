@@ -2,12 +2,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { map } from 'rxjs/operators';
 
-import { combineLatest, merge, Observable, of } from 'rxjs/index';
-import { startWith, switchMap, tap } from 'rxjs/internal/operators';
+import { combineLatest, interval, Observable, of } from 'rxjs/index';
+import { distinctUntilChanged, startWith, switchMap, tap } from 'rxjs/internal/operators';
 import { networks } from './blockchain/config';
 import { account$, networkId$ } from './blockchain/network';
 import { Web3Status, web3Status$ } from './blockchain/web3';
-import { loadApp$, LoadingState } from './entry/LoadingState';
+import { LoadingState } from './entry/LoadingState';
 import { Main } from './Main';
 import { connect } from './utils/connect';
 import { UnreachableCaseError } from './utils/UnreachableCaseError';
@@ -15,6 +15,7 @@ import { UnreachableCaseError } from './utils/UnreachableCaseError';
 interface Props {
   status: Web3Status;
   network?: string;
+  tosAccepted?: boolean;
 }
 
 class App extends React.Component<Props> {
@@ -33,7 +34,7 @@ class App extends React.Component<Props> {
           return LoadingState.UNSUPPORTED;
         }
 
-        if (localStorage.getItem('acceptedToS')  === 'true') {
+        if (this.props.tosAccepted) {
           return <Main/>;
         }
 
@@ -44,25 +45,38 @@ class App extends React.Component<Props> {
   }
 }
 
-const accepted$ = loadApp$.pipe(
-  map((result: {status: Web3Status}) => ({ ...result }))
+const accepted$ = interval(500).pipe(
+  startWith(0),
+  map(() => localStorage.getItem('tosAccepted') === 'true')
 );
 
-const props$: Observable<Props> = web3Status$.pipe(
+const web3StatusResolve$: Observable<Props> = web3Status$.pipe(
   switchMap(status =>
     status === 'ready' ?
       combineLatest(networkId$, account$).pipe(
         tap(([network, account]) =>
           console.log(`status: ${status}, network: ${network}, account: ${account}`)),
         map(([network, _account]) => ({ status, network })),
-
-      ) :   of({ status })
+      ) : of({ status })
   ),
   startWith({ status: 'initializing' as Web3Status })
 );
 
-const AppTxRx = connect(App, merge(props$, accepted$));
+const props$: Observable<Props> = combineLatest(accepted$, web3StatusResolve$).pipe(
+  map(([tosResolution, web3Status]) => {
+    return {
+      tosAccepted: tosResolution,
+      ...web3Status
+    } as Props;
+  }),
+  distinctUntilChanged((a: Props, b: Props) => {
+    return a.status === b.status && a.network === b.network && a.tosAccepted === b.tosAccepted;
+  })
+
+);
+
+const AppTxRx = connect(App, props$);
 
 const root: HTMLElement = document.getElementById('root')!;
 
-ReactDOM.render(<AppTxRx />, root);
+ReactDOM.render(<AppTxRx/>, root);

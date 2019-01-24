@@ -1,17 +1,11 @@
 import classnames from 'classnames';
 import * as React from 'react';
-import { Subject } from 'rxjs/index';
-import { Web3Status } from '../blockchain/web3';
 import { Logo } from '../logo/Logo';
 import { button } from '../utils/forms/Buttons.scss';
 import { Checkbox } from '../utils/forms/Checkbox';
 import { MetamaskIcon, NetworkIcon } from '../utils/icons/Icons';
 import { Client } from './client/Client';
 import * as styles from './Entry.scss';
-
-interface Result {
-  status: Web3Status;
-}
 
 class AcceptTos extends React.Component<any, any> {
 
@@ -66,8 +60,7 @@ class AcceptTos extends React.Component<any, any> {
   }
 
   private loadApp = () => {
-    localStorage.setItem('acceptedToS', true.toString());
-    loadApp$.next({ status: 'ready' });
+    localStorage.setItem('tosAccepted', 'true');
   }
 }
 
@@ -138,5 +131,3 @@ export class LoadingState {
     return <AcceptTos/>;
   }
 }
-
-export const loadApp$ = new Subject<Result>();
