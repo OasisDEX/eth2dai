@@ -1,3 +1,4 @@
+import { isEqual } from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { map } from 'rxjs/operators';
@@ -69,9 +70,7 @@ const props$: Observable<Props> = combineLatest(accepted$, web3StatusResolve$).p
       ...web3Status
     } as Props;
   }),
-  distinctUntilChanged((a: Props, b: Props) => {
-    return a.status === b.status && a.network === b.network && a.tosAccepted === b.tosAccepted;
-  })
+  distinctUntilChanged(isEqual)
 
 );
 
