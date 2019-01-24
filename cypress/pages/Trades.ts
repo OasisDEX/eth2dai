@@ -29,19 +29,19 @@ export class Trades {
   }
 
   public static first() {
-    cy.get(tid('my-trades'), { timeout: 5000 }).first().as('trade');
+    cy.get(tid('my-trades'), { timeout: 10000 }).first().as('trade');
 
     return new Trade();
   }
 
   public static number(number: number) {
-    cy.get(tid('my-trades'), { timeout: 5000 }).eq(number - 1).as('trade');
+    cy.get(tid('my-trades'), { timeout: 10000 }).eq(number - 1).as('trade');
 
     return new Trade();
   }
 
   public static last() {
-    cy.get(tid('my-trades'), { timeout: 5000 }).as('trade');
+    cy.get(tid('my-trades'), { timeout: 10000 }).as('trade');
 
     return new Trade();
   }

@@ -56,12 +56,3 @@ body {
   opacity: 0;
   transition: opacity 250ms ease-out;
 }
-
-.loggedOut {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
