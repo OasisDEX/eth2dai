@@ -511,11 +511,11 @@ const Error = ({ field, messages } : { field: string, messages?: Message[] }) =>
 function messageContent(msg: Message) {
   switch (msg.kind) {
     case MessageKind.noAllowance:
-      return <>
+      return <span>
         {`Trading of ${msg.token} tokens has not been enabled.`}
-        {'\u00A0'}
-        <a href="/balances">Go to balances tab</a>
-      </>;
+        {' '}
+        <a href="/balances" style={{ whiteSpace: 'nowrap' }}>Go to Balances</a>
+      </span>;
     case MessageKind.insufficientAmount:
       return  <>
         {`Your ${msg.token} balance is too low to fund this order`}
