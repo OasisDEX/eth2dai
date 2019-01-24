@@ -42,7 +42,7 @@ jobs:
       enabled: true
       image: circleci/classic:edge
       docker_layer_caching: true
-    parallelism: 4
+    parallelism: 5
     steps:
       - checkout
       - restore_cache:
