@@ -4,6 +4,7 @@ import { Currency } from '../../utils/text/Text';
 import { DAIicon, ETHicon } from '../coinIcons/coinIcons';
 import { NetworkConfig } from '../config';
 import { TxMetaKind } from './txMeta';
+import { TransactionDef } from './callsHelpers';
 
 export interface ApproveWalletData {
   token: string;
@@ -20,7 +21,7 @@ const descriptionIcon = ({ token }: ApproveWalletData) => {
   }
 };
 
-export const approveWallet = {
+export const approveWallet: TransactionDef<ApproveWalletData> = {
   descriptionIcon,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
@@ -36,7 +37,7 @@ export const approveWallet = {
   },
 };
 
-export const disapproveWallet = {
+export const disapproveWallet: TransactionDef<ApproveWalletData> = {
   descriptionIcon,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
