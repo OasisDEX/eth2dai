@@ -1,5 +1,6 @@
 import { cypressVisitWithWeb3 } from '../utils/index';
 
+import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
 import { Order } from '../pages/Order';
 import { Orderbook, OrderType } from '../pages/Orderbook';
@@ -7,7 +8,10 @@ import { Tab } from '../pages/Tab';
 import { Trades } from '../pages/Trades';
 
 describe('Sell Order', () => {
-  beforeEach(() => cypressVisitWithWeb3());
+  beforeEach(() => {
+    cypressVisitWithWeb3();
+    ApplicationState.acceptToS();
+  });
 
   it('should place a new order', () => {
     const price = '300';

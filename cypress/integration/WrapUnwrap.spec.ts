@@ -1,3 +1,4 @@
+import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
 import { Tab } from '../pages/Tab';
 import { unwrapping, wrapping } from '../pages/WrapUnwrap';
@@ -7,7 +8,7 @@ describe('Wrapping ETH', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-
+    ApplicationState.acceptToS();
     Tab.balances();
   });
 
@@ -54,7 +55,7 @@ describe('Unwrapping ETH', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-
+    ApplicationState.acceptToS();
     Tab.balances();
   });
 
