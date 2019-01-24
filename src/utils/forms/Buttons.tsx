@@ -5,8 +5,8 @@ import * as styles from './Buttons.scss';
 
 type ButtonProps =
   React.ButtonHTMLAttributes<HTMLButtonElement> &
-  {  color?: 'green' | 'red' | 'grey' | 'white',
-    size?: 'md' | 'sm' | 'lg' | 'unsized',
+  {  color?: 'green' | 'red' | 'grey' | 'white' | 'whiteOutlined',
+    size?: 'xs' | 'md' | 'sm' | 'lg' | 'unsized',
     block?: boolean };
 
 export const Button = (props: ButtonProps) => {

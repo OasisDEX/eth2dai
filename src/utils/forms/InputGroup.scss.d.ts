@@ -1,5 +1,6 @@
 export const inputGroup: string;
 export const addon: string;
+export const xs: string;
 export const sm: string;
 export const md: string;
 export const lg: string;

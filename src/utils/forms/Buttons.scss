@@ -76,6 +76,20 @@
   ));
 }
 
+.whiteOutlined {
+  opacity: 0.99; // in buttonGroup it makes this button stand out
+                 // in front of buttons next to it, so both left and right border are visible
+
+  @include button((
+          color: $font-color-base,
+          bg: $grey-darkest,
+          border-color: white,
+          color-hover: $font-color-base,
+          border-color-hover: white,
+          bg-hover: lighten($grey-light, 5%)
+  ));
+}
+
 .green {
   @include button((
           color: $font-color-base,
