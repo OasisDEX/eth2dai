@@ -1,3 +1,4 @@
+import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
 import { Tab } from '../pages/Tab';
 import { unwrapping, wrapping } from '../pages/WrapUnwrap';
@@ -7,7 +8,7 @@ describe('Wrapping ETH', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-
+    ApplicationState.acceptToS();
     Tab.balances();
   });
 
@@ -29,7 +30,7 @@ describe('Wrapping ETH', () => {
     Balance.of('ETH').shouldBe(/8,999.../);
     Balance.of('WETH').shouldBe(/1,001.../);
 
-   // extract constants from the WrapUnwrapFromView
+    // extract constants from the WrapUnwrapFromView
     wrapping('10000').shouldFailWith(`You don't have enough money`);
 
     Balance.of('ETH').shouldBe(/8,999.../);
@@ -54,7 +55,7 @@ describe('Unwrapping ETH', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-
+    ApplicationState.acceptToS();
     Tab.balances();
   });
 
