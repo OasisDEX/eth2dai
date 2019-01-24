@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import { isEmpty, uniqBy, unzip } from 'lodash';
 import { bindNodeCallback, combineLatest, Observable, of, zip } from 'rxjs';
-import { exhaustMap, expand, map, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
+import { expand, map, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
 
 import { NetworkConfig } from '../../blockchain/config';
 import { amountFromWei } from '../../blockchain/utils';
@@ -97,7 +97,6 @@ function loadOffersAllAtOnce(
     context.tokens[buyToken].address
   ).pipe(
     map(parseOffers(sellToken, buyToken, type, true)),
-    // map(({ offers }) => offers)
     expand(({ lastOfferId }) => lastOfferId.isZero() ?
       of() :
       bindNodeCallback(
@@ -129,12 +128,13 @@ export function loadOrderbook$(
   { base, quote }: TradingPair
 ): Observable<Orderbook> {
   return combineLatest(context$, onEveryBlock$).pipe(
-    exhaustMap(([context, blockNumber]) =>
+    switchMap(([context, blockNumber]) =>
       zip(
         loadOffersAllAtOnce(context, quote, base, OfferType.buy),
         loadOffersAllAtOnce(context, base, quote, OfferType.sell)
       ).pipe(
         map(([buy, sell]) => {
+          console.log('orderbook for block:', blockNumber, buy, sell);
           const spread =
             !isEmpty(sell) && !isEmpty(buy)
               ? sell[0].price.minus(buy[0].price)

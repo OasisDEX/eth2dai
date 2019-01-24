@@ -1,0 +1,122 @@
+@import "../utils/Variables";
+@import "../utils/forms/Buttons.mixins";
+
+.section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  margin: auto;
+
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
+.logo {
+  height: 2.5em;
+  width: 10em;
+  margin-bottom: 2.625em;
+}
+
+.container {
+  width: 100%;
+  max-width: 490px;
+  padding: 24px;
+  border: 1px solid #555561;
+  border-radius: 4px;
+
+  &TopHalf {
+    display: inline-flex;
+    text-transform: capitalize;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    & .placeholder {
+      display: inline-flex;
+      justify-content: space-between;
+    }
+
+    & .column {
+      margin-left: 12px;
+      display: inline-flex;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  &BottomHalf {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 24px;
+
+    & a {
+      text-decoration: none;
+      color: #BBDEFB;
+    }
+  }
+}
+
+.label {
+  font-family: Montserrat, sans-serif;
+  font-weight: 500;
+
+  margin-right: 4px;
+  letter-spacing: .4px;
+
+  color: #8D8D96;
+
+  &.client {
+    line-height: 17px;
+    color: #FFF
+  }
+
+  &.status {
+    line-height: normal;
+    font-size: 12px;
+    text-align: left;
+  }
+}
+
+button {
+  width: 108px;
+  height: 32px;
+
+  &.grey {
+    @include button((
+      color: #fff,
+      bg: transparent,
+      border-color: #555561,
+      color-hover: #000000,
+      border-color-hover: rgba(255, 255, 255, 0.90),
+      bg-hover: rgba(255, 255, 255, 0.90)
+    ))
+  }
+}
+
+.availableClients {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 32px;
+
+  & > *:first-child {
+    margin-left: 0;
+  }
+
+  & > * {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 100%;
+    margin-left: 24px
+  }
+}

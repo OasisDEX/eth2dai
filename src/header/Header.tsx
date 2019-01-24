@@ -5,10 +5,9 @@ import * as React from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
 
-import LogoSvg from './Logo.svg';
-
 import { theAppContext } from 'src/AppContext';
 import { account$ } from '../blockchain/network';
+import { Logo } from '../logo/Logo';
 import { connect } from '../utils/connect';
 import { Loadable, loadablifyLight } from '../utils/loadable';
 import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
@@ -22,7 +21,7 @@ class Header extends React.Component<HeaderProps, any> {
     return (
       <header>
         <section>
-          <img src={LogoSvg} />
+          <Logo className={styles.logo}/>
           <nav>
             <ul>
               <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange" />

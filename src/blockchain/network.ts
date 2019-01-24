@@ -28,10 +28,10 @@ export const version$ = web3Ready$.pipe(
   switchMap(() => bindNodeCallback(web3.version.getNode)()),
 );
 
-export const networkId$ = every3Seconds$.pipe(
+export const networkId$ = interval(250).pipe(
+  startWith(0),
   switchMap(() => bindNodeCallback(web3.version.getNetwork)()),
   distinctUntilChanged(),
-  // tap(n => console.log(`network: ${n}`)),
   shareReplay(1)
 );
 
@@ -111,6 +111,7 @@ export const gasPrice$: Observable<BigNumber> = web3Ready$.pipe(
         headers: {
           Accept: 'application/json',
         },
+        crossDomain: true,
       })),
       retryWhen(errors => errors.pipe(delayWhen(() => onEveryBlock$.pipe(skip(1))))),
       map(({ response }) =>

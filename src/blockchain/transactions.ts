@@ -9,6 +9,7 @@ import {
   shareReplay,
   startWith,
   take,
+  tap
 } from 'rxjs/operators';
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import { account$, context$, onEveryBlock$ } from './network';
@@ -122,7 +123,13 @@ export function send(
         mergeMap(() => bindNodeCallback(web3.eth.getTransactionReceipt)(txHash)),
         filter(receipt => !!receipt),
         // to prevent degenerated infura response...
-        filter((receipt: any) => receipt.blockNumber !== undefined),
+        tap((receipt: any) =>
+          console.log('receipt', receipt, receipt.blockNumber)
+        ),
+        filter((receipt: any) =>
+          receipt.blockNumber !== undefined && receipt.blockNumber !== null
+        ),
+        tap(receipt => console.log('filtered receipt', receipt)),
         take(1),
         mergeMap(receipt => successOrFailure(txHash, receipt)),
         catchError(error => {
