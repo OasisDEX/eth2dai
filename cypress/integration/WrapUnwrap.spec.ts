@@ -30,7 +30,7 @@ describe('Wrapping ETH', () => {
     Balance.of('WETH').shouldBe(/1,001.../);
 
    // extract constants from the WrapUnwrapFromView
-    wrapping('10000').shouldFailWith(`You don't have enough money`);
+    wrapping('10000').shouldFailWith(`Your ETH balance is too low`);
 
     Balance.of('ETH').shouldBe(/8,999.../);
     Balance.of('WETH').shouldBe(/1,001.../);
@@ -43,7 +43,7 @@ describe('Wrapping ETH', () => {
     Balance.of('WETH').shouldBe(/1,001.../);
 
     // extract constants from the WrapUnwrapFromView
-    wrapping('0').shouldFailWith(`Type in greater amount, it's too low`);
+    wrapping('0').shouldFailWith(`Amount is too low`);
 
     Balance.of('ETH').shouldBe(/8,999.../);
     Balance.of('WETH').shouldBe(/1,001.../);
@@ -77,7 +77,7 @@ describe('Unwrapping ETH', () => {
     Balance.of('WETH').shouldBe(/1,001.../);
 
     // extract constants from the WrapUnwrapFromView
-    unwrapping('10000').shouldFailWith(`You don't have enough money`);
+    unwrapping('10000').shouldFailWith(`Your WETH balance is too low`);
 
     Balance.of('ETH').shouldBe(/8,999.../);
     Balance.of('WETH').shouldBe(/1,001.../);
@@ -90,7 +90,7 @@ describe('Unwrapping ETH', () => {
     Balance.of('WETH').shouldBe(/1,001.../);
 
     // extract constants from the WrapUnwrapFromView
-    unwrapping('0').shouldFailWith(`Type in greater amount, it's too low`);
+    unwrapping('0').shouldFailWith(`Amount is too low`);
 
     Balance.of('ETH').shouldBe(/8,999.../);
     Balance.of('WETH').shouldBe(/1,001.../);
