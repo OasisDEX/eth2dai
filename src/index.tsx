@@ -64,9 +64,9 @@ const web3StatusResolve$: Observable<Props> = web3Status$.pipe(
 );
 
 const props$: Observable<Props> = combineLatest(accepted$, web3StatusResolve$).pipe(
-  map(([tosResolution, web3Status]) => {
+  map(([tosAccepted, web3Status]) => {
     return {
-      tosAccepted: tosResolution,
+      tosAccepted,
       ...web3Status
     } as Props;
   }),
