@@ -2,12 +2,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { map } from 'rxjs/operators';
 
-import { combineLatest, Observable, of } from 'rxjs/index';
+import { combineLatest, merge, Observable, of } from 'rxjs/index';
 import { startWith, switchMap, tap } from 'rxjs/internal/operators';
 import { networks } from './blockchain/config';
 import { account$, networkId$ } from './blockchain/network';
 import { Web3Status, web3Status$ } from './blockchain/web3';
-import * as styles from './index.scss';
+import { loadApp$, LoadingState } from './entry/LoadingState';
 import { Main } from './Main';
 import { connect } from './utils/connect';
 import { UnreachableCaseError } from './utils/UnreachableCaseError';
@@ -15,29 +15,39 @@ import { UnreachableCaseError } from './utils/UnreachableCaseError';
 interface Props {
   status: Web3Status;
   network?: string;
+  acceptedToS?: boolean;
 }
 
 class App extends React.Component<Props> {
   public render() {
     switch (this.props.status) {
       case 'initializing':
-        return <span className={styles.loggedOut}>initializing</span>;
+        return LoadingState.INITIALIZATION;
       case 'waiting':
-        return <span className={styles.loggedOut}>waiting for approval...</span>;
+        return LoadingState.WAITING_FOR_APPROVAL;
       case 'denied':
-        return <span className={styles.loggedOut}>access denied</span>;
+        return LoadingState.ACCESS_DENIED;
       case 'missing':
-        return <span className={styles.loggedOut}>please install a web3 provider</span>;
+        return LoadingState.MISSING_PROVIDER;
       case 'ready':
         if (this.props.network !== undefined && !networks[this.props.network]) {
-          return <span className={styles.loggedOut}>network not supported</span>;
+          return LoadingState.UNSUPPORTED;
         }
-        return <Main/>;
+
+        if (this.props.acceptedToS) {
+          return <Main/>;
+        }
+
+        return LoadingState.ACCEPT_TOS;
       default:
         throw new UnreachableCaseError(this.props.status);
     }
   }
 }
+
+const accepted$ = loadApp$.pipe(
+  map((result: {status: Web3Status, acceptedToS: boolean}) => ({ ...result }))
+);
 
 const props$: Observable<Props> = web3Status$.pipe(
   switchMap(status =>
@@ -47,12 +57,12 @@ const props$: Observable<Props> = web3Status$.pipe(
           console.log(`status: ${status}, network: ${network}, account: ${account}`)),
         map(([network, _account]) => ({ status, network })),
 
-      ) : of({ status })
+      ) :   of({ status })
   ),
   startWith({ status: 'initializing' as Web3Status })
 );
 
-const AppTxRx = connect(App, props$);
+const AppTxRx = connect(App, merge(props$, accepted$));
 
 const root: HTMLElement = document.getElementById('root')!;
 
