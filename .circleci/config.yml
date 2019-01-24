@@ -26,6 +26,18 @@ jobs:
           key: v3-dependencies-{{ checksum "package.json" }}
 
   test:
+    docker:
+      - image: circleci/node:8.11.2-stretch
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v3-dependencies-{{ checksum "package.json" }}
+      - run: 
+          name: Run linting & tests
+          command: yarn test
+
+  test-e2e:
     machine:
       enabled: true
       image: circleci/classic:edge
@@ -37,19 +49,11 @@ jobs:
           - v3-dependencies-{{ checksum "package.json" }}
       - run: .circleci/install-yarn.sh
       - run: 
-          name: Run linting & tests
-          command: source /opt/circleci/.nvm/nvm.sh && yarn test
-      - run: 
           name: Get & run localnode image
           command: |
             LOCALNODE_SHA=8e36f81989cd0e17c9e6de035c4dde58f0f12bd5
             docker login -u $DOCKER_USER -p $DOCKER_PASS && docker pull oasisdex/localnode:$LOCALNODE_SHA
             docker run -d -p 8545:8545 oasisdex/localnode:$LOCALNODE_SHA master
-      - run:
-          name: Run visual regression
-          command: |
-            source /opt/circleci/.nvm/nvm.sh
-            yarn storybook:vis-reg || true # ignore failures here. We should reject PRs during review process if change is not valid.
       - run: 
           name: Wait for localnode to be up
           command: |
@@ -106,6 +110,7 @@ workflows:
   mainflow:
     jobs:
       - install
+
       - test:
           requires: 
             - install
@@ -113,21 +118,32 @@ workflows:
             branches:
               ignore:
                 - gh-pages
+      - test-e2e:
+          requires: 
+            - install
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+
       - deploy_dev:
           requires:
             - test
+            - test-e2e
           filters:
             branches:
               only: dev
       - deploy_stage:
           requires:
             - test
+            - test-e2e
           filters:
             branches:
               only: staging
       - deploy_prod:
           requires:
             - test
+            - test-e2e
           filters:
             branches:
               only: master
