@@ -20,7 +20,7 @@ export function formatAmount(amount: BigNumber, token: string): string {
 }
 
 export function formatPrice(amount: BigNumber, token: string): string {
-  return amount.toFormat(tokens[token].digits, BigNumber.ROUND_DOWN);
+  return amount.toFormat(tokens[token].digits, BigNumber.ROUND_HALF_UP);
 }
 
 export function formatPercent(number: BigNumber, { precision = 0, plus = false } = {}) {
