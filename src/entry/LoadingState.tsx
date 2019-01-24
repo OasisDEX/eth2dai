@@ -11,7 +11,6 @@ import * as styles from './Entry.scss';
 
 interface Result {
   status: Web3Status;
-  acceptedToS: boolean;
 }
 
 class AcceptTos extends React.Component<any, any> {
@@ -67,7 +66,8 @@ class AcceptTos extends React.Component<any, any> {
   }
 
   private loadApp = () => {
-    loadApp$.next({ status: 'ready', acceptedToS: true });
+    localStorage.setItem('acceptedToS', true.toString());
+    loadApp$.next({ status: 'ready' });
   }
 }
 

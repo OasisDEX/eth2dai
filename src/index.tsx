@@ -15,7 +15,6 @@ import { UnreachableCaseError } from './utils/UnreachableCaseError';
 interface Props {
   status: Web3Status;
   network?: string;
-  acceptedToS?: boolean;
 }
 
 class App extends React.Component<Props> {
@@ -34,7 +33,7 @@ class App extends React.Component<Props> {
           return LoadingState.UNSUPPORTED;
         }
 
-        if (this.props.acceptedToS) {
+        if ((localStorage.getItem('acceptedToS') || false) === true) {
           return <Main/>;
         }
 
@@ -46,7 +45,7 @@ class App extends React.Component<Props> {
 }
 
 const accepted$ = loadApp$.pipe(
-  map((result: {status: Web3Status, acceptedToS: boolean}) => ({ ...result }))
+  map((result: {status: Web3Status}) => ({ ...result }))
 );
 
 const props$: Observable<Props> = web3Status$.pipe(
