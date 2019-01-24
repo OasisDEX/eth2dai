@@ -8,6 +8,23 @@ version: 2
 # i think for now it's not worth the trouble but in future, when ci pipeline slows done it can be nice (KK)
 
 jobs:
+  install:
+    docker:
+      - image: circleci/node:8.11.2-stretch
+    steps:
+      - checkout
+      - restore_cache:
+            keys:
+            - v3-dependencies-{{ checksum "package.json" }}
+
+      - run: yarn install --frozen-lockfile
+
+      - save_cache:
+          paths:
+            - node_modules
+            - ~/.cache
+          key: v3-dependencies-{{ checksum "package.json" }}
+
   test:
     machine:
       enabled: true
@@ -19,12 +36,6 @@ jobs:
           keys:
           - v3-dependencies-{{ checksum "package.json" }}
       - run: .circleci/install-yarn.sh
-      - run: source /opt/circleci/.nvm/nvm.sh && yarn install --frozen-lockfile
-      - save_cache:
-          paths:
-            - node_modules
-            - ~/.cache
-          key: v3-dependencies-{{ checksum "package.json" }}
       - run: 
           name: Run linting & tests
           command: source /opt/circleci/.nvm/nvm.sh && yarn test
@@ -94,7 +105,10 @@ workflows:
 
   mainflow:
     jobs:
+      - install
       - test:
+          requires: 
+            - install
           filters:
             branches:
               ignore:
