@@ -1,10 +1,10 @@
 import { isEqual } from 'lodash';
+import 'normalize.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { map } from 'rxjs/operators';
-
 import { combineLatest, interval, Observable, of } from 'rxjs/index';
 import { distinctUntilChanged, startWith, switchMap, tap } from 'rxjs/internal/operators';
+import { map } from 'rxjs/operators';
 import { networks } from './blockchain/config';
 import { account$, networkId$ } from './blockchain/network';
 import { Web3Status, web3Status$ } from './blockchain/web3';
