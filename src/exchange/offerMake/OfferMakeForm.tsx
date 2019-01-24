@@ -530,15 +530,15 @@ function messageContent(msg: Message) {
       </>;
     case MessageKind.slippageLimitToLow:
       return <>
-        `Slippage limit to low`
+        Slippage limit too low
       </>;
     case MessageKind.slippageLimitToHigh:
       return <>
-        `Slippage limit to high`
+        Slippage limit too high
       </>;
     case MessageKind.slippageLimitNotSet:
       return <>
-        `Slippage limit is necessary`
+        Slippage limit is necessary
       </>;
   }
 }
