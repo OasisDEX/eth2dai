@@ -33,7 +33,7 @@ class App extends React.Component<Props> {
           return LoadingState.UNSUPPORTED;
         }
 
-        if ((localStorage.getItem('acceptedToS') || false) === true) {
+        if (localStorage.getItem('acceptedToS')  === 'true') {
           return <Main/>;
         }
 
