@@ -16,15 +16,15 @@ import { zero } from '../utils/zero';
 
 export enum MessageKind {
   insufficientAmount = 'insufficientAmount',
-  insufficientAvailableAmount = 'insufficientAvailableAmount',
   dustAmount = 'dustAmount',
 }
 
-export interface Message {
-  kind: MessageKind.insufficientAmount |
-    MessageKind.insufficientAvailableAmount |
-    MessageKind.dustAmount;
-}
+export type Message = {
+  kind: MessageKind.insufficientAmount,
+  token: string,
+} | {
+  kind: MessageKind.dustAmount,
+};
 
 export enum WrapUnwrapFormKind {
   wrap = 'wrap',
@@ -94,15 +94,17 @@ function applyChange(
 function validate(state: WrapUnwrapFormState) {
   const messages: Message[] = [];
   const balance = state.kind === WrapUnwrapFormKind.wrap ? state.ethBalance : state.wethBalance;
+  const insufficientTest = state.amount && (state.kind === WrapUnwrapFormKind.wrap ? state.amount.gte : state.amount.gt).bind(state.amount);
 
   if (state.amount && state.amount.lte(zero)) {
     messages.push({
       kind: MessageKind.dustAmount
     });
   }
-  if (state.amount && balance && state.amount.gte(balance)) {
+  if (balance && insufficientTest && insufficientTest(balance)) {
     messages.push({
-      kind: MessageKind.insufficientAmount
+      kind: MessageKind.insufficientAmount,
+      token: state.kind === WrapUnwrapFormKind.wrap ? 'ETH' : 'WETH'
     });
   }
   return {
