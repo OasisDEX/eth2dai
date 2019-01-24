@@ -58,7 +58,7 @@ export class TheFooter extends React.Component<FooterProps> {
           <br/>
           <div>
           <span>
-            <a href={`https://github.com/OasisDEX/eth2dai/tree/${process.env.__BRANCH__}`}
+            <a href={`https://github.com/OasisDEX/eth2dai/commit/${process.env.__HASH__}`}
             target="_blank"
             rel="noopener noreferrer">
               {process.env.__NAME__} Version {process.env.__VERSION__} ({process.env.__HASH__})
