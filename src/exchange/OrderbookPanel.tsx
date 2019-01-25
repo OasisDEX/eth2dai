@@ -49,7 +49,7 @@ export class OrderbookPanel extends React.Component<OrderbookPanelProps & SubVie
               </div>
             }
             <Button
-              style={btnStyles}
+              style={{ ...btnStyles, marginRight:'0' }}
               onClick={this.changeChartListView}
               data-test-id={`orderbook-type-${this.props.kind}`}
             >
