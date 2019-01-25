@@ -4,7 +4,8 @@ const { superCI, report } = require("super-ci");
 const { buildSize } = require("build-size-super-plugin");
 const exec = require("await-exec");
 
-const artifactsPath = "https://s3-eu-west-1.amazonaws.com/superci-bucket/e9344e85-7b81-417e-9b65-4f31253a32d7/";
+const artifactsPath =
+  "https://s3-eu-west-1.amazonaws.com/superci-bucket/e9344e85-7b81-417e-9b65-4f31253a32d7/";
 
 module.exports.main = async function main() {
   await buildSize({
@@ -14,16 +15,12 @@ module.exports.main = async function main() {
   await deploy(join(__dirname, "build"));
 
   await visReg();
-}
+};
 
 async function deploy(path) {
   if (superCI.isPr()) {
     await superCI.saveCollection("build", path);
-    report(
-      `Branch deployment: ${artifactsPath}${
-        superCI.context.currentSha
-      }/build/index.html`,
-    );
+    report(`[Branch deployment](${artifactsPath}${superCI.context.currentSha}/build/index.html)`);
   }
 }
 
@@ -38,10 +35,15 @@ async function visReg() {
 
     await superCI.saveCollection("storybook-vis-reg-report", join(__dirname, ".reg"));
 
+    const reportData = require("./.reg/out.json");
     report(
-      `Vis reg report: ${artifactsPath}${
+      `[Vis reg report](${artifactsPath}${
         superCI.context.currentSha
-      }/storybook-vis-reg-report/index.html`,
+      }/storybook-vis-reg-report/index.html)
+      Changed files: **${reportData.failedItems.length}**
+      New files: **${reportData.newItems.length}**
+      Deleted files: **${reportData.deletedItems.length}**
+      `,
     );
   }
 }
