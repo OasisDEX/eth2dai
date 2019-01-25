@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CSSTransitionGroup } from 'react-transition-group';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { transactionObserver, TxState, TxStatus } from '../blockchain/transactions';
 import { Timer } from '../utils/Timer';
@@ -18,31 +18,26 @@ export class TransactionNotifierView extends React.Component<{
     const now = new Date().getTime();
     // debugger;
     return (
-      <div className={styles.main}>
-        <CSSTransitionGroup
-          transitionName="transaction"
-          transitionEnterTimeout={1000}
-          transitionLeaveTimeout={600}
-        >
-          {this.props.transactions
-            .filter(
-              transaction => !transaction.dismissed && (
-                (transaction.status === TxStatus.Success &&
-                  transaction.confirmations < transaction.safeConfirmations) ||
-                !transaction.end ||
-                now - transaction.lastChange.getTime() < VISIBILITY_TIMEOUT * 1000)
-            )
-            .map(transaction =>
-              (
+      <TransitionGroup className={styles.main}>
+        {this.props.transactions
+          .filter(
+            transaction => !transaction.dismissed && (
+              (transaction.status === TxStatus.Success &&
+                transaction.confirmations < transaction.safeConfirmations) ||
+              !transaction.end ||
+              now - transaction.lastChange.getTime() < VISIBILITY_TIMEOUT * 1000)
+          )
+          .map(transaction =>
+            (
+              <CSSTransition key={transaction.txNo} classNames="transaction" timeout={1000}>
                 <Notification
-                  key={transaction.txNo}
                   {...transaction}
                   onDismiss={ () => transactionObserver.next({ kind: 'dismissed', txNo: transaction.txNo }) }
                   />
-              )
-            )}
-        </CSSTransitionGroup>
-      </div>
+              </CSSTransition>
+            )
+          )}
+      </TransitionGroup>
     );
   }
 }

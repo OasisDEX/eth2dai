@@ -6,7 +6,7 @@
     top: 1em;
     z-index: 10;
   }
-  
+
   .block {
     position: relative;
     padding: 18px 24px;
@@ -79,16 +79,16 @@
   opacity: 0.01;
 }
 
-:global(.transaction-enter.transaction-enter-active) {
+:global(.transaction-enter-active) {
   opacity: 1;
   transition: opacity 1000ms ease-in;
 }
 
-:global(.transaction-leave) {
+:global(.transaction-exit) {
   opacity: 1;
 }
 
-:global(.transaction-leave.transaction-leave-active) {
+:global(.transaction-exit-active) {
   opacity: 0.01;
-  transition: opacity 600ms ease-in;
+  transition: opacity 1000ms ease-in;
 }

@@ -22,16 +22,16 @@
   opacity: 0.01;
 }
 
-:global(.order-enter.order-enter-active) {
+:global(.order-enter-active) {
   opacity: 1;
   transition: opacity 1000ms ease-in;
 }
 
-:global(.order-leave) {
+:global(.order-exit) {
   opacity: 1;
 }
 
-:global(.order-leave.order-leave-active) {
+:global(.order-exit-active) {
   opacity: 0.01;
-  transition: opacity 600ms ease-in;
+  transition: opacity 1000ms ease-in;
 }

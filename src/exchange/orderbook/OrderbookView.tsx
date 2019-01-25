@@ -1,7 +1,7 @@
 // tslint:disable:no-console
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { CSSTransitionGroup } from 'react-transition-group';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import * as styles from './OrderbookView.scss';
 
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
@@ -52,7 +52,6 @@ export class OrderbookView extends React.Component<Props> {
       });
     }
 
-    const skipTransition = tradingPairChanged;
     return (
       <WithLoadingIndicator loadable={this.props}>
         { (orderbook: Orderbook) => (<Table align="right" scrollable={true}
@@ -70,44 +69,39 @@ export class OrderbookView extends React.Component<Props> {
               </th>
             </tr>
           </thead>
-          {!skipTransition && <CSSTransitionGroup
+          <TransitionGroup
             component="tbody"
-            transitionName="order"
-            transitionEnterTimeout={1000}
-            transitionLeaveTimeout={600}
-            ref={el =>
+            ref={(el: any) =>
               this.tbody = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
             }
           >
             { orderbook.sell.slice().reverse().map((offer: Offer) => (
-                <this.OfferRow offer={offer}
-                  kind="sell"
-                  parent={this}
-                  key={offer.offerId.toString()} />
-              ))
-            }
-            <RowHighlighted>
-              <td ref={el => this.spreadRow = el || undefined}>
-                {orderbook.spread
-                  ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote} />
-                  : '-'}
-              </td>
-              <td/>
-              <td>
-                <Muted>{this.props.tradingPair.quote} Spread</Muted>
-              </td>
-            </RowHighlighted>
+              <CSSTransition key={offer.offerId.toString()} classNames="order" timeout={1000}>
+                <this.OfferRow offer={offer} kind="sell" parent={this} />
+              </CSSTransition>
+            )) }
 
-            { orderbook.buy.map((offer: Offer) => {
-              return (
-                <this.OfferRow
-                  offer={offer}
-                  kind="buy"
-                  parent={this}
-                  key={offer.offerId.toString()} />
-              );
-            })}
-          </CSSTransitionGroup> }
+            {/* don't remove me! */}
+            <CSSTransition key="0" classNames="order" timeout={1000}>
+              <RowHighlighted>
+                <td ref={el => this.spreadRow = el || undefined}>
+                  {orderbook.spread
+                    ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote} />
+                    : '-'}
+                </td>
+                <td/>
+                <td>
+                  <Muted>{this.props.tradingPair.quote} Spread</Muted>
+                </td>
+              </RowHighlighted>
+            </CSSTransition>
+
+            { orderbook.buy.map((offer: Offer) => (
+              <CSSTransition key={offer.offerId.toString()} classNames="order" timeout={1000}>
+                <this.OfferRow offer={offer} kind="buy" parent={this} />
+              </CSSTransition>
+            )) }
+          </TransitionGroup>
         </Table>
       )}
       </WithLoadingIndicator>
@@ -115,13 +109,12 @@ export class OrderbookView extends React.Component<Props> {
   }
 
   public OfferRow(
-    { offer, kind, parent, key } :
-    { offer: Offer, kind: string, parent: any, key: string }
+    { offer, kind, parent } :
+    { offer: Offer, kind: string, parent: any }
   ) {
     return (
       <RowClickable
         data-test-id={kind}
-        key={key}
         clickable={parent.canTakeOffer(offer)}
         onClick={ parent.takeOffer(offer)}>
         <td data-test-id="price">
