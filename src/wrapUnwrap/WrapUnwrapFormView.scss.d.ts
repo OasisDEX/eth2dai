@@ -8,6 +8,7 @@ export const checklistHrMargin: string;
 export const infoRow: string;
 export const infoRowMargin: string;
 export const hrMargin: string;
+export const summary: string;
 export const warning: string;
 export const warningIcon: string;
 export const warningText: string;

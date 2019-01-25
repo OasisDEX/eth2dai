@@ -78,7 +78,7 @@ export class WrapUnwrapFormView
 
   private summary(state: WrapUnwrapFormState) {
     return (
-      <div>
+      <div className={styles.summary}>
         <div className={classnames(styles.infoRow, styles.infoRowMargin)}>
           <Muted>Wallet</Muted>
           <Money token="ETH" value={state.ethBalance} fallback="-" />

@@ -33,6 +33,7 @@
   > .button:not(:first-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    margin-left: -1px;
   }
   > .button:not(:last-child) {
     border-top-right-radius: 0;
@@ -70,7 +71,21 @@
           bg: $grey-darkest,
           border-color: $grey-light,
           color-hover: $font-color-base,
-          border-color-hover: lighten($grey-darkest, 5%),
+          border-color-hover: lighten($grey-light, 2%),
+          bg-hover: lighten($grey-light, 5%)
+  ));
+}
+
+.whiteOutlined {
+  opacity: 0.99; // in buttonGroup it makes this button stand out
+                 // in front of buttons next to it, so both left and right border are visible
+
+  @include button((
+          color: $font-color-base,
+          bg: $grey-darkest,
+          border-color: white,
+          color-hover: $font-color-base,
+          border-color-hover: white,
           bg-hover: lighten($grey-light, 5%)
   ));
 }

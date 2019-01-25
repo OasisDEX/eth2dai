@@ -57,8 +57,7 @@ function axes(svgContainer: any,
               yBuy: ScaleLogarithmic<number, number>,
               yToken: string | undefined,
               ) {
-  // price axis
-
+  // small price axis
   const xAdditionalAxe = svgContainer
     .append('g')
     .classed('xAdditional', true)
@@ -70,29 +69,17 @@ function axes(svgContainer: any,
   xAdditionalAxe.selectAll('.tick line').classed(styles.axisLineAdditional, true);
   xAdditionalAxe.selectAll('.tick text').classed(styles.hidden, true);
 
-  const xAxis = svgContainer.append('g');
-  xAxis
-    .attr('transform', `translate(0, ${ chartCoords.top })`)
-    .classed(styles.axisMainLabel, true)
-    .call(d3.axisBottom(x)
-      .ticks(5)
-      .tickSize(chartSize.height + 6));
-  xAxis.select('.domain').classed(styles.axisLineMain, true);
-  xAxis.selectAll('.tick line').classed(styles.axisLineMain, true);
-
-  // remove prices smaller than 0
-  xAxis.selectAll('.tick')
-    .filter((d: any, _i: number) => d < 0)
-    .classed(styles.hidden, true);
-
   // -----------
   // volume axis
-  const yAxis = svgContainer.append('g');
-  const yTickAddon = 6;
+  const yAxis = svgContainer
+    .append('g')
+    .classed('yAxis', true);
+  const yTickAddon = 0;
   const yTokenMarginTop = 20;
   const yTokenMarginHorizontal = 8;
 
-  const buyAxis = yAxis.append('g');
+  const buyAxis = yAxis.append('g')
+    .classed('buyAxis', true);
   buyAxis.attr('transform', `translate( ${ chartCoords.right }, 0)`);
   buyAxis.call(d3.axisLeft(yBuy)
     .ticks(15)
@@ -100,6 +87,7 @@ function axes(svgContainer: any,
     .tickFormat(d => d.toString()));
 
   const yBuyTokenLabel = yAxis.append('g')
+    .classed('yBuyTokenLabel', true)
     .attr('transform', `translate( ${chartCoords.left}, ${yTokenMarginTop})`);
   yBuyTokenLabel.call(d3.axisLeft(yBuy)
     .ticks(15)
@@ -107,7 +95,8 @@ function axes(svgContainer: any,
     .tickPadding(yTokenMarginHorizontal)
     .tickFormat(_d => `${yToken}`));
 
-  const sellAxis = yAxis.append('g');
+  const sellAxis = yAxis.append('g')
+    .classed('sellAxis', true);
   sellAxis.attr('transform', `translate( ${ chartCoords.left }, 0)`);
   sellAxis.call(d3.axisRight(ySell)
     .ticks(15)
@@ -144,13 +133,35 @@ function axes(svgContainer: any,
     })
   ;
 
-  // style token labels
+  // volume axis: style token labels
   yBuyTokenLabel.selectAll('.tick text')
     .classed(styles.axisMainLabel, false)
     .classed(styles.axisYTokenLabel, true);
   ySellTokenLabel.selectAll('.tick text')
     .classed(styles.axisMainLabel, false)
     .classed(styles.axisYTokenLabel, true);
+
+  // -----------
+  // main price axis
+  const xAxis = svgContainer
+    .append('g')
+    .classed('xAxis', true);
+
+  xAxis
+    .attr('transform', `translate(0, ${ chartCoords.top })`)
+    .classed(styles.axisMainLabel, true)
+    .classed('xAxis', true)
+    .call(d3.axisBottom(x)
+      .ticks(5)
+      .tickSize(chartSize.height + 6));
+  xAxis.select('.domain').classed(styles.axisLineMain, true);
+  xAxis.selectAll('.tick line').classed(styles.axisLineMain, true);
+
+  // remove prices smaller than 0
+  xAxis.selectAll('.tick')
+    .filter((d: any, _i: number) => d < 0)
+    .classed(styles.hidden, true);
+
 }
 
 export class DepthChartView extends React.Component<DepthChartInternalProps> {
@@ -175,7 +186,8 @@ export class DepthChartView extends React.Component<DepthChartInternalProps> {
     .append('svg')
     .attr('width', totalWidth)
     .attr('height', totalHeight)
-    .append('g');
+    .append('g')
+    .classed('depthchart', true);
 
     const x = d3.scaleLinear()
     .domain([data.minPrice, data.maxPrice])
