@@ -120,7 +120,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   private orderTypePicker() {
     return <div className={styles.picker}>
       <PanelHeader bordered={true}>
-        Choose ordertype
+        Choose order type
       </PanelHeader>
 
       <PanelBody paddingVertical={true} className={styles.pickerBody}>
