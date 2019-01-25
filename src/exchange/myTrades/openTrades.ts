@@ -51,14 +51,14 @@ function txnToTrade(txn: TxState): TradeWithStatus  {
     throw new Error('Should not get here!');
   }
 
-  const baseAmount = txn.meta.args.kind === OfferType.buy ?
-    txn.meta.args.buyAmount : txn.meta.args.sellAmount;
-  const baseToken = txn.meta.args.kind === OfferType.buy ?
-    txn.meta.args.buyToken : txn.meta.args.sellToken;
-  const quoteAmount = txn.meta.args.kind === OfferType.sell ?
-    txn.meta.args.buyAmount : txn.meta.args.sellAmount;
-  const quoteToken = txn.meta.args.kind === OfferType.sell ?
-    txn.meta.args.buyToken : txn.meta.args.sellToken;
+  const baseAmount = txn.meta.args.baseAmount ||
+    (txn.meta.args.kind === OfferType.buy ? txn.meta.args.buyAmount : txn.meta.args.sellAmount);
+  const baseToken = txn.meta.args.baseToken ||
+    (txn.meta.args.kind === OfferType.buy ? txn.meta.args.buyToken : txn.meta.args.sellToken);
+  const quoteAmount = txn.meta.args.quoteAmount ||
+    (txn.meta.args.kind === OfferType.sell ? txn.meta.args.buyAmount : txn.meta.args.sellAmount);
+  const quoteToken = txn.meta.args.quoteToken ||
+    (txn.meta.args.kind === OfferType.sell ? txn.meta.args.buyToken : txn.meta.args.sellToken);
 
   return {
     baseAmount,
