@@ -30,7 +30,7 @@ yarn storybook
 
 ### Visual Regression
 
-We use SuperCI + VisReg Suit + storybook-chrome-screenshot to conduct visual regression tests with every PR.
+We use SuperCI + reg-suit + storybook-chrome-screenshot to conduct visual regression tests with every PR.
 
 To ignore given story use `ignoreDuringVisualRegression` helper.
 
