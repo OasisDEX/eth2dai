@@ -791,18 +791,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/storybook__react@^3.0.9":
+"@types/storybook__react@^3.0.8", "@types/storybook__react@^3.0.9":
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/@types/storybook__react/-/storybook__react-3.0.9.tgz#aac193f0c037ddfc2342bd027d720553ac089a56"
   integrity sha512-uhQMkyS/WZIKn8z222D8WJbWy7aXYaqazsrLKdpRLsHBz2YaAVbAmj4vr2rQDfA7+RgjwTMZKHs9Vrga8lRkbQ==
-  dependencies:
-    "@types/react" "*"
-    "@types/webpack-env" "*"
-
-"@types/storybook__react@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@types/storybook__react/-/storybook__react-4.0.0.tgz#52cc452fbab599568d595075a90142ef4a1233f6"
-  integrity sha512-Iq3RX953fqZRwWN3jywm8pUx1/Atev+x/9tF7/2CNA+Ii55sGSJJRWMRthUKQXTa3zOexcvfksfVYdUaIZY91w==
   dependencies:
     "@types/react" "*"
     "@types/webpack-env" "*"
@@ -12780,10 +12772,10 @@ storybook-chromatic@^1.2.2:
     tree-kill "^1.1.0"
     uuid "^3.3.2"
 
-storybook-chrome-screenshot@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/storybook-chrome-screenshot/-/storybook-chrome-screenshot-1.4.0.tgz#29d0ec018c635a486652a9000c3d4929759411ae"
-  integrity sha512-GdDlanhTYhJPyTbqIvPyFD5blYz3aKLK7BkTh4K7afdzQt58ZiuEXLghpXVcGFEOg/KVB3MwL1KHXyCPKZtMtQ==
+storybook-chrome-screenshot@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/storybook-chrome-screenshot/-/storybook-chrome-screenshot-1.3.1.tgz#006056939875a55de83f9fd750d1ee4ec3ab47fc"
+  integrity sha512-LYqSc/X6lgSkbzvHOz7vCKhu0O+y2GWMa5P6LbjefQqpj8zoHxKOS20b/4+Gq8eLL5xKHxM2E/4V1gtxrl8Nhw==
   dependencies:
     "@types/imagesloaded" "^4.1.1"
     "@types/lodash" "^4.14.113"
@@ -12794,7 +12786,7 @@ storybook-chrome-screenshot@^1.4.0:
     "@types/puppeteer" "^1.5.1"
     "@types/query-string" "^6.1.0"
     "@types/sanitize-filename" "^1.1.28"
-    "@types/storybook__react" "^4.0.0"
+    "@types/storybook__react" "^3.0.8"
     babel-polyfill "^6.26.0"
     chalk "^2.4.1"
     commander "^2.16.0"
