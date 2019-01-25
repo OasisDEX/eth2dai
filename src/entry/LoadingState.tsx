@@ -44,7 +44,9 @@ class AcceptTos extends React.Component<any, any> {
                     }}
                     size="md"
                     disabled={!this.state.isChecked}
-                    data-test-id="continue-with-app">
+                    data-test-id="continue-with-app"
+                    onClick={this.loadApp}
+            >
               Continue
             </Button>
           </div>
@@ -61,6 +63,10 @@ class AcceptTos extends React.Component<any, any> {
         </div>
       </section>
     );
+  }
+
+  private loadApp = () => {
+    localStorage.setItem('tosAccepted', 'true');
   }
 }
 
