@@ -79,6 +79,7 @@
 .whiteOutlined {
   opacity: 0.99; // in buttonGroup it makes this button stand out
                  // in front of buttons next to it, so both left and right border are visible
+  font-weight: 600; //semibold
 
   @include button((
           color: $font-color-base,
@@ -140,10 +141,7 @@
 }
 
 // ----- size ------
-@include formInputHeights();
-.lg {
-  font-size: 14px;
-}
+@include formInputSizes();
 
 .block {
   display: block;

@@ -1,4 +1,5 @@
 export const container: string;
+export const orderTypeBtn: string;
 export const right: string;
 export const myTradesTable: string;
 export const myOpenTradesTable: string;
