@@ -85,22 +85,6 @@
   }
 }
 
-button {
-  width: 108px;
-  height: 32px;
-
-  &.grey {
-    @include button((
-      color: #fff,
-      bg: transparent,
-      border-color: #555561,
-      color-hover: #000000,
-      border-color-hover: rgba(255, 255, 255, 0.90),
-      bg-hover: rgba(255, 255, 255, 0.90)
-    ))
-  }
-}
-
 .availableClients {
   display: flex;
   flex-direction: row;
