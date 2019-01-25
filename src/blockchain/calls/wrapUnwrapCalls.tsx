@@ -4,13 +4,14 @@ import { Money } from '../../utils/formatters/Formatters';
 import { ETHicon } from '../coinIcons/coinIcons';
 import { NetworkConfig } from '../config';
 import { amountToWei } from '../utils';
+import { TransactionDef } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
 export interface WrapUnwrapData {
   amount: BigNumber;
 }
 
-export const wrap = {
+export const wrap: TransactionDef<WrapUnwrapData> = {
   call: (_: WrapUnwrapData, context: NetworkConfig) =>
     context.tokens.WETH.contract.deposit,
   options: ({ amount }: WrapUnwrapData) => ({
@@ -26,7 +27,7 @@ export const wrap = {
   descriptionIcon: () => <ETHicon />
 };
 
-export const unwrap = {
+export const unwrap: TransactionDef<WrapUnwrapData> = {
   call: (_: WrapUnwrapData, context: NetworkConfig) =>
     context.tokens.WETH.contract.withdraw,
   options: () => ({ gas: 100000 }),
