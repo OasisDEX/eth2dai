@@ -30,14 +30,11 @@ yarn storybook
 
 ### Visual Regression
 
-We use [Chromatic](https://www.chromaticqa.com/) to conduct visual regression tests with every PR.
+We use SuperCI + VisReg Suit + storybook-chrome-screenshot to conduct visual regression tests with every PR.
 
 To ignore given story use `ignoreDuringVisualRegression` helper.
 
-Run (you will need `CHROMATIC_APP_CODE` env): 
-```sh
-yarn storybook:vis-reg
-```
+To create screenshots locally, run: `yarn storybook:screenshots`.
 
 ### E2E tests
 ```
