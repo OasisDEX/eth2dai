@@ -41,19 +41,21 @@ const StoryWithLoading = ({ loadable }: {loadable: any}) => {
   );
 };
 
-stories.add('WithLoadingIndicator component', () => {
-  const value = { text: 'It loaded successfully!' };
-  return (
-    <div>
-      <h1>Loading</h1>
-      <StoryWithLoading loadable={{ value, status: 'loading' }} />
+ignoreDuringVisualRegression(() => {
+  stories.add('WithLoadingIndicator component', () => {
+    const value = { text: 'It loaded successfully!' };
+    return (
+      <div>
+        <h1>Loading</h1>
+        <StoryWithLoading loadable={{ value, status: 'loading' }}/>
 
-      <h1>Loaded</h1>
-      <StoryWithLoading loadable={{ value, status: 'loaded' }} />
+        <h1>Loaded</h1>
+        <StoryWithLoading loadable={{ value, status: 'loaded' }}/>
 
-      <h1>Error</h1>
-      <StoryWithLoading loadable={{ value, status: 'error' }} />
+        <h1>Error</h1>
+        <StoryWithLoading loadable={{ value, status: 'error' }}/>
 
-    </div>
-  );
-});
+      </div>
+    );
+  });
+}
