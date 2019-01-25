@@ -126,6 +126,19 @@
   font-weight: 600; //semibold
 }
 
+.greyWhite{
+
+
+  @include button((
+    color: $white,
+    bg: transparent,
+    border-color: $dark-greyish-blue,
+    color-hover: #000000,
+    border-color-hover: rgba(255, 255, 255, 0.90),
+    bg-hover: rgba(255, 255, 255, 0.90)
+  ))
+}
+
 // ----- size ------
 @include formInputHeights();
 .lg {

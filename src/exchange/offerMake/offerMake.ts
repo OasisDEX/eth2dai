@@ -235,7 +235,7 @@ function directMatchState(state: OfferFormState,
     price,
     total: price && amount && amount.times(price),
     priceImpact: price && orders[0] &&
-    (price.minus(orders[0].price).dividedBy(orders[0].price)).times(100),
+    (price.minus(orders[0].price).dividedBy(orders[0].price)).times(100).abs(),
     matchType: OfferMatchType.direct,
     gasEstimationStatus: GasEstimationStatus.unset
   };

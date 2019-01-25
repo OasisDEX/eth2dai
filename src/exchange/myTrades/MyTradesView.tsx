@@ -21,7 +21,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
     return (
       <div className={styles.container}>
         <PanelHeader>
-          <span>My Trades</span>
+          <span>My Orders</span>
           <ButtonGroup style={{ marginLeft: 'auto' }}>
             <Button
               size="sm"

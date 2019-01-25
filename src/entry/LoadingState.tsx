@@ -1,11 +1,11 @@
 import classnames from 'classnames';
 import * as React from 'react';
 import { Logo } from '../logo/Logo';
-import { button } from '../utils/forms/Buttons.scss';
+import { Button } from '../utils/forms/Buttons';
 import { Checkbox } from '../utils/forms/Checkbox';
 import { MetamaskIcon, NetworkIcon } from '../utils/icons/Icons';
 import { Client } from './client/Client';
-import * as styles from './Entry.scss';
+import * as styles from './LoadingState.scss';
 
 class AcceptTos extends React.Component<any, any> {
 
@@ -38,11 +38,17 @@ class AcceptTos extends React.Component<any, any> {
                 <span className={classnames(styles.label, styles.client)}>Metamask</span>
               </div>
             </div>
-            <button disabled={!this.state.isChecked} className={classnames(button, styles.grey)}
+            <Button color="greyWhite"
+                    style={{
+                      width:'108px',
+                    }}
+                    size="md"
+                    disabled={!this.state.isChecked}
                     data-test-id="continue-with-app"
-                    onClick={this.loadApp}>
+                    onClick={this.loadApp}
+            >
               Continue
-            </button>
+            </Button>
           </div>
           <div className={styles.containerBottomHalf}>
             <Checkbox name="tos"
