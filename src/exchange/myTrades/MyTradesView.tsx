@@ -26,11 +26,13 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
             <Button
               size="sm"
               color={ this.props.kind === MyTradesKind.open ? 'whiteOutlined' : 'grey' }
+              className={styles.orderTypeBtn}
               onClick={() => this.props.changeKind(MyTradesKind.open)}
             >Open</Button>
             <Button
               size="sm"
               color={ this.props.kind === MyTradesKind.closed ? 'whiteOutlined' : 'grey' }
+              className={styles.orderTypeBtn}
               onClick={() => this.props.changeKind(MyTradesKind.closed)}
             >Close</Button>
           </ButtonGroup>
