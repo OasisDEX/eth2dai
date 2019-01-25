@@ -67,6 +67,17 @@ jobs:
             yarn build:ci
             ./.circleci/run-e2e.sh
 
+  super-ci:
+    docker:
+      - image: circleci/node:8.11.2-stretch
+    steps:
+      - checkout
+      - restore_cache:
+            keys:
+            - v3-dependencies-{{ checksum "package.json" }}
+      - run: PUBLIC_URL=. yarn build
+      - run: yarn super-ci
+
   deploy_dev:
     docker:
       - image: circleci/node:8.11.2-stretch
@@ -120,6 +131,13 @@ workflows:
               ignore:
                 - gh-pages
       - test-e2e:
+          requires: 
+            - install
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - super-ci:
           requires: 
             - install
           filters:
