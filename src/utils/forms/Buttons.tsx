@@ -5,9 +5,11 @@ import * as styles from './Buttons.scss';
 
 type ButtonProps =
   React.ButtonHTMLAttributes<HTMLButtonElement> &
-  {  color?: 'green' | 'red' | 'grey' | 'white' | 'whiteOutlined',
+  {  color?: 'green' | 'red' | 'grey' | 'white' | 'greyWhite' | 'whiteOutlined',
     size?: 'xs' | 'md' | 'sm' | 'lg' | 'unsized',
-    block?: boolean };
+    block?: boolean,
+    dataTestId?: string
+  };
 
 export const Button = (props: ButtonProps) => {
   const { children, className, color, size, block, ...btnProps } = props;

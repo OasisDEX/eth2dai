@@ -6,6 +6,7 @@ export const whiteOutlined: string;
 export const green: string;
 export const red: string;
 export const white: string;
+export const greyWhite: string;
 export const xs: string;
 export const sm: string;
 export const md: string;
