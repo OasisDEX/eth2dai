@@ -1,12 +1,5 @@
 version: 2
 
-# @todo we could split this into multiple different jobs and make some things in parallel
-# - build 
-# - (in parallel) tests, e2e-test
-# - deploy
-# To accomplish this we need to figure out passing build between jobs as well as installed deps
-# i think for now it's not worth the trouble but in future, when ci pipeline slows done it can be nice (KK)
-
 jobs:
   install:
     docker:
@@ -42,7 +35,7 @@ jobs:
       enabled: true
       image: circleci/classic:edge
       docker_layer_caching: true
-    parallelism: 5
+    parallelism: 3
     steps:
       - checkout
       - restore_cache:
