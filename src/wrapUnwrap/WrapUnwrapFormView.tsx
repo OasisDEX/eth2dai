@@ -78,14 +78,14 @@ export class WrapUnwrapFormView
 
   private summary(state: WrapUnwrapFormState) {
     return (
-      <div>
+      <div className={styles.summary}>
         <div className={classnames(styles.infoRow, styles.infoRowMargin)}>
           <Muted>Wallet</Muted>
           <Money token="ETH" value={state.ethBalance} fallback="-" />
         </div>
         <div className={classnames(styles.infoRow, styles.infoRowMargin)}>
           <Muted>Wrapped</Muted>
-          <Money token="ETH" value={state.wethBalance} fallback="-" />
+          <Money token="WETH" value={state.wethBalance} fallback="-" />
         </div>
       </div>
     );
@@ -202,11 +202,9 @@ export class WrapUnwrapFormView
   private messageContent(msg: Message) {
     switch (msg.kind) {
       case MessageKind.insufficientAmount:
-        return `You don't have enough money`;
+        return `Your ${msg.token} balance is too low`;
       case MessageKind.dustAmount:
-        return `Type in greater amount, it's too low`;
-      case MessageKind.insufficientAvailableAmount:
-        return `You don't have enough available amount`;
+        return `Amount is too low`;
     }
   }
 

@@ -26,7 +26,7 @@ export class OrderbookView extends React.Component<Props> {
   private spreadRow?: HTMLElement;
 
   public center() {
-    if (this.tbody && this.spreadRow && process.env.REACT_APP_ENV !== 'test') {
+    if (this.tbody && this.spreadRow && typeof(this.tbody.scrollTo) === 'function') {
       const firstRow: HTMLElement = this.tbody.children[0] as HTMLElement;
       this.tbody.scrollTo(0, this.spreadRow.offsetTop - firstRow.offsetTop -
         (this.tbody.clientHeight - firstRow.clientHeight) / 2);

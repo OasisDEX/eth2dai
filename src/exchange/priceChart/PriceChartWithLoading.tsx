@@ -32,28 +32,27 @@ export class PriceChartWithLoading extends React.Component<PriceChartProps> {
           Price chart
           <ButtonGroup style={{ marginLeft: 'auto' }}>
             <Button
-              className={classnames(styles.btn, {
-                [styles.btnActive]: this.props.groupMode === 'byMonth'
-              })}
+              color={ this.props.groupMode === 'byMonth' ? 'whiteOutlined' : 'grey'}
+              size="sm"
+              className={classnames(styles.btn)}
               onClick={this.handleKindChange('byMonth')}
             >1M</Button>
             <Button
-              className={classnames(styles.btn, {
-                [styles.btnActive]: this.props.groupMode === 'byWeek'
-              })}
+              color={ this.props.groupMode === 'byWeek' ? 'whiteOutlined' : 'grey'}
+              size="sm"
+              className={classnames(styles.btn)}
               onClick={this.handleKindChange('byWeek')}
             >1W</Button>
             <Button
-              className={classnames(styles.btn, {
-                [styles.btnActive]: this.props.groupMode === 'byDay'
-              })}
+              color={ this.props.groupMode === 'byDay' ? 'whiteOutlined' : 'grey'}
+              size="sm"
+              className={classnames(styles.btn)}
               onClick={this.handleKindChange('byDay')}
             >1D</Button>
             <Button
-              className={classnames(styles.btn, {
-                [styles.btnActive]: this.props.groupMode === 'byHour'
-              })}
-              style={{ marginLeft: '-1px' }}
+              color={ this.props.groupMode === 'byHour' ? 'whiteOutlined' : 'grey'}
+              size="sm"
+              className={classnames(styles.btn)}
               onClick={this.handleKindChange('byHour')}
             >1H</Button>
           </ButtonGroup>
