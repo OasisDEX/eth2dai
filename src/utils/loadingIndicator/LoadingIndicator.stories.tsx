@@ -59,4 +59,4 @@ ignoreDuringVisualRegression(() => {
       </div>
     );
   });
-};
+});
