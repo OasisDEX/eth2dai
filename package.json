@@ -23,6 +23,7 @@
     "cypress:dev": "NODE_ENV='development' cypress open",
     "tsc": "tsc -p ./tsconfig.prod.json --noEmit && tsc -p ./cypress/tsconfig.json --noEmit && tsc -p ./tsconfig.test.json --noEmit && tsc -p ./tsconfig.json --noEmit",
     "storybook:vis-reg": "chromatic test",
+    "storybook:screenshots": "storybook-chrome-screenshot -p 9001 --inject-files ./.storybook/disable-animations.js",
     "super-ci": "super-ci"
   },
   "dependencies": {
@@ -109,6 +110,7 @@
     "node-sass": "^4.9.2",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
+    "reg-simple-keygen-plugin": "^0.7.16",
     "reg-suit": "^0.7.17",
     "sass-loader": "^7.0.3",
     "source-map-loader": "^0.2.1",

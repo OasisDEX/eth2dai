@@ -12,6 +12,8 @@ module.exports.main = async function main() {
   });
 
   await deploy(join(__dirname, "build"));
+
+  await visReg();
 }
 
 async function deploy(path) {

@@ -11556,6 +11556,11 @@ reg-cli@^0.13.0:
     mustache "^2.3.0"
     x-img-diff-js "0.3.5"
 
+reg-simple-keygen-plugin@^0.7.16:
+  version "0.7.16"
+  resolved "https://registry.yarnpkg.com/reg-simple-keygen-plugin/-/reg-simple-keygen-plugin-0.7.16.tgz#540f6bc700f9bff902c8566c3cf8003126209231"
+  integrity sha512-fY0BUOpwxna0rxWECY9Spze8BJ7YLo4s23AgMdL3u13rkwGN9g97uoAR48EgJf3rRnOYNKN1XqlBK5mD5qScNw==
+
 reg-suit-core@^0.7.17:
   version "0.7.17"
   resolved "https://registry.yarnpkg.com/reg-suit-core/-/reg-suit-core-0.7.17.tgz#ae9df78e82f1de9c8e0ef8ae974eec1624087ee7"
