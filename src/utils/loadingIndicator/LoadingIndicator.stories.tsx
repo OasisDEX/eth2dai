@@ -1,6 +1,7 @@
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 
+import { ignoreDuringVisualRegression } from '../../storybookUtils';
 import { Panel } from '../panel/Panel';
 import { LoadingIndicator, WithLoadingIndicator } from './LoadingIndicator';
 
@@ -58,4 +59,4 @@ ignoreDuringVisualRegression(() => {
       </div>
     );
   });
-}
+};
