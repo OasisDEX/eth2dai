@@ -68,8 +68,8 @@ export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...trans
   );
 };
 
-export function describeTxStatus({ status, start }: TxState) {
-  switch (status) {
+export function describeTxStatus(tx: TxState) {
+  switch (tx.status) {
     case TxStatus.Success:
       return 'Confirmed';
     case TxStatus.Error:
@@ -80,12 +80,12 @@ export function describeTxStatus({ status, start }: TxState) {
     case TxStatus.WaitingForConfirmation:
       return (
         <>
-          Unconfirmed <Timer start={start} />
+          Unconfirmed <Timer start={tx.broadcastedAt} />
         </>
       );
     case TxStatus.CancelledByTheUser:
       return 'Rejected';
     default:
-      throw new UnreachableCaseError(status);
+      throw new UnreachableCaseError(tx);
   }
 }
