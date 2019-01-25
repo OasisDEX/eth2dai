@@ -2,7 +2,6 @@ import classnames from 'classnames';
 import * as React from 'react';
 import { Logo } from '../logo/Logo';
 import { Button } from '../utils/forms/Buttons';
-import { button, greyWhite } from '../utils/forms/Buttons.scss';
 import { Checkbox } from '../utils/forms/Checkbox';
 import { MetamaskIcon, NetworkIcon } from '../utils/icons/Icons';
 import { Client } from './client/Client';
@@ -48,11 +47,6 @@ class AcceptTos extends React.Component<any, any> {
                     data-test-id="continue-with-app">
               Continue
             </Button>
-            {/*<button disabled={!this.state.isChecked} className={classnames(button, styles.button, greyWhite)}*/}
-                    {/*data-test-id="continue-with-app"*/}
-                    {/*onClick={this.loadApp}>*/}
-              {/*Continue*/}
-            {/*</button>*/}
           </div>
           <div className={styles.containerBottomHalf}>
             <Checkbox name="tos"
