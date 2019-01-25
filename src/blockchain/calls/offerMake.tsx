@@ -60,10 +60,10 @@ export const offerMake: TransactionDef<OfferMakeData> = {
   description: ({ buyAmount, buyToken, sellAmount, sellToken, kind }: OfferMakeData) => (
     kind === OfferType.sell ?
     <>
-      Create  Sell order <Money value={sellAmount} token={sellToken}/>
+      Create Sell Order <Money value={sellAmount} token={sellToken}/>
     </> :
     <>
-      Create  Buy order <Money value={buyAmount} token={buyToken}/>
+      Create Buy Order <Money value={buyAmount} token={buyToken}/>
     </>
   )
 
@@ -102,9 +102,9 @@ export const offerMakeDirect: TransactionDef<OfferMakeDirectData> = {
   description: ({ baseAmount, baseToken, quoteAmount, quoteToken, kind }: OfferMakeDirectData) =>
   kind === OfferType.sell ?
   <>
-    Create  Sell order <Money value={baseAmount} token={baseToken}/>
+    Create Sell Order <Money value={baseAmount} token={baseToken}/>
   </> :
   <>
-    Create  Buy order <Money value={quoteAmount} token={quoteToken}/>
+    Create Buy Order <Money value={quoteAmount} token={quoteToken}/>
   </>,
 };

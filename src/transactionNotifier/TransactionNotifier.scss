@@ -9,17 +9,17 @@
   
   .block {
     position: relative;
-    padding: 18px 24px;
+    padding: 16px 24px;
     margin: 10px 18px 24px 18px;
     background-color: $grey-darkest;
     border: 1px solid $grey-darken-darkest;
+    border-radius: 4px;
     box-shadow: 0 0 4px 1px rgba(black, 0.20);
     font-size: 14px;
     width: 350px;
 }
 
 .title {
-  font-size: $font-size-smaller;
   letter-spacing: 0.36px;
   margin-bottom: 4px;
   margin-top: 5px;
@@ -53,15 +53,14 @@
 }
 
 .description {
-  font-size: $font-size-smaller;
   color: $grey-light;
 }
 
 .cross {
   border-radius: 100%;
   background-color: $grey-dark;
-  height: 15px;
-  width: 15px;
+  height: 1.5em;
+  width: 1.5em;
   display: flex;
   justify-content: center;
   align-items: center;
