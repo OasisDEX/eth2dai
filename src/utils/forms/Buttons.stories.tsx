@@ -26,11 +26,21 @@ stories.add('Colors', () => (
 ));
 
 stories.add('Button group', () => (
-  <ButtonGroup>
-    <Button color="red">Pierwszy</Button>
-    <Button color="green">Drugi</Button>
-    <Button color="red">Trzeci</Button>
-  </ButtonGroup>
+  <div>
+    <ButtonGroup>
+      <Button color="red">Pierwszy</Button>
+      <Button color="green">Drugi</Button>
+      <Button color="red">Trzeci</Button>
+    </ButtonGroup>
+    <br/>
+    <ButtonGroup>
+      <Button color="grey">Nick Burkhardt</Button>
+      <Button color="grey">Juliette Silverton</Button>
+      <Button color="grey">Eddie Monroe</Button>
+      <Button color="grey">Rosalee Calvert</Button>
+      <Button color="grey">Hank Griffin</Button>
+    </ButtonGroup>
+  </div>
 ));
 
 stories.add('Button size', () => (

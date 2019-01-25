@@ -206,12 +206,14 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.buy)}
           color={ this.props.kind === 'buy' ? 'green' : 'grey' }
+          size="sm"
         >Buy</Button>
         <Button
           data-test-id="new-sell-order"
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.sell)}
           color={ this.props.kind === 'sell' ? 'red' : 'grey' }
+          size="sm"
         >Sell</Button>
       </ButtonGroup>
     );
@@ -512,9 +514,8 @@ function messageContent(msg: Message) {
   switch (msg.kind) {
     case MessageKind.noAllowance:
       return <span>
-        {`Trading of ${msg.token} tokens has not been enabled.`}
-        {' '}
-        <a href="/balances" style={{ whiteSpace: 'nowrap' }}>Go to Balances</a>
+        {`Unlock ${msg.token} for Trading in the `}
+        <a href="/balances" style={{ whiteSpace: 'nowrap' }}>Balances Page</a>
       </span>;
     case MessageKind.insufficientAmount:
       return  <>
