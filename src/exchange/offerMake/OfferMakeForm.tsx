@@ -199,6 +199,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   }
 
   private headerButtons() {
+    const disabled = this.props.stage === 'waitingForApproval';
     return (
       <ButtonGroup className={styles.btnGroup}>
         <Button
@@ -206,6 +207,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.buy)}
           color={ this.props.kind === 'buy' ? 'green' : 'grey' }
+          disabled={disabled}
           size="sm"
         >Buy</Button>
         <Button
@@ -213,6 +215,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.sell)}
           color={ this.props.kind === 'sell' ? 'red' : 'grey' }
+          disabled={disabled}
           size="sm"
         >Sell</Button>
       </ButtonGroup>
@@ -220,6 +223,8 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   }
 
   private balanceButtons() {
+    const disabled = this.props.stage === 'waitingForApproval';
+
     return (
     <div className={styles.ownedResourcesInfoBox}>
       <Button
@@ -227,7 +232,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         onClick={this.handleSetMax}
         size="lg"
         block={true}
-        disabled={this.props.kind === 'buy'}
+        disabled={this.props.kind === 'buy' || disabled}
         className={styles.balanceBtn}
       >
         { this.props.baseToken && <BalanceIcon token={this.props.baseToken} />}
@@ -242,7 +247,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         onClick={this.handleSetMax}
         size="lg"
         block={true}
-        disabled={this.props.kind === 'sell' || this.props.matchType === OfferMatchType.direct}
+        disabled={this.props.kind === 'sell' || this.props.matchType === OfferMatchType.direct || disabled}
         className={styles.balanceBtn}
       >
         { this.props.quoteToken && <BalanceIcon token={this.props.quoteToken} />}
@@ -257,6 +262,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   }
 
   private orderType() {
+    const disabled = this.props.stage === 'waitingForApproval';
     return (
       <div className={styles.summary} style={{ marginBottom: '16px' }}>
         <Button
@@ -265,6 +271,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           data-test-id="select-order-type"
           type="button"
           onClick={this.handleOpenPicker}
+          disabled={disabled}
         >
           {this.orderTypes[this.props.matchType]}
         </Button>
