@@ -7,13 +7,14 @@ import { OfferMatchType } from '../../utils/form';
 import { Money } from '../../utils/formatters/Formatters';
 import { NetworkConfig } from '../config';
 import { amountToWei } from '../utils';
+import { TransactionDef } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
 export interface CancelData {
   offerId: BigNumber;
 }
 
-export const cancelOffer = {
+export const cancelOffer: TransactionDef<CancelData> = {
   call: (_data: CancelData, context: NetworkConfig) => context.otc.contract.cancel.uint256,
   prepareArgs: ({ offerId }: CancelData) => [
     offerId,
@@ -36,7 +37,7 @@ export interface OfferMakeData {
   gasEstimation?: number;
 }
 
-export const offerMake = {
+export const offerMake: TransactionDef<OfferMakeData> = {
   call: (data: OfferMakeData, context: NetworkConfig) => ({
     [OfferMatchType.limitOrder]: context.otc.contract.offer
       ['uint256,address,uint256,address,uint256,bool'],
@@ -80,7 +81,7 @@ export interface OfferMakeDirectData {
   gasEstimation?: number;
 }
 
-export const offerMakeDirect = {
+export const offerMakeDirect: TransactionDef<OfferMakeDirectData> = {
   call: ({ kind }: OfferMakeDirectData, context: NetworkConfig) => kind === OfferType.buy ?
     context.otc.contract.buyAllAmount['address,uint256,address,uint256'] :
     context.otc.contract.sellAllAmount['address,uint256,address,uint256'],
