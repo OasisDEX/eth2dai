@@ -53,7 +53,11 @@ export class OrderbookPanel extends React.Component<OrderbookPanelProps & SubVie
               onClick={this.changeChartListView}
               data-test-id={`orderbook-type-${this.props.kind}`}
             >
-              <ChartListSwitchBtn />
+              {
+                this.props.kind === OrderbookViewKind.depthChart ?
+                  <ToListSwitchBtn/> :
+                  <ToChartSwitchBtn/>
+              }
             </Button>
           </div>
         </PanelHeader>
@@ -102,12 +106,26 @@ export class PlusBtn extends React.PureComponent {
   }
 }
 
-export class ChartListSwitchBtn extends React.PureComponent {
+export class ToListSwitchBtn extends React.PureComponent {
   public render() {
     return (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
         <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
         <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    );
+  }
+}
+
+export class ToChartSwitchBtn extends React.PureComponent {
+  public render() {
+    return (
+      <svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1">
+          <g transform="translate(-6.000000, -6.000000)" fill="white" fill-rule="nonzero">
+            <g transform="translate(3.000000, 3.000000)">
+              <path d="M19,3 L5,3 C3.9,3 3,3.9 3,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,5 C21,3.9 20.1,3 19,3 Z M10,19 L5,19 L5,12 L12,12 L12,17 C12,18.1045695 11.1045695,19 10,19 Z M19,12 L12,12 L12,7 C12,5.8954305 12.8954305,5 14,5 L19,5 L19,12 Z"/>
+            </g>
+        </g>
       </svg>
     );
   }
