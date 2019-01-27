@@ -11,6 +11,7 @@
     "src/**/*.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "superfile.ts",
     "./node_modules/web3-typescript-typings/index.d.ts"
   ]
 }
