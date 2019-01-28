@@ -24,7 +24,7 @@ export const wrap: TransactionDef<WrapUnwrapData> = {
     <React.Fragment>
       Wrap <Money value={amount} token={'ETH'}/>
     </React.Fragment>,
-  descriptionIcon: () => <ETHicon />
+  descriptionIcon: () => <ETHicon theme="circle"/>
 };
 
 export const unwrap: TransactionDef<WrapUnwrapData> = {
@@ -38,5 +38,5 @@ export const unwrap: TransactionDef<WrapUnwrapData> = {
     <React.Fragment>
       Unwrap <Money value={amount} token={'WETH'}/>
     </React.Fragment>,
-  descriptionIcon: () => <ETHicon />
+  descriptionIcon: () => <ETHicon theme="circle"/>
 };
