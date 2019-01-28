@@ -280,7 +280,7 @@ export function doGasEstimation<S extends HasGasEstimation>(
 
       return gasCall.pipe(
         map((rawGasEstimation: number) => {
-          const gasEstimation = rawGasEstimation * GAS_ESTIMATION_MULTIPLIER;
+          const gasEstimation = Math.floor(rawGasEstimation * GAS_ESTIMATION_MULTIPLIER);
           const gasCost = amountFromWei((gasPrice).times(gasEstimation), 'ETH');
           return {
             ...(state as object),
