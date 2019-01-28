@@ -10,10 +10,11 @@ interface LoadingIndicatorProps<T> {
   children: (loaded: T) => React.ReactElement<any>;
   inline?: boolean;
   light?: boolean;
+  error?:  React.ReactElement<any>;
 }
 
 export function WithLoadingIndicator<T>(props: LoadingIndicatorProps<T>) {
-  const { className, loadable, children, inline, light } = props;
+  const { className, loadable, children, inline, light, error } = props;
   switch (loadable.status) {
     case undefined:
     case 'loading':
@@ -21,6 +22,9 @@ export function WithLoadingIndicator<T>(props: LoadingIndicatorProps<T>) {
         <LoadingIndicator inline={inline} light={light}/>
       );
     case 'error':
+      if (error) {
+        return (error);
+      }
       return (
         <div className={
           classnames(styles.loading, className, { [styles.inline]: inline, [styles.light]: light })
