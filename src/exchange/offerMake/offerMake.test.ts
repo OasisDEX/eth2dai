@@ -246,7 +246,7 @@ test('click buy button', () => {
     kind: OfferType.buy,
     gasPrice: new BigNumber(0.01),
     position: undefined,
-    gasEstimation: 20,
+    gasEstimation: 26,
   });
 
   expect(snapshotify(unpack(controller))).toMatchSnapshot();
@@ -292,7 +292,7 @@ test('click sell button...', () => {
     kind: OfferType.sell,
     gasPrice: new BigNumber(0.01),
     position: undefined,
-    gasEstimation: 20,
+    gasEstimation: 26,
   });
 
 });
@@ -335,7 +335,7 @@ test('click buy button confirmed', () => {
     kind: OfferType.buy,
     gasPrice: new BigNumber(0.01),
     position: undefined,
-    gasEstimation: 20,
+    gasEstimation: 26,
   });
 
 });

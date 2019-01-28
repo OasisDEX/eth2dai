@@ -10,6 +10,8 @@ $panel-padding-vertical: 12px;
   border: 1px solid $grey-darken-darkest;
   box-shadow: 0 0 4px 1px rgba(black, 0.20);
   border-radius: $border-radius;
+  display: flex;
+  flex-direction: column;
 }
 
 .panelWithFooterBordered {

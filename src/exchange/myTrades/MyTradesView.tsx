@@ -11,7 +11,7 @@ import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndica
 import { PanelHeader } from '../../utils/panel/Panel';
 import { RowClickable, Table } from '../../utils/table/Table';
 import { InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
-import { Trade } from '../trades';
+import { Trade, TradeAct } from '../trades';
 import { MyTradesKind, MyTradesPropsLoadable } from './myTrades';
 import * as styles from './MyTradesView.scss';
 import { TradeWithStatus } from './openTrades';
@@ -97,7 +97,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                           Open
                         </span>
                         <CloseButton data-test-id="cancel"
-                                     onClick={this.cancelOffer(trade.offerId)}
+                                     onClick={this.cancelOffer(trade.offerId, trade.act, trade.baseAmount, trade.baseToken)}
                         />
                       </td>
                     }
@@ -121,9 +121,9 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
     );
   }
 
-  public cancelOffer = (offerId: BigNumber) => {
+  public cancelOffer = (offerId:BigNumber, type: TradeAct, amount: BigNumber, token: string) => {
     return (): void => {
-      this.props.cancelOffer({ offerId });
+      this.props.cancelOffer({ offerId, type, amount, token });
     };
   }
 

@@ -42,7 +42,7 @@ export class WrapUnwrapFormView
       overlayClassName={styles.modalOverlay}
       closeTimeoutMS={250}
     >
-      <Panel style={{ width: '454px' }} className={styles.modalChild}>
+      <Panel style={{ width: '454px', height: '528px' }} className={styles.modalChild}>
         <PanelHeader bordered={true}>
           <div>{this.props.kind} ether</div>
         </PanelHeader>
