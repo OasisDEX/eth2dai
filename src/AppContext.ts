@@ -111,8 +111,8 @@ export function setupAppContext() {
   const wrapUnwrapForm$ =
     curry(createWrapUnwrapForm$)(gasPrice$, etherPriceUsd$, etherBalance$, wethBalance$, calls$);
 
-  const approve = createWalletApprove(calls$);
-  const disapprove = createWalletDisapprove(calls$);
+  const approve = createWalletApprove(calls$, gasPrice$);
+  const disapprove = createWalletDisapprove(calls$, gasPrice$);
 
   const AssetOverviewViewRxTx =
     inject(
