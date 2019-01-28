@@ -23,8 +23,10 @@ stories.add('Loading indicator', () => (
 
     <h1>Loading indicator inline</h1>
     <Panel style={{ height: '150px', width: '300px',  padding: '15px' }}>
-      <span>it's loading</span>
-      <LoadingIndicator inline={true}/>
+      <span>
+        <span>it's loading</span>
+        <LoadingIndicator inline={true}/>
+      </span>
     </Panel>
 
     <h1>Loading indicator with light background</h1>
