@@ -6,12 +6,12 @@ import classnames from 'classnames';
 import { Button, ButtonGroup } from '../../utils/forms/Buttons';
 import { LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
+import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
 import {
   GroupMode, PriceChartDataPoint,
 } from './pricechart';
 import { PriceChartView } from './PriceChartView';
-
 import * as styles from './PriceChartWithLoading.scss';
 
 interface PriceChartProps extends LoadableWithTradingPair<PriceChartDataPoint[]> {
@@ -27,7 +27,7 @@ export class PriceChartWithLoading extends React.Component<PriceChartProps> {
 
   public render() {
     return (
-      <div>
+      <>
         <PanelHeader bordered={true}>
           Price chart
           <ButtonGroup style={{ marginLeft: 'auto' }}>
@@ -57,12 +57,15 @@ export class PriceChartWithLoading extends React.Component<PriceChartProps> {
             >1H</Button>
           </ButtonGroup>
         </PanelHeader>
-        <WithLoadingIndicator loadable={this.props}>
+        <WithLoadingIndicator
+          error={<ServerUnreachable/>}
+          loadable={this.props}
+        >
           {(points: PriceChartDataPoint[]) => (
             <PriceChartView data={points} groupMode={this.props.groupMode} />
           )}
         </WithLoadingIndicator>
-      </div>
+      </>
     );
   }
 }
