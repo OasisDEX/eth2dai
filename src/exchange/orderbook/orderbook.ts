@@ -133,6 +133,16 @@ export function loadOrderbook$(
         loadOffersAllAtOnce(context, quote, base, OfferType.buy),
         loadOffersAllAtOnce(context, base, quote, OfferType.sell)
       ).pipe(
+        // in order to fix broken empty responses accept empty orderbook
+        // only if it happens twice in a row
+        scan(
+          ([prevBuy, prevSell], [buy, sell]) => [buy, sell, prevBuy, prevSell],
+          [[], [], [], []] as Offer[][]
+        ),
+        map(([buy, sell, prevBuy, prevSell]) => [
+          buy.length === 0 && prevBuy.length === 0 ? buy : prevBuy,
+          sell.length === 0 && prevSell.length === 0 ? sell : prevSell,
+        ]),
         map(([buy, sell]) => {
           console.log('orderbook for block:', blockNumber, buy, sell);
           const spread =
