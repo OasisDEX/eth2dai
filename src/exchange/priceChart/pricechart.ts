@@ -42,7 +42,7 @@ export function loadAggregatedTrades(
 
   return combineLatest(context$$, onEveryBlock$$).pipe(
     switchMap(([context]) =>
-      vulcan0x(context.oasisDataService.url, view, options, filter, fields, undefined)
+      vulcan0x(context.oasisDataService.url, view, options, filter, fields, undefined, undefined, undefined)
     ),
     map(aggrs => aggrs.map(parseAggregatedData)),
   );

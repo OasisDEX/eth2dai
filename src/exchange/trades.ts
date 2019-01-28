@@ -71,7 +71,7 @@ export const getTrades = (
   context: NetworkConfig,
   baseToken: string,
   quoteToken: string,
-  filters: {account?: string, from?: Date, to?: Date},
+  filters: {account?: string, from?: Date, to?: Date, offset?: number, limit?: number},
 ): Observable<Trade[]> => {
   const accountVal = filters.account ? (web3 as any).toChecksumAddress(filters.account) : null;
 
@@ -114,7 +114,9 @@ export const getTrades = (
     {},
     filter,
     fields,
-    order
+    order,
+    filters.limit,
+    filters.offset,
   ).pipe(
     map(trades => trades.map(parseTrade(accountVal, quoteToken, baseToken, quoteToken)))
   );

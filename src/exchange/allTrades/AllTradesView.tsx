@@ -26,7 +26,7 @@ export class AllTrades extends React.Component<AllTradesProps> {
           loadable={this.props}
           error={<ServerUnreachable/>}
         >
-          { ({ trades, loading, nextPageStart, more$ }) => (<Table align="right"
+          { ({ trades, loading, more$ }) => (<Table align="right"
                                          scrollable={true}
                                          className={styles.allTradesTable}>
             <thead>
@@ -58,7 +58,6 @@ export class AllTrades extends React.Component<AllTradesProps> {
                   <Button onClick={showMore(more$)}
                           block={true}
                           size="md"
-                          title={formatDateTime(nextPageStart)}
                           disabled={loading}
                   >
                     { loading ? <span className={styles.loader} /> : 'Load more' }

@@ -65,7 +65,6 @@ export function createAllTrades$(
 export interface TradesBrowser {
   trades: Trade[];
   loading: boolean;
-  nextPageStart: Date;
   more$: Subject<any>;
 }
 
@@ -77,40 +76,41 @@ export function createTradesBrowser$(
 ): Observable<TradesBrowser> {
   const firstPageEnd = moment().subtract(interval, unit).startOf('day').toDate();
   const more$ = new Subject<any>();
+  const perPage = 1000;
 
   return context$$.pipe(
     switchMap(context => combineLatest(
       allTrades(tradingPair),
       more$.pipe(
-        mergeScan<any, { nextPageStart: Date, loading: boolean, trades: Trade[] }>(
-          ({ nextPageStart, trades }, _more) => {
-            const pageStart = nextPageStart;
-            const pageEnd = moment(nextPageStart).subtract(interval, unit).toDate();
+        mergeScan<any, { nextPageStart: number, to: Date, loading: boolean, trades: Trade[] }>(
+          ({ to, nextPageStart, trades }, _more) => {
             return getTrades(context, tradingPair.base, tradingPair.quote, {
-              from: pageEnd,
-              to: pageStart,
+              to,
+              offset: nextPageStart,
+              limit: perPage
             }).pipe(
               retryWhen(errors => errors.pipe(delay(500))),
               map(newTrades => ({
+                to,
                 trades: [...trades, ...newTrades],
                 loading: false,
-                nextPageStart: pageEnd,
+                nextPageStart: nextPageStart + perPage,
               })),
               startWith({
                 trades,
                 nextPageStart,
+                to,
                 loading: true,
               }),
             );
           },
-          { nextPageStart: firstPageEnd, loading: false, trades: [] },
+          { nextPageStart: 0, to: firstPageEnd, loading: false, trades: [] },
         ),
-        startWith({ nextPageStart: firstPageEnd, loading: false, trades: [] as Trade[] }),
+        startWith({ nextPageStart: 0, to: firstPageEnd, loading: false, trades: [] as Trade[] }),
       ),
     ).pipe(
-      map(([current, { nextPageStart, loading, trades }]) => ({
+      map(([current, { loading, trades }]) => ({
         more$,
-        nextPageStart,
         loading,
         trades: [...current, ...trades],
       })),
