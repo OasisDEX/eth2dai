@@ -279,7 +279,8 @@ export function doGasEstimation<S extends HasGasEstimation>(
       }
 
       return gasCall.pipe(
-        map((gasEstimation: number) => {
+        map((rawGasEstimation: number) => {
+          const gasEstimation = rawGasEstimation * GAS_ESTIMATION_MULTIPLIER;
           const gasCost = amountFromWei((gasPrice).times(gasEstimation), 'ETH');
           return {
             ...(state as object),
@@ -303,3 +304,6 @@ export function doGasEstimation<S extends HasGasEstimation>(
       gasEstimationStatus: GasEstimationStatus.calculating } as S)
   );
 }
+
+// we accommodate for the fact that orderbook can look different when tx executes and it can take more gas
+const GAS_ESTIMATION_MULTIPLIER = 1.3;
