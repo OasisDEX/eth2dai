@@ -37,6 +37,14 @@ export class OrderbookView extends React.Component<Props> {
     this.center();
   }
 
+  public enter = () => {
+    this.center();
+  }
+
+  public exit = () => {
+    this.center();
+  }
+
   public render() {
     const tradingPairChanged = this.lastTradingPair &&
       tradingPairResolver(this.lastTradingPair) !== tradingPairResolver(this.props.tradingPair);
@@ -76,7 +84,12 @@ export class OrderbookView extends React.Component<Props> {
             }
           >
             { orderbook.sell.slice().reverse().map((offer: Offer) => (
-              <CSSTransition key={offer.offerId.toString()} classNames="order" timeout={1000}>
+              <CSSTransition
+                key={offer.offerId.toString()}
+                classNames="order"
+                timeout={1000}
+                onEntering={this.enter}
+                onExited={this.exit}>
                 <this.OfferRow offer={offer} kind="sell" parent={this} />
               </CSSTransition>
             )) }
