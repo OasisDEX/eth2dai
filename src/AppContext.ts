@@ -111,8 +111,8 @@ export function setupAppContext() {
   const wrapUnwrapForm$ =
     curry(createWrapUnwrapForm$)(gasPrice$, etherPriceUsd$, etherBalance$, wethBalance$, calls$);
 
-  const approve = createWalletApprove(calls$);
-  const disapprove = createWalletDisapprove(calls$);
+  const approve = createWalletApprove(calls$, gasPrice$);
+  const disapprove = createWalletDisapprove(calls$, gasPrice$);
 
   const AssetOverviewViewRxTx =
     inject(
@@ -196,7 +196,7 @@ export function setupAppContext() {
   );
 
   const myCurrentTrades$ = createMyCurrentTrades$(myTradesKind$, myOpenTrades$, myClosedTrades$);
-  const myTrades$ = createMyTrades$(myTradesKind$, myCurrentTrades$, calls$, context$);
+  const myTrades$ = createMyTrades$(myTradesKind$, myCurrentTrades$, calls$, context$, gasPrice$);
   const MyTradesTxRx = connect(MyTrades, myTrades$);
 
   const currentPrice$ = createCurrentPrice$(currentTradeHistory$);

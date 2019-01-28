@@ -101,7 +101,9 @@ export function allowance$(token: string, guy?: string): Observable<boolean> {
    );
 }
 
-export const gasPrice$: Observable<BigNumber> = web3Ready$.pipe(
+export type GasPrice$ = Observable<BigNumber>;
+
+export const gasPrice$: GasPrice$ = web3Ready$.pipe(
   switchMap(() => concat(
     bindNodeCallback(web3.eth.getGasPrice)(),
     onEveryBlock$.pipe(
