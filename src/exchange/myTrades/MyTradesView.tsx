@@ -5,34 +5,44 @@ import { BigNumber } from 'bignumber.js';
 import { etherscan } from '../../blockchain/etherscan';
 import { formatDateTime } from '../../utils/formatters/format';
 import { FormatAmount, FormatPrice } from '../../utils/formatters/Formatters';
-import { CloseButton } from '../../utils/forms/Buttons';
-import { Select } from '../../utils/forms/Select';
+import { Button, ButtonGroup, CloseButton } from '../../utils/forms/Buttons';
 import { ProgressIcon } from '../../utils/icons/Icons';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
+import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { RowClickable, Table } from '../../utils/table/Table';
 import { InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
-import { Trade } from '../trades';
-import { MyTradesKind, MyTradesKindKeys, MyTradesPropsLoadable } from './myTrades';
+import { Trade, TradeAct } from '../trades';
+import { MyTradesKind, MyTradesPropsLoadable } from './myTrades';
 import * as styles from './MyTradesView.scss';
 import { TradeWithStatus } from './openTrades';
 
 export class MyTrades extends React.Component<MyTradesPropsLoadable> {
   public render() {
     return (
-      <div className={styles.container}>
-        <PanelHeader>
-          <span>My Trades</span>
-          <Select onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                  this.props.changeKind(event.target.value as MyTradesKindKeys)}
-                  style={{ marginLeft: 'auto' }}
-                  value={this.props.kind}>
-            <option value={MyTradesKind.open}>Open</option>
-            <option value={MyTradesKind.closed}>Closed</option>
-          </Select>
+      <>
+        <PanelHeader bordered={this.props.status === 'error'}>
+          <span>My Orders</span>
+          <ButtonGroup style={{ marginLeft: 'auto' }}>
+            <Button
+              size="sm"
+              color={ this.props.kind === MyTradesKind.open ? 'whiteOutlined' : 'grey' }
+              className={styles.orderTypeBtn}
+              onClick={() => this.props.changeKind(MyTradesKind.open)}
+            >Open</Button>
+            <Button
+              size="sm"
+              color={ this.props.kind === MyTradesKind.closed ? 'whiteOutlined' : 'grey' }
+              className={styles.orderTypeBtn}
+              onClick={() => this.props.changeKind(MyTradesKind.closed)}
+            >Close</Button>
+          </ButtonGroup>
         </PanelHeader>
 
-        <WithLoadingIndicator loadable={this.props}>
+        <WithLoadingIndicator
+          loadable={this.props}
+          error={this.props.kind === MyTradesKind.closed ? <ServerUnreachable/> : undefined }
+        >
           { (trades: TradeWithStatus[]) => (
             <Table
               scrollable={true}
@@ -91,7 +101,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                           Open
                         </span>
                         <CloseButton data-test-id="cancel"
-                                     onClick={this.cancelOffer(trade.offerId)}
+                                     onClick={this.cancelOffer(trade.offerId, trade.act, trade.baseAmount, trade.baseToken)}
                         />
                       </td>
                     }
@@ -111,13 +121,13 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
           </Table>
         )}
         </WithLoadingIndicator>
-      </div>
+      </>
     );
   }
 
-  public cancelOffer = (offerId: BigNumber) => {
+  public cancelOffer = (offerId:BigNumber, type: TradeAct, amount: BigNumber, token: string) => {
     return (): void => {
-      this.props.cancelOffer({ offerId });
+      this.props.cancelOffer({ offerId, type, amount, token });
     };
   }
 

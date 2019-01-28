@@ -6,12 +6,12 @@ import classnames from 'classnames';
 import { Button, ButtonGroup } from '../../utils/forms/Buttons';
 import { LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
+import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
 import {
   GroupMode, PriceChartDataPoint,
 } from './pricechart';
 import { PriceChartView } from './PriceChartView';
-
 import * as styles from './PriceChartWithLoading.scss';
 
 interface PriceChartProps extends LoadableWithTradingPair<PriceChartDataPoint[]> {
@@ -27,43 +27,45 @@ export class PriceChartWithLoading extends React.Component<PriceChartProps> {
 
   public render() {
     return (
-      <div>
+      <>
         <PanelHeader bordered={true}>
           Price chart
           <ButtonGroup style={{ marginLeft: 'auto' }}>
             <Button
-              className={classnames(styles.btn, {
-                [styles.btnActive]: this.props.groupMode === 'byMonth'
-              })}
+              color={ this.props.groupMode === 'byMonth' ? 'whiteOutlined' : 'grey'}
+              size="sm"
+              className={classnames(styles.btn)}
               onClick={this.handleKindChange('byMonth')}
             >1M</Button>
             <Button
-              className={classnames(styles.btn, {
-                [styles.btnActive]: this.props.groupMode === 'byWeek'
-              })}
+              color={ this.props.groupMode === 'byWeek' ? 'whiteOutlined' : 'grey'}
+              size="sm"
+              className={classnames(styles.btn)}
               onClick={this.handleKindChange('byWeek')}
             >1W</Button>
             <Button
-              className={classnames(styles.btn, {
-                [styles.btnActive]: this.props.groupMode === 'byDay'
-              })}
+              color={ this.props.groupMode === 'byDay' ? 'whiteOutlined' : 'grey'}
+              size="sm"
+              className={classnames(styles.btn)}
               onClick={this.handleKindChange('byDay')}
             >1D</Button>
             <Button
-              className={classnames(styles.btn, {
-                [styles.btnActive]: this.props.groupMode === 'byHour'
-              })}
-              style={{ marginLeft: '-1px' }}
+              color={ this.props.groupMode === 'byHour' ? 'whiteOutlined' : 'grey'}
+              size="sm"
+              className={classnames(styles.btn)}
               onClick={this.handleKindChange('byHour')}
             >1H</Button>
           </ButtonGroup>
         </PanelHeader>
-        <WithLoadingIndicator loadable={this.props}>
+        <WithLoadingIndicator
+          error={<ServerUnreachable/>}
+          loadable={this.props}
+        >
           {(points: PriceChartDataPoint[]) => (
             <PriceChartView data={points} groupMode={this.props.groupMode} />
           )}
         </WithLoadingIndicator>
-      </div>
+      </>
     );
   }
 }

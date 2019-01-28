@@ -3,25 +3,32 @@ import * as React from 'react';
 import { Error } from 'tslint/lib/error';
 
 import { OfferType } from '../../exchange/orderbook/orderbook';
+import { TradeAct } from '../../exchange/trades';
 import { OfferMatchType } from '../../utils/form';
 import { Money } from '../../utils/formatters/Formatters';
 import { NetworkConfig } from '../config';
 import { amountToWei } from '../utils';
+import { TransactionDef } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
 export interface CancelData {
-  offerId: BigNumber;
+  offerId:BigNumber;
+  type: TradeAct;
+  amount: BigNumber;
+  token: string;
 }
 
-export const cancelOffer = {
+export const cancelOffer: TransactionDef<CancelData> = {
   call: (_data: CancelData, context: NetworkConfig) => context.otc.contract.cancel.uint256,
   prepareArgs: ({ offerId }: CancelData) => [
-    offerId,
+    offerId
   ],
   options: () => ({ gas: 500000 }),
   kind: TxMetaKind.cancel,
-  description: ({ offerId }: CancelData) =>
-    <React.Fragment>Cancel offer {offerId.toString()}</React.Fragment>,
+  description: ({ type, amount, token }: CancelData) =>
+    <React.Fragment>
+      Cancel <span style={{ textTransform: 'capitalize' }}>{type}</span> Order {amount.valueOf()} {token.toUpperCase()}
+    </React.Fragment>,
 };
 
 export interface OfferMakeData {
@@ -36,7 +43,7 @@ export interface OfferMakeData {
   gasEstimation?: number;
 }
 
-export const offerMake = {
+export const offerMake: TransactionDef<OfferMakeData> = {
   call: (data: OfferMakeData, context: NetworkConfig) => ({
     [OfferMatchType.limitOrder]: context.otc.contract.offer
       ['uint256,address,uint256,address,uint256,bool'],
@@ -59,10 +66,10 @@ export const offerMake = {
   description: ({ buyAmount, buyToken, sellAmount, sellToken, kind }: OfferMakeData) => (
     kind === OfferType.sell ?
     <>
-      Create  Sell order <Money value={sellAmount} token={sellToken}/>
+      Create Sell Order <Money value={sellAmount} token={sellToken}/>
     </> :
     <>
-      Create  Buy order <Money value={buyAmount} token={buyToken}/>
+      Create Buy Order <Money value={buyAmount} token={buyToken}/>
     </>
   )
 
@@ -80,7 +87,7 @@ export interface OfferMakeDirectData {
   gasEstimation?: number;
 }
 
-export const offerMakeDirect = {
+export const offerMakeDirect: TransactionDef<OfferMakeDirectData> = {
   call: ({ kind }: OfferMakeDirectData, context: NetworkConfig) => kind === OfferType.buy ?
     context.otc.contract.buyAllAmount['address,uint256,address,uint256'] :
     context.otc.contract.sellAllAmount['address,uint256,address,uint256'],
@@ -101,9 +108,9 @@ export const offerMakeDirect = {
   description: ({ baseAmount, baseToken, quoteAmount, quoteToken, kind }: OfferMakeDirectData) =>
   kind === OfferType.sell ?
   <>
-    Create  Sell order <Money value={baseAmount} token={baseToken}/>
+    Create Sell Order <Money value={baseAmount} token={baseToken}/>
   </> :
   <>
-    Create  Buy order <Money value={quoteAmount} token={quoteToken}/>
+    Create Buy Order <Money value={quoteAmount} token={quoteToken}/>
   </>,
 };

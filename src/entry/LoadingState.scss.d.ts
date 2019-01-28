@@ -8,6 +8,4 @@ export const containerBottomHalf: string;
 export const label: string;
 export const client: string;
 export const status: string;
-export const grey: string;
-export const disabled: string;
 export const availableClients: string;

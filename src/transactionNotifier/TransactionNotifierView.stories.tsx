@@ -1,6 +1,7 @@
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 
+import { BigNumber } from 'bignumber.js';
 import { approveWallet, disapproveWallet } from '../blockchain/calls/approveCalls';
 import {
   CancelData,
@@ -72,7 +73,7 @@ stories.add('Cancel offer', () => (
   <Notification
     {...{
       ...cancelledByTheUserTx,
-      meta: { ...cancelOffer, args: { offerId: zero } as CancelData },
+      meta: { ...cancelOffer, args: { offerId: zero, type: 'buy', amount: new BigNumber('1.2345'), token: 'WETH' } as CancelData },
     }}
   />
 ));
@@ -132,6 +133,7 @@ const waitingForConfirmationTx: NotificationProps = {
   ...common,
   status: TxStatus.WaitingForConfirmation,
   txHash: 'abc',
+  broadcastedAt: startTime,
 };
 stories.add('Wrap (WaitingForConfirmation)', () => (
   <Notification {...{ ...waitingForConfirmationTx, meta: { ...wrap, args: { amount: zero } } }} />

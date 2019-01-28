@@ -31,6 +31,15 @@ export const ProgressIcon = (props: ProgressIconProps) => {
   );
 };
 
+export const ErrorIcon = (props: React.HTMLAttributes<SVGGraphicsElement>) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" {...props}>
+      <path fill="none" d="M0 0h24v24H0V0z"/>
+      <path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+    </svg>
+  );
+};
+
 export const MetamaskIcon = () => (
   <svg width="32" height="32" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
     <g id="Icons/Navigation/Metamask" fill="none" fillRule="evenodd">
@@ -227,4 +236,20 @@ export const NetworkIcon = () => {
         id="Combined-Shape" fill="#69F0AE"/>
     </g>
   </svg>;
+};
+
+export const Cross = () => {
+  return (
+    <svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+      <g id="Page-1" fill="none" fillRule="evenodd">
+        <g id="baseline-cancel-24px" transform="translate(-2 -2)">
+          <polygon id="Path" points="0 0 24 0 24 24 0 24" />
+          <path d="M12,2 C6.47,2 2,6.47 2,12 C2,17.53 6.47,22 12,22 C17.53,22 22,17.53 22,12 C22,6.47 17.53,2 12,2 Z"
+                id="Path" fill="rgba(255,255,255, 0.05)" fillRule="nonzero" />
+          <polygon id="Path" fill="#FFF" fillRule="nonzero" points="17 15.59 15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12"
+          />
+        </g>
+      </g>
+    </svg>
+  );
 };

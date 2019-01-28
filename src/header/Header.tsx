@@ -21,7 +21,9 @@ class Header extends React.Component<HeaderProps, any> {
     return (
       <header>
         <section>
-          <Logo className={styles.logo}/>
+          <a href="/" className={styles.logo}>
+            <Logo />
+          </a>
           <nav>
             <ul>
               <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange" />

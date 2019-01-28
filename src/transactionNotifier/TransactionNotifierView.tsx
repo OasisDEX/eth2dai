@@ -2,6 +2,7 @@ import * as React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 
 import { transactionObserver, TxState, TxStatus } from '../blockchain/transactions';
+import { Cross } from '../utils/icons/Icons';
 import { Timer } from '../utils/Timer';
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import * as styles from './TransactionNotifier.scss';
@@ -63,13 +64,13 @@ export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...trans
       )}
       <div className={styles.title}>{description}</div>
       <div className={styles.description}>{describeTxStatus(transaction)}</div>
-      <a tabIndex={0} onClick={onDismiss} className={styles.cross}>&times;</a>
+      <a tabIndex={0} onClick={onDismiss} className={styles.cross}><Cross/></a>
     </div>
   );
 };
 
-export function describeTxStatus({ status, start }: TxState) {
-  switch (status) {
+export function describeTxStatus(tx: TxState) {
+  switch (tx.status) {
     case TxStatus.Success:
       return 'Confirmed';
     case TxStatus.Error:
@@ -80,12 +81,12 @@ export function describeTxStatus({ status, start }: TxState) {
     case TxStatus.WaitingForConfirmation:
       return (
         <>
-          Unconfirmed <Timer start={start} />
+          Unconfirmed <Timer start={tx.broadcastedAt} />
         </>
       );
     case TxStatus.CancelledByTheUser:
       return 'Rejected';
     default:
-      throw new UnreachableCaseError(status);
+      throw new UnreachableCaseError(tx);
   }
 }

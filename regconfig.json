@@ -1,0 +1,16 @@
+{
+  "core": {
+    "workingDir": ".reg",
+    "actualDir": "__screenshots__",
+    "thresholdRate": 0,
+    "ximgdiff": {
+      "invocationType": "client"
+    }
+  },
+  "plugins": {
+    "reg-simple-keygen-plugin": {
+      "expectedKey": "${CURRENT_KEY}",
+      "actualKey": "${BASE_KEY}"
+    }
+  }
+}
