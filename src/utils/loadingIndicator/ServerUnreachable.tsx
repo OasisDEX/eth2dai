@@ -22,7 +22,7 @@ export const ServerUnreachable = ({ className, ...props }: {
           className={styles.link}
           target="_blank"
           rel="noopener noreferrer"
-          href="https://github.com/OasisDEX/eth2dai/issues">
+          href="https://chat.makerdao.com/channel/eth2dai">
         Contact us
       </a>
       </Muted>
