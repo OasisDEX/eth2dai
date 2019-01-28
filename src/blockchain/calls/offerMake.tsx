@@ -12,7 +12,7 @@ import { TxMetaKind } from './txMeta';
 
 export interface CancelData {
   offerId: BigNumber;
-  gasPrice: BigNumber;
+  gasPrice?: BigNumber;
   gasEstimation?: number;
 }
 

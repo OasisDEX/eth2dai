@@ -1,6 +1,8 @@
+import bignumberJs, { BigNumber } from 'bignumber.js';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, switchMap, filter } from 'rxjs/operators';
-import { doGasEstimation, GasEstimationStatus } from 'src/utils/form';
+import { filter, map, switchMap, tap, first } from 'rxjs/operators';
+import { TxState } from 'src/blockchain/transactions';
+import { doGasEstimation, GasEstimationStatus, HasGasEstimation } from 'src/utils/form';
 import { Calls$ } from '../../blockchain/calls/calls';
 import { CancelData } from '../../blockchain/calls/offerMake';
 import { NetworkConfig } from '../../blockchain/config';
@@ -8,8 +10,7 @@ import { EtherscanConfig } from '../../blockchain/etherscan';
 import { LoadableWithTradingPair } from '../../utils/loadable';
 import { Trade } from '../trades';
 import { TradeWithStatus } from './openTrades';
-import { TxState } from 'src/blockchain/transactions';
-import BigNumber from 'bignumber.js';
+import { gasPrice$ } from 'src/blockchain/network';
 
 export enum MyTradesKind {
   open = 'open',
@@ -43,32 +44,33 @@ export function createMyTrades$(myTradesKind$: BehaviorSubject<MyTradesKind>,
                                 myCurrentTrades$:
                                   Observable<LoadableWithTradingPair<TradeWithStatus[]>>,
                                 calls$: Calls$,
-                                context$: Observable<NetworkConfig>)
+                                context$: Observable<NetworkConfig>, 
+                                gasPrice$: Observable<BigNumber>)
   : Observable<MyTradesPropsLoadable> {
   return combineLatest(myTradesKind$, myCurrentTrades$, calls$, context$).pipe(
     map(([kind, loadableTrades, calls, context]) => ({
       kind,
       ...loadableTrades,
-      cancelOffer: calls.cancelOffer,
+      cancelOffer: createCancelOffer(calls$, gasPrice$),
       etherscan: context.etherscan,
       changeKind: (k: MyTradesKindKeys) => myTradesKind$.next(MyTradesKind[k]),
     }))
   );
 }
 
-function createCancelOffer(calls$: Calls$) {
-  return function (offerId: BigNumber):Observable<TxState> {
-    return doGasEstimation(
-      calls$,
-      {
-        gasEstimationStatus: GasEstimationStatus.unset,
-      },
-      (calls) => calls.cancelOfferEstimateGas(cancelData)
-    ).pipe(
-      filter((e) => e.gasEstimationStatus === GasEstimationStatus.calculated),
-      switchMap(e => calls$.pipe(
-        switchMap(calls => calls.cancelOffer({ offerId,   }))
-      ))
-    );
+function createCancelOffer(calls$: Calls$, gasPrice$: Observable<BigNumber>) {
+  return function(cancelData: CancelData) {
+    return calls$.pipe(
+      first(),
+      switchMap(calls => calls.cancelOfferEstimateGas(cancelData)),
+      switchMap(gasEstimation =>
+        combineLatest(calls$, gasPrice$).pipe(
+          first(),
+          switchMap(([calls, gasPrice]) =>
+            calls.cancelOffer({ ...cancelData, gasPrice, gasEstimation}),
+          ),
+        ),
+      ),
+    ).subscribe(console.log);
   };
 }
