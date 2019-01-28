@@ -25,11 +25,11 @@ export class OrderbookView extends React.Component<Props> {
   private tbody?: HTMLElement;
   private spreadRow?: HTMLElement;
 
-  public center() {
+  public center(offset: number = 0) {
     if (this.tbody && this.spreadRow && typeof(this.tbody.scrollTo) === 'function') {
       const firstRow: HTMLElement = this.tbody.children[0] as HTMLElement;
       this.tbody.scrollTo(0, this.spreadRow.offsetTop - firstRow.offsetTop -
-        (this.tbody.clientHeight - firstRow.clientHeight) / 2);
+        (this.tbody.clientHeight - firstRow.clientHeight) / 2 + offset * firstRow.clientHeight);
     }
   }
 
@@ -42,7 +42,7 @@ export class OrderbookView extends React.Component<Props> {
   }
 
   public exit = () => {
-    this.center();
+    this.center(-1);
   }
 
   public render() {
