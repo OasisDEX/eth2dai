@@ -25,6 +25,7 @@ const defaultCalls = {
   offerMakeEstimateGas: () => of(20),
   offerMake: null as any,
   cancelOffer: null as any,
+  cancelOfferEstimateGas: null as any,
   offerMakeDirect: null as any,
   offerMakeDirectEstimateGas: () => of(30),
   setupMTProxy: null as any,

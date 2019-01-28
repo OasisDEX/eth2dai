@@ -8,10 +8,11 @@ import { FormatAmount, FormatPrice } from '../../utils/formatters/Formatters';
 import { Button, ButtonGroup, CloseButton } from '../../utils/forms/Buttons';
 import { ProgressIcon } from '../../utils/icons/Icons';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
+import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { RowClickable, Table } from '../../utils/table/Table';
 import { InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
-import { Trade } from '../trades';
+import { Trade, TradeAct } from '../trades';
 import { MyTradesKind, MyTradesPropsLoadable } from './myTrades';
 import * as styles from './MyTradesView.scss';
 import { TradeWithStatus } from './openTrades';
@@ -19,8 +20,8 @@ import { TradeWithStatus } from './openTrades';
 export class MyTrades extends React.Component<MyTradesPropsLoadable> {
   public render() {
     return (
-      <div className={styles.container}>
-        <PanelHeader>
+      <>
+        <PanelHeader bordered={this.props.status === 'error'}>
           <span>My Orders</span>
           <ButtonGroup style={{ marginLeft: 'auto' }}>
             <Button
@@ -38,7 +39,10 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
           </ButtonGroup>
         </PanelHeader>
 
-        <WithLoadingIndicator loadable={this.props}>
+        <WithLoadingIndicator
+          loadable={this.props}
+          error={this.props.kind === MyTradesKind.closed ? <ServerUnreachable/> : undefined }
+        >
           { (trades: TradeWithStatus[]) => (
             <Table
               scrollable={true}
@@ -97,7 +101,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                           Open
                         </span>
                         <CloseButton data-test-id="cancel"
-                                     onClick={this.cancelOffer(trade.offerId)}
+                                     onClick={this.cancelOffer(trade.offerId, trade.act, trade.baseAmount, trade.baseToken)}
                         />
                       </td>
                     }
@@ -117,13 +121,13 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
           </Table>
         )}
         </WithLoadingIndicator>
-      </div>
+      </>
     );
   }
 
-  public cancelOffer = (offerId: BigNumber) => {
+  public cancelOffer = (offerId:BigNumber, type: TradeAct, amount: BigNumber, token: string) => {
     return (): void => {
-      this.props.cancelOffer({ offerId });
+      this.props.cancelOffer({ offerId, type, amount, token });
     };
   }
 

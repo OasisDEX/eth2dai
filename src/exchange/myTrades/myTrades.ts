@@ -1,4 +1,5 @@
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { BigNumber } from 'bignumber.js';
+import { BehaviorSubject, combineLatest, noop, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { Calls$ } from '../../blockchain/calls/calls';
 import { CancelData } from '../../blockchain/calls/offerMake';
@@ -36,19 +37,21 @@ export function createMyCurrentTrades$(
   );
 }
 
-export function createMyTrades$(myTradesKind$: BehaviorSubject<MyTradesKind>,
-                                myCurrentTrades$:
-                                  Observable<LoadableWithTradingPair<TradeWithStatus[]>>,
-                                calls$: Calls$,
-                                context$: Observable<NetworkConfig>)
-  : Observable<MyTradesPropsLoadable> {
-  return combineLatest(myTradesKind$, myCurrentTrades$, calls$, context$).pipe(
-    map(([kind, loadableTrades, calls, context]) => ({
+export function createMyTrades$(
+  myTradesKind$: BehaviorSubject<MyTradesKind>,
+  myCurrentTrades$: Observable<LoadableWithTradingPair<TradeWithStatus[]>>,
+  calls$: Calls$,
+  context$: Observable<NetworkConfig>,
+  gasPrice$: Observable<BigNumber>,
+): Observable<MyTradesPropsLoadable> {
+  return combineLatest(myTradesKind$, myCurrentTrades$, context$, calls$).pipe(
+    map(([kind, loadableTrades, context, calls]) => ({
       kind,
       ...loadableTrades,
-      cancelOffer: calls.cancelOffer,
+      cancelOffer: (cancelData: CancelData) =>
+        calls.cancelOffer(gasPrice$, cancelData).subscribe(noop),
       etherscan: context.etherscan,
       changeKind: (k: MyTradesKindKeys) => myTradesKind$.next(MyTradesKind[k]),
-    }))
+    })),
   );
 }

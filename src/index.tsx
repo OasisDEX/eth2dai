@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 import { networks } from './blockchain/config';
 import { account$, networkId$ } from './blockchain/network';
 import { Web3Status, web3Status$ } from './blockchain/web3';
-import { LoadingState } from './entry/LoadingState';
+import { LoadingState } from './landingPage/LandingPage';
 import { Main } from './Main';
 import { connect } from './utils/connect';
 import { UnreachableCaseError } from './utils/UnreachableCaseError';
