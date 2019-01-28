@@ -151,15 +151,19 @@ export function send(
         } as TxState),
       );
     }),
-    catchError(error =>
-      of({
+    catchError(error => {
+      if ((error.message as string).indexOf('User denied transaction signature') === -1) {
+        console.error(error);
+      }
+
+      return of({
         ...common,
         error,
         end: new Date(),
         lastChange: new Date(),
         status: TxStatus.CancelledByTheUser,
-      }),
-    ),
+      });
+    }),
     startWith({
       ...common,
       status: TxStatus.WaitingForApproval,
