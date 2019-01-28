@@ -1,5 +1,6 @@
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, filter } from 'rxjs/operators';
+import { doGasEstimation, GasEstimationStatus } from 'src/utils/form';
 import { Calls$ } from '../../blockchain/calls/calls';
 import { CancelData } from '../../blockchain/calls/offerMake';
 import { NetworkConfig } from '../../blockchain/config';
@@ -7,6 +8,8 @@ import { EtherscanConfig } from '../../blockchain/etherscan';
 import { LoadableWithTradingPair } from '../../utils/loadable';
 import { Trade } from '../trades';
 import { TradeWithStatus } from './openTrades';
+import { TxState } from 'src/blockchain/transactions';
+import BigNumber from 'bignumber.js';
 
 export enum MyTradesKind {
   open = 'open',
@@ -51,4 +54,21 @@ export function createMyTrades$(myTradesKind$: BehaviorSubject<MyTradesKind>,
       changeKind: (k: MyTradesKindKeys) => myTradesKind$.next(MyTradesKind[k]),
     }))
   );
+}
+
+function createCancelOffer(calls$: Calls$) {
+  return function (offerId: BigNumber):Observable<TxState> {
+    return doGasEstimation(
+      calls$,
+      {
+        gasEstimationStatus: GasEstimationStatus.unset,
+      },
+      (calls) => calls.cancelOfferEstimateGas(cancelData)
+    ).pipe(
+      filter((e) => e.gasEstimationStatus === GasEstimationStatus.calculated),
+      switchMap(e => calls$.pipe(
+        switchMap(calls => calls.cancelOffer({ offerId,   }))
+      ))
+    );
+  };
 }

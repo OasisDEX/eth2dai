@@ -12,6 +12,8 @@ import { TxMetaKind } from './txMeta';
 
 export interface CancelData {
   offerId: BigNumber;
+  gasPrice: BigNumber;
+  gasEstimation?: number;
 }
 
 export const cancelOffer: TransactionDef<CancelData> = {
