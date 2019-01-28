@@ -15,7 +15,7 @@ export interface Web3Window {
 export interface ProviderMetaData {
   alias: string;
   fullName: string;
-  icon: HTMLObjectElement | string;
+  icon: JSX.Element | string;
 }
 
 export const web3Status$: Observable<Web3Status> = fromEvent(document, 'visibilitychange').pipe(
