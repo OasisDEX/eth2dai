@@ -13,9 +13,9 @@ export interface ApproveWalletData {
 const descriptionIcon = ({ token }: ApproveWalletData) => {
   switch (token) {
     case 'WETH':
-      return <ETHicon />;
+      return <ETHicon theme="circle"/>;
     case 'DAI':
-      return <DAIicon />;
+      return <DAIicon theme="circle"/>;
     default:
       throw new Error(`unknown token ${token}`);
   }
