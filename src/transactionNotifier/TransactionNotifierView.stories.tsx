@@ -132,6 +132,7 @@ const waitingForConfirmationTx: NotificationProps = {
   ...common,
   status: TxStatus.WaitingForConfirmation,
   txHash: 'abc',
+  broadcastedAt: startTime,
 };
 stories.add('Wrap (WaitingForConfirmation)', () => (
   <Notification {...{ ...waitingForConfirmationTx, meta: { ...wrap, args: { amount: zero } } }} />

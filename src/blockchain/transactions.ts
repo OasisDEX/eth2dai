@@ -43,6 +43,7 @@ export type TxState = {
   | {
     status: TxStatus.WaitingForConfirmation;
     txHash: string;
+    broadcastedAt: Date;
   }
   | {
     status: TxStatus.Success;
@@ -145,6 +146,7 @@ export function send(
         startWith({
           ...common,
           txHash,
+          broadcastedAt: new Date(),
           status: TxStatus.WaitingForConfirmation,
         } as TxState),
       );
