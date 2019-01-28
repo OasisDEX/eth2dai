@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Error } from 'tslint/lib/error';
 
 import { OfferType } from '../../exchange/orderbook/orderbook';
+import { TradeAct } from '../../exchange/trades';
 import { OfferMatchType } from '../../utils/form';
 import { Money } from '../../utils/formatters/Formatters';
 import { NetworkConfig } from '../config';
@@ -11,18 +12,23 @@ import { TransactionDef } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
 export interface CancelData {
-  offerId: BigNumber;
+  offerId:BigNumber;
+  type: TradeAct;
+  amount: BigNumber;
+  token: string;
 }
 
 export const cancelOffer: TransactionDef<CancelData> = {
   call: (_data: CancelData, context: NetworkConfig) => context.otc.contract.cancel.uint256,
   prepareArgs: ({ offerId }: CancelData) => [
-    offerId,
+    offerId
   ],
   options: () => ({ gas: 500000 }),
   kind: TxMetaKind.cancel,
-  description: ({ offerId }: CancelData) =>
-    <React.Fragment>Cancel offer {offerId.toString()}</React.Fragment>,
+  description: ({ type, amount, token }: CancelData) =>
+    <React.Fragment>
+      Cancel <span style={{ textTransform: 'capitalize' }}>{type}</span> Order {amount.valueOf()} {token.toUpperCase()}
+    </React.Fragment>,
 };
 
 export interface OfferMakeData {
