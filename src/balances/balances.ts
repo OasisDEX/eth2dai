@@ -13,6 +13,7 @@ import {
 } from 'rxjs/operators';
 
 import { shareReplay } from 'rxjs/internal/operators';
+import { GasPrice$ } from 'src/blockchain/network';
 import { Calls$ } from '../blockchain/calls/calls';
 import { TxMetaKind } from '../blockchain/calls/txMeta';
 import { NetworkConfig, tokens } from '../blockchain/config';
@@ -215,13 +216,13 @@ export function createCombinedBalances$(
   );
 }
 
-export function createWalletApprove(calls$: Calls$) {
+export function createWalletApprove(calls$: Calls$, gasPrice$: GasPrice$) {
   return (token: string): Observable<TxState> => {
     console.log('approve');
     const r = calls$.pipe(
       first(),
       switchMap(calls => {
-        return calls.approveWallet({ token });
+        return calls.approveWallet(gasPrice$, { token });
       })
     );
     r.subscribe();
@@ -229,13 +230,13 @@ export function createWalletApprove(calls$: Calls$) {
   };
 }
 
-export function createWalletDisapprove(calls$: Calls$) {
+export function createWalletDisapprove(calls$: Calls$, gasPrice$: GasPrice$) {
   return (token: string): Observable<TxState> => {
     console.log('disapprove');
     const r = calls$.pipe(
       first(),
       switchMap(calls => {
-        return calls.disapproveWallet({ token });
+        return calls.disapproveWallet(gasPrice$, { token });
       })
     );
     r.subscribe();

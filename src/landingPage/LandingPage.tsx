@@ -1,11 +1,12 @@
 import classnames from 'classnames';
 import * as React from 'react';
+import { getCurrentProviderName } from '../blockchain/web3';
 import { Logo } from '../logo/Logo';
 import { Button } from '../utils/forms/Buttons';
 import { Checkbox } from '../utils/forms/Checkbox';
-import { MetamaskIcon, NetworkIcon } from '../utils/icons/Icons';
+import {  NetworkIcon } from '../utils/icons/Icons';
 import { Client } from './client/Client';
-import * as styles from './LoadingState.scss';
+import * as styles from './LandingPage.scss';
 
 class AcceptTos extends React.Component<any, any> {
 
@@ -25,17 +26,18 @@ class AcceptTos extends React.Component<any, any> {
   }
 
   public render() {
+    const { fullName, icon } = getCurrentProviderName();
     return (
       <section className={styles.section}>
         <Logo className={styles.logo}/>
         <div className={styles.container}>
           <div style={{ justifyContent: 'space-between' }} className={styles.containerTopHalf}>
             <div className={styles.placeholder}>
-              <MetamaskIcon/>
+              {icon}
               <div className={styles.column}>
                 <span className={classnames(styles.label, styles.status)}>Connected</span>
                 {/*TODO: make a list of all wallets and dynamically display the name of the wallet*/}
-                <span className={classnames(styles.label, styles.client)}>Metamask</span>
+                <span className={classnames(styles.label, styles.client)}>{fullName}</span>
               </div>
             </div>
             <Button color="greyWhite"
