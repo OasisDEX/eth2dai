@@ -224,6 +224,11 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
 
   private balanceButtons() {
     const disabled = this.props.stage === 'waitingForApproval';
+    const setMaxSellDisabled = this.props.kind === 'buy' || disabled;
+    const setMaxBuyDisabled = this.props.kind === 'sell' ||
+      this.props.matchType === OfferMatchType.direct ||
+      !this.props.price ||
+      disabled;
 
     return (
     <div className={styles.ownedResourcesInfoBox}>
@@ -232,7 +237,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         onClick={this.handleSetMax}
         size="lg"
         block={true}
-        disabled={this.props.kind === 'buy' || disabled}
+        disabled={setMaxSellDisabled}
         className={styles.balanceBtn}
       >
         { this.props.baseToken && <BalanceIcon token={this.props.baseToken} />}
@@ -247,7 +252,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         onClick={this.handleSetMax}
         size="lg"
         block={true}
-        disabled={this.props.kind === 'sell' || this.props.matchType === OfferMatchType.direct || disabled}
+        disabled={setMaxBuyDisabled}
         className={styles.balanceBtn}
       >
         { this.props.quoteToken && <BalanceIcon token={this.props.quoteToken} />}
