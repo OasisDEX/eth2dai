@@ -12,6 +12,12 @@ export interface Web3Window {
   ethereum?: any;
 }
 
+export interface ProviderMetaData {
+  alias: string;
+  fullName: string;
+  icon: HTMLObjectElement | string;
+}
+
 export const web3Status$: Observable<Web3Status> = fromEvent(document, 'visibilitychange').pipe(
   startWith(null),
   filter(() => !web3),
@@ -42,7 +48,7 @@ export function setupFakeWeb3ForTesting() {
   web3 = new Web3();
 }
 
-export const getCurrentProviderName = (provider = (window as Web3Window).web3.currentProvider) => {
+export const getCurrentProviderName = (provider = (window as Web3Window).web3.currentProvider): ProviderMetaData => {
   if (provider.isMetaMask) {
     return {
       alias:'metamask',
@@ -109,7 +115,7 @@ export const getCurrentProviderName = (provider = (window as Web3Window).web3.cu
 
   return {
     alias:'other',
-    fullname:'Oher',
+    fullName:'Other',
     icon: ProviderIcons.ETHEREUM
   };
 };
