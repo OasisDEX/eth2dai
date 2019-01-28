@@ -2,6 +2,7 @@ import { curry, fromPairs, isEqual, toPairs } from 'lodash';
 import * as moment from 'moment';
 import { BehaviorSubject, bindNodeCallback, combineLatest, Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
+import { takeWhile } from 'rxjs/internal/operators';
 import {
   distinctUntilChanged,
   exhaustMap,
@@ -74,7 +75,7 @@ function logTakes$(context: NetworkConfig, block: number) {
   const logTake = context.otc.contract.LogTake(
     { pair },
     {
-      fromBlock: block - blockStep + 1,
+      fromBlock: Math.max(0, block - blockStep + 1),
       toBlock: block
     }
   );
@@ -89,7 +90,12 @@ function createBlocks$(latestBlock: number, step: number): [Observable<number>, 
     setTimeout(() => current.next(current.getValue() - step), 0);
   }
 
-  return [current, nextBlock];
+  return [
+    current.pipe(
+      takeWhile(block => block >= 0)
+    ),
+    nextBlock
+  ];
 }
 
 export function createVulcan0xDelay$(
