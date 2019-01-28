@@ -1,4 +1,3 @@
-// tslint:disable:no-console
 import * as React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Subject } from 'rxjs';
@@ -8,6 +7,7 @@ import { formatDateTime } from '../../utils/formatters/format';
 import { FormatAmount, FormatPrice } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
+import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { RowClickable, Table } from '../../utils/table/Table';
 import { InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
@@ -21,9 +21,12 @@ export class AllTrades extends React.Component<AllTradesProps> {
       more$.next(true);
     };
     return (
-      <div>
+      <>
         <PanelHeader>Trade history</PanelHeader>
-        <WithLoadingIndicator loadable={this.props}>
+        <WithLoadingIndicator
+          loadable={this.props}
+          error={<ServerUnreachable/>}
+        >
           { ({ trades, loading, nextPageStart, more$ }) => (<Table align="right"
                                          scrollable={true}
                                          className={styles.allTradesTable}>
@@ -75,7 +78,7 @@ export class AllTrades extends React.Component<AllTradesProps> {
             </TransitionGroup>
           </Table>) }
         </WithLoadingIndicator>
-      </div>
+      </>
     );
   }
 

@@ -6,6 +6,9 @@ import { NavLink } from 'react-router-dom';
 import { tokens, tradingPairs } from '../../blockchain/config';
 import { FormatAmount, FormatPercent, FormatPrice } from '../../utils/formatters/Formatters';
 import { WithLoadingIndicatorInline } from '../../utils/loadingIndicator/LoadingIndicator';
+import {
+  ServerUnreachableInline
+} from '../../utils/loadingIndicator/ServerUnreachable';
 import { BoundarySpan, InfoLabel } from '../../utils/text/Text';
 import { TradingPair, TradingPairsProps } from './tradingPair';
 import * as styles from './TradingPairView.scss';
@@ -59,7 +62,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
   public static PairInfoVP({ value, label }: PairInfoVP) {
     return (
       <div className={styles.pairInfo}>
-        <span>{value}</span>
+        {value}
         <InfoLabel className={styles.pairInfoLabel}>{label}</InfoLabel>
       </div>
     );
@@ -114,7 +117,11 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
         </div>
 
         <TradingPairView.PairInfoVP label="Current price" value={
-          <WithLoadingIndicatorInline loadable={currentPrice} className={styles.pairInfo}>
+          <WithLoadingIndicatorInline
+            error={<ServerUnreachableInline fallback="-"/>}
+            loadable={currentPrice}
+            className={styles.pairInfo}
+          >
             {(currentPriceLoaded?: BigNumber) => (
               currentPriceLoaded ?
                 <FormatPrice value={currentPriceLoaded} token={quote} /> :
@@ -123,7 +130,11 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
           </WithLoadingIndicatorInline>
         } />
         <TradingPairView.PairInfoVP label="24h price" value={
-          <WithLoadingIndicatorInline loadable={yesterdayPriceChange} className={styles.pairInfo}>
+          <WithLoadingIndicatorInline
+            error={<ServerUnreachableInline fallback="-"/>}
+            loadable={yesterdayPriceChange}
+            className={styles.pairInfo}
+          >
             {(yesterdayPriceChangeLoaded?: BigNumber) => (
               yesterdayPriceChangeLoaded ?
                 <TradingPairView.YesterdayPriceVP
@@ -134,7 +145,11 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
           </WithLoadingIndicatorInline>
         } />
         <TradingPairView.PairInfoVP label="24h volume" value={
-          <WithLoadingIndicatorInline loadable={weeklyVolume} className={styles.pairInfo}>
+          <WithLoadingIndicatorInline
+            loadable={weeklyVolume}
+            className={styles.pairInfo}
+            error={<ServerUnreachableInline fallback="-"/>}
+          >
             {(weeklyVolumeLoaded: BigNumber) => (
               <FormatAmount value={weeklyVolumeLoaded} token={quote} />
             )}
