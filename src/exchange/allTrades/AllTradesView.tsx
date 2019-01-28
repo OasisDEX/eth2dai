@@ -21,7 +21,9 @@ export class AllTrades extends React.Component<AllTradesProps> {
     };
     return (
       <>
-        <PanelHeader>Trade history</PanelHeader>
+        <PanelHeader
+          bordered={this.props.status === 'error'}
+        >Trade history</PanelHeader>
         <WithLoadingIndicator
           loadable={this.props}
           error={<ServerUnreachable/>}
