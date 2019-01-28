@@ -4,7 +4,22 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1em;
+  margin-top: 1em;
+  margin-bottom: 0.75em;
+
+  .logo {
+    width: 132px;
+    max-height: 37px;
+    margin: auto 1.5em auto auto;
+
+    &:hover {
+      :global {
+        #bg{
+          fill-opacity: 0.35;
+        }
+      }
+    }
+  }
 }
 
 section {

@@ -1,5 +1,6 @@
 import { cypressVisitWithWeb3 } from '../utils/index';
 
+import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
 import { Order } from '../pages/Order';
 import { Orderbook, OrderType } from '../pages/Orderbook';
@@ -10,6 +11,7 @@ describe('Buy Order', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
+    ApplicationState.acceptToS();
 
     // Doing this because I don't have have enough funds on this account :)
     Trades

@@ -39,28 +39,39 @@
 // input heights list to be consistent across universe
 // key is input height name, value is height value
 $inputHeight: (
-  sm: 26px,
+  xs: 26px,
+  sm: 30px,
   md: 32px,
   lg: 38px,
   unsized: auto,
 );
 
+$inputFontSize: (
+  xs: 14px,
+  sm: 14px,
+  md: 14px,
+  lg: 14px,
+  unsized: auto,
+);
+
+@mixin formInputSize($name) {
+  .#{$name} {
+    height: map-get($inputHeight, $name);
+    font-size: map-get($inputFontSize, $name);
+  }
+}
 // generate class for input heights
 // If $name is given, generate only this one given class (f.e. .lg)
 // otherwise generate all possible classes.
 // Generation base on $inputHeight map
-@mixin formInputHeights($name: null) {
-  @if($name) {
-    @if map-has-key($inputHeight, $name) {
-      .#{$name} {
-        height: map-get($inputHeight, $name);
-      }
-    }
+@mixin formInputSizes($sizeName: null) {
+  @if($sizeName) {
+    // generate only for one given size
+    @include formInputSize($sizeName);
   } @else {
+    // generate for all sizes given in inputHeights map
     @each $name, $value in $inputHeight {
-      .#{$name} {
-        height: $value;
-      }
+      @include formInputSize($name);
     }
   }
 }

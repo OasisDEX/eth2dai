@@ -15,6 +15,7 @@ const defaultCalls = {
   offerMakeEstimateGas: () => of(20),
   offerMake: null as any,
   cancelOffer: null as any,
+  cancelOfferEstimateGas: null as any,
   offerMakeDirect: null as any,
   offerMakeDirectEstimateGas: null as any,
   setupMTProxy: null as any,
@@ -63,7 +64,7 @@ describe('Wrapping' , () => {
 
     expect(unpack(controller).readyToProceed).toBeFalsy();
     expect(unpack(controller).messages.length).toBe(1);
-    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount });
+    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount, token: 'ETH' });
   });
 
   test('negative amount', () => {
@@ -135,7 +136,7 @@ describe('Unwrapping', () => {
 
     expect(unpack(controller).readyToProceed).toBeFalsy();
     expect(unpack(controller).messages.length).toBe(1);
-    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount });
+    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount, token: 'WETH' });
   });
 
   test('negative amount', () => {

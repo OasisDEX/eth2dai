@@ -70,7 +70,7 @@ const Content = (props: any | { parentMatch: string }) => {
         </Panel>
       </FlexLayoutRow>
       <FlexLayoutRow>
-        <Panel style={{ flexGrow: 1 }} footerBordered={true}>
+        <Panel style={{ flexGrow: 1, minHeight: '230px' }} footerBordered={true}>
           <theAppContext.Consumer>
             { ({ MyTradesTxRx }) =>
               <MyTradesTxRx />

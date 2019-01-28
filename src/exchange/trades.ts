@@ -76,7 +76,7 @@ export const getTrades = (
   const accountVal = filters.account ? (web3 as any).toChecksumAddress(filters.account) : null;
 
   const fields = ['offerId', 'maker', 'bidAmt', 'bidTkn', 'lotAmt', 'block', 'time', 'tx'];
-  const order = 'TIME_DESC';
+  const order = `[TIME_DESC, IDX_DESC]`;
   const filter = {
     or: [
       {
@@ -108,7 +108,14 @@ export const getTrades = (
     } : {},
   };
 
-  return vulcan0x(context.oasisDataService.url, 'allOasisTrades', {}, filter, fields, order).pipe(
+  return vulcan0x(
+    context.oasisDataService.url,
+    'allOasisTrades',
+    {},
+    filter,
+    fields,
+    order
+  ).pipe(
     map(trades => trades.map(parseTrade(accountVal, quoteToken, baseToken, quoteToken)))
   );
 };

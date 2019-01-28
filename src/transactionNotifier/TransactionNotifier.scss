@@ -5,24 +5,24 @@
     right: 1em;
     top: 1em;
     z-index: 10;
-}
-
-.block {
+  }
+  
+  .block {
     position: relative;
-    padding: 18px 24px;
+    padding: 16px 24px 16px 16px;
     margin: 10px 18px 24px 18px;
     background-color: $grey-darkest;
     border: 1px solid $grey-darken-darkest;
+    border-radius: 4px;
     box-shadow: 0 0 4px 1px rgba(black, 0.20);
     font-size: 14px;
     width: 350px;
 }
 
 .title {
-  font-weight: 600;
-  font-size: $font-size-base;
-  letter-spacing: 0.36px;
-  margin-bottom: 0.75em;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+  margin-top: 5px;
 }
 
 .close {
@@ -35,6 +35,40 @@
     &:hover {
         background-color: #eee;
     }
+}
+
+.icon {
+  width: 44px;
+  height: 50px;
+  float: left;
+  margin-top: 7px;
+}
+
+.icon-inner {
+  width: 32px;
+  height: 32px;
+}
+
+.description {
+  color: $grey-light;
+}
+
+.cross {
+  border-radius: 100%;
+  background-color: $grey-dark;
+  height: 1.5em;
+  width: 1.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  cursor: pointer;
+
+  &:hover,&:focus {
+    opacity: 0.8;
+  }
 }
 
 :global(.transaction-enter) {

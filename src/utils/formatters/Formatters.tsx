@@ -42,7 +42,7 @@ export const FormatAmount = (props: FormatAmountProps) => {
   if (greyed) {
     return <FormatNumber formatter={formatAmount} value={value as BigNumber} {...props} />;
   }
-  return <span {...spanProps}>{formatAmount(value as BigNumber, token)}</span>;
+  return <span title={value && value.toString()} {...spanProps}>{formatAmount(value as BigNumber, token)}</span>;
 };
 
 export const FormatPrice: React.SFC<any> = ({ ...props } : any) =>

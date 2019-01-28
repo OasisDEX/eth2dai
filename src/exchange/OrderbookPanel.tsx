@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { map } from 'rxjs/operators';
 import { Button } from '../utils/forms/Buttons';
-import { Select } from '../utils/forms/Select';
 import { PanelHeader } from '../utils/panel/Panel';
 import { ZoomChange } from './depthChart/depthchart';
 
@@ -36,7 +35,12 @@ export class OrderbookPanel extends React.Component<OrderbookPanelProps & SubVie
     return (
       <div style={{ width: this.props.kind === OrderbookViewKind.depthChart ? '508px' : '452px' }}>
         <PanelHeader bordered={this.props.kind === OrderbookViewKind.depthChart}>
-          <span>Order book</span>
+          <span>
+            {
+              this.props.kind === OrderbookViewKind.depthChart ?
+              'Depth chart' : 'Order book'
+            }
+          </span>
           <div style={{ marginLeft: 'auto', display: 'flex' }}>
             {this.props.kind === OrderbookViewKind.depthChart &&
               <div>
@@ -44,17 +48,17 @@ export class OrderbookPanel extends React.Component<OrderbookPanelProps & SubVie
                 <Button style={btnStyles} onClick={this.zoomIn}><PlusBtn /></Button>
               </div>
             }
-            <Select data-test-id="orderbook-type"
-              onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                this.props.kindChange(event.target.value as OrderbookViewKind)}
-              value={this.props.kind}>
-              <option data-test-id="orders-depth-chart" value={OrderbookViewKind.depthChart}>
-                Depth chart
-              </option>
-              <option data-test-id="orders-list" value={OrderbookViewKind.list}>
-                List
-              </option>
-            </Select>
+            <Button
+              style={{ ...btnStyles, marginRight:'0' }}
+              onClick={this.changeChartListView}
+              data-test-id={`orderbook-type-${this.props.kind}`}
+            >
+              {
+                this.props.kind === OrderbookViewKind.depthChart ?
+                  <ToListSwitchBtn/> :
+                  <ToChartSwitchBtn/>
+              }
+            </Button>
           </div>
         </PanelHeader>
           {
@@ -72,6 +76,11 @@ export class OrderbookPanel extends React.Component<OrderbookPanelProps & SubVie
 
   private zoomOut = () => {
     this.props.zoomChange('zoomOut');
+  }
+
+  private changeChartListView = () => {
+    this.props.kindChange(this.props.kind === OrderbookViewKind.depthChart ?
+      OrderbookViewKind.list : OrderbookViewKind.depthChart);
   }
 }
 
@@ -92,6 +101,31 @@ export class PlusBtn extends React.PureComponent {
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
         <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    );
+  }
+}
+
+export class ToListSwitchBtn extends React.PureComponent {
+  public render() {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    );
+  }
+}
+
+export class ToChartSwitchBtn extends React.PureComponent {
+  public render() {
+    return (
+      <svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1">
+          <g transform="translate(-6.000000, -6.000000)" fill="white" fillRule="nonzero">
+            <g transform="translate(3.000000, 3.000000)">
+              <path d="M19,3 L5,3 C3.9,3 3,3.9 3,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,5 C21,3.9 20.1,3 19,3 Z M10,19 L5,19 L5,12 L12,12 L12,17 C12,18.1045695 11.1045695,19 10,19 Z M19,12 L12,12 L12,7 C12,5.8954305 12.8954305,5 14,5 L19,5 L19,12 Z"/>
+            </g>
+        </g>
       </svg>
     );
   }

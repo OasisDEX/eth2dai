@@ -17,7 +17,7 @@
 }
 
 // ----------- sizes
-@include formInputHeights();
+@include formInputSizes();
 .sm, .md {
   .addon, input {
     font-size: 12px;

@@ -158,7 +158,7 @@ export type StageChange =
 export type OfferFormChange = ManualChange | EnvironmentChange | StageChange;
 
 function offerMakeData(state: OfferFormState): OfferMakeData {
-  const { amount, total, baseToken, quoteToken, position, kind, matchType, gasPrice } = state;
+  const { amount, total, baseToken, quoteToken, position, kind, matchType, gasPrice, gasEstimation } = state;
   const buySell = kind === OfferType.buy ? {
     buyAmount: amount as BigNumber, buyToken: baseToken,
     sellAmount: total as BigNumber, sellToken: quoteToken
@@ -167,20 +167,26 @@ function offerMakeData(state: OfferFormState): OfferMakeData {
     sellAmount: amount as BigNumber, sellToken: baseToken
   };
   return {
-    ...buySell, matchType, position, kind, gasPrice: gasPrice as BigNumber
+    ...buySell,
+    matchType,
+    position,
+    kind,
+    gasEstimation,
+    gasPrice: gasPrice as BigNumber,
   };
 }
 
 function offerMakeDirectData(state: OfferFormState): OfferMakeDirectData {
   const {
     amount, total, baseToken, quoteToken, price,
-    kind, slippageLimit, matchType, gasPrice
+    kind, slippageLimit, matchType, gasPrice, gasEstimation
   } = state;
   return {
     baseToken,
     quoteToken,
     matchType,
     kind,
+    gasEstimation,
     baseAmount: amount as BigNumber,
     quoteAmount: (total as BigNumber)
       .times(new BigNumber(1)
@@ -229,7 +235,7 @@ function directMatchState(state: OfferFormState,
     price,
     total: price && amount && amount.times(price),
     priceImpact: price && orders[0] &&
-    (price.minus(orders[0].price).dividedBy(orders[0].price)).times(100),
+    (price.minus(orders[0].price).dividedBy(orders[0].price)).times(100).abs(),
     matchType: OfferMatchType.direct,
     gasEstimationStatus: GasEstimationStatus.unset
   };

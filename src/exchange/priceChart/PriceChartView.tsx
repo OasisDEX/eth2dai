@@ -10,16 +10,23 @@ import { GroupMode, groupModeMapper, PriceChartDataPoint } from './pricechart';
 import * as styles from './PriceChartView.scss';
 
 const margin = { top: 5, right: 45, bottom: 40, left: 10 };
-const width = 450;
+const width = 440;
 const height = 270;
-const bars = { width: 8, padding: 2, delta: -4 };
+const bars = { width: 7, padding: 2, delta: -4 };
+const maxDataLength = 38;
 
-const chartSize = {
+const bothChartSize = {
   width: width - margin.left - margin.right, // chart's width
   height: height - margin.top - margin.bottom, // chart's height
 };
+
+const candleChartSize = {
+  width: bothChartSize.width, // candle chart's width
+  height: bothChartSize.height * 4 / 5, // chart's height
+};
 const volumeChartSize = {
-  height: chartSize.height / 5,
+  width: bothChartSize.width, // chart's width
+  height: bothChartSize.height / 5,
 };
 
 export interface PriceChartInternalProps {
@@ -44,7 +51,7 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
   public render() {
 
     const data = this.props.data
-      .slice(-38);
+      .slice(-maxDataLength);
     const groupModeMap = groupModeMapper[this.props.groupMode];
     const chart = createElement('div');
 
@@ -65,26 +72,39 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
     const xScale = d3.scaleTime()
       .domain([minimalDate, maximalDate])
       // .nice(d3.timeDay)
-      .range([0, chartSize.width]);
+      .range([0, bothChartSize.width]);
 
     let minimal: number  = d3.min(data, d => d.low) || 0;
     let maximal: number  = d3.max(data, d => d.high) || 100;
     const minMaxDiff = maximal - minimal;
-    minimal = minimal - minMaxDiff * 0.4; // make space for volume chart
+    minimal = minimal - minMaxDiff * 0.1; // make bottom margin
     maximal = Math.max(maximal + minMaxDiff * 0.1, minimal); // make top margin
     // degenerated data -- expand domain a little
     if (minimal === maximal) {
       minimal *= 0.9;
       maximal *= 1.1;
     }
-    const yScale = d3.scaleLinear()
+    const yCandleScale = d3.scaleLinear()
       .domain([minimal, maximal])
-      .range([chartSize.height, 0])
+      .range([candleChartSize.height, 0])
       .nice();
 
-    axes(data, svgMainGraphic, xScale, yScale, groupModeMap.format);
-    barChart(data, svgMainGraphic, xScale, this.state.hoverId);
-    candleChart(data, svgMainGraphic, xScale, yScale, this.state.hoverId);
+    const volumeMaximal = Math.ceil((d3.max(data, d => d.turnover) || 10) * 1.1);
+    const yVolumeScale = d3.scaleLinear()
+      .domain([0, volumeMaximal * 1.4]) // multiply to add space at top of volume
+                                                // in case the candle label is at the bottom
+      .range([volumeChartSize.height, 0]);
+
+    axes(data,
+         svgMainGraphic,
+         xScale,
+         yCandleScale,
+         yVolumeScale,
+         volumeMaximal,
+         groupModeMap.format
+    );
+    volumeChart(data, svgMainGraphic, xScale, yVolumeScale, this.state.hoverId);
+    candleChart(data, svgMainGraphic, xScale, yCandleScale, this.state.hoverId);
     hoverBarChart(data, svgMainGraphic, xScale);
 
     svgMainGraphic.select('.hoverbar').selectAll('rect')
@@ -95,7 +115,11 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
         this.setState({ hoverId: -1 });
       });
 
-    return (<div style={{ position: 'relative' }}>
+    return (<div style={{
+      position: 'relative',
+      display: 'flex',
+      justifyContent: 'center',
+    }}>
         {chart.toReact()}
         <DataDetails data={this.state.hoverData}
                      timestampFormat={groupModeMap.format}
@@ -125,25 +149,21 @@ function hoverBarChart(data: PriceChartDataPoint[],
     .style('fill', 'transparent')
     .attr('x', (d) => xScale(d.timestamp) + bars.delta)
     .attr('y', _d => 0)
-    .attr('height', _d => chartSize.height)
+    .attr('height', _d => bothChartSize.height)
     .attr('width', bars.width);
 }
 
-function barChart(data: PriceChartDataPoint[],
-                  svgContainer: Selection<BaseType, any, null, undefined>,
-                  xScale: ScaleTime<number, number>,
-                  hoverId: number,
+function volumeChart(data: PriceChartDataPoint[],
+                     svgContainer: Selection<BaseType, any, null, undefined>,
+                     xScale: ScaleTime<number, number>,
+                     yVolumeScale: ScaleLinear<number, number>,
+                     hoverId: number,
 ) {
   const svg = svgContainer
     .append('g')
     .attr('transform',
-          `translate(0, ${chartSize.height - volumeChartSize.height})`)
+          `translate(0, ${candleChartSize.height - 0.3 })`)
     .classed('volume', true);
-
-  const maximal = d3.max(data, d => d.turnover) || 10;
-  const yScale = d3.scaleLinear()
-    .domain([0, maximal])
-    .range([volumeChartSize.height, 0]);
 
   const mbar = svg.selectAll('.bar')
     .data([data])
@@ -156,8 +176,8 @@ function barChart(data: PriceChartDataPoint[],
     .attr('class', (_d, i) => hoverId === i ? styles.hoved : '')
     .classed(styles.volume, true)
     .attr('x', (d) => xScale(d.timestamp) + bars.delta)
-    .attr('y', d => yScale(d.turnover))
-    .attr('height', d => yScale(0) - yScale(d.turnover))
+    .attr('y', d => yVolumeScale(d.turnover))
+    .attr('height', d => yVolumeScale(0) - yVolumeScale(d.turnover))
     .attr('width', bars.width);
 }
 
@@ -212,7 +232,9 @@ function candleChart(data: PriceChartDataPoint[],
 function axes(_data: PriceChartDataPoint[],
               svgContainer: Selection<BaseType, any, null, undefined>,
               xScale: ScaleTime<number, number>,
-              yScale: ScaleLinear<number, number>,
+              yCandleScale: ScaleLinear<number, number>,
+              yVolumeScale: ScaleLinear<number, number>,
+              volumeMaximal: number,
               xTimestampFormat: string,
 ) {
   const svg = svgContainer
@@ -223,34 +245,53 @@ function axes(_data: PriceChartDataPoint[],
   // .ticks(d3.timeDay.every(1))
     .tickPadding(10)
     .ticks(5)
-    .tickSize(chartSize.height)
+    .tickSize(bothChartSize.height)
     .tickFormat((d: any) => moment(d).format(xTimestampFormat));
 
-  const yGridAxis = d3.axisRight(yScale)
-    .scale(yScale)
-    .tickSize(chartSize.width)
-    .ticks(Math.floor(chartSize.height / 50));
+  const yCandleGridAxis = d3.axisRight(yCandleScale)
+    .scale(yCandleScale)
+    .tickSize(candleChartSize.width)
+    .ticks(Math.floor(candleChartSize.height / 50));
+
+  const yVolumeGridAxis = d3.axisRight(yVolumeScale)
+    .scale(yVolumeScale)
+    .tickSize(volumeChartSize.width)
+    .tickValues([volumeMaximal]);
 
   const xAxisGroup = svg.append<SVGGraphicsElement>('g')
     .attr('class', 'axis xaxis')
     .call(xGridAxis);
 
-  const yAxisGroup = svg.append<SVGGraphicsElement>('g')
-    .attr('class', 'axis yaxis')
-    .call(yGridAxis);
+  const yCandleAxisGroup = svg.append<SVGGraphicsElement>('g')
+    .attr('class', 'axis yaxisCandle')
+    .call(yCandleGridAxis);
+
+  const yVolumeAxisGroup = svg.append<SVGGraphicsElement>('g')
+    .attr('class', 'axis yaxisVolume')
+    .attr('transform', `translate(0, ${bothChartSize.height - volumeChartSize.height})`)
+    .call(yVolumeGridAxis);
 
   const xDomainAxisGroup = svg.append<SVGGraphicsElement>('g')
     .attr('class', 'axis xaxisdomain')
-    .attr('transform', `translate(0, ${chartSize.height})`)
+    .attr('transform', `translate(0, ${bothChartSize.height})`)
     .call(xGridAxis
       .tickFormat(_d => '')
       .tickSizeOuter(0)
       .tickSizeInner(5));
 
-  const yDomainAxisGroup = svg.append<SVGGraphicsElement>('g')
-    .attr('class', 'axis yaxisdomain')
-    .attr('transform', `translate(${chartSize.width}, 0)`)
-    .call(yGridAxis
+  const yCandleDomainAxisGroup = svg.append<SVGGraphicsElement>('g')
+    .attr('class', 'axis yaxisdomainCandle')
+    .attr('transform', `translate(${candleChartSize.width}, 0)`)
+    .call(yCandleGridAxis
+      .tickFormat(_d => '')
+      .tickSizeOuter(0)
+      .tickSizeInner(0));
+
+  const yVolumeDomainAxisGroup = svg.append<SVGGraphicsElement>('g')
+    .attr('class', 'axis yaxisdomainVolume')
+    .attr('transform',
+          `translate(${bothChartSize.width}, ${bothChartSize.height - volumeChartSize.height})`)
+    .call(yVolumeGridAxis
       .tickFormat(_d => '')
       .tickSizeOuter(0)
       .tickSizeInner(0));
@@ -264,7 +305,12 @@ function axes(_data: PriceChartDataPoint[],
   // hide grid domain
   xAxisGroup.selectAll('.domain')
     .attr('visibility', 'hidden');
-  yAxisGroup.selectAll('.domain')
+  yCandleAxisGroup.selectAll('.domain')
+    .attr('visibility', 'hidden');
+  yVolumeAxisGroup.selectAll('.domain')
+    .attr('visibility', 'hidden');
+  // hide volume ticks
+  yVolumeAxisGroup.selectAll('.tick')
     .attr('visibility', 'hidden');
 
   // style x domain
@@ -275,8 +321,11 @@ function axes(_data: PriceChartDataPoint[],
     .classed(styles.axisLineMain, true);
 
   // style y domain
-  yDomainAxisGroup.selectAll('.domain')
+  yCandleDomainAxisGroup.selectAll('.domain')
     .classed(styles.axisLineMain, true);
+  yVolumeDomainAxisGroup.selectAll('.domain')
+    .classed(styles.axisLineMain, true)
+    .classed(styles.axisYVolumeLineMain, true);
 
   // ----- style text -------
   // style x labels
@@ -284,7 +333,7 @@ function axes(_data: PriceChartDataPoint[],
     .classed(styles.axisXMainLabel, true);
 
   // style y labels
-  yAxisGroup.selectAll('.tick text')
+  yCandleAxisGroup.selectAll('.tick text')
     .classed(styles.axisYMainLabel, true);
 }
 
@@ -299,7 +348,11 @@ const DataDetails = ({ data, timestampFormat, defaultData }: {
       <div className={styles.infoBoxItem}><Muted>O</Muted> {curr.open && curr.open.toFixed(2)}</div>
       <div className={styles.infoBoxItem}><Muted>H</Muted> {curr.high && curr.high.toFixed(2)}</div>
       <div className={styles.infoBoxItem}><Muted>L</Muted> {curr.low && curr.low.toFixed(2)}</div>
-      <div className={styles.infoBoxItem}><Muted>C</Muted> {curr.close && curr.close.toFixed(2)}
+      <div className={styles.infoBoxItem}>
+        <Muted>C</Muted> {curr.close && curr.close.toFixed(2)}
+      </div>
+      <div className={styles.infoBoxItem}>
+        <Muted>V</Muted> {curr.turnover && curr.turnover.toFixed(2)}
       </div>
       <div className={styles.infoBoxItem}>{curr.timestamp
                        && moment(curr.timestamp).format(timestampFormat)}</div>

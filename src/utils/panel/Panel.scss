@@ -1,6 +1,7 @@
 @import "../Variables";
 
 $panel-padding-horizontal: 16px;
+$panel-padding-vertical: 12px;
 
 
 // panel
@@ -9,6 +10,8 @@ $panel-padding-horizontal: 16px;
   border: 1px solid $grey-darken-darkest;
   box-shadow: 0 0 4px 1px rgba(black, 0.20);
   border-radius: $border-radius;
+  display: flex;
+  flex-direction: column;
 }
 
 .panelWithFooterBordered {
@@ -30,14 +33,16 @@ $panel-padding-horizontal: 16px;
 .panelHeader {
   display: flex;
   align-items: center;
-  padding: 12px $panel-padding-horizontal;
+  padding: $panel-padding-vertical $panel-padding-horizontal;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.36px;
   min-height: 64px;
 }
 
 .panelHeaderBordered {
+  padding-bottom: $panel-padding-vertical - 1px;  // adding border makes header 1px higher,
+                                                  // so subtract this 1px from bottom padding
   border-bottom: 1px solid $grey-dark;
 }
 

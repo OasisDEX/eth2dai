@@ -95,6 +95,7 @@ module.exports = {
       '.json',
       '.web.jsx',
       '.jsx',
+      '.scss'
     ],
     alias: {
 
@@ -302,7 +303,6 @@ module.exports = {
       async: false,
       watch: paths.appSrc,
       tsconfig: paths.appTsConfig,
-      tslint: paths.appTsLint,
     }),
     buildInfo,
   ],

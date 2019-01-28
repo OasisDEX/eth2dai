@@ -1,8 +1,8 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
 
-import * as ReactDOM from 'react-dom';
 import { tokens } from '../../blockchain/config';
 import { BigNumberInput } from '../../utils/bigNumberInput/BigNumberInput';
 import { FormChangeKind, OfferMatchType } from '../../utils/form';
@@ -120,7 +120,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   private orderTypePicker() {
     return <div className={styles.picker}>
       <PanelHeader bordered={true}>
-        Choose ordertype
+        Choose order type
       </PanelHeader>
 
       <PanelBody paddingVertical={true} className={styles.pickerBody}>
@@ -199,6 +199,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   }
 
   private headerButtons() {
+    const disabled = this.props.stage === 'waitingForApproval';
     return (
       <ButtonGroup className={styles.btnGroup}>
         <Button
@@ -206,18 +207,24 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.buy)}
           color={ this.props.kind === 'buy' ? 'green' : 'grey' }
+          disabled={disabled}
+          size="sm"
         >Buy</Button>
         <Button
           data-test-id="new-sell-order"
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.sell)}
           color={ this.props.kind === 'sell' ? 'red' : 'grey' }
+          disabled={disabled}
+          size="sm"
         >Sell</Button>
       </ButtonGroup>
     );
   }
 
   private balanceButtons() {
+    const disabled = this.props.stage === 'waitingForApproval';
+
     return (
     <div className={styles.ownedResourcesInfoBox}>
       <Button
@@ -225,7 +232,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         onClick={this.handleSetMax}
         size="lg"
         block={true}
-        disabled={this.props.kind === 'buy'}
+        disabled={this.props.kind === 'buy' || disabled}
         className={styles.balanceBtn}
       >
         { this.props.baseToken && <BalanceIcon token={this.props.baseToken} />}
@@ -240,7 +247,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         onClick={this.handleSetMax}
         size="lg"
         block={true}
-        disabled={this.props.kind === 'sell' || this.props.matchType === OfferMatchType.direct}
+        disabled={this.props.kind === 'sell' || this.props.matchType === OfferMatchType.direct || disabled}
         className={styles.balanceBtn}
       >
         { this.props.quoteToken && <BalanceIcon token={this.props.quoteToken} />}
@@ -255,6 +262,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   }
 
   private orderType() {
+    const disabled = this.props.stage === 'waitingForApproval';
     return (
       <div className={styles.summary} style={{ marginBottom: '16px' }}>
         <Button
@@ -263,6 +271,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           data-test-id="select-order-type"
           type="button"
           onClick={this.handleOpenPicker}
+          disabled={disabled}
         >
           {this.orderTypes[this.props.matchType]}
         </Button>
@@ -511,19 +520,34 @@ const Error = ({ field, messages } : { field: string, messages?: Message[] }) =>
 function messageContent(msg: Message) {
   switch (msg.kind) {
     case MessageKind.noAllowance:
-      return `Trading of ${msg.token} tokens has not been enabled`;
+      return <span>
+        {`Unlock ${msg.token} for Trading in the `}
+        <a href="/balances" style={{ whiteSpace: 'nowrap' }}>Balances Page</a>
+      </span>;
     case MessageKind.insufficientAmount:
-      return  `Your ${msg.token} balance is too low to fund this order`;
+      return  <>
+        {`Your ${msg.token} balance is too low to fund this order`}
+      </>;
     case MessageKind.dustAmount:
-      return `Order below ${msg.amount} ${msg.token} limit`;
+      return <>
+        {`Order below ${msg.amount} ${msg.token} limit`}
+      </>;
     case MessageKind.incredibleAmount:
-      return `Your order exceeds max amount for ${msg.token} token`;
+      return <>
+        {`Your order exceeds max amount for ${msg.token} token`}
+      </>;
     case MessageKind.slippageLimitToLow:
-      return `Slippage limit to low`;
+      return <>
+        Slippage limit too low
+      </>;
     case MessageKind.slippageLimitToHigh:
-      return `Slippage limit to high`;
+      return <>
+        Slippage limit too high
+      </>;
     case MessageKind.slippageLimitNotSet:
-      return `Slippage limit is necessary`;
+      return <>
+        Slippage limit is necessary
+      </>;
   }
 }
 

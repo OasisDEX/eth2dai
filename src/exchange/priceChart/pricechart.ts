@@ -19,9 +19,9 @@ export interface PriceChartDataPoint {
 export type GroupMode = 'byMonth' | 'byWeek' | 'byDay' | 'byHour';
 
 export const groupModeMapper: { [key in GroupMode]: {addUnit: string, format: string} } = {
-  byMonth: { addUnit: 'month', format: 'YY-MM' },
-  byWeek: { addUnit: 'weeks', format: 'MM-DD' },
-  byDay: { addUnit: 'days', format: 'MM-DD' },
+  byMonth: { addUnit: 'month', format: 'YYYY MMM' },
+  byWeek: { addUnit: 'weeks', format: 'MMM DD' },
+  byDay: { addUnit: 'days', format: 'MMM DD' },
   byHour: { addUnit: 'hours', format: 'HH:mm' },
 };
 

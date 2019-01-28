@@ -75,15 +75,26 @@
   color: $grey-lightest;
 }
 
+.axisYVolumeLabel {
+  font-family: $font-additional; // Lato
+  color: $grey-lightest;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 .axisXMainLabel {
   @include fontMontserratMedium;
   color: $white;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .axisLineMain {
   stroke: #636369;
   stroke-width: 2px;
+}
+
+.axisYVolumeLineMain {
+  stroke-linecap: round;
 }
 
 .axisLineGrid {
@@ -104,7 +115,7 @@
 
   display: flex;
   justify-content: space-between;
-  width: 75%;
+  width: calc(100% - 20px);
 }
 
 .infoBoxItem {
