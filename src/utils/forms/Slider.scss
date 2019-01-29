@@ -43,12 +43,12 @@
 
 @mixin blocked() {
   margin-left: 34px - 16px - 2px;
-  background: white url("./switch-disabled.svg") no-repeat 13% center;
+  background: white url("./switch-disabled.svg") no-repeat 14% center;
 }
 
 @mixin unblocked() {
   margin-left: 2px;
-  background: white url("./switch-active.svg") no-repeat 85% center;
+  background: white url("./switch-active.svg") no-repeat 84% center;
 }
 
 .pointerBlocked {

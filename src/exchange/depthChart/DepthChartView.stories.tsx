@@ -34,6 +34,8 @@ const defChartProps = {
   base: 'ETH',
   quote: 'DAI',
   matchType: OfferMatchType.limitOrder,
+  kindChange: () => null,
+  zoomChange: () => null,
 };
 
 defaultStories.add('Sample order book', () => (

@@ -1,6 +1,15 @@
 @import "../../utils/Variables";
 @import "../../utils/Mixins";
 
+.switchBtn {
+  margin-right: 0; // 0.7em;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  fill: white;
+}
+
+
 .spreadRow {
   background-color: rgba(white, 0.02);
 }

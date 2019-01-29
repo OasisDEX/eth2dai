@@ -29,6 +29,8 @@ function offerMakeFormProps(overrides: object = {}): Loadable<OfferFormState> {
     value: {
       baseToken: 'WETH',
       quoteToken: 'DAI',
+      baseTokenDigits: 5,
+      quoteTokenDigits: 2,
       kind: OfferType.buy,
       gasEstimationStatus: GasEstimationStatus.unset,
       stage: FormStage.editing,
@@ -377,6 +379,7 @@ stories.add('Width of Create order and Order book panels', () => {
         <OrderbookView
           account="..."
           change={() => null}
+          kindChange={() => null}
           status="loaded"
           tradingPair={{ quote: 'DAI', base: 'WETH' } as TradingPair }
           value={ orderbook }
@@ -396,7 +399,9 @@ stories.add('Width of Create order and Order book panels', () => {
           quote="DAI"
           matchType={OfferMatchType.limitOrder}
           orderbook={fakeOrderBook}
-          kind={OfferType.buy} />
+          kind={OfferType.buy}
+          kindChange={() => null}
+          zoomChange={() => null} />
 
       </Panel>
     </FlexLayoutRow>

@@ -206,7 +206,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           data-test-id="new-buy-order"
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.buy)}
-          color={ this.props.kind === 'buy' ? 'green' : 'grey' }
+          color={ this.props.kind === OfferType.buy ? 'green' : 'grey' }
           disabled={disabled}
           size="sm"
         >Buy</Button>
@@ -214,7 +214,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           data-test-id="new-sell-order"
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.sell)}
-          color={ this.props.kind === 'sell' ? 'red' : 'grey' }
+          color={ this.props.kind === OfferType.sell ? 'red' : 'grey' }
           disabled={disabled}
           size="sm"
         >Sell</Button>
@@ -224,6 +224,11 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
 
   private balanceButtons() {
     const disabled = this.props.stage === 'waitingForApproval';
+    const setMaxSellDisabled = this.props.kind === OfferType.buy || disabled;
+    const setMaxBuyDisabled = this.props.kind === OfferType.sell ||
+      this.props.matchType === OfferMatchType.direct ||
+      !this.props.price ||
+      disabled;
 
     return (
     <div className={styles.ownedResourcesInfoBox}>
@@ -232,7 +237,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         onClick={this.handleSetMax}
         size="lg"
         block={true}
-        disabled={this.props.kind === 'buy' || disabled}
+        disabled={setMaxSellDisabled}
         className={styles.balanceBtn}
       >
         { this.props.baseToken && <BalanceIcon token={this.props.baseToken} />}
@@ -247,7 +252,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         onClick={this.handleSetMax}
         size="lg"
         block={true}
-        disabled={this.props.kind === 'sell' || this.props.matchType === OfferMatchType.direct || disabled}
+        disabled={setMaxBuyDisabled}
         className={styles.balanceBtn}
       >
         { this.props.quoteToken && <BalanceIcon token={this.props.quoteToken} />}
@@ -338,7 +343,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         className={styles.confirmButton}
         type="submit"
         value="submit"
-        color={this.props.kind === 'buy' ? 'green' : 'red' }
+        color={this.props.kind === OfferType.buy ? 'green' : 'red' }
         disabled={this.props.stage !== 'readyToProceed'}
       >
         {this.props.kind} {this.props.baseToken}
@@ -381,7 +386,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         type="text"
         mask={createNumberMask({
           allowDecimal: true,
-          decimalLimit: 5,
+          decimalLimit: this.props.baseTokenDigits,
           prefix: ''
         })}
         onChange={this.handleAmountChange}
@@ -416,7 +421,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           type="text"
           mask={createNumberMask({
             allowDecimal: true,
-            decimalLimit: 5,
+            decimalLimit: this.props.quoteTokenDigits,
             prefix: ''
           })}
           onChange={this.handlePriceChange}
@@ -535,6 +540,10 @@ function messageContent(msg: Message) {
     case MessageKind.incredibleAmount:
       return <>
         {`Your order exceeds max amount for ${msg.token} token`}
+      </>;
+    case MessageKind.orderbookTotalExceeded:
+      return <>
+        {`Your order exceeds the order book total`}
       </>;
     case MessageKind.slippageLimitToLow:
       return <>

@@ -253,18 +253,24 @@ function offerMake(
   const offerMakeLoadable$ = loadablifyLight(offerMake$);
   const OfferMakePanelTxRx = connect(OfferMakePanel, offerMakeLoadable$);
 
-  const [zoomChange, depthChartWithLoading$] = createDepthChartWithLoading$(
+  const [kindChange, orderbookPanel$] = createOrderbookPanel$();
+
+  const depthChartWithLoading$ = createDepthChartWithLoading$(
     offerMake$,
     orderbookWithTradingPair$,
-    currentTradingPair$
+    currentTradingPair$,
+    kindChange
   );
   const DepthChartWithLoadingTxRx = connect(DepthChartWithLoading, depthChartWithLoading$);
 
-  const pickableOrderbook$
-    = createPickableOrderBookFromOfferMake$(orderbookWithTradingPair$, account$, offerMake$);
+  const pickableOrderbook$ = createPickableOrderBookFromOfferMake$(
+    orderbookWithTradingPair$,
+    account$,
+    offerMake$,
+    kindChange
+  );
   const OrderbookViewTxRx = connect(OrderbookView, pickableOrderbook$);
 
-  const orderbookPanel$ = createOrderbookPanel$(zoomChange);
   const OrderbookPanelTxRx = connect(
     inject<OrderbookPanelProps, SubViewsProps>(
       OrderbookPanel,
