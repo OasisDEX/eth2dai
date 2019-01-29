@@ -59,6 +59,7 @@ export enum MessageKind {
   insufficientAmount = 'insufficientAmount',
   incredibleAmount = 'incredibleAmount',
   dustAmount = 'dustAmount',
+  orderbookTotalExceeded = 'orderbookTotalExceeded',
   slippageLimitNotSet = 'slippageNotSet',
   slippageLimitToLow = 'slippageLimitToLow',
   slippageLimitToHigh = 'slippageLimitToHigh',
@@ -79,7 +80,7 @@ export type Message = {
 } | {
   kind: MessageKind.slippageLimitToHigh |
     MessageKind.slippageLimitToLow |
-    MessageKind.slippageLimitNotSet
+    MessageKind.slippageLimitNotSet | MessageKind.orderbookTotalExceeded
   field: string;
   priority: number;
 };
@@ -477,6 +478,14 @@ function preValidate(state: OfferFormState): OfferFormState {
         token: receiveToken,
       });
     }
+  }
+
+  if (state.matchType === OfferMatchType.direct && !state.price && state.amount) {
+    messages.push({
+      kind: MessageKind.orderbookTotalExceeded,
+      field: 'amount',
+      priority: 3,
+    });
   }
 
   if (!state.slippageLimit) {

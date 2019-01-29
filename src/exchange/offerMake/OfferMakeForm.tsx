@@ -541,6 +541,10 @@ function messageContent(msg: Message) {
       return <>
         {`Your order exceeds max amount for ${msg.token} token`}
       </>;
+    case MessageKind.orderbookTotalExceeded:
+      return <>
+        {`Your order exceeds the orderbook total`}
+      </>;
     case MessageKind.slippageLimitToLow:
       return <>
         Slippage limit too low
