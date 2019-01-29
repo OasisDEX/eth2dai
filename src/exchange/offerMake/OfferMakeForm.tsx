@@ -206,7 +206,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           data-test-id="new-buy-order"
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.buy)}
-          color={ this.props.kind === 'buy' ? 'green' : 'grey' }
+          color={ this.props.kind === OfferType.sell ? 'green' : 'grey' }
           disabled={disabled}
           size="sm"
         >Buy</Button>
@@ -214,7 +214,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           data-test-id="new-sell-order"
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.sell)}
-          color={ this.props.kind === 'sell' ? 'red' : 'grey' }
+          color={ this.props.kind === OfferType.sell ? 'red' : 'grey' }
           disabled={disabled}
           size="sm"
         >Sell</Button>
@@ -224,8 +224,8 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
 
   private balanceButtons() {
     const disabled = this.props.stage === 'waitingForApproval';
-    const setMaxSellDisabled = this.props.kind === 'buy' || disabled;
-    const setMaxBuyDisabled = this.props.kind === 'sell' ||
+    const setMaxSellDisabled = this.props.kind === OfferType.buy || disabled;
+    const setMaxBuyDisabled = this.props.kind === OfferType.sell ||
       this.props.matchType === OfferMatchType.direct ||
       !this.props.price ||
       disabled;
@@ -343,7 +343,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         className={styles.confirmButton}
         type="submit"
         value="submit"
-        color={this.props.kind === 'buy' ? 'green' : 'red' }
+        color={this.props.kind === OfferType.buy ? 'green' : 'red' }
         disabled={this.props.stage !== 'readyToProceed'}
       >
         {this.props.kind} {this.props.baseToken}
