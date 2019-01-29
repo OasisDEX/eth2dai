@@ -206,7 +206,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           data-test-id="new-buy-order"
           className={styles.btn}
           onClick={() => this.handleKindChange(OfferType.buy)}
-          color={ this.props.kind === OfferType.sell ? 'green' : 'grey' }
+          color={ this.props.kind === OfferType.buy ? 'green' : 'grey' }
           disabled={disabled}
           size="sm"
         >Buy</Button>
