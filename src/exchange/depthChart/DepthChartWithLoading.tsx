@@ -3,10 +3,13 @@ import * as React from 'react';
 import { combineLatest, Observable } from 'rxjs';
 import { filter } from 'rxjs/internal/operators';
 import { map } from 'rxjs/operators';
+
 import { OfferMatchType } from '../../utils/form';
 import { LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
+import { PanelHeader } from '../../utils/panel/Panel';
 import { OfferType, Orderbook } from '../orderbook/orderbook';
+import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair } from '../tradingPair/tradingPair';
 import { createZoom$, ZoomChange } from './depthchart';
 import { DepthChartView } from './DepthChartView';
@@ -20,26 +23,42 @@ type DepthChartProps = LoadableWithTradingPair<Orderbook> & {
   base?: string;
   quote?: string;
   zoomChange: (change: ZoomChange) => void;
+  kindChange: (kind: OrderbookViewKind) => void;
 };
 
 export class DepthChartWithLoading extends React.Component<DepthChartProps> {
   public render() {
-    return (
-      <WithLoadingIndicator loadable={this.props}>
-        { (orderbook: Orderbook) => (
-          <DepthChartView orderbook={orderbook}
-                          kind={this.props.kind}
-                          amount={this.props.amount}
-                          price={this.props.price}
-                          zoom={this.props.zoom}
-                          base={this.props.base}
-                          quote={this.props.quote}
-                          matchType={this.props.matchType}
+    if (this.props.status === 'loaded') {
+      const orderbook = this.props.value as Orderbook;
+      return (
+        <div style={{ width: '508px' }}>
+          <DepthChartView  orderbook={orderbook}
+                           kind={this.props.kind}
+                           amount={this.props.amount}
+                           price={this.props.price}
+                           zoom={this.props.zoom}
+                           base={this.props.base}
+                           quote={this.props.quote}
+                           matchType={this.props.matchType}
+                           zoomChange={this.props.zoomChange}
+                           kindChange={this.props.kindChange}
           />
-        )}
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ width: '508px' }}>
+        <PanelHeader bordered={true}>
+          <span>Depth chart</span>
+        </PanelHeader>
+        <WithLoadingIndicator loadable={this.props}>
+          { (_orderbook: Orderbook) => (<div />)}
       </WithLoadingIndicator>
+      </div>
     );
   }
+
 }
 
 export interface FormState {
@@ -54,7 +73,8 @@ export function createDepthChartWithLoading$(
   currentOfferForm$: Observable<FormState>,
   orderbook$: Observable<LoadableWithTradingPair<Orderbook>>,
   tradingPair$: Observable<TradingPair>,
-): [(change: ZoomChange) => void, Observable<DepthChartProps>] {
+  kindChange: (kind: OrderbookViewKind) => void,
+): Observable<DepthChartProps> {
 
   const [zoomChange, zoom$] = createZoom$(
     tradingPair$,
@@ -64,32 +84,30 @@ export function createDepthChartWithLoading$(
     )
   );
 
-  return [
-    zoomChange,
-    combineLatest(
-      currentOfferForm$,
-      orderbook$,
-      zoom$,
-      tradingPair$,
-    ).pipe(
-      map(([
-        { kind, matchType, amount, price },
-        orderbook,
+  return combineLatest(
+    currentOfferForm$,
+    orderbook$,
+    zoom$,
+    tradingPair$,
+  ).pipe(
+    map(([
+      { kind, matchType, amount, price },
+      orderbook,
+      zoom,
+      { base, quote }]: any
+    ) => {
+      return {
+        ...orderbook,
         zoom,
-        { base, quote }]: any
-      ) => {
-        return {
-          ...orderbook,
-          zoom,
-          zoomChange,
-          base,
-          quote,
-          kind,
-          matchType,
-          amount,
-          price,
-        };
-      })
-    )
-  ];
+        zoomChange,
+        base,
+        quote,
+        kind,
+        matchType,
+        amount,
+        price,
+        kindChange,
+      };
+    })
+  );
 }
