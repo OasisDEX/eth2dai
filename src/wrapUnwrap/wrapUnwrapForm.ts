@@ -117,13 +117,13 @@ function estimateGasPrice(
   calls$: Calls$, state: WrapUnwrapFormState
 ): Observable<WrapUnwrapFormState> {
   return doGasEstimation(calls$, state, (calls: Calls) => {
-    if (!state.amount) {
+    if (!state.amount || !state.gasPrice) {
       return undefined;
     }
     const call = state.kind === WrapUnwrapFormKind.wrap ?
       calls.wrapEstimateGas :
       calls.unwrapEstimateGas;
-    return call({ amount: state.amount });
+    return call({ amount: state.amount, gasPrice: state.gasPrice });
   });
 }
 
@@ -150,8 +150,9 @@ function prepareProceed(calls$: Calls$): [
 
     const kind = state.kind;
     const amount = state.amount;
+    const gasPrice = state.gasPrice;
 
-    if (!amount) {
+    if (!amount || !gasPrice) {
       return;
     }
 
@@ -166,7 +167,7 @@ function prepareProceed(calls$: Calls$): [
             kind === WrapUnwrapFormKind.wrap ?
               calls.wrap :
               calls.unwrap;
-          return call({ amount })
+          return call({ amount, gasPrice })
           .pipe(
             transactionToX(
               progressChange(ProgressStage.waitingForApproval),

@@ -16,6 +16,8 @@ export interface CancelData {
   type: TradeAct;
   amount: BigNumber;
   token: string;
+  gasPrice?: BigNumber;
+  gasEstimation?: number;
 }
 
 export const cancelOffer: TransactionDef<CancelData> = {
