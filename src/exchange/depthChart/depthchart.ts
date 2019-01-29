@@ -169,7 +169,7 @@ function calculateSummaryForSell(price: BigNumber, volume?: PriceVolume[]): Summ
   if (price === undefined || volume === undefined || volume.length === 0) {
     return { amount, totalCost } as SummaryAmountAndTotal;
   }
-  const adeqVolumes = volume.filter(vol => price.gte(new BigNumber(vol.price)));
+  const adeqVolumes = volume.filter(vol => price.toNumber() >= vol.price);
   if (adeqVolumes.length > 0) {
     amount = adeqVolumes[adeqVolumes.length - 1].volume;
   }
@@ -186,7 +186,7 @@ function calculateSummaryForBuys(price: BigNumber, volume?: PriceVolume[]): Summ
   if (price === undefined || volume === undefined || volume.length === 0) {
     return { amount, totalCost } as SummaryAmountAndTotal;
   }
-  const adeqVolumes = volume.filter(vol => price.lte(new BigNumber(vol.price)));
+  const adeqVolumes = volume.filter(vol => price.toNumber() <= vol.price);
   if (adeqVolumes.length > 0) {
     const thePriceVolume = adeqVolumes[adeqVolumes.length - 1];
     amount = thePriceVolume.volume;
