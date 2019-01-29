@@ -11,7 +11,8 @@ import { TxState, TxStatus } from '../../blockchain/transactions';
 import { combineAndMerge } from '../../utils/combineAndMerge';
 import {
   AllowanceChange,
-  AmountFieldChange, BalancesChange,
+  AmountFieldChange,
+  BalancesChange,
   doGasEstimation,
   DustLimitChange,
   EtherPriceUSDChange,
@@ -94,6 +95,8 @@ export type Message = {
 export interface OfferFormState extends HasGasEstimation {
   baseToken: string;
   quoteToken: string;
+  baseTokenDigits: number;
+  quoteTokenDigits: number;
   kind: OfferType;
   matchType: OfferMatchType;
   price?: BigNumber;
@@ -588,16 +591,18 @@ function prepareSubmit(calls$: Calls$): [
   return [submit, stageChange$];
 }
 
-export function createFormController$(params: {
-  gasPrice$: Observable<BigNumber>;
-  allowance$: (token: string) => Observable<boolean>;
-  balances$: Observable<Balances>;
-  dustLimits$: Observable<DustLimits>;
-  orderbook$: Observable<Orderbook>,
-  calls$: Calls$;
-  etherPriceUsd$: Observable<BigNumber>
-},
-                                      tradingPair: TradingPair): Observable<OfferFormState> {
+export function createFormController$(
+  params: {
+    gasPrice$: Observable<BigNumber>;
+    allowance$: (token: string) => Observable<boolean>;
+    balances$: Observable<Balances>;
+    dustLimits$: Observable<DustLimits>;
+    orderbook$: Observable<Orderbook>,
+    calls$: Calls$;
+    etherPriceUsd$: Observable<BigNumber>
+  },
+  tradingPair: TradingPair
+): Observable<OfferFormState> {
 
   const manualChange$ = new Subject<ManualChange>();
 
@@ -619,6 +624,8 @@ export function createFormController$(params: {
     kind: OfferType.buy,
     baseToken: tradingPair.base,
     quoteToken: tradingPair.quote,
+    baseTokenDigits: tokens[tradingPair.base].digits,
+    quoteTokenDigits: tokens[tradingPair.quote].digits,
     gasEstimationStatus: GasEstimationStatus.unset,
     stage: FormStage.editing,
     price: undefined,

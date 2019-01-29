@@ -386,7 +386,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         type="text"
         mask={createNumberMask({
           allowDecimal: true,
-          decimalLimit: 5,
+          decimalLimit: this.props.baseTokenDigits,
           prefix: ''
         })}
         onChange={this.handleAmountChange}
@@ -421,7 +421,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           type="text"
           mask={createNumberMask({
             allowDecimal: true,
-            decimalLimit: 5,
+            decimalLimit: this.props.quoteTokenDigits,
             prefix: ''
           })}
           onChange={this.handlePriceChange}

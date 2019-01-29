@@ -29,6 +29,8 @@ function offerMakeFormProps(overrides: object = {}): Loadable<OfferFormState> {
     value: {
       baseToken: 'WETH',
       quoteToken: 'DAI',
+      baseTokenDigits: 5,
+      quoteTokenDigits: 2,
       kind: OfferType.buy,
       gasEstimationStatus: GasEstimationStatus.unset,
       stage: FormStage.editing,
