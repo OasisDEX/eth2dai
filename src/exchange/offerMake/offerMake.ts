@@ -483,7 +483,7 @@ function preValidate(state: OfferFormState): OfferFormState {
     }
   }
 
-  if (state.matchType === OfferMatchType.direct && !state.price && state.amount) {
+  if (state.matchType === OfferMatchType.direct && !state.price && state.amount && !state.amount.eq(0)) {
     messages.push({
       kind: MessageKind.orderbookTotalExceeded,
       field: 'amount',
