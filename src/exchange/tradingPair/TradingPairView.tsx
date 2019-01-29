@@ -116,7 +116,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
           }
         </div>
 
-        <TradingPairView.PairInfoVP label="Current price" value={
+        <TradingPairView.PairInfoVP label="Last price" value={
           <WithLoadingIndicatorInline
             error={<ServerUnreachableInline fallback="-"/>}
             loadable={currentPrice}
