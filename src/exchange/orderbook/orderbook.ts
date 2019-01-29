@@ -9,6 +9,7 @@ import { amountFromWei } from '../../blockchain/utils';
 import { PickOfferChange } from '../../utils/form';
 import { LoadableWithTradingPair } from '../../utils/loadable';
 import { OfferFormState } from '../offerMake/offerMake';
+import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair } from '../tradingPair/tradingPair';
 
 export enum OfferType {
@@ -180,6 +181,7 @@ export function createPickableOrderBookFromOfferMake$(
   currentOrderBook$: Observable<LoadableWithTradingPair<Orderbook>>,
   account$: Observable<string | undefined>,
   currentOfferForm$: Observable<OfferFormState>,
+  kindChange: (kind: OrderbookViewKind) => void
 ) {
   return combineLatest(
     currentOrderBook$,
@@ -189,7 +191,8 @@ export function createPickableOrderBookFromOfferMake$(
     map(([currentOrderBook, account, { change }]) => ({
       ...currentOrderBook,
       account,
-      change: (ch: PickOfferChange) => change(ch),
+      kindChange,
+      change: (ch: PickOfferChange) => change(ch)
     }))
   );
 }

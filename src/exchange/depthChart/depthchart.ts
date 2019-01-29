@@ -28,7 +28,12 @@ interface DepthChartVolumes {
   sellsExtra?: PriceVolume[];
 }
 
-export interface DepthChartData extends DepthChartVolumes {
+interface DepthChartVolumesWithZoom extends DepthChartVolumes{
+  zoomInEnabled: boolean;
+  zoomOutEnabled: boolean;
+}
+
+export interface DepthChartData extends DepthChartVolumesWithZoom {
   minPrice: number;
   maxPrice: number;
   minVolume: number;
@@ -128,9 +133,9 @@ function minMax<T>(data: T[], select: (x: T) => number) {
 }
 
 // adjust price range by extending a little bit on both sides
-function adjustPriceRange(volumes: DepthChartVolumes,
+function adjustPriceRange(volumes: DepthChartVolumesWithZoom,
                           minPrice: number,
-                          maxPrice: number): [DepthChartVolumes, number, number] {
+                          maxPrice: number): [DepthChartVolumesWithZoom, number, number] {
   const extender = (maxPrice - minPrice) * 0.1;
 
   let newMaxPrice = maxPrice + extender;
@@ -215,8 +220,7 @@ function calculateSummary(volumes: DepthChartVolumes, price?: BigNumber): Summar
   } as Summary;
 }
 
-function addMinMaxSummary(volumes: DepthChartVolumes, price?: BigNumber) {
-  const summary = calculateSummary(volumes, price);
+function addMinMax(volumes: DepthChartVolumesWithZoom) {
 
   const accumulated: PriceVolume[] = ([
     volumes.buysAfter, volumes.buysBefore, volumes.buysExtra,
@@ -245,7 +249,6 @@ function addMinMaxSummary(volumes: DepthChartVolumes, price?: BigNumber) {
     ...adjustedVolumes,
     minVolume,
     maxVolume,
-    summary,
     minPrice: adjustedMinPrice,
     maxPrice: adjustedMaxPrice
   };
@@ -425,6 +428,48 @@ export function findDefaultZoom(orderbook: Orderbook | undefined): BigNumber | u
   }
 }
 
+function doZoom(
+  zoom: BigNumber | undefined,
+  buys: Offer[],
+  sells: Offer[],
+  data: DepthChartVolumes
+): DepthChartVolumesWithZoom {
+  if (zoom && (!isEmpty(buys) || !isEmpty(sells))) {
+    const mid = getCenter(buys, sells);
+
+    const zoomLeft = mid.minus(zoom).toNumber();
+    const zoomRight = mid.plus(zoom).toNumber();
+
+    const sellsBefore = data.sellsBefore && data.sellsBefore.filter(v => v.price < zoomRight);
+    const buysBefore = data.buysBefore && data.buysBefore.filter(v => v.price > zoomLeft);
+    const sellsAfter = data.sellsAfter && data.sellsAfter.filter(v => v.price < zoomRight);
+    const buysAfter = data.buysAfter && data.buysAfter.filter(v => v.price > zoomLeft);
+    const sellsExtra = data.sellsExtra && data.sellsExtra.filter(v => v.price < zoomRight);
+    const buysExtra = data.buysExtra && data.buysExtra.filter(v => v.price > zoomLeft);
+
+    const zoomInEnabled = true;
+    const zoomOutEnabled =
+      !(buysBefore && data.buysBefore && buysBefore.length === data.buysBefore.length &&
+      sellsBefore && data.sellsBefore && sellsBefore.length === data.sellsBefore.length);
+
+    return {
+      sellsBefore,
+      buysBefore,
+      sellsAfter,
+      buysAfter,
+      sellsExtra,
+      buysExtra,
+      zoomInEnabled,
+      zoomOutEnabled
+    };
+  }
+  return {
+    ...data,
+    zoomInEnabled: false,
+    zoomOutEnabled: false
+  };
+}
+
 /**
  * Calculate data to draw depth chart based on offer make (or create position) form
  * @param {Offer[]} buys -- buys from orderbook
@@ -448,29 +493,11 @@ export function getDepthChartData(
   zoom?: BigNumber,
   ): DepthChartData {
 
-  if (zoom && (!isEmpty(buys) || !isEmpty(sells))) {
-    const mid = getCenter(buys, sells);
-
-    const zoomLeft = mid.minus(zoom);
-    const zoomRight = mid.plus(zoom);
-
-    sells = sells.filter(offer => offer.price.lt(zoomRight));
-    buys = buys.filter(offer => offer.price.gt(zoomLeft));
-
-    // console.log(zoom.toNumber());
-    // console.log(mid.toNumber());
-    // console.log(zoomLeft.toNumber());
-    // console.log(zoomRight.toNumber());
-
-    // logOffers('buys', buys);
-    // logOffers('sells', sells);
-  }
-
   const sellsBefore = accumulate(sells);
   const buysBefore = accumulate(buys);
 
   if (!price || !amount) {
-    return addMinMaxSummary({ sellsBefore, buysBefore });
+    return addMinMax(doZoom(zoom, buys, sells, { sellsBefore, buysBefore }));
   }
 
   // const priceExtreme = matchType === OfferMatchType.direct ?
@@ -506,8 +533,17 @@ export function getDepthChartData(
         break;
     }
 
-    return addMinMaxSummary({ sellsBefore, sellsAfter, buysBefore, buysAfter, buysExtra },
-                            maxPrice);
+    return {
+      ...addMinMax(doZoom(
+        zoom, buys, sells,
+        { sellsBefore, sellsAfter, buysBefore, buysAfter, buysExtra }
+        )
+      ),
+      summary: calculateSummary(
+        { sellsBefore, sellsAfter, buysBefore, buysAfter, buysExtra },
+        maxPrice
+      )
+    };
   }
 
   if (offerType === 'sell') {
@@ -536,8 +572,15 @@ export function getDepthChartData(
         break;
     }
 
-    return addMinMaxSummary({ sellsBefore, sellsAfter, sellsExtra, buysBefore, buysAfter },
-                            minPrice);
+    return {
+      ...addMinMax(doZoom(
+        zoom, buys, sells,
+        { sellsBefore, sellsAfter, sellsExtra, buysBefore, buysAfter })),
+      summary: calculateSummary(
+        { sellsBefore, sellsAfter, sellsExtra, buysBefore, buysAfter },
+        minPrice
+      )
+    };
   }
 
   throw new Error('Should never get here -- offerType must be sell or buy');

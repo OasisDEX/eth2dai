@@ -6,9 +6,12 @@ import { BaseType, Selection } from 'd3-selection';
 import * as React from 'react';
 import { createElement } from 'react-faux-dom';
 import { OfferMatchType } from '../../utils/form';
+import { Button } from '../../utils/forms/Buttons';
+import { PanelHeader } from '../../utils/panel/Panel';
 import { Muted } from '../../utils/text/Text';
 import { OfferType, Orderbook } from '../orderbook/orderbook';
-import { DepthChartData, getDepthChartData, Summary } from './depthchart';
+import { OrderbookViewKind } from '../OrderbookPanel';
+import { DepthChartData, getDepthChartData, Summary, ZoomChange } from './depthchart';
 import * as styles from './DepthChartView.scss';
 
 interface PriceVolume {
@@ -25,6 +28,8 @@ interface DepthChartInternalProps {
   zoom?: BigNumber;
   base?: string;
   quote?: string;
+  zoomChange: (change: ZoomChange) => void;
+  kindChange: (kind: OrderbookViewKind) => void;
 }
 
 const totalWidth = 508;
@@ -164,6 +169,14 @@ function axes(svgContainer: any,
 
 }
 
+const btnStyles = {
+  marginRight: '0.7em',
+  padding: 0,
+  width: '30px',
+  height: '30px',
+  fill: 'white'
+};
+
 export class DepthChartView extends React.Component<DepthChartInternalProps> {
 
   public render() {
@@ -248,15 +261,91 @@ export class DepthChartView extends React.Component<DepthChartInternalProps> {
     const hasSells = [data.sellsBefore, data.sellsAfter]
       .filter(vol => vol !== undefined && vol.length > 0).length > 0;
 
-    return (<div className={styles.depthChart}>
-        {chart.toReact()}
-        { hasSells && <SellersLegend /> }
-        { hasBuys && <BuyersLegend /> }
-        { data.summary && drawSummaryInfoBox(data.summary)
-        && <Legend summary={data.summary}
-                   fromCurrency={this.props.base || ''}
-                   toCurrency={this.props.quote || ''} /> }
-      </div>);
+    return (
+      <>
+        <PanelHeader bordered={true}>
+            <span>Depth chart</span>
+            <div style={{ marginLeft: 'auto', display: 'flex' }}>
+                <Button
+                  style={btnStyles}
+                  onClick={this.zoomOut}
+                  disabled={!data.zoomOutEnabled}
+                >
+                  <MinusBtn />
+                </Button>
+                <Button
+                  style={btnStyles}
+                  onClick={this.zoomIn}
+                  disabled={!data.zoomInEnabled}
+                >
+                  <PlusBtn />
+                </Button>
+                <Button
+                    style={{ ...btnStyles, marginRight:'0' }}
+                    onClick={this.changeChartListView}
+                    data-test-id="orderbook-type-depthChart"
+                >
+                    <ToListSwitchBtn/>
+                </Button>
+            </div>
+        </PanelHeader>
+
+        <div className={styles.depthChart}>
+          {chart.toReact()}
+          { hasSells && <SellersLegend /> }
+          { hasBuys && <BuyersLegend /> }
+          { data.summary && drawSummaryInfoBox(data.summary)
+          && <Legend summary={data.summary}
+                     fromCurrency={this.props.base || ''}
+                     toCurrency={this.props.quote || ''} /> }
+        </div>
+      </>);
+  }
+
+  private zoomIn = () => {
+    this.props.zoomChange('zoomIn');
+  }
+
+  private zoomOut = () => {
+    this.props.zoomChange('zoomOut');
+  }
+
+  private changeChartListView = () => {
+    this.props.kindChange(OrderbookViewKind.list);
+  }
+
+}
+
+class MinusBtn extends React.PureComponent {
+  public render() {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M19 13H5v-2h14v2z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    );
+  }
+}
+
+class PlusBtn extends React.PureComponent {
+  public render() {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    );
+  }
+}
+
+class ToListSwitchBtn extends React.PureComponent {
+  public render() {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    );
   }
 }
 

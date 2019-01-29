@@ -379,6 +379,7 @@ stories.add('Width of Create order and Order book panels', () => {
         <OrderbookView
           account="..."
           change={() => null}
+          kindChange={() => null}
           status="loaded"
           tradingPair={{ quote: 'DAI', base: 'WETH' } as TradingPair }
           value={ orderbook }
@@ -398,7 +399,9 @@ stories.add('Width of Create order and Order book panels', () => {
           quote="DAI"
           matchType={OfferMatchType.limitOrder}
           orderbook={fakeOrderBook}
-          kind={OfferType.buy} />
+          kind={OfferType.buy}
+          kindChange={() => null}
+          zoomChange={() => null} />
 
       </Panel>
     </FlexLayoutRow>
