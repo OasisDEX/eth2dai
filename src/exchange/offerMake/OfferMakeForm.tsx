@@ -386,7 +386,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         type="text"
         mask={createNumberMask({
           allowDecimal: true,
-          decimalLimit: 5,
+          decimalLimit: this.props.baseTokenDigits,
           prefix: ''
         })}
         onChange={this.handleAmountChange}
@@ -421,7 +421,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           type="text"
           mask={createNumberMask({
             allowDecimal: true,
-            decimalLimit: 5,
+            decimalLimit: this.props.quoteTokenDigits,
             prefix: ''
           })}
           onChange={this.handlePriceChange}
@@ -540,6 +540,10 @@ function messageContent(msg: Message) {
     case MessageKind.incredibleAmount:
       return <>
         {`Your order exceeds max amount for ${msg.token} token`}
+      </>;
+    case MessageKind.orderbookTotalExceeded:
+      return <>
+        {`Your order exceeds the orderbook total`}
       </>;
     case MessageKind.slippageLimitToLow:
       return <>
