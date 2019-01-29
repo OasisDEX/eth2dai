@@ -266,6 +266,15 @@ function applyChange(state: OfferFormState,
         matchType: change.matchType,
       };
     case FormChangeKind.pickOfferChange:
+      if (state.matchType === OfferMatchType.direct && state.orderbook) {
+        return directMatchState(
+          state, {
+            kind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy,
+            amount: change.offer.baseAmount
+          },
+          state.orderbook
+        );
+      }
       return {
         ...state,
         kind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy,
@@ -303,6 +312,14 @@ function applyChange(state: OfferFormState,
     case FormChangeKind.setMaxChange:
       if (state.balances === undefined) {
         return state;
+      }
+      if (state.matchType === OfferMatchType.direct && state.orderbook) {
+        switch (state.kind) {
+          case OfferType.sell:
+            return directMatchState(state, { amount: state.balances[state.baseToken] }, state.orderbook);
+          case OfferType.buy:
+            return state;
+        }
       }
       switch (state.kind) {
         case OfferType.sell:
