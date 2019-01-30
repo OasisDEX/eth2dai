@@ -3,11 +3,13 @@ import { isEmpty, uniqBy, unzip } from 'lodash';
 import { bindNodeCallback, combineLatest, Observable, of, zip } from 'rxjs';
 import { expand, map, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
 
+import { tap } from 'rxjs/internal/operators';
 import { NetworkConfig } from '../../blockchain/config';
 import { amountFromWei } from '../../blockchain/utils';
 import { PickOfferChange } from '../../utils/form';
 import { LoadableWithTradingPair } from '../../utils/loadable';
 import { OfferFormState } from '../offerMake/offerMake';
+import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair } from '../tradingPair/tradingPair';
 
 export enum OfferType {
@@ -133,22 +135,44 @@ export function loadOrderbook$(
         loadOffersAllAtOnce(context, quote, base, OfferType.buy),
         loadOffersAllAtOnce(context, base, quote, OfferType.sell)
       ).pipe(
-        map(([buy, sell]) => {
-          console.log('orderbook for block:', blockNumber, buy, sell);
-          const spread =
-            !isEmpty(sell) && !isEmpty(buy)
-              ? sell[0].price.minus(buy[0].price)
-              : undefined;
-
-          return {
-            blockNumber,
-            buy,
-            spread,
-            sell
-          };
-        })
+        map(([buy, sell]) => ({
+          blockNumber,
+          buy,
+          sell
+        })),
       )
     ),
+    tap(({ blockNumber, buy, sell }) =>
+      console.log('orderbook length for block:', blockNumber, buy.length, sell.length)),
+    // in order to fix broken empty responses accept empty orderbook
+    // only if it happens twice in a row
+    scan(
+      ({ buy: prevBuy, sell: prevSell }, current) => ({ prevBuy, prevSell, ...current }),
+      {
+        blockNumber: 0,
+        buy: [], sell: [],
+        prevBuy: [] as Offer[], prevSell: [] as Offer[]
+      }
+    ),
+    map(({ blockNumber, buy, sell, prevBuy, prevSell }) => ({
+      blockNumber,
+      buy: buy.length > 0 || buy.length === 0 && prevBuy.length === 0 ? buy : prevBuy,
+      sell: sell.length > 0 || sell.length === 0 && prevSell.length === 0 ? sell : prevSell,
+    })),
+    map(({ blockNumber, buy, sell }) => {
+      console.log('corrected orderbook length for block:', blockNumber, buy.length, sell.length);
+      const spread =
+        !isEmpty(sell) && !isEmpty(buy)
+          ? sell[0].price.minus(buy[0].price)
+          : undefined;
+
+      return {
+        blockNumber,
+        buy,
+        spread,
+        sell
+      };
+    }),
     shareReplay(1),
   );
 }
@@ -157,6 +181,7 @@ export function createPickableOrderBookFromOfferMake$(
   currentOrderBook$: Observable<LoadableWithTradingPair<Orderbook>>,
   account$: Observable<string | undefined>,
   currentOfferForm$: Observable<OfferFormState>,
+  kindChange: (kind: OrderbookViewKind) => void
 ) {
   return combineLatest(
     currentOrderBook$,
@@ -166,7 +191,8 @@ export function createPickableOrderBookFromOfferMake$(
     map(([currentOrderBook, account, { change }]) => ({
       ...currentOrderBook,
       account,
-      change: (ch: PickOfferChange) => change(ch),
+      kindChange,
+      change: (ch: PickOfferChange) => change(ch)
     }))
   );
 }

@@ -11,7 +11,8 @@ import { TxState, TxStatus } from '../../blockchain/transactions';
 import { combineAndMerge } from '../../utils/combineAndMerge';
 import {
   AllowanceChange,
-  AmountFieldChange, BalancesChange,
+  AmountFieldChange,
+  BalancesChange,
   doGasEstimation,
   DustLimitChange,
   EtherPriceUSDChange,
@@ -59,6 +60,7 @@ export enum MessageKind {
   insufficientAmount = 'insufficientAmount',
   incredibleAmount = 'incredibleAmount',
   dustAmount = 'dustAmount',
+  orderbookTotalExceeded = 'orderbookTotalExceeded',
   slippageLimitNotSet = 'slippageNotSet',
   slippageLimitToLow = 'slippageLimitToLow',
   slippageLimitToHigh = 'slippageLimitToHigh',
@@ -79,7 +81,7 @@ export type Message = {
 } | {
   kind: MessageKind.slippageLimitToHigh |
     MessageKind.slippageLimitToLow |
-    MessageKind.slippageLimitNotSet
+    MessageKind.slippageLimitNotSet | MessageKind.orderbookTotalExceeded
   field: string;
   priority: number;
 };
@@ -93,6 +95,8 @@ export type Message = {
 export interface OfferFormState extends HasGasEstimation {
   baseToken: string;
   quoteToken: string;
+  baseTokenDigits: number;
+  quoteTokenDigits: number;
   kind: OfferType;
   matchType: OfferMatchType;
   price?: BigNumber;
@@ -266,14 +270,37 @@ function applyChange(state: OfferFormState,
         matchType: change.matchType,
       };
     case FormChangeKind.pickOfferChange:
-      return {
-        ...state,
-        kind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy,
-        price: change.offer.price,
-        amount: change.offer.baseAmount,
-        total: change.offer.quoteAmount,
-        gasEstimationStatus: GasEstimationStatus.unset
-      };
+      if (state.matchType === OfferMatchType.direct && state.orderbook) {
+        return directMatchState(
+          state, {
+            kind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy,
+            amount: change.offer.baseAmount
+          },
+          state.orderbook
+        );
+      }
+
+      let newState = applyChange(
+        state,
+        {
+          kind: FormChangeKind.kindChange,
+          newKind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy
+        }
+      );
+      newState = applyChange(
+        newState,
+        {
+          kind: FormChangeKind.amountFieldChange,
+          value: new BigNumber(change.offer.baseAmount.toFixed(tokens[state.baseToken].digits))
+        }
+      );
+      return applyChange(
+        newState,
+        {
+          kind: FormChangeKind.priceFieldChange,
+          value: new BigNumber(change.offer.price.toFixed(tokens[state.quoteToken].digits))
+        }
+      );
     case OfferMakeChangeKind.pickerOpenChange:
       return {
         ...state,
@@ -303,6 +330,14 @@ function applyChange(state: OfferFormState,
     case FormChangeKind.setMaxChange:
       if (state.balances === undefined) {
         return state;
+      }
+      if (state.matchType === OfferMatchType.direct && state.orderbook) {
+        switch (state.kind) {
+          case OfferType.sell:
+            return directMatchState(state, { amount: state.balances[state.baseToken] }, state.orderbook);
+          case OfferType.buy:
+            return state;
+        }
       }
       switch (state.kind) {
         case OfferType.sell:
@@ -462,6 +497,14 @@ function preValidate(state: OfferFormState): OfferFormState {
     }
   }
 
+  if (state.matchType === OfferMatchType.direct && !state.price && state.amount && !state.amount.eq(0)) {
+    messages.push({
+      kind: MessageKind.orderbookTotalExceeded,
+      field: 'amount',
+      priority: 3,
+    });
+  }
+
   if (!state.slippageLimit) {
     messages.push({
       kind: MessageKind.slippageLimitNotSet,
@@ -562,16 +605,18 @@ function prepareSubmit(calls$: Calls$): [
   return [submit, stageChange$];
 }
 
-export function createFormController$(params: {
-  gasPrice$: Observable<BigNumber>;
-  allowance$: (token: string) => Observable<boolean>;
-  balances$: Observable<Balances>;
-  dustLimits$: Observable<DustLimits>;
-  orderbook$: Observable<Orderbook>,
-  calls$: Calls$;
-  etherPriceUsd$: Observable<BigNumber>
-},
-                                      tradingPair: TradingPair): Observable<OfferFormState> {
+export function createFormController$(
+  params: {
+    gasPrice$: Observable<BigNumber>;
+    allowance$: (token: string) => Observable<boolean>;
+    balances$: Observable<Balances>;
+    dustLimits$: Observable<DustLimits>;
+    orderbook$: Observable<Orderbook>,
+    calls$: Calls$;
+    etherPriceUsd$: Observable<BigNumber>
+  },
+  tradingPair: TradingPair
+): Observable<OfferFormState> {
 
   const manualChange$ = new Subject<ManualChange>();
 
@@ -593,6 +638,8 @@ export function createFormController$(params: {
     kind: OfferType.buy,
     baseToken: tradingPair.base,
     quoteToken: tradingPair.quote,
+    baseTokenDigits: tokens[tradingPair.base].digits,
+    quoteTokenDigits: tokens[tradingPair.quote].digits,
     gasEstimationStatus: GasEstimationStatus.unset,
     stage: FormStage.editing,
     price: undefined,

@@ -35,7 +35,7 @@ export class AssetOverviewView
 {
   public render() {
     return (
-      <Panel footerBordered={true}>
+      <Panel footerBordered={true} style={{ width: '100%' }}>
         <PanelHeader>Asset overview</PanelHeader>
         <WithLoadingIndicator loadable={this.props}>
           {(combinedBalances) => (
