@@ -25,24 +25,28 @@ export class OrderbookView extends React.Component<Props> {
   private tbody?: HTMLElement;
   private spreadRow?: HTMLElement;
 
-  public center(offset: number = 0) {
+  public center(force: boolean, offset: number = 0) {
     if (this.tbody && this.spreadRow && typeof(this.tbody.scrollTo) === 'function') {
-      const firstRow: HTMLElement = this.tbody.children[0] as HTMLElement;
-      this.tbody.scrollTo(0, this.spreadRow.offsetTop - firstRow.offsetTop -
-        (this.tbody.clientHeight - firstRow.clientHeight) / 2 + offset * firstRow.clientHeight);
+      const position = this.spreadRow.offsetTop - this.tbody.offsetTop - this.tbody.scrollTop;
+      const spreadVisible = position > -this.spreadRow.clientHeight && position < this.tbody.clientHeight;
+      if (force || spreadVisible) {
+        const firstRow: HTMLElement = this.tbody.children[0] as HTMLElement;
+        this.tbody.scrollTo(0, this.spreadRow.offsetTop - firstRow.offsetTop -
+          (this.tbody.clientHeight - firstRow.clientHeight) / 2 + offset * firstRow.clientHeight);
+      }
     }
   }
 
   public componentDidMount() {
-    this.center();
+    this.center(true);
   }
 
   public enter = () => {
-    this.center();
+    this.center(false);
   }
 
   public exit = () => {
-    this.center(-1);
+    this.center(false, -1);
   }
 
   public render() {
@@ -56,7 +60,7 @@ export class OrderbookView extends React.Component<Props> {
 
     if (justLoaded || tradingPairChanged) {
       setTimeout(() => {
-        this.center();
+        this.center(true);
       });
     }
 
