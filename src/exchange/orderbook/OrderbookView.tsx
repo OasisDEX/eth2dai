@@ -106,7 +106,13 @@ export class OrderbookView extends React.Component<Props> {
                 }
               >
                 { orderbook.sell.slice().reverse().map((offer: Offer) => (
-                  <CSSTransition key={offer.offerId.toString()} classNames="order" timeout={1000}>
+                  <CSSTransition
+                    key={offer.offerId.toString()}
+                    classNames="order"
+                    timeout={1000}
+                    onEntering={this.enter}
+                    onExited={this.exit}
+                  >
                     <this.OfferRow offer={offer} kind="sell" parent={this} />
                   </CSSTransition>
                 ))
