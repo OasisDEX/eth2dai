@@ -1,14 +1,9 @@
 import * as React from 'react';
 
+import * as styles from './FlexLayoutRow.scss';
+
 export const FlexLayoutRow = ({ children }: { children: any }) => (
-  <div
-    style={{
-      display: 'flex',
-      marginBottom: '24px',
-      justifyContent: 'space-between',
-      // flexWrap: 'wrap'
-    }}
-  >
+  <div className={styles.flr}>
     {children}
   </div>
 );

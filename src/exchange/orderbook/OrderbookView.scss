@@ -1,6 +1,13 @@
 @import "../../utils/Variables";
 @import "../../utils/Mixins";
 
+.orderbook {
+  width: 452px;
+  @include media-breakpoint-down(lg) {
+    width: 100%;
+  }
+}
+
 .switchBtn {
   margin-right: 0; // 0.7em;
   padding: 0;
