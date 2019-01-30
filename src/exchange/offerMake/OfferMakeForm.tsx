@@ -543,7 +543,7 @@ function messageContent(msg: Message) {
       </>;
     case MessageKind.orderbookTotalExceeded:
       return <>
-        {`Your order exceeds the orderbook total`}
+        {`Your order exceeds the order book total`}
       </>;
     case MessageKind.slippageLimitToLow:
       return <>

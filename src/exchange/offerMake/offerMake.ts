@@ -279,14 +279,28 @@ function applyChange(state: OfferFormState,
           state.orderbook
         );
       }
-      return {
-        ...state,
-        kind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy,
-        price: change.offer.price,
-        amount: change.offer.baseAmount,
-        total: change.offer.quoteAmount,
-        gasEstimationStatus: GasEstimationStatus.unset
-      };
+
+      let newState = applyChange(
+        state,
+        {
+          kind: FormChangeKind.kindChange,
+          newKind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy
+        }
+      );
+      newState = applyChange(
+        newState,
+        {
+          kind: FormChangeKind.amountFieldChange,
+          value: new BigNumber(change.offer.baseAmount.toFixed(tokens[state.baseToken].digits))
+        }
+      );
+      return applyChange(
+        newState,
+        {
+          kind: FormChangeKind.priceFieldChange,
+          value: new BigNumber(change.offer.price.toFixed(tokens[state.quoteToken].digits))
+        }
+      );
     case OfferMakeChangeKind.pickerOpenChange:
       return {
         ...state,
@@ -483,7 +497,7 @@ function preValidate(state: OfferFormState): OfferFormState {
     }
   }
 
-  if (state.matchType === OfferMatchType.direct && !state.price && state.amount) {
+  if (state.matchType === OfferMatchType.direct && !state.price && state.amount && !state.amount.eq(0)) {
     messages.push({
       kind: MessageKind.orderbookTotalExceeded,
       field: 'amount',
