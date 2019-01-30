@@ -1,0 +1,43 @@
+@import "../utils/Mixins";
+
+.tradingPairPanel {
+  flex-grow: 1;
+}
+
+$historyPanelsHeight: 341px;
+$offerMakePanelHeight: 474px;
+$twoColumnsPanelWidth: 454px;
+
+.priceChartPanel,
+.allTradesPanel {
+  width: $twoColumnsPanelWidth;
+  height: $historyPanelsHeight;
+
+  @include media-breakpoint-down(lg) {
+    width: 100%;
+  }
+}
+
+
+.offerMakePanel {
+  height: $offerMakePanelHeight;
+  margin-right: 24px;
+  flex-grow: 1;
+  @include media-breakpoint-down(lg) {
+    margin-right: 0;
+    width: 100%;
+  }
+}
+
+.orderbookPanel {
+  height: $offerMakePanelHeight;
+  @include media-breakpoint-down(lg) {
+    //flex-grow: 1;
+    width: 100%;
+  }
+}
+
+.myOrdersPanel {
+  min-height: 230px;
+  width: 100%;
+}
