@@ -20,7 +20,7 @@ body {
   width: 932px;
   margin: 0 auto;
 
-  @media (max-width: $breakpoint-md) {
+  @include media-breakpoint-down(lg) {
     width: auto;
     margin-left: 1em;
     margin-right: 1em;
