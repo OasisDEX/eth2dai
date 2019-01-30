@@ -13,6 +13,7 @@ import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair } from '../tradingPair/tradingPair';
 import { createZoom$, ZoomChange } from './depthchart';
 import { DepthChartView } from './DepthChartView';
+import * as styles from './DepthChartView.scss';
 
 type DepthChartProps = LoadableWithTradingPair<Orderbook> & {
   kind: OfferType;
@@ -31,7 +32,7 @@ export class DepthChartWithLoading extends React.Component<DepthChartProps> {
     if (this.props.status === 'loaded') {
       const orderbook = this.props.value as Orderbook;
       return (
-        <div style={{ width: '508px' }}>
+        <div className={styles.depthChartWithLoading}>
           <DepthChartView  orderbook={orderbook}
                            kind={this.props.kind}
                            amount={this.props.amount}
@@ -48,7 +49,7 @@ export class DepthChartWithLoading extends React.Component<DepthChartProps> {
     }
 
     return (
-      <div style={{ width: '508px' }}>
+      <div className={styles.depthChartWithLoading}>
         <PanelHeader bordered={true}>
           <span>Depth chart</span>
         </PanelHeader>

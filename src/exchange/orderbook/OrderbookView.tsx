@@ -60,7 +60,7 @@ export class OrderbookView extends React.Component<Props> {
     const skipTransition = tradingPairChanged;
 
     return (
-      <div style={{ width: '452px' }}>
+      <div className={styles.orderbook} >
         <PanelHeader>
           <span>Order book</span>
           <div style={{ marginLeft: 'auto', display: 'flex' }}>
