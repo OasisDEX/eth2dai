@@ -15,26 +15,38 @@ import * as styles from './Header.scss';
 
 interface HeaderProps extends RouteComponentProps<any>{}
 
+const {
+  section,
+  sectionStatus,
+  sectionNavigation,
+  logo,
+  navElement,
+  navLink,
+  activeNavLink,
+} = styles;
+
 class Header extends React.Component<HeaderProps, any> {
   public render() {
     const matchUrl = this.props.match.url;
     return (
       <header>
-        <section>
-          <a href="/" className={styles.logo}>
-            <Logo />
+        <section className={section}>
+          <a href="/" className={logo}>
+            <Logo/>
           </a>
+        </section>
+        <section className={classnames(section, sectionNavigation)}>
           <nav>
             <ul>
-              <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange" />
-              <HeaderNavLink path={matchUrl.concat('balances')} name="Balances" />
+              <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange"/>
+              <HeaderNavLink path={matchUrl.concat('balances')} name="Balances"/>
             </ul>
           </nav>
-        </section>
-        <section>
-          <StatusTxRx />
+        </section >
+        <section className={classnames(section, sectionStatus)}>
+          <StatusTxRx/>
           <theAppContext.Consumer>
-            { ({ NetworkTxRx }) =>
+            {({ NetworkTxRx }) =>
               // @ts-ignore
               <NetworkTxRx/>
             }
@@ -55,7 +67,7 @@ class Status extends React.Component<StatusProps> {
       { (account: string) => {
         const label = account ? account.slice(0, 6) + '...' + account.slice(-4) : 'Logged out';
         return (
-          <div title={account} className={classnames(styles.navElement, styles.account)}>
+          <div title={account} className={classnames(navElement, styles.account)}>
             {account && <Jazzicon
               diameter={25}
               seed={jsNumberForAddress(account)} />}
@@ -75,8 +87,8 @@ export const HeaderNavLink = ({ path, name }: {path: string, name: string}) => (
     <NavLink
       data-test-id={name}
       to={path}
-      className={styles.navLink}
-      activeClassName={styles.activeNavLink}>
+      className={navLink}
+      activeClassName={activeNavLink}>
       {name}
     </NavLink>
   </li>
