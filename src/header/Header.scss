@@ -1,4 +1,55 @@
+@import "../utils/Mixins";
 @import "../utils/Variables";
+
+@include media-breakpoint-down(sm) {
+  header {
+    flex-wrap: wrap;
+
+    & nav,
+    nav ul,
+    nav ul li {
+      width: 100%;
+    }
+
+    & nav ul {
+      margin-top: 24px;
+    }
+
+    & .navLink {
+      width: 100%;
+    }
+
+    & .networkIndicator {
+      max-width: 68px;
+      font-size: 14px;
+      height: 32px;
+    }
+  }
+
+  .sectionNavigation {
+    order: 3;
+    width: 100%;
+  }
+
+  .sectionStatus {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+
+    & .account {
+      width: 32px;
+      height: 32px;
+
+      & :global(.paper) {
+        height: 20px !important;
+        width: 20px !important;
+      }
+
+      & span {
+        display: none;
+      }
+    }
+  }
+}
 
 header {
   display: flex;
@@ -14,7 +65,7 @@ header {
 
     &:hover {
       :global {
-        #bg{
+        #bg {
           fill-opacity: 0.35;
         }
       }
@@ -22,8 +73,12 @@ header {
   }
 }
 
-section {
+.section {
   display: inline-flex;
+
+  &Navigation {
+    margin-right: auto;
+  }
 }
 
 nav ul {
