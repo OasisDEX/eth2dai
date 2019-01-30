@@ -179,3 +179,19 @@ $inputFontSize: (
   font-family: $font-additional;
   font-weight: 500;
 }
+
+
+// ----------------------------- media queries / mobile mixin ------------------------
+
+// Media of at most the maximum breakpoint width. No query for the largest breakpoint.
+// Makes the @content apply to the given breakpoint and narrower.
+// Checks if grid-breakpoint is enabled
+@mixin media-breakpoint-down($name, $breakpoints: $grid-breakpoints) {
+  $max: map-get($breakpoints, $name);
+
+  @if $max and $grid-breakpoints-enabled == true {
+    @media (max-width: $max) {
+      @content;
+    }
+  }
+}
