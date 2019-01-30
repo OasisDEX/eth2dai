@@ -44,4 +44,11 @@ $font-size-smaller: 12px;
 $border-radius: 4px;
 
 
-$breakpoint-md: 1024px;
+// breakpoints, mobile etc
+$grid-breakpoints: (
+  sm: 576px, // below it's really narrow screen and it might look bad or need scrolls etc
+  md: 768px, // below is mobile
+  lg: 992px, // below is table; up is desktop with 2-columns layout
+) !default;
+
+$grid-breakpoints-enabled: true;
