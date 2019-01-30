@@ -1,3 +1,4 @@
+export const depthChartWithLoading: string;
 export const depthChart: string;
 export const sellChart: string;
 export const sellChartDark: string;
