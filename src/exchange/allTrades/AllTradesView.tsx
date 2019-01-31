@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Subject } from 'rxjs';
 
 import { etherscan } from '../../blockchain/etherscan';
@@ -38,9 +39,14 @@ export class AllTrades extends React.Component<AllTradesProps> {
                 <th>Time</th>
               </tr>
             </thead>
-            <tbody>
-              {trades.map((trade, i) => (
-                  <RowClickable key={i} clickable={!!trade.tx} onClick={this.tradeDetails(trade)}>
+            <TransitionGroup component="tbody">
+              {trades.map(trade => (
+                <CSSTransition
+                  key={`${trade.tx}_${trade.idx}`}
+                  classNames="trade"
+                  timeout={1000}
+                >
+                  <RowClickable clickable={!!trade.tx} onClick={this.tradeDetails(trade)}>
                     <td>
                       <SellBuySpan type={trade.act}>
                         <FormatPrice value={trade.price} token={trade.quoteToken} />
@@ -53,20 +59,24 @@ export class AllTrades extends React.Component<AllTradesProps> {
                       <Muted>{formatDateTime(trade.time)}</Muted>
                     </td>
                   </RowClickable>
-                )
-              )}
-              <tr>
-                <td colSpan={3}>
-                  <Button onClick={showMore(more$)}
-                          block={true}
-                          size="md"
-                          disabled={loading}
-                  >
-                    { loading ? <span className={styles.loader} /> : 'Load more' }
-                  </Button>
-                </td>
-              </tr>
-            </tbody>
+                </CSSTransition>
+              ))}
+
+              {/* don't remove me! */}
+              <CSSTransition key="0" classNames="trade" timeout={1000}>
+                <tr>
+                  <td colSpan={3}>
+                    <Button onClick={showMore(more$)}
+                            block={true}
+                            size="md"
+                            disabled={loading}
+                    >
+                      { loading ? <span className={styles.loader} /> : 'Load more' }
+                    </Button>
+                  </td>
+                </tr>
+              </CSSTransition>
+            </TransitionGroup>
           </Table>) }
         </WithLoadingIndicator>
       </>
