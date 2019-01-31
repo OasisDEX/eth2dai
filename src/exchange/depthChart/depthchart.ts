@@ -62,6 +62,14 @@ export type ZoomChange = 'zoomIn' | 'zoomOut';
 
 const zoomMultiplier = new BigNumber(1.5);
 
+function zoomIn(zoom: BigNumber) {
+  return zoom.dividedBy(zoomMultiplier);
+}
+
+function zoomOut(zoom: BigNumber) {
+  return zoom.times(zoomMultiplier);
+}
+
 export function createZoom$(
   tradingPair$: Observable<TradingPair>,
   orderBook$: Observable<Orderbook>
@@ -81,8 +89,8 @@ export function createZoom$(
               scan(
                 (zoom: BigNumber, change: ZoomChange) => {
                   return change === 'zoomOut' ?
-                    zoom.times(zoomMultiplier) :
-                    zoom.dividedBy(zoomMultiplier);
+                    zoomOut(zoom) :
+                    zoomIn(zoom);
                 },
               ),
             )
@@ -440,27 +448,18 @@ function doZoom(
     const zoomLeft = mid.minus(zoom).toNumber();
     const zoomRight = mid.plus(zoom).toNumber();
 
-    const sellsBefore = data.sellsBefore && data.sellsBefore.filter(v => v.price < zoomRight);
-    const buysBefore = data.buysBefore && data.buysBefore.filter(v => v.price > zoomLeft);
-    const sellsAfter = data.sellsAfter && data.sellsAfter.filter(v => v.price < zoomRight);
-    const buysAfter = data.buysAfter && data.buysAfter.filter(v => v.price > zoomLeft);
-    const sellsExtra = data.sellsExtra && data.sellsExtra.filter(v => v.price < zoomRight);
-    const buysExtra = data.buysExtra && data.buysExtra.filter(v => v.price > zoomLeft);
-
-    const zoomInEnabled = true;
-    const zoomOutEnabled =
-      !(buysBefore && data.buysBefore && buysBefore.length === data.buysBefore.length &&
-      sellsBefore && data.sellsBefore && sellsBefore.length === data.sellsBefore.length);
+    const zoomInEnabled = isZoomInEnabled(mid, zoom, data);
+    const zoomOutEnabled = isZoomOutEnabled(mid, zoom, data);
 
     return {
-      sellsBefore,
-      buysBefore,
-      sellsAfter,
-      buysAfter,
-      sellsExtra,
-      buysExtra,
       zoomInEnabled,
-      zoomOutEnabled
+      zoomOutEnabled,
+      sellsBefore: data.sellsBefore && data.sellsBefore.filter(v => v.price < zoomRight),
+      buysBefore: data.buysBefore && data.buysBefore.filter(v => v.price > zoomLeft),
+      sellsAfter: data.sellsAfter && data.sellsAfter.filter(v => v.price < zoomRight),
+      buysAfter: data.buysAfter && data.buysAfter.filter(v => v.price > zoomLeft),
+      sellsExtra: data.sellsExtra && data.sellsExtra.filter(v => v.price < zoomRight),
+      buysExtra: data.buysExtra && data.buysExtra.filter(v => v.price > zoomLeft),
     };
   }
   return {
@@ -468,6 +467,46 @@ function doZoom(
     zoomInEnabled: false,
     zoomOutEnabled: false
   };
+}
+
+/**
+ * Checks if zoom in is enabled.
+ * Zoom in is enabled if after zooming in something some data (sells or byus) will be visible
+ * @param {BigNumber} mid - current middle value
+ * @param {BigNumber} zoom - current zoom value
+ * @param {DepthChartVolumes} data - current data
+ * @returns {boolean} should zoom in be enabled
+ */
+function isZoomInEnabled(mid: BigNumber, zoom: BigNumber, data: DepthChartVolumes): boolean {
+  const zoomLeftAfterZoomIn = mid.minus(zoomIn(zoom)).toNumber();
+  const zoomRightAfterZoomIn = mid.plus(zoomIn(zoom)).toNumber();
+  return ([data.buysAfter, data.buysBefore, data.buysExtra]
+      .filter(v => v !== undefined) as PriceVolume[][])
+      .some(d => d.filter(v => v.price > zoomLeftAfterZoomIn).length > 0) ||
+    ([data.sellsAfter, data.sellsBefore, data.sellsExtra]
+      .filter(v => v !== undefined) as PriceVolume[][])
+      .some(d => d.filter(v => v.price < zoomRightAfterZoomIn).length > 0);
+}
+
+/** Checks if zoom out is enabled.
+ * Zoom out is enabled if current zoom does not show every data, that mean:
+ * there are buys with higher price than currently visible (zoom right)
+ * or there are sells with lower price (zoom left)
+ *
+ * @param {BigNumber} mid - current middle value
+ * @param {BigNumber} zoom - current zoom value
+ * @param {DepthChartVolumes} data - current data
+ * @returns {boolean} should zoom out be enabled
+ */
+function isZoomOutEnabled(mid: BigNumber, zoom: BigNumber, data: DepthChartVolumes): boolean {
+  const zoomLeft = mid.minus(zoom).toNumber();
+  const zoomRight = mid.plus(zoom).toNumber();
+  return ([data.buysAfter, data.buysBefore, data.buysExtra]
+      .filter(v => v !== undefined) as PriceVolume[][])
+      .some(d => Math.min(...d.map(v => v.price)) < zoomLeft) ||
+    ([data.sellsAfter, data.sellsBefore, data.sellsExtra]
+      .filter(v => v !== undefined) as PriceVolume[][])
+      .some(d => Math.max(...d.map(v => v.price)) > zoomRight);
 }
 
 /**
