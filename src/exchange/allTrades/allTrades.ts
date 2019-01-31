@@ -15,12 +15,13 @@ import { TradingPair } from '../tradingPair/tradingPair';
 
 export type IntervalUnit = 'hour' | 'day' | 'week' | 'month';
 
+const TRADES_PAGE_SIZE = 1000;
+
 export interface AllTradesProps extends LoadableWithTradingPair<TradesBrowser> {
   etherscan: EtherscanConfig;
 }
 
 export function loadAllTrades(
-  interval: number, unit: IntervalUnit,
   context$$: Observable<NetworkConfig>,
   onEveryBlock$$: Observable<number>,
   { base, quote }: TradingPair,
@@ -40,7 +41,7 @@ export function loadAllTrades(
     context$$.pipe(
       switchMap(context =>
         getTrades(context, base, quote, {
-          from: moment().subtract(interval, unit).startOf('day').toDate(),
+          limit: TRADES_PAGE_SIZE,
           to: borderline,
         })
       ),
@@ -69,44 +70,38 @@ export interface TradesBrowser {
 }
 
 export function createTradesBrowser$(
-  interval: number, unit: IntervalUnit,
   context$$: Observable<NetworkConfig>,
   allTrades: (pair: TradingPair) => Observable<Trade[]>,
   tradingPair: TradingPair,
 ): Observable<TradesBrowser> {
-  const firstPageEnd = moment().subtract(interval, unit).startOf('day').toDate();
   const more$ = new Subject<any>();
-  const perPage = 1000;
 
   return context$$.pipe(
     switchMap(context => combineLatest(
       allTrades(tradingPair),
       more$.pipe(
-        mergeScan<any, { nextPageStart: number, to: Date, loading: boolean, trades: Trade[] }>(
-          ({ to, nextPageStart, trades }, _more) => {
+        mergeScan<any, { nextPageStart: number, loading: boolean, trades: Trade[] }>(
+          ({ nextPageStart, trades }, _more) => {
             return getTrades(context, tradingPair.base, tradingPair.quote, {
-              to,
               offset: nextPageStart,
-              limit: perPage
+              limit: TRADES_PAGE_SIZE
             }).pipe(
               retryWhen(errors => errors.pipe(delay(500))),
               map(newTrades => ({
-                to,
                 trades: [...trades, ...newTrades],
                 loading: false,
-                nextPageStart: nextPageStart + perPage,
+                nextPageStart: nextPageStart + TRADES_PAGE_SIZE,
               })),
               startWith({
                 trades,
                 nextPageStart,
-                to,
                 loading: true,
               }),
             );
           },
-          { nextPageStart: 0, to: firstPageEnd, loading: false, trades: [] },
+          { nextPageStart: TRADES_PAGE_SIZE, loading: false, trades: [] },
         ),
-        startWith({ nextPageStart: 0, to: firstPageEnd, loading: false, trades: [] as Trade[] }),
+        startWith({ nextPageStart: TRADES_PAGE_SIZE, loading: false, trades: [] as Trade[] }),
       ),
     ).pipe(
       map(([current, { loading, trades }]) => ({
