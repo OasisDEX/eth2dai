@@ -12928,10 +12928,10 @@ subarg@^1.0.0:
   dependencies:
     minimist "^1.1.0"
 
-super-ci@^0.0.17:
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/super-ci/-/super-ci-0.0.17.tgz#72087afc5ba8d679e311887ea601bf15e1d5c292"
-  integrity sha512-AzCD+qd/UDyA/SxyKmBQDzFJ33Rm5UKYaNhMGFEOoSbxpy/lFMnJ0A3qbqFhMqGI7sYwJ6LK4Qgwh7L5xnLjmQ==
+super-ci@^0.0.18:
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/super-ci/-/super-ci-0.0.18.tgz#dff51940e8d92924caaac0e4837fbecff7e93c0c"
+  integrity sha512-oXJXpDQjjvH4R+ypekUIBKD0Svgg2Fkos69mDlvynuHIDrTEiT6UDSCnXKnz1Dd8uWVBbasfIeEvxKdz9QU6Rg==
   dependencies:
     glob "^7.1.3"
     mime-types "^2.1.21"
@@ -12940,6 +12940,7 @@ super-ci@^0.0.17:
     request-promise "^4.2.2"
     ts-essentials "^1.0.2"
     ts-node "^8.0.2"
+    url-join "^4.0.0"
 
 supports-color@5.1.0:
   version "5.1.0"
@@ -13882,6 +13883,11 @@ url-join@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-2.0.5.tgz#5af22f18c052a000a48d7b82c5e9c2e2feeda728"
   integrity sha1-WvIvGMBSoACkjXuCxenC4v7tpyg=
+
+url-join@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
+  integrity sha1-TTNA6AfTdzvamZH4MFrNzCpmXSo=
 
 url-loader@0.6.2, url-loader@^0.6.2:
   version "0.6.2"
