@@ -10,15 +10,16 @@ import { TxMetaKind } from './txMeta';
 export interface WrapUnwrapData {
   amount: BigNumber;
   gasPrice: BigNumber;
+  gas?: number;
 }
 
 export const wrap: TransactionDef<WrapUnwrapData> = {
   call: (_: WrapUnwrapData, context: NetworkConfig) =>
     context.tokens.WETH.contract.deposit,
-  options: ({ amount, gasPrice }: WrapUnwrapData) => ({
+  options: ({ amount, gasPrice, gas }: WrapUnwrapData) => ({
+    gas,
     gasPrice: gasPrice.toString(),
     value: amountToWei(amount, 'ETH').toFixed(0),
-    gas: 100000,
   }),
   kind: TxMetaKind.wrap,
   prepareArgs: (_: WrapUnwrapData) => [],
@@ -32,7 +33,7 @@ export const wrap: TransactionDef<WrapUnwrapData> = {
 export const unwrap: TransactionDef<WrapUnwrapData> = {
   call: (_: WrapUnwrapData, context: NetworkConfig) =>
     context.tokens.WETH.contract.withdraw,
-  options: ({ gasPrice }) => ({ gasPrice, gas: 100000 }),
+  options: ({ gasPrice, gas }) => ({ gas, gasPrice: gasPrice.toString() }),
   kind: TxMetaKind.unwrap,
   prepareArgs: ({ amount }: WrapUnwrapData) =>
     [amountToWei(amount, 'ETH').toFixed(0)],
