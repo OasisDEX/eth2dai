@@ -151,8 +151,9 @@ function prepareProceed(calls$: Calls$): [
     const kind = state.kind;
     const amount = state.amount;
     const gasPrice = state.gasPrice;
+    const gas = state.gasEstimation;
 
-    if (!amount || !gasPrice) {
+    if (!amount || !gasPrice || !gas) {
       return;
     }
 
@@ -167,7 +168,7 @@ function prepareProceed(calls$: Calls$): [
             kind === WrapUnwrapFormKind.wrap ?
               calls.wrap :
               calls.unwrap;
-          return call({ amount, gasPrice })
+          return call({ amount, gasPrice, gas })
           .pipe(
             transactionToX(
               progressChange(ProgressStage.waitingForApproval),
