@@ -4,7 +4,7 @@
   flex-grow: 1;
 }
 
-$historyPanelsHeight: 341px;
+$historyPanelsHeight: 342px;
 $offerMakePanelHeight: 474px;
 $twoColumnsPanelWidth: 454px;
 
@@ -32,7 +32,6 @@ $twoColumnsPanelWidth: 454px;
 .orderbookPanel {
   height: $offerMakePanelHeight;
   @include media-breakpoint-down(lg) {
-    //flex-grow: 1;
     width: 100%;
   }
 }
