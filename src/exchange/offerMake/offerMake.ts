@@ -195,6 +195,7 @@ function offerMakeDirectData(state: OfferFormState): OfferMakeDirectData {
     quoteAmount: (total as BigNumber)
       .times(new BigNumber(1)
         .plus((slippageLimit as BigNumber)
+          .plus(0.001)
           .dividedBy(
             kind === 'buy' ? 100 : -100
           )
@@ -204,7 +205,7 @@ function offerMakeDirectData(state: OfferFormState): OfferMakeDirectData {
   };
 }
 
-function directMatchPrice(amount: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
+function directMatchTotal(amount: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
   if (!amount) return undefined;
   let baseAmount = amount;
   let quoteAmount = new BigNumber(0);
@@ -222,7 +223,7 @@ function directMatchPrice(amount: BigNumber | undefined, orders: Offer[]): BigNu
       baseAmount = new BigNumber(0);
     }
   }
-  return amount.isZero() || !baseAmount.isZero() ? undefined : quoteAmount.dividedBy(amount);
+  return !baseAmount.isZero() ? undefined : quoteAmount;
 }
 
 function directMatchState(state: OfferFormState,
@@ -231,15 +232,16 @@ function directMatchState(state: OfferFormState,
   const amount = change.hasOwnProperty('amount') ? (change as any).amount : state.amount;
   const kind = change.hasOwnProperty('kind') ? (change as any).kind : state.kind;
   const orders = kind === 'buy' ? orderbook.sell : orderbook.buy;
-  const price = directMatchPrice(amount, orders);
+  const total = directMatchTotal(amount, orders);
+  const price = amount && total && (amount.isZero() ? undefined : total.dividedBy(amount));
   return {
     ...state,
     kind,
     amount,
     price,
-    total: price && amount && amount.times(price),
+    total,
     priceImpact: price && orders[0] &&
-    (price.minus(orders[0].price).dividedBy(orders[0].price)).times(100).abs(),
+      (price.minus(orders[0].price).dividedBy(orders[0].price)).times(100).abs(),
     matchType: OfferMatchType.direct,
     gasEstimationStatus: GasEstimationStatus.unset
   };
