@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import { isEmpty, uniqBy, unzip } from 'lodash';
 import { bindNodeCallback, combineLatest, Observable, of, zip } from 'rxjs';
-import { expand, map, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
+import { expand, map, reduce, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
 
 import { tap } from 'rxjs/internal/operators';
 import { NetworkConfig } from '../../blockchain/config';
@@ -119,7 +119,7 @@ function loadOffersAllAtOnce(
         throw e;
       }),
     )),
-    scan<{ offers: Offer[] }, Offer[]>((result, { offers }) => result.concat(offers), []),
+    reduce<{ offers: Offer[] }, Offer[]>((result, { offers }) => result.concat(offers), []),
     map(offers => uniqBy(offers, ({ offerId }) => offerId.toString())),
   );
 }
