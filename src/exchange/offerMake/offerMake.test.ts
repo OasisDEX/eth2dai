@@ -1067,7 +1067,7 @@ test('place direct sell order using all of the balance which is zero', () => {
 
   expect(unpack(controller).amount).toEqual(new BigNumber(0));
   expect(unpack(controller).price).toEqual(undefined);
-  expect(unpack(controller).total).toEqual(undefined);
+  expect(unpack(controller).total).toEqual(new BigNumber(0));
   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
 });
 
@@ -1152,7 +1152,7 @@ test('place direct sell order that exceeds the balance', () => {
 
   expect(unpack(controller).amount).toEqual(new BigNumber(12));
   expect(unpack(controller).price).toEqual(new BigNumber('0.18333333333333333333'));
-  expect(unpack(controller).total).toEqual(new BigNumber('2.19999999999999999996'));
+  expect(unpack(controller).total).toEqual(new BigNumber('2.2'));
   expect(unpack(controller).messages.length).toBe(1);
   expect(unpack(controller).messages[0].kind).toBe(MessageKind.insufficientAmount);
   expect(unpack(controller).gasEstimationStatus).toEqual(GasEstimationStatus.unset);
