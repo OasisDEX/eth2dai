@@ -16,7 +16,7 @@ export const wrap: TransactionDef<WrapUnwrapData> = {
   call: (_: WrapUnwrapData, context: NetworkConfig) =>
     context.tokens.WETH.contract.deposit,
   options: ({ amount, gasPrice }: WrapUnwrapData) => ({
-    gasPrice,
+    gasPrice: gasPrice.toString(),
     value: amountToWei(amount, 'ETH').toFixed(0),
     gas: 100000,
   }),
