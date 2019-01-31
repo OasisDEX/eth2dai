@@ -16,6 +16,10 @@ import * as styles from './Header.scss';
 interface HeaderProps extends RouteComponentProps<any>{}
 
 const {
+  header,
+  nav,
+  list,
+  item,
   section,
   sectionStatus,
   sectionNavigation,
@@ -29,15 +33,15 @@ class Header extends React.Component<HeaderProps, any> {
   public render() {
     const matchUrl = this.props.match.url;
     return (
-      <header>
+      <header className={header}>
         <section className={section}>
           <a href="/" className={logo}>
             <Logo/>
           </a>
         </section>
         <section className={classnames(section, sectionNavigation)}>
-          <nav>
-            <ul>
+          <nav className={nav}>
+            <ul className={list}>
               <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange"/>
               <HeaderNavLink path={matchUrl.concat('balances')} name="Balances"/>
             </ul>
@@ -83,7 +87,7 @@ class Status extends React.Component<StatusProps> {
 export const StatusTxRx = connect(Status, loadablifyLight(account$));
 
 export const HeaderNavLink = ({ path, name }: {path: string, name: string}) => (
-  <li>
+  <li className={item}>
     <NavLink
       data-test-id={name}
       to={path}
