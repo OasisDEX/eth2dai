@@ -20,7 +20,7 @@
 
 .myOpenTradesTable {
   @include tableColumnsWidth(100px 165px 165px 165px 165px 165px);
-  @include tableColumnsWidth(50px 90px 90px 90px 60px 80px, lg);
+  @include tableColumnsWidth(50px 85px 85px 85px 60px 75px, lg);
 
   // status with icon
   td:last-child {
@@ -30,7 +30,7 @@
 
 .myCloseTradesTable {
   @include tableColumnsWidth(100px 165px 165px 165px 165px);
-  @include tableColumnsWidth(60px 104px 104px 104px 90px, lg);
+  @include tableColumnsWidth(60px 100px 100px 100px 90px, lg);
 }
 
 .statusText {
