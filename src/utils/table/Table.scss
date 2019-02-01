@@ -14,6 +14,9 @@ $padding-horizontal-edges-mod: 15px;
   @include media-breakpoint-down(md) {
     display: block;
     overflow: auto;
+    // in mobile it's important that scrollable table is short enough
+    // to allow user scroll the page, not only table
+    max-height: calc(100vh - 70px) !important;
 
     th {
       position: sticky;
