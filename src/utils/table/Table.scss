@@ -119,9 +119,4 @@ $padding-horizontal-edges-mod: 15px;
   @include media-breakpoint-up(md) {
     @include scrollableTable;
   }
-  &Lg {
-    @include media-breakpoint-up(lg) {
-      @include scrollableTable;
-    }
-  }
 }
