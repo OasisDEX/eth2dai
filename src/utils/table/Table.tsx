@@ -6,12 +6,13 @@ import * as styles from './Table.scss';
 export const Table = ({ children, align, scrollable, className }:
       { children: any,
         align?: 'right' | 'left' | 'center',
-        scrollable?: any,
+        scrollable?: boolean | 'lg',
         className?: any }) => (
   <table className={ classnames({ [styles.table] : true,
     [styles.extendOnBorders]: true,
     [styles[align || 'left']]: align,
-    [styles.scrollable]: scrollable,
+    [styles.scrollableLg]: scrollable === 'lg',
+    [styles.scrollable]: scrollable === true,
     [className]: className
   }) }>
     {children}
