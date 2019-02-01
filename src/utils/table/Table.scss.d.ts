@@ -6,3 +6,4 @@ export const left: string;
 export const trHighlighted: string;
 export const clickable: string;
 export const scrollable: string;
+export const scrollableLg: string;

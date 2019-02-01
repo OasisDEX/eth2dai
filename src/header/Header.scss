@@ -2,7 +2,7 @@
 @import "../utils/Variables";
 
 :global(.paper) {
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     height: 20px !important;
     width: 20px !important;
   }
@@ -37,14 +37,14 @@
   &Navigation {
     margin-right: auto;
 
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
       order: 3;
       width: 100%;
     }
   }
 
   &Status {
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
       flex: 1 1 auto;
       justify-content: flex-end;
     }
@@ -52,7 +52,7 @@
 }
 
 .nav, .list, .item {
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     width: 100%;
   }
 }
@@ -62,7 +62,7 @@
     list-style-type: none;
     padding: 0;
 
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
       margin-top: 24px;
     }
 
@@ -108,7 +108,7 @@
     cursor: pointer;
   }
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     width: 100%;
   }
 }
@@ -126,13 +126,13 @@
   border-radius: $border-radius;
   margin-right: 12px;
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     width: 32px;
     height: 32px;
   }
 
   & span {
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
       display: none
     }
   }
@@ -155,7 +155,7 @@
 
   text-transform: capitalize;
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     max-width: 68px;
     font-size: 14px;
     height: 32px;
