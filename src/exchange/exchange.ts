@@ -20,7 +20,10 @@ export function createYesterdayPrice$(
 ): Observable<BigNumber | undefined> {
   return tradeHistory$.pipe(
     map(trades => {
-      const borderline = moment().subtract(1, 'days').toDate();
+      if (!trades[0]) {
+        return undefined;
+      }
+      const borderline = moment(trades[0].time).subtract(1, 'days').toDate();
       const trade = trades.find((t: Trade) => t.time <= borderline);
       return trade ? trade.price : undefined;
     }),
