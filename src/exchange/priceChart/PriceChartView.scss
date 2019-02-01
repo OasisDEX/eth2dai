@@ -105,17 +105,17 @@
 // Info box for price chart
 .infoBox {
   position: absolute;
-  left: 10px;
+  left: auto;
   top: 0;
 
   background-color: rgba($grey-darkest, 0.5);
-  //border: 1px solid $grey-light;
   font-size: 10px;
   padding: 2px 3px;
 
   display: flex;
   justify-content: space-between;
   width: calc(100% - 20px);
+  max-width: 440px;
 }
 
 .infoBoxItem {
