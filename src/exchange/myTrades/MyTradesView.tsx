@@ -45,7 +45,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
         >
           { (trades: TradeWithStatus[]) => (
             <Table
-              scrollable={true}
+              scrollable="lg"
               align="left"
               className={classnames(styles.myTradesTable, {
                 [styles.myOpenTradesTable]: this.props.kind === MyTradesKind.open,
