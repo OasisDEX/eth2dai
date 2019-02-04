@@ -95,20 +95,9 @@
 }
 
 .wrapUnwrapBtn {
-  @include media-breakpoint-down(lg){
-    font-size:11px;
-  }
-
   @include media-breakpoint-down(md){
     width: 64px;
     height: 20px;
     font-size: 9px;
-  }
-
-  @include media-breakpoint-down(sm){
-    width: 54px;
-    height: 18px;
-    font-size: 8px;
-    padding: 0;
   }
 }
