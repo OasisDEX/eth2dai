@@ -4,6 +4,10 @@
 .table {
   th {
     text-transform: unset;
+
+    @include media-breakpoint-down(md) {
+      font-size: 10px;
+    }
   }
 
   .center {
@@ -12,6 +16,12 @@
 
   .amount {
     text-align: right;
+  }
+
+  td {
+    @include media-breakpoint-down(md) {
+      font-size: 11px;
+    }
   }
 
   // align tokens icons so they look like they
@@ -31,6 +41,10 @@
   td:nth-child(4) {
     padding-top: 0;
     padding-bottom: 0;
+  }
+
+  th, td {
+    padding: 8px 12px;
   }
 }
 
@@ -70,4 +84,12 @@
 .transferBtnLeft {
   transform: rotate(180deg);
   margin-right: 5px;
+}
+
+.wrapUnwrapBtn {
+  @include media-breakpoint-down(md){
+    width: 64px;
+    height: 20px;
+    font-size: 9px;
+  }
 }

@@ -5,3 +5,4 @@ export const centeredAsset: string;
 export const transferBtn: string;
 export const disabled: string;
 export const transferBtnLeft: string;
+export const wrapUnwrapBtn: string;
