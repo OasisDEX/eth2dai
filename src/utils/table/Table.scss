@@ -11,6 +11,20 @@ $padding-horizontal-edges-mod: 15px;
   border-collapse: collapse;
   width: 100%;
 
+  @include media-breakpoint-down(md) {
+    display: block;
+    overflow: auto;
+    // in mobile it's important that scrollable table is short enough
+    // to allow user scroll the page, not only table
+    max-height: calc(100vh - 70px) !important;
+
+    th {
+      position: sticky;
+      top: -1px;
+      background-color: $grey-dark;
+    }
+  }
+
   thead {
     @extend .trHighlighted;
   }
@@ -83,7 +97,7 @@ $padding-horizontal-edges-mod: 15px;
 }
 
 // With scrollable tbody
-.scrollable {
+@mixin scrollableTable {
   // table
   display: flex;
   flex-direction: column;
@@ -102,10 +116,10 @@ $padding-horizontal-edges-mod: 15px;
   tr {
     display: flex;
   }
+}
 
-  //td, th {
-  //  &:last-child {
-  //    padding-right: $padding-horizontal;
-  //  }
-  //}
+.scrollable {
+  @include media-breakpoint-up(md) {
+    @include scrollableTable;
+  }
 }
