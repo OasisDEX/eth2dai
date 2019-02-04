@@ -16,7 +16,6 @@ import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator
 import { ModalOpenerProps, ModalProps } from '../utils/modal';
 import { Panel, PanelHeader } from '../utils/panel/Panel';
 import { Table } from '../utils/table/Table';
-import * as tableStyles from '../utils/table/Table.scss';
 import { Currency } from '../utils/text/Text';
 import { zero } from '../utils/zero';
 import { WrapUnwrapFormKind, WrapUnwrapFormState } from '../wrapUnwrap/wrapUnwrapForm';
