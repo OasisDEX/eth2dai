@@ -31,13 +31,16 @@ export function loadAggregatedTrades(
   onEveryBlock$$: Observable<number>,
   { base, quote }: TradingPair,
 ): Observable<PriceChartDataPoint[]> {
-  const view = 'tradesAggregated';
-  const options = { timeUnit: unit, tzOffset: { minutes: -new Date().getTimezoneOffset() } };
   const borderline = moment().subtract(interval, unit).startOf('day').toDate();
+  const view = 'tradesAggregated';
+  const options = {
+    timeUnit: unit,
+    tzOffset: { minutes: -new Date().getTimezoneOffset() },
+    dateFrom: borderline.toISOString(),
+  };
   const fields = ['date', 'open', 'close', 'min', 'max', 'volumeBase'];
   const filter = {
     market: { equalTo: `${base}${quote}` },
-    date: { greaterThan: borderline.toISOString() },
   };
 
   return combineLatest(context$$, onEveryBlock$$).pipe(
