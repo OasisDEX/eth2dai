@@ -123,9 +123,3 @@ $padding-horizontal-edges-mod: 15px;
     @include scrollableTable;
   }
 }
-
-.hideOnMobile {
-  @include media-breakpoint-down(md) {
-    display: none;
-  }
-}
