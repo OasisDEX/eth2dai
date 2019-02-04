@@ -1,4 +1,5 @@
 @import "../Variables";
+@import "../Mixins";
 
 $panel-padding-horizontal: 16px;
 $panel-padding-vertical: 12px;
@@ -40,6 +41,13 @@ $panel-padding-vertical: 12px;
   font-weight: 500;
   letter-spacing: 0.36px;
   min-height: 64px;
+
+  @include media-breakpoint-down(md) {
+    font-size: 14px;
+    line-height: 18px;
+    padding: 14px 18px;
+    min-height: 0;
+  }
 }
 
 .panelHeaderBordered {
