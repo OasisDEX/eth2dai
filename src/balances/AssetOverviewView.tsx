@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import classnames from 'classnames';
 import { Observable } from 'rxjs/internal/Observable';
 import { TokenIcon } from '../blockchain/coinIcons/TokenIcon';
 import { tokens } from '../blockchain/config';
@@ -14,6 +15,7 @@ import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator
 import { ModalOpenerProps, ModalProps } from '../utils/modal';
 import { Panel, PanelHeader } from '../utils/panel/Panel';
 import { Table } from '../utils/table/Table';
+import * as tableStyles from '../utils/table/Table.scss';
 import { Currency } from '../utils/text/Text';
 import { zero } from '../utils/zero';
 import { WrapUnwrapFormKind, WrapUnwrapFormState } from '../wrapUnwrap/wrapUnwrapForm';
@@ -61,17 +63,17 @@ export class AssetsOverviewViewInternal
       <Table className={styles.table} align="left">
         <thead>
         <tr>
-          <th style={{ width: '20%' }}>Symbol</th>
+          <th className={tableStyles.hideOnMobile} style={{ width: '20%' }}>Symbol</th>
           <th style={{ width: '20%' }}>Asset</th>
           <th style={{ width: '20%' }} className={styles.center}>Unlock</th>
           <th style={{ width: '15%' }} className={styles.center}/>
           <th style={{ width: '15%' }} className={styles.amount}>Wallet</th>
-          <th style={{ width: '20%' }} className={styles.amount}>Value (USD)</th>
+          <th className={classnames(styles.amount, tableStyles.hideOnMobile)} style={{ width: '20%' }}>Value (USD)</th>
         </tr>
         </thead>
         <tbody>
         <tr data-test-id="ETH-overview">
-          <td>ETH</td>
+          <td className={tableStyles.hideOnMobile} >ETH</td>
           <td>
             <div className={styles.centeredAsset}>
               <TokenIcon token="ETH" /> <Currency
@@ -84,6 +86,7 @@ export class AssetsOverviewViewInternal
               data-test-id="open-wrap-form"
               color="grey"
               size="sm"
+              className={styles.wrapUnwrapBtn}
               block={true}
               onClick={() => this.wrap()}
               disabled={this.props.etherBalance.eq(zero)}
@@ -94,14 +97,14 @@ export class AssetsOverviewViewInternal
           <td data-test-id={`ETH-balance`} className={styles.amount} data-vis-reg-mask={true}>
             <FormatAmount value={this.props.etherBalance} token="ETH" />
           </td>
-          <td className={styles.amount} data-vis-reg-mask={true}>
+          <td className={classnames(styles.amount, tableStyles.hideOnMobile)} data-vis-reg-mask={true}>
             <FormatAmount value={this.props.etherValueInUsd} token="USD" />
           </td>
         </tr>
 
         { this.props.balances && this.props.balances.map(combinedBalance => (
           <tr data-test-id={`${combinedBalance.name}-overview`} key={combinedBalance.name}>
-            <td>{combinedBalance.name}</td>
+            <td className={tableStyles.hideOnMobile}>{combinedBalance.name}</td>
             <td>
               <div className={styles.centeredAsset}>
                 <TokenIcon token={combinedBalance.name} /> <Currency
@@ -125,6 +128,7 @@ export class AssetsOverviewViewInternal
                 data-test-id="open-unwrap-form"
                 color="grey"
                 size="sm"
+                className={styles.wrapUnwrapBtn}
                 block={true}
                 onClick={() => this.unwrap()}
                 disabled={combinedBalance.balance.eq(zero)}
@@ -136,7 +140,7 @@ export class AssetsOverviewViewInternal
             <td data-test-id={`${combinedBalance.name}-balance`} className={styles.amount} data-vis-reg-mask={true}>
               <FormatAmount value={combinedBalance.balance} token={combinedBalance.name} />
             </td>
-            <td className={styles.amount} data-vis-reg-mask={true}>
+            <td className={classnames(styles.amount, tableStyles.hideOnMobile)} data-vis-reg-mask={true}>
               <FormatAmount value={combinedBalance.valueInUsd} token="USD" fallback=""/>
             </td>
           </tr>
