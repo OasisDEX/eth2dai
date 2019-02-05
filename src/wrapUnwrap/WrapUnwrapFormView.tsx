@@ -42,14 +42,14 @@ export class WrapUnwrapFormView
       overlayClassName={styles.modalOverlay}
       closeTimeoutMS={250}
     >
-      <Panel style={{ width: '454px', height: '528px' }} className={styles.modalChild}>
+      <Panel className={classnames(styles.panel, styles.modalChild)}>
         <PanelHeader bordered={true}>
           <div>{this.props.kind} ether</div>
         </PanelHeader>
         <WithLoadingIndicator loadable={this.props}>
         { state =>
           (<React.Fragment>
-            <PanelBody style={{ height: '390px' }}>
+            <PanelBody className={styles.panelBody}>
               { this.summary(state) }
               <Hr color="light" className={styles.hrMargin}/>
               {this.formOrTransactionState(state)}
