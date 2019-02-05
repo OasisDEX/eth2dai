@@ -38,9 +38,6 @@ $twoColumnsPanelWidth: 454px;
   height: $offerMakePanelHeight;
   @include media-breakpoint-down(lg) {
     width: 100%;
-  }
-
-  @include media-breakpoint-down(sm) {
     height: auto;
   }
 }
