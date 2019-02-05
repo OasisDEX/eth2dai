@@ -8,6 +8,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @include media-breakpoint-down(sm) {
+    font-size:14px;
+  }
 }
 
 .infoRowMargin {
@@ -58,6 +62,12 @@
   flex-grow: 2;
   flex-shrink: 0;
   padding: 10px 16px;
+
+  @include media-breakpoint-down(sm) {
+    flex-basis: 72px;
+    padding: 10px 8px;
+    font-size: 12px;
+  }
 }
 
 .inputCurrencyAddon {
@@ -67,4 +77,24 @@
   justify-content: start;
   padding: 10px 16px;
   white-space: nowrap;
+
+  @include media-breakpoint-down(sm) {
+    flex-basis: 42px;
+    padding: 10px 8px;
+    font-size: 12px;
+    justify-content: center;
+  }
+}
+
+.panel {
+  width: 454px;
+  max-height: 528px;
+
+  &Body {
+    height: 390px;
+
+    @include media-breakpoint-down(sm){
+      height: 320px;
+    }
+  }
 }
