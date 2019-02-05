@@ -26,6 +26,11 @@ $twoColumnsPanelWidth: 454px;
   @include media-breakpoint-down(lg) {
     margin-right: 0;
     width: 100%;
+    height: auto;
+  }
+
+  @include media-breakpoint-down(sm) {
+    height: auto;
   }
 }
 
@@ -33,6 +38,10 @@ $twoColumnsPanelWidth: 454px;
   height: $offerMakePanelHeight;
   @include media-breakpoint-down(lg) {
     width: 100%;
+  }
+
+  @include media-breakpoint-down(sm) {
+    height: auto;
   }
 }
 
