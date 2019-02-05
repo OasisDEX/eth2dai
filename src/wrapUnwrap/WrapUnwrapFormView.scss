@@ -3,6 +3,12 @@
 @include modal();
 @include checklistBorderBox();
 
+.checklistLine {
+  @include media-breakpoint-down(sm) {
+    font-size: 14px;
+    flex-direction: column;
+  }
+}
 
 .infoRow {
   display: flex;
@@ -94,7 +100,7 @@
     height: 390px;
 
     @include media-breakpoint-down(sm){
-      height: 320px;
+      height: 300px;
     }
   }
 }
