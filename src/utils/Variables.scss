@@ -47,7 +47,7 @@ $border-radius: 4px;
 // breakpoints, mobile etc
 $grid-breakpoints: (
   // below 280px it's really narrow screen and it might look bad or need scrolls etc
-  sm: 320px,
+  sm: 360px,
   md: 480px, // below is mobile
   lg: 992px, // below is table; up is desktop with 2-columns layout
 ) !default;
