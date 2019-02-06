@@ -1,10 +1,17 @@
 @import "../utils/Variables";
 
-.textSeparator {
-  display: inline-block;
-  margin-left: 0.5em;
-  margin-right: 0.5em;
-  color: rgba(255, 255, 255, 0.1);
+.links {
+  & > *:after {
+    content: "/";
+    display: inline-block;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    color: rgba(255, 255, 255, 0.1);
+  }
+
+  & > *:last-child:after {
+    content: "";
+  }
 }
 
 .footerSeparator {
@@ -20,6 +27,11 @@
   color: #B3B3B9;
   letter-spacing: 0.2px;
   margin-bottom: 2em;
+
+  & > * {
+    margin-bottom: 16px;
+  }
+
 
   a {
     text-decoration: none;

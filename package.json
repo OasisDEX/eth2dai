@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@types/ramda": "^0.25.38",
+    "@types/react-responsive": "^3.0.2",
     "await-exec": "^0.1.2",
     "bignumber.js": "^7.2.1",
     "case-sensitive-paths-webpack-plugin": "2.1.1",
@@ -49,6 +50,7 @@
     "react-faux-dom": "^4.2.0",
     "react-jazzicon": "^0.1.2",
     "react-modal": "^3.6.1",
+    "react-responsive": "^6.1.1",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-text-mask": "^5.4.1",
