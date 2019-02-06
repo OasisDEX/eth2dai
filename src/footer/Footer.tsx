@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as moment from 'moment';
 import * as React from 'react';
+import { default as MediaQuery } from 'react-responsive';
 import { bindNodeCallback, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { NetworkConfig } from '../blockchain/config';
@@ -22,49 +23,101 @@ export class TheFooter extends React.Component<FooterProps> {
       <div>
         <hr className={styles.footerSeparator}/>
         <div className={styles.footer}>
-          <div>
-            Market Closing Time - <WithLoadingIndicatorInline loadable={expirationDate}>
-            {(expDate) => <>{moment(expDate).format('DD.MM.YYYY')}</>}
-          </WithLoadingIndicatorInline>
-            <span className={styles.textSeparator}>/</span>
-            <a target="_blank" rel="noopener noreferrer"
-               href={`${etherscan.url}/address/${address}`}>
-              Market Contract
-            </a><span className={styles.textSeparator}>/</span>
-            <a target="_blank" rel="noopener noreferrer" href="/tos.pdf">
-              Legal
-            </a><span className={styles.textSeparator}>/</span>
-            <a target="_blank"
-               rel="noopener noreferrer"
-               href="https://github.com/OasisDEX/eth2dai/issues">
-              Report Issues
-            </a><span className={styles.textSeparator}>/</span>
-            <a target="_blank" className={styles.iconLink}
-               rel="noopener noreferrer"
-               href="https://chat.makerdao.com/channel/eth2dai">
-              <RocketChat/>
-            </a>
-            <a target="_blank" className={styles.iconLink}
-               rel="noopener noreferrer"
-               href="https://www.reddit.com/r/OasisDEX/">
-              <Reddit/>
-            </a>
-            <a target="_blank" className={styles.iconLink}
-               rel="noopener noreferrer"
-               href="https://github.com/OasisDEX/eth2dai">
-              <Github/>
-            </a>
-          </div>
-          <br/>
-          <div>
-          <span>
+          <MediaQuery minWidth={768}>
+            <div className={styles.links}>
+              <span>
+              Market Closing Time - <WithLoadingIndicatorInline loadable={expirationDate}>
+                {(expDate) => <>{moment(expDate).format('DD.MM.YYYY')}</>}
+              </WithLoadingIndicatorInline>
+            </span>
+              <a target="_blank" rel="noopener noreferrer"
+                 href={`${etherscan.url}/address/${address}`}>
+                Market Contract
+              </a>
+              <a target="_blank" rel="noopener noreferrer" href="/tos.pdf">
+                Legal
+              </a>
+              <a target="_blank"
+                 rel="noopener noreferrer"
+                 href="https://github.com/OasisDEX/eth2dai/issues">
+                Report Issues
+              </a>
+              <span>
+              <a target="_blank" className={styles.iconLink}
+                 rel="noopener noreferrer"
+                 href="https://chat.makerdao.com/channel/eth2dai">
+                <RocketChat/>
+              </a>
+              <a target="_blank" className={styles.iconLink}
+                 rel="noopener noreferrer"
+                 href="https://www.reddit.com/r/OasisDEX/">
+                <Reddit/>
+              </a>
+              <a target="_blank" className={styles.iconLink}
+                 rel="noopener noreferrer"
+                 href="https://github.com/OasisDEX/eth2dai">
+                <Github/>
+              </a>
+            </span>
+            </div>
+            <div>
+              <span>
             <a href={`https://github.com/OasisDEX/eth2dai/commit/${process.env.__HASH__}`}
-            target="_blank"
-            rel="noopener noreferrer">
+               target="_blank"
+               rel="noopener noreferrer">
               {process.env.__NAME__} Version {process.env.__VERSION__} ({process.env.__HASH__})
-            </a> - Build Date { moment(process.env.__DATE__).format('DD.MM.YYYY HH:MM')}
+            </a> - Build Date {moment(process.env.__DATE__).format('DD.MM.YYYY HH:MM')}
           </span>
-          </div>
+            </div>
+          </MediaQuery>
+          <MediaQuery maxWidth={768}>
+            <div>
+              Market Closing Time - <WithLoadingIndicatorInline loadable={expirationDate}>
+                {(expDate) => <>{moment(expDate).format('DD.MM.YYYY')}</>}
+              </WithLoadingIndicatorInline>
+            </div>
+            <div className={styles.links}>
+              <a target="_blank" rel="noopener noreferrer"
+                 href={`${etherscan.url}/address/${address}`}>
+                Market Contract
+              </a>
+              <a target="_blank" rel="noopener noreferrer" href="/tos.pdf">
+                Legal
+              </a>
+              <a target="_blank"
+                 rel="noopener noreferrer"
+                 href="https://github.com/OasisDEX/eth2dai/issues">
+                Report Issues
+              </a>
+            </div>
+            <div>
+              <a target="_blank" className={styles.iconLink}
+                 rel="noopener noreferrer"
+                 href="https://chat.makerdao.com/channel/eth2dai">
+                <RocketChat/>
+              </a>
+              <a target="_blank" className={styles.iconLink}
+                 rel="noopener noreferrer"
+                 href="https://www.reddit.com/r/OasisDEX/">
+                <Reddit/>
+              </a>
+              <a target="_blank" className={styles.iconLink}
+                 rel="noopener noreferrer"
+                 href="https://github.com/OasisDEX/eth2dai">
+                <Github/>
+              </a>
+            </div>
+            <div>
+              <a href={`https://github.com/OasisDEX/eth2dai/commit/${process.env.__HASH__}`}
+                 target="_blank"
+                 rel="noopener noreferrer">
+                {process.env.__NAME__} Version {process.env.__VERSION__} ({process.env.__HASH__})
+              </a>
+            </div>
+            <div>
+              Build Date {moment(process.env.__DATE__).format('DD.MM.YYYY HH:MM')}
+            </div>
+          </MediaQuery>
         </div>
       </div>
     );
