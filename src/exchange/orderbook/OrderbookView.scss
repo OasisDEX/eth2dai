@@ -14,6 +14,10 @@
   width: 30px;
   height: 30px;
   fill: white;
+
+  @include media-breakpoint-down(lg){
+    display: none;
+  }
 }
 
 
