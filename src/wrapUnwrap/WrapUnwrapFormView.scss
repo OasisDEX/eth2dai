@@ -39,6 +39,10 @@
 .warning {
   display: flex;
   align-items: stretch;
+
+  @include media-breakpoint-down(md) {
+    min-height: 120px;
+  }
 }
 
 .warningIcon {
@@ -52,6 +56,11 @@
 
 .warningText {
   font-size: 14px;
+
+  @include media-breakpoint-down(md){
+    display: inline-flex;
+    align-items: center;
+  }
 }
 
 // footer with buttons
@@ -100,7 +109,7 @@
     height: 390px;
 
     @include media-breakpoint-down(sm){
-      height: 300px;
+      height: 340px;
     }
   }
 }
