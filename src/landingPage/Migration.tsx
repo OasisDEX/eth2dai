@@ -28,7 +28,7 @@ export class Migration extends React.Component<Props> {
     const blog = 'https://www.reddit.com/r/OasisDEX/';
     const oldContract = '0xB7ac09C2c0217B07d7c103029B4918a2C401eeCB';
     const newContract = '0x39755357759ce0d7f32dc8dc45414cca409ae24e';
-    const closingTime = moment(new Date('2019-02-15 17:00 UTC'));
+    const closingTime = moment(new Date('2019-02-09 17:00 UTC'));
 
     const minutes = closingTime.diff(moment(), 'minutes');
     const [d, h, m] = [Math.floor(minutes / 60 / 24), Math.floor(minutes / 60) % 24, minutes % 60];
