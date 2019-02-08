@@ -25,7 +25,7 @@ export class Migration extends React.Component<Props> {
   }
 
   public render() {
-    const blog = 'https://www.reddit.com/r/OasisDEX/';
+    const blog = 'https://www.reddit.com/r/MakerDAO/comments/aoimcy/announcement_the_oasis_team_is_performing_an/';
     const oldContract = '0xB7ac09C2c0217B07d7c103029B4918a2C401eeCB';
     const newContract = '0x39755357759ce0d7f32dc8dc45414cca409ae24e';
     const closingTime = moment(new Date('2019-02-09 17:00 UTC'));
