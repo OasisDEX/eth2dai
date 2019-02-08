@@ -278,6 +278,16 @@ Object {
 }
 `;
 
+exports[`validation - amount exceeds orderbook 1`] = `
+Object {
+  "0": Object {
+    "field": "amount",
+    "kind": "orderbookTotalExceeded",
+    "priority": 3,
+  },
+}
+`;
+
 exports[`validation - not enough money 1`] = `
 Object {
   "0": Object {

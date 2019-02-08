@@ -460,6 +460,22 @@ test('validation - too big amount', () => {
   expect(snapshotify(unpack(controller).messages)).toMatchSnapshot();
 });
 
+test('validation - amount exceeds orderbook', () => {
+  const controller = createFormController$(defParams, tradingPair);
+  const { change } = unpack(controller);
+  expect(unpack(controller).messages).toEqual([]);
+  change({
+    kind: FormChangeKind.matchTypeChange,
+    matchType: OfferMatchType.direct,
+  });
+  change({
+    kind: FormChangeKind.amountFieldChange,
+    value: new BigNumber(1)
+  });
+  expect(unpack(controller).messages).not.toEqual([]);
+  expect(snapshotify(unpack(controller).messages)).toMatchSnapshot();
+});
+
 test('init sell', () => {
   const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);

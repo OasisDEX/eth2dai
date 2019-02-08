@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import { isEmpty, uniqBy, unzip } from 'lodash';
 import { bindNodeCallback, combineLatest, Observable, of, zip } from 'rxjs';
-import { expand, map, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
+import { expand, map, reduce, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
 
 import { tap } from 'rxjs/internal/operators';
 import { NetworkConfig } from '../../blockchain/config';
@@ -119,7 +119,7 @@ function loadOffersAllAtOnce(
         throw e;
       }),
     )),
-    scan<{ offers: Offer[] }, Offer[]>((result, { offers }) => result.concat(offers), []),
+    reduce<{ offers: Offer[] }, Offer[]>((result, { offers }) => result.concat(offers), []),
     map(offers => uniqBy(offers, ({ offerId }) => offerId.toString())),
   );
 }
@@ -135,6 +135,7 @@ export function loadOrderbook$(
         loadOffersAllAtOnce(context, quote, base, OfferType.buy),
         loadOffersAllAtOnce(context, base, quote, OfferType.sell)
       ).pipe(
+        map(hideDusts),
         map(([buy, sell]) => ({
           blockNumber,
           buy,
@@ -195,4 +196,14 @@ export function createPickableOrderBookFromOfferMake$(
       change: (ch: PickOfferChange) => change(ch)
     }))
   );
+}
+
+const DUST_ORDER_THRESHOLD = '0.000000000001'; // 10^15
+
+function isDustOrder(o: Offer): boolean {
+  return o.quoteAmount.lt(DUST_ORDER_THRESHOLD) || o.baseAmount.lt(DUST_ORDER_THRESHOLD);
+}
+
+function hideDusts(dusts: Offer[][]): Offer[][] {
+  return dusts.map(offers => offers.filter((o) => !isDustOrder(o)));
 }
