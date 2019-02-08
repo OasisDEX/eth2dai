@@ -9,6 +9,7 @@ import { networks } from './blockchain/config';
 import { account$, networkId$ } from './blockchain/network';
 import { Web3Status, web3Status$ } from './blockchain/web3';
 import { LoadingState } from './landingPage/LandingPage';
+import { Migration } from './landingPage/Migration';
 import { Main } from './Main';
 import { connect } from './utils/connect';
 import { UnreachableCaseError } from './utils/UnreachableCaseError';
@@ -17,9 +18,20 @@ interface Props {
   status: Web3Status;
   network?: string;
   tosAccepted?: boolean;
+  migrationAccepted?: boolean;
 }
 
-class App extends React.Component<Props> {
+class App extends React.Component<Props, { migrationAccepted: boolean }> {
+
+  public constructor(props: Props) {
+    super(props);
+    this.state = { migrationAccepted: false };
+  }
+
+  public continue = () => {
+    this.setState({ migrationAccepted: true });
+  }
+
   public render() {
     switch (this.props.status) {
       case 'initializing':
@@ -35,19 +47,22 @@ class App extends React.Component<Props> {
           return LoadingState.UNSUPPORTED;
         }
 
-        if (this.props.tosAccepted) {
-          return <Main/>;
+        if (!this.props.tosAccepted) {
+          return LoadingState.ACCEPT_TOS;
+        }
+        if (!this.state.migrationAccepted) {
+          return <Migration continue={this.continue} />;
         }
 
-        return LoadingState.ACCEPT_TOS;
+        return <Main/>;
       default:
         throw new UnreachableCaseError(this.props.status);
     }
   }
 }
 
-const accepted$ = interval(500).pipe(
-  startWith(0),
+const accepted$: Observable<boolean> = interval(500).pipe(
+  startWith(false),
   map(() => localStorage.getItem('tosAccepted') === 'true')
 );
 
@@ -71,7 +86,6 @@ const props$: Observable<Props> = combineLatest(accepted$, web3StatusResolve$).p
     } as Props;
   }),
   distinctUntilChanged(isEqual)
-
 );
 
 const AppTxRx = connect(App, props$);
