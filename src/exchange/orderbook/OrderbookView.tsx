@@ -4,6 +4,7 @@ import * as ReactDOM from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import * as styles from './OrderbookView.scss';
 
+import { default as MediaQuery } from 'react-responsive';
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
 import { FormatAmount, FormatPrice } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
@@ -74,13 +75,24 @@ export class OrderbookView extends React.Component<Props> {
         <PanelHeader>
           <span>Order book</span>
           <div style={{ marginLeft: 'auto', display: 'flex' }}>
-            <Button
-              className={styles.switchBtn}
-              onClick={this.changeChartListView}
-              data-test-id={`orderbook-type-list`}
-            >
-              <ToChartSwitchBtn/>
-            </Button>
+            <MediaQuery maxWidth={768}>
+              {(matches) => {
+                let isDisabled = false;
+
+                if (matches) {
+                  isDisabled = true;
+                }
+
+                return <Button
+                  disabled={isDisabled}
+                  className={styles.switchBtn}
+                  onClick={this.changeChartListView}
+                  data-test-id={`orderbook-type-list`}
+                >
+                  <ToChartSwitchBtn/>
+                </Button>;
+              }}
+            </MediaQuery>
           </div>
         </PanelHeader>
         <WithLoadingIndicator loadable={this.props}>
