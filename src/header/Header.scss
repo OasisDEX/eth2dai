@@ -11,6 +11,9 @@ header {
     width: 132px;
     max-height: 37px;
     margin: auto 1.5em auto auto;
+    svg:hover :global(#bg) {
+      fill-opacity: 0.35;
+    }
   }
 }
 

@@ -8,6 +8,7 @@ import { NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
 import { theAppContext } from 'src/AppContext';
 import { account$ } from '../blockchain/network';
 import { connect } from '../utils/connect';
+import { SvgImage } from '../utils/icons/utils';
 import { Loadable, loadablifyLight } from '../utils/loadable';
 import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
 import * as styles from './Header.scss';
@@ -22,7 +23,7 @@ class Header extends React.Component<HeaderProps, any> {
       <header>
         <section>
           <a href="/" className={styles.logo}>
-            <object data={Logo} type="image/svg+xml" />
+            <SvgImage image={Logo} />
           </a>
           <nav>
             <ul>
