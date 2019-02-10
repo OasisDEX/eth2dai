@@ -1,3 +1,7 @@
+# speed up ideas:
+# - avoid creating production build multiple times (its done in e2e jobs)
+# - create custom docker image for super-ci jobs
+
 version: 2
 
 jobs:
@@ -132,8 +136,6 @@ jobs:
             cp `find  | grep png` /home/circleci/project/__screenshots__
       - run:
           command: yarn super-ci-e2e
-
-
 
   deploy_dev:
     docker:
