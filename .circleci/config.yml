@@ -61,7 +61,7 @@ jobs:
             ./.circleci/run-e2e.sh
 
       - persist_to_workspace:
-          # root: /tmp/workspace
+          root: /home/circleci/project
           paths:
             - cypress/screenshots
 
