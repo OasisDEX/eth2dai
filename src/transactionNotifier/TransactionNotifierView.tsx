@@ -58,7 +58,7 @@ export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...trans
       )}
       <div className={styles.title}>{description}</div>
       <div className={styles.description}>{describeTxStatus(transaction)}</div>
-      <a tabIndex={0} onClick={onDismiss} className={styles.cross}><Cross/></a>
+      <a tabIndex={0} onClick={onDismiss} className={styles.cross} data-test-id="notification-cross"><Cross/></a>
     </div>
   );
 };

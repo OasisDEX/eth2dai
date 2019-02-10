@@ -1,4 +1,4 @@
-import { cypressVisitWithWeb3 } from '../utils/index';
+import { cypressVisitWithWeb3, tid } from '../utils/index';
 
 import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
@@ -6,6 +6,7 @@ import { Order } from '../pages/Order';
 import { Orderbook, OrderType } from '../pages/Orderbook';
 import { Tab } from '../pages/Tab';
 import { Trades } from '../pages/Trades';
+import { makeScreenshots } from '../utils/makeScreenshots';
 
 describe('Buy Order', () => {
 
@@ -23,6 +24,10 @@ describe('Buy Order', () => {
   it('should place a new order', () => {
     const price = '280';
     const amount = '1';
+
+    // make sure to close notification first
+    cy.get(tid("notification-cross")).click().wait(500);
+    makeScreenshots("new-order");
 
     const orders = Orderbook.list(OrderType.BUY);
     orders.countIs(2);
