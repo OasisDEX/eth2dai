@@ -123,7 +123,16 @@ jobs:
             keys:
             - v3-dependencies-{{ checksum "package.json" }}
       - attach_workspace:
-          at: ./screenshots
+          at: /tmp/workspace
+      - run:
+          name: Copy all screenshots in one place
+          working_directory: /tmp/workspace
+          command: |
+            mkdir -p /home/circleci/project/__screenshots__
+            cp `find  | grep png` /home/circleci/project/__screenshots__
+      - run:
+          command: yarn super-ci-e2e
+
 
 
   deploy_dev:

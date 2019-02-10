@@ -23,7 +23,8 @@
     "cypress:dev": "rm -rf cypress/screenshots && NODE_ENV='development' cypress open",
     "tsc": "tsc -p ./tsconfig.prod.json --noEmit && tsc -p ./cypress/tsconfig.json --noEmit && tsc -p ./tsconfig.test.json --noEmit && tsc -p ./tsconfig.json --noEmit",
     "storybook:screenshots": "storybook-chrome-screenshot -p 9001 --inject-files ./.storybook/disable-animations.js",
-    "super-ci": "super-ci"
+    "super-ci": "super-ci",
+    "super-ci-e2e": "super-ci --order 1 ./superfile-e2e.ts"
   },
   "dependencies": {
     "@types/ramda": "^0.25.38",
