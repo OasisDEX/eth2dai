@@ -1,8 +1,9 @@
 // tslint:disable:no-console
 import { BigNumber } from 'bignumber.js';
-import { bindNodeCallback, combineLatest, concat, interval, Observable } from 'rxjs';
+import { bindNodeCallback, combineLatest, concat, empty, interval, Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import {
+  catchError,
   delayWhen,
   distinctUntilChanged,
   filter,
@@ -144,5 +145,8 @@ export const etherPriceUsd$: Observable<BigNumber> = concat(
     headers: {
       Accept: 'application/json',
     },
-  }).pipe(map(({ response }) => new BigNumber(response[0].price_usd)))
+  }).pipe(
+    map(({ response }) => new BigNumber(response[0].price_usd)),
+    catchError(() => empty()),
+  )
 );
