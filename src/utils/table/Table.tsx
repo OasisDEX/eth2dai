@@ -11,7 +11,6 @@ export const Table = ({ children, align, scrollable, className }:
   <table className={ classnames({ [styles.table] : true,
     [styles.extendOnBorders]: true,
     [styles[align || 'left']]: align,
-    [styles.scrollable]: scrollable,
     [className]: className
   }) }>
     {children}
