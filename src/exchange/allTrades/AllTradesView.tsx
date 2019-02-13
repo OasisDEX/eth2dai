@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Subject } from 'rxjs';
+import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
 
 import { etherscan } from '../../blockchain/etherscan';
 import { formatDateTime } from '../../utils/formatters/format';
@@ -22,63 +23,69 @@ export class AllTrades extends React.Component<AllTradesProps> {
     };
     return (
       <>
-        <PanelHeader
-          bordered={this.props.status === 'error'}
-        >Trade history</PanelHeader>
-        <WithLoadingIndicator
-          loadable={this.props}
-          error={<ServerUnreachable/>}
-        >
-          { ({ trades, loading, more$ }) => (<Table align="right"
-                                         scrollable={true}
-                                         className={styles.allTradesTable}>
+      <PanelHeader
+        bordered={this.props.status === 'error'}
+      >Trade history</PanelHeader>
+      <WithLoadingIndicator
+        loadable={this.props}
+        error={<ServerUnreachable/>}
+      >
+        {({ trades, loading, more$ }) => (
+          <>
+          <Table align="right" className={styles.allTradesTable}>
             <thead>
-              <tr>
-                <th><InfoLabel>Price</InfoLabel> {this.props.tradingPair.quote}</th>
-                <th><InfoLabel>Amount</InfoLabel> {this.props.tradingPair.base}</th>
-                <th>Time</th>
-              </tr>
+            <tr>
+              <th><InfoLabel>Price</InfoLabel> {this.props.tradingPair.quote}</th>
+              <th><InfoLabel>Amount</InfoLabel> {this.props.tradingPair.base}</th>
+              <th>Time</th>
+            </tr>
             </thead>
-            <TransitionGroup component="tbody">
-              {trades.map(trade => (
-                <CSSTransition
-                  key={`${trade.tx}_${trade.idx}`}
-                  classNames="trade"
-                  timeout={1000}
-                >
-                  <RowClickable clickable={!!trade.tx} onClick={this.tradeDetails(trade)}>
-                    <td>
-                      <SellBuySpan type={trade.act}>
-                        <FormatPrice value={trade.price} token={trade.quoteToken} />
-                      </SellBuySpan>
-                    </td>
-                    <td>
-                      <FormatAmount value={trade.baseAmount} token={trade.baseToken} />
-                    </td>
-                    <td>
-                      <Muted>{formatDateTime(trade.time)}</Muted>
-                    </td>
-                  </RowClickable>
-                </CSSTransition>
-              ))}
+          </Table>
+          <Scrollbar>
+            <Table align="right" className={styles.allTradesTable}>
+              <TransitionGroup component="tbody">
+                {trades.map(trade => (
+                  <CSSTransition
+                    key={`${trade.tx}_${trade.idx}`}
+                    classNames="trade"
+                    timeout={1000}
+                  >
+                    <RowClickable clickable={!!trade.tx} onClick={this.tradeDetails(trade)}>
+                      <td>
+                        <SellBuySpan type={trade.act}>
+                          <FormatPrice value={trade.price} token={trade.quoteToken}/>
+                        </SellBuySpan>
+                      </td>
+                      <td>
+                        <FormatAmount value={trade.baseAmount} token={trade.baseToken}/>
+                      </td>
+                      <td>
+                        <Muted>{formatDateTime(trade.time)}</Muted>
+                      </td>
+                    </RowClickable>
+                  </CSSTransition>
+                ))}
 
-              {/* don't remove me! */}
-              <CSSTransition key="0" classNames="trade" timeout={1000}>
-                <tr>
-                  <td colSpan={3}>
-                    <Button onClick={showMore(more$)}
-                            block={true}
-                            size="md"
-                            disabled={loading}
-                    >
-                      { loading ? <span className={styles.loader} /> : 'Load more' }
-                    </Button>
-                  </td>
-                </tr>
-              </CSSTransition>
-            </TransitionGroup>
-          </Table>) }
-        </WithLoadingIndicator>
+                {/* don't remove me! */}
+                <CSSTransition key="0" classNames="trade" timeout={1000}>
+                  <tr>
+                    <td colSpan={3}>
+                      <Button onClick={showMore(more$)}
+                              block={true}
+                              size="md"
+                              disabled={loading}
+                      >
+                        {loading ? <span className={styles.loader}/> : 'Load more'}
+                      </Button>
+                    </td>
+                  </tr>
+                </CSSTransition>
+              </TransitionGroup>
+            </Table>
+          </Scrollbar>
+          </>
+        )}
+      </WithLoadingIndicator>
       </>
     );
   }
