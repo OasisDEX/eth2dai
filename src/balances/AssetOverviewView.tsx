@@ -133,10 +133,10 @@ export class AssetsOverviewViewInternal
               </Button>
               }
             </td>
-            <td data-test-id={`${combinedBalance.name}-balance`} className={styles.amount}>
+            <td data-test-id={`${combinedBalance.name}-balance`} className={styles.amount} data-vis-reg-mask={true}>
               <FormatAmount value={combinedBalance.balance} token={combinedBalance.name} />
             </td>
-            <td className={styles.amount}>
+            <td className={styles.amount} data-vis-reg-mask={true}>
               <FormatAmount value={combinedBalance.valueInUsd} token="USD" fallback=""/>
             </td>
           </tr>
