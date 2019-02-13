@@ -6,7 +6,6 @@ import {
   delayWhen,
   distinctUntilChanged,
   filter,
-  first,
   map,
   retryWhen,
   shareReplay,
@@ -131,7 +130,6 @@ export const gasPrice$: GasPrice$ = web3Ready$.pipe(
 export const etherPriceUsd$: Observable<BigNumber> = concat(
   context$.pipe(
     filter(context => !!context),
-    first(),
     filter(context => context.saiTub.address !== ''),
     switchMap(context => bindNodeCallback(context.saiTub.contract.pip)()),
     map((address: string) => web3.eth.contract(dsValue as any).at(address)),
