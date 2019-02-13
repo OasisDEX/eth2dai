@@ -28,6 +28,7 @@ class Header extends React.Component<HeaderProps, any> {
             <ul>
               <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange" />
               <HeaderNavLink path={matchUrl.concat('balances')} name="Balances" />
+              TEST123
             </ul>
           </nav>
         </section>
