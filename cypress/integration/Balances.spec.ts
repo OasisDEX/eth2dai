@@ -9,7 +9,7 @@ describe('Balances', () => {
 
   beforeEach(() => cypressVisitWithWeb3());
 
-  it('should display all token balances', () => {
+  it.only('should display all token balances', () => {
     ApplicationState.acceptToS();
     Tab.balances();
 

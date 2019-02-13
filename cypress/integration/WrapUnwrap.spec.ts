@@ -4,7 +4,7 @@ import { Tab } from '../pages/Tab';
 import { unwrapping, wrapping } from '../pages/WrapUnwrap';
 import { cypressVisitWithWeb3 } from '../utils/index';
 
-describe('Wrapping ETH', () => {
+describe.skip('Wrapping ETH', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
@@ -51,7 +51,7 @@ describe('Wrapping ETH', () => {
   });
 });
 
-describe('Unwrapping ETH', () => {
+describe.skip('Unwrapping ETH', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();

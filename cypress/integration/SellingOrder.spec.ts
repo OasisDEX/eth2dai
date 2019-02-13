@@ -8,13 +8,13 @@ import { Tab } from '../pages/Tab';
 import { Trades } from '../pages/Trades';
 import { makeScreenshots } from '../utils/makeScreenshots';
 
-describe('Sell Order', () => {
+describe.only('Sell Order', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
     ApplicationState.acceptToS();
   });
 
-  it('should place a new order', () => {
+  it.only('should place a new order', () => {
     const price = '300';
     const amount = '1';
 
