@@ -21,7 +21,7 @@ export class TheFooter extends React.Component<FooterProps> {
     return (
       <div>
         <hr className={styles.footerSeparator}/>
-        <div className={styles.footer}>
+        <div className={styles.footer} data-vis-reg-mask={true}>
           <div>
             Market Closing Time - <WithLoadingIndicatorInline loadable={expirationDate}>
             {(expDate) => <span data-vis-reg-mask={true}>{moment(expDate).format('DD.MM.YYYY')}</span>}
@@ -56,7 +56,7 @@ export class TheFooter extends React.Component<FooterProps> {
             </a>
           </div>
           <br/>
-          <div data-vis-reg-mask={true}>
+          <div>
           <span>
             <a href={`https://github.com/OasisDEX/eth2dai/commit/${process.env.__HASH__}`}
             target="_blank"

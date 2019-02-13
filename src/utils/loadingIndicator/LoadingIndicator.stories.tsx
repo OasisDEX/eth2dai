@@ -13,31 +13,6 @@ import { ServerUnreachable, ServerUnreachableInline } from './ServerUnreachable'
 
 const stories = storiesOf('Loading indicator', module);
 
-stories.add('Loading indicator', () => (
-  <div>
-    <h1>Loading indicator default</h1>
-    <Panel style={{ height: '150px', width: '300px', padding: '15px' }}>
-      <span>it's loading</span>
-      <LoadingIndicator />
-    </Panel>
-
-    <h1>Loading indicator inline</h1>
-    <Panel style={{ height: '150px', width: '300px',  padding: '15px' }}>
-      <span>
-        <span>it's loading</span>
-        <LoadingIndicator inline={true}/>
-      </span>
-    </Panel>
-
-    <h1>Loading indicator with light background</h1>
-    <Panel style={{ height: '150px', width: '300px',  padding: '15px' }}>
-      <span>it's loading</span>
-      <LoadingIndicator light={true}/>
-    </Panel>
-
-  </div>
-));
-
 const StoryWithLoading = ({ loadable }: {loadable: any}) => {
   return (
     <Panel style={{ height: '150px', width: '300px', padding: '15px' }}>
@@ -51,6 +26,31 @@ const StoryWithLoading = ({ loadable }: {loadable: any}) => {
 };
 
 ignoreDuringVisualRegression(() => {
+  stories.add('Loading indicator', () => (
+    <div>
+      <h1>Loading indicator default</h1>
+      <Panel style={{ height: '150px', width: '300px', padding: '15px' }}>
+        <span>it's loading</span>
+        <LoadingIndicator />
+      </Panel>
+
+      <h1>Loading indicator inline</h1>
+      <Panel style={{ height: '150px', width: '300px',  padding: '15px' }}>
+        <span>
+          <span>it's loading</span>
+          <LoadingIndicator inline={true}/>
+        </span>
+      </Panel>
+
+      <h1>Loading indicator with light background</h1>
+      <Panel style={{ height: '150px', width: '300px',  padding: '15px' }}>
+        <span>it's loading</span>
+        <LoadingIndicator light={true}/>
+      </Panel>
+
+    </div>
+  ));
+
   stories.add('WithLoadingIndicator component', () => {
     const value = { text: 'It loaded successfully!' };
     return (
