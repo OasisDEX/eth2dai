@@ -91,10 +91,10 @@ export class AssetsOverviewViewInternal
               Wrap
             </Button>
           </td>
-          <td data-test-id={`ETH-balance`} className={styles.amount} data-vis-reg-mask>
+          <td data-test-id={`ETH-balance`} className={styles.amount} data-vis-reg-mask={true}>
             <FormatAmount value={this.props.etherBalance} token="ETH" />
           </td>
-          <td className={styles.amount} data-vis-reg-mask>
+          <td className={styles.amount} data-vis-reg-mask={true}>
             <FormatAmount value={this.props.etherValueInUsd} token="USD" />
           </td>
         </tr>
