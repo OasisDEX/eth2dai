@@ -22,6 +22,8 @@ export function makeScreenshots(name: string): void {
     for (const viewport of viewports) {
       cy.viewport(viewport as any);
 
+      cy.wait(100);
+
       cy.screenshot(`${name}-${viewport.replace("+", "plus")}`, commonScreenshotOptions as any);
     }
   }
