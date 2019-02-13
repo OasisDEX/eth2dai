@@ -5,8 +5,7 @@
 @mixin tableColumnWidth($column, $width) {
   th, td {
     &:nth-child(#{$column}) {
-      width: $width;
-      flex-basis: $width;
+      max-width: $width;
     }
   }
 }
