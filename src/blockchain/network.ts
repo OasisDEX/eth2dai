@@ -6,6 +6,7 @@ import {
   delayWhen,
   distinctUntilChanged,
   filter,
+  first,
   map,
   retryWhen,
   shareReplay,
@@ -130,17 +131,25 @@ export const gasPrice$: GasPrice$ = web3Ready$.pipe(
 export const etherPriceUsd$: Observable<BigNumber> = concat(
   context$.pipe(
     filter(context => !!context),
+    first(),
     filter(context => context.saiTub.address !== ''),
     switchMap(context => bindNodeCallback(context.saiTub.contract.pip)()),
     map((address: string) => web3.eth.contract(dsValue as any).at(address)),
     switchMap(pip => bindNodeCallback(pip.read)()),
     map((value: string) => new BigNumber(value).div(new BigNumber(10).pow(18))),
   ),
-  ajax({
-    url: 'https://api.coinmarketcap.com/v1/ticker/ethereum/',
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-    },
-  }).pipe(map(({ response }) => new BigNumber(response[0].price_usd)))
+  onEveryBlock$.pipe(
+    switchMap(() => ajax({
+      url: 'https://api.coinmarketcap.com/v1/ticker/ethereum/',
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    })),
+    retryWhen(errors => errors.pipe(delayWhen(() => onEveryBlock$.pipe(skip(1))))),
+    map(({ response }) => new BigNumber(response[0].price_usd)),
+  ),
+).pipe(
+  distinctUntilChanged((x: BigNumber, y: BigNumber) => x.eq(y)),
+  shareReplay(1),
 );
