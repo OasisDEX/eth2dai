@@ -73,7 +73,7 @@ const protoMain = {
   safeConfirmations: 0,
   avgBlocksPerDay: 5760 * 1.05,
   startingBlock: 4751582,
-  get otc() { return load(otc, '0xB7ac09C2c0217B07d7c103029B4918a2C401eeCB'); },
+  get otc() { return load(otc, '0x39755357759ce0d7f32dc8dc45414cca409ae24e'); },
   get saiTub() { return load(saiTub, '0x448a5065aebb8e423f0896e6c5d525c040f59af3'); },
   get tokens() {
     return asMap('token', [
@@ -103,7 +103,7 @@ const kovan: NetworkConfig = {
   safeConfirmations: 0,
   avgBlocksPerDay: 21600 * 0.55,
   startingBlock: 5216718,
-  get otc() { return load(otc, '0xdB3b642eBc6Ff85A3AB335CFf9af2954F9215994'); },
+  get otc() { return load(otc, '0x4a6bc4e803c62081ffebcc8d227b5a87a58f1f8f'); },
   get saiTub() { return load(saiTub, '0xa71937147b55deb8a530c7229c442fd3f31b7db2'); },
   get tokens() {
     return asMap('token', [
