@@ -6,6 +6,7 @@ import { Order } from '../pages/Order';
 import { Orderbook, OrderType } from '../pages/Orderbook';
 import { Tab } from '../pages/Tab';
 import { Trades } from '../pages/Trades';
+import { makeScreenshots } from '../utils/makeScreenshots';
 
 describe('Sell Order', () => {
   beforeEach(() => {
@@ -19,6 +20,7 @@ describe('Sell Order', () => {
 
     const orders = Orderbook.list(OrderType.SELL);
     orders.countIs(4);
+    makeScreenshots("new-order");
 
     new Order()
             .sell()

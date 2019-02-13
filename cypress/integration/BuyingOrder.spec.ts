@@ -25,10 +25,6 @@ describe('Buy Order', () => {
     const price = '280';
     const amount = '1';
 
-    // make sure to close notification first
-    cy.get(tid("notification-cross")).click().wait(500);
-    makeScreenshots("new-order");
-
     const orders = Orderbook.list(OrderType.BUY);
     orders.countIs(2);
 
