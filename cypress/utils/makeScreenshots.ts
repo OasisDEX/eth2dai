@@ -5,7 +5,7 @@ const blackoutStyle = `
         color: black !important;
       }
       [data-vis-reg-hide] {
-        visibility: hidden;
+        display: none;
       }
     </style>`;
 const commonScreenshotOptions = { capture: "fullPage" };
