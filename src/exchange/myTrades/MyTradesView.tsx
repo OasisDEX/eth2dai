@@ -10,6 +10,7 @@ import { ProgressIcon } from '../../utils/icons/Icons';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
+import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
 import { RowClickable, Table } from '../../utils/table/Table';
 import { InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { Trade, TradeAct } from '../trades';
@@ -38,15 +39,13 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
             >Close</Button>
           </ButtonGroup>
         </PanelHeader>
-
         <WithLoadingIndicator
           loadable={this.props}
           error={this.props.kind === MyTradesKind.closed ? <ServerUnreachable/> : undefined }
         >
           { (trades: TradeWithStatus[]) => (
-            <Table
-              scrollable={true}
-              align="left"
+            <>
+            <Table align="left"
               className={classnames(styles.myTradesTable, {
                 [styles.myOpenTradesTable]: this.props.kind === MyTradesKind.open,
                 [styles.myCloseTradesTable]: this.props.kind === MyTradesKind.closed,
@@ -63,62 +62,67 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                 <th className={styles.right}>
                   <InfoLabel>Total</InfoLabel> {this.props.tradingPair.quote}
                 </th>
-                <th className={styles.right}>Time</th>
+                <th className={classnames(this.props.kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>Time</th>
                 { this.props.kind === MyTradesKind.open &&
                   <th className={styles.right}>Status</th>
                 }
               </tr>
             </thead>
-            <tbody>
-              {trades
+            </Table>
+            <Scrollbar>
+              <Table align="left" className={styles.myTradesTable}>
+                <tbody>
+                {trades
                   .map((trade: TradeWithStatus, i: number) => {
                     return (
-                  <RowClickable
-                    data-test-id="my-trades"
-                    key={i}
-                    clickable={this.props.kind === MyTradesKind.closed}
-                    onClick={this.showInEtherscan(trade)}
-                  >
-                    <td data-test-id="type">
-                      <SellBuySpan type={trade.act}>{trade.act}</SellBuySpan>
-                    </td>
-                    <td data-test-id="price" className={styles.right}>
-                      <FormatPrice value={trade.price} token={trade.quoteToken} />
-                    </td>
-                    <td data-test-id="amount" className={styles.right}>
-                      <FormatAmount value={trade.baseAmount} token={trade.baseToken} />
-                    </td>
-                    <td data-test-id="total" className={styles.right}>
-                      <FormatAmount value={trade.quoteAmount} token={trade.quoteToken} />
-                    </td>
-                    <td className={styles.right}>
-                      <Muted data-vis-reg-mask={true}>{formatDateTime(trade.time)}</Muted>
-                    </td>
-                    { this.props.kind === MyTradesKind.open &&
+                      <RowClickable
+                        data-test-id="my-trades"
+                        key={i}
+                        clickable={this.props.kind === MyTradesKind.closed}
+                        onClick={this.showInEtherscan(trade)}
+                      >
+                        <td data-test-id="type">
+                          <SellBuySpan type={trade.act}>{trade.act}</SellBuySpan>
+                        </td>
+                        <td data-test-id="price" className={styles.right}>
+                          <FormatPrice value={trade.price} token={trade.quoteToken} />
+                        </td>
+                        <td data-test-id="amount" className={styles.right}>
+                          <FormatAmount value={trade.baseAmount} token={trade.baseToken} />
+                        </td>
+                        <td data-test-id="total" className={styles.right}>
+                          <FormatAmount value={trade.quoteAmount} token={trade.quoteToken} />
+                        </td>
+                        <td className={classnames(this.props.kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>
+                          <Muted data-vis-reg-mask={true}>{formatDateTime(trade.time)}</Muted>
+                        </td>
+                        { this.props.kind === MyTradesKind.open &&
                         trade.status === undefined &&
-                      <td className={styles.right}>
-                        <span className={styles.statusText}>
+                        <td className={styles.right}>
+                        <span className={classnames('hide-md', styles.statusText)}>
                           Open
                         </span>
-                        <CloseButton data-test-id="cancel"
-                                     onClick={this.cancelOffer(trade.offerId, trade.act, trade.baseAmount, trade.baseToken)}
-                        />
-                      </td>
-                    }
-                    { this.props.kind === MyTradesKind.open &&
+                          <CloseButton data-test-id="cancel"
+                                       onClick={this.cancelOffer(trade.offerId, trade.act, trade.baseAmount, trade.baseToken)}
+                          />
+                        </td>
+                        }
+                        { this.props.kind === MyTradesKind.open &&
                         trade.status !== undefined &&
-                      <td className={styles.right}>
-                        <span className={styles.statusText}>
+                        <td className={styles.right}>
+                        <span className={classnames('hide-md', styles.statusText)}>
                           pending
                         </span>
-                        <ProgressIcon className={styles.statusProgress}/>
-                      </td>
-                    }
-                  </RowClickable>
+                          <ProgressIcon className={styles.statusProgress}/>
+                        </td>
+                        }
+                      </RowClickable>
                     );
                   })}
-            </tbody>
-          </Table>
+                </tbody>
+              </Table>
+            </Scrollbar>
+            </>
         )}
         </WithLoadingIndicator>
       </>

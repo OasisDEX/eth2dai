@@ -9,6 +9,7 @@ export class Scrollbar extends React.Component {
     return (
       <Scrollbars
         renderThumbVertical={(props:any) => <div {...props} className={styles.scrollbarThumb}/>}
+        renderThumbHorizontal={(props:any) => <div {...props} className={styles.scrollbarThumb}/>}
       >
         { this.props.children}
       </Scrollbars>
