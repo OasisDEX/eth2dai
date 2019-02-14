@@ -27,7 +27,7 @@ export class TheFooter extends React.Component<FooterProps> {
             <div className={styles.links}>
               <span>
               Market Closing Time - <WithLoadingIndicatorInline loadable={expirationDate}>
-                {(expDate) => <span data-vis-reg-mask={true}>{moment(expDate).format('DD.MM.YYYY')}</span>}
+                {(expDate) => <span data-vis-reg-hide={true}>{moment(expDate).format('DD.MM.YYYY')}</span>}
               </WithLoadingIndicatorInline>
             </span>
               <a target="_blank" rel="noopener noreferrer"
@@ -60,7 +60,7 @@ export class TheFooter extends React.Component<FooterProps> {
               </a>
             </span>
             </div>
-            <div data-vis-reg-mask={true}>
+            <div data-vis-reg-hide={true}>
               <span>
             <a href={`https://github.com/OasisDEX/eth2dai/commit/${process.env.__HASH__}`}
                target="_blank"
@@ -73,7 +73,7 @@ export class TheFooter extends React.Component<FooterProps> {
           <MediaQuery maxWidth={768}>
             <div>
               Market Closing Time - <WithLoadingIndicatorInline loadable={expirationDate}>
-                {(expDate) => <span data-vis-reg-mask={true}>{moment(expDate).format('DD.MM.YYYY')}</span>}
+                {(expDate) => <span data-vis-reg-hide={true}>{moment(expDate).format('DD.MM.YYYY')}</span>}
               </WithLoadingIndicatorInline>
             </div>
             <div className={styles.links}>
@@ -107,14 +107,14 @@ export class TheFooter extends React.Component<FooterProps> {
                 <Github/>
               </a>
             </div>
-            <div data-vis-reg-mask={true}>
+            <div data-vis-reg-hide={true}>
               <a href={`https://github.com/OasisDEX/eth2dai/commit/${process.env.__HASH__}`}
                  target="_blank"
                  rel="noopener noreferrer">
                 {process.env.__NAME__} Version {process.env.__VERSION__} ({process.env.__HASH__})
               </a>
             </div>
-            <div data-vis-reg-mask={true}>
+            <div data-vis-reg-hide={true}>
               Build Date {moment(process.env.__DATE__).format('DD.MM.YYYY HH:MM')}
             </div>
           </MediaQuery>
