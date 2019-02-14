@@ -3,6 +3,9 @@
 
 .orderbook {
   width: 452px;
+  height: 100%;
+  overflow: hidden;
+
   @include media-breakpoint-down(lg) {
     width: 100%;
   }
@@ -22,7 +25,7 @@
 }
 
 .orderbookTable {
-  max-height: 389px;
+  max-height: 360px;
   @include tableColumnsWidth(146px 146px 146px);
 
   td, th {
