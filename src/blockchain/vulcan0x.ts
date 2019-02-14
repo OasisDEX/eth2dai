@@ -20,13 +20,16 @@ function filterize(filter: any): string {
 
 export function vulcan0x(
   url: string, resource: string, params: {[key: string]: any},
-  filter: any, fields: string[], order: string|undefined
+  filter: any, fields: string[], order: string|undefined,
+  limit: number|undefined, offset: number|undefined
 ): Observable<any[]> {
   const options = toPairs({
     ...fromPairs(toPairs(params).map(([k, v]) => [k, filterize(v)]) as any),
     filter: filterize(filter),
-    ...order ? { orderBy: order } : {} }
-  ).map(([k, v]) => `${k}: ${v}`).join('\n');
+    ...order ? { orderBy: order } : {},
+    ...limit ? { first: limit } : {},
+    ...offset ? { offset } : {},
+  }).map(([k, v]) => `${k}: ${v}`).join('\n');
   return ajax({
     url,
     method: 'POST',

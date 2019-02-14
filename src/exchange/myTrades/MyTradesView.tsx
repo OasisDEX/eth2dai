@@ -92,7 +92,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                       <FormatAmount value={trade.quoteAmount} token={trade.quoteToken} />
                     </td>
                     <td className={styles.right}>
-                      <Muted>{formatDateTime(trade.time)}</Muted>
+                      <Muted data-vis-reg-mask={true}>{formatDateTime(trade.time)}</Muted>
                     </td>
                     { this.props.kind === MyTradesKind.open &&
                         trade.status === undefined &&

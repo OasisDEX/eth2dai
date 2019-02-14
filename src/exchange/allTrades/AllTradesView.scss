@@ -23,3 +23,22 @@
   background-position: center;
   opacity: 0.5;
 }
+
+// ------------------ animations for table -----------------------
+:global(.trade-enter) {
+  opacity: 0.01;
+}
+
+:global(.trade-enter-active) {
+  opacity: 1;
+  transition: opacity 1000ms ease-in;
+}
+
+:global(.trade-exit) {
+  opacity: 1;
+}
+
+:global(.trade-exit-active) {
+  opacity: 0.01;
+  transition: opacity 1000ms ease-in;
+}

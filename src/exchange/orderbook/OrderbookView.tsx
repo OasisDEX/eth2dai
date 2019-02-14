@@ -1,7 +1,7 @@
 // tslint:disable:no-console
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { CSSTransitionGroup } from 'react-transition-group';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import * as styles from './OrderbookView.scss';
 
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
@@ -29,16 +29,28 @@ export class OrderbookView extends React.Component<Props> {
   private tbody?: HTMLElement;
   private spreadRow?: HTMLElement;
 
-  public center() {
+  public center(force: boolean, offset: number = 0) {
     if (this.tbody && this.spreadRow && typeof(this.tbody.scrollTo) === 'function') {
-      const firstRow: HTMLElement = this.tbody.children[0] as HTMLElement;
-      this.tbody.scrollTo(0, this.spreadRow.offsetTop - firstRow.offsetTop -
-        (this.tbody.clientHeight - firstRow.clientHeight) / 2);
+      const position = this.spreadRow.offsetTop - this.tbody.offsetTop - this.tbody.scrollTop;
+      const spreadVisible = position > -this.spreadRow.clientHeight && position < this.tbody.clientHeight;
+      if (force || spreadVisible) {
+        const firstRow: HTMLElement = this.tbody.children[0] as HTMLElement;
+        this.tbody.scrollTo(0, this.spreadRow.offsetTop - firstRow.offsetTop -
+          (this.tbody.clientHeight - firstRow.clientHeight) / 2 + offset * firstRow.clientHeight);
+      }
     }
   }
 
   public componentDidMount() {
-    this.center();
+    this.center(true);
+  }
+
+  public enter = () => {
+    this.center(false);
+  }
+
+  public exit = () => {
+    this.center(false, -1);
   }
 
   public render() {
@@ -53,11 +65,9 @@ export class OrderbookView extends React.Component<Props> {
 
     if (justLoaded || tradingPairChanged) {
       setTimeout(() => {
-        this.center();
+        this.center(true);
       });
     }
-
-    const skipTransition = tradingPairChanged;
 
     return (
       <div style={{ width: '452px' }}>
@@ -89,44 +99,46 @@ export class OrderbookView extends React.Component<Props> {
                 </th>
               </tr>
               </thead>
-              {!skipTransition && <CSSTransitionGroup
+              <TransitionGroup
                 component="tbody"
-                transitionName="order"
-                transitionEnterTimeout={1000}
-                transitionLeaveTimeout={600}
-                ref={el =>
+                ref={(el: any) =>
                   this.tbody = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
                 }
               >
                 { orderbook.sell.slice().reverse().map((offer: Offer) => (
-                  <this.OfferRow offer={offer}
-                                 kind="sell"
-                                 parent={this}
-                                 key={offer.offerId.toString()} />
+                  <CSSTransition
+                    key={offer.offerId.toString()}
+                    classNames="order"
+                    timeout={1000}
+                    onEntering={this.enter}
+                    onExited={this.exit}
+                  >
+                    <this.OfferRow offer={offer} kind="sell" parent={this} />
+                  </CSSTransition>
                 ))
                 }
-                <RowHighlighted>
-                  <td ref={el => this.spreadRow = el || undefined}>
-                    {orderbook.spread
-                      ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote} />
-                      : '-'}
-                  </td>
-                  <td/>
-                  <td>
-                    <Muted>{this.props.tradingPair.quote} Spread</Muted>
-                  </td>
-                </RowHighlighted>
 
-                { orderbook.buy.map((offer: Offer) => {
-                  return (
-                    <this.OfferRow
-                      offer={offer}
-                      kind="buy"
-                      parent={this}
-                      key={offer.offerId.toString()} />
-                  );
-                })}
-              </CSSTransitionGroup> }
+                {/* better don't remove me! */}
+                <CSSTransition key="0" classNames="order" timeout={1000}>
+                  <RowHighlighted>
+                    <td ref={el => this.spreadRow = el || undefined}>
+                      {orderbook.spread
+                        ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote} />
+                        : '-'}
+                    </td>
+                    <td/>
+                    <td>
+                      <Muted>{this.props.tradingPair.quote} Spread</Muted>
+                    </td>
+                  </RowHighlighted>
+                </CSSTransition>
+
+                { orderbook.buy.map((offer: Offer) => (
+                  <CSSTransition key={offer.offerId.toString()} classNames="order" timeout={1000}>
+                    <this.OfferRow offer={offer} kind="buy" parent={this} />
+                  </CSSTransition>
+                )) }
+              </TransitionGroup>
             </Table>
           )}
         </WithLoadingIndicator>
@@ -135,13 +147,12 @@ export class OrderbookView extends React.Component<Props> {
   }
 
   public OfferRow(
-    { offer, kind, parent, key } :
-    { offer: Offer, kind: string, parent: any, key: string }
+    { offer, kind, parent } :
+    { offer: Offer, kind: string, parent: any }
   ) {
     return (
       <RowClickable
         data-test-id={kind}
-        key={key}
         clickable={parent.canTakeOffer(offer)}
         onClick={ parent.takeOffer(offer)}>
         <td data-test-id="price">
