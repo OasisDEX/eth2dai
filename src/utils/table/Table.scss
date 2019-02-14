@@ -50,7 +50,7 @@ $padding-horizontal-edges-mod: 15px;
     }
   }
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     th, td,
     th:first-child,
     td:first-child {
