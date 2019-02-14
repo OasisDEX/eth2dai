@@ -3,6 +3,7 @@ import { cypressVisitWithWeb3 } from '../utils/index';
 import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
 import { Tab } from '../pages/Tab';
+import { makeScreenshots } from '../utils/makeScreenshots';
 
 describe('Balances', () => {
 
@@ -15,5 +16,7 @@ describe('Balances', () => {
     Balance.of('ETH').shouldBe(/8,999.../);
     Balance.of('WETH').shouldBe(/1,001.../);
     Balance.of('DAI').shouldBe(/170.../);
+
+    makeScreenshots("balances");
   });
 });

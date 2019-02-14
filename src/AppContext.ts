@@ -135,14 +135,14 @@ export function setupAppContext() {
   );
 
   const tradeHistory = memoizeTradingPair(
-    curry(loadAllTrades)(1, 'day', context$, onEveryBlock$)
+    curry(loadAllTrades)(context$, onEveryBlock$)
   );
   const currentTradeHistory$ = currentTradingPair$.pipe(
     switchMap(tradeHistory),
   );
   const currentTradesBrowser$ = loadablifyPlusTradingPair(
     currentTradingPair$,
-    curry(createTradesBrowser$)(1, 'day', context$, tradeHistory),
+    curry(createTradesBrowser$)(context$, tradeHistory),
   );
 
   const allTrades$ = createAllTrades$(currentTradesBrowser$, context$);

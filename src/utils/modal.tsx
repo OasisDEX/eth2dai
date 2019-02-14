@@ -30,8 +30,6 @@ export function withModal<O, P extends ModalOpenerProps>(
   return class extends React.Component<O, WrapperState> {
     constructor(o: O) {
       super(o);
-      this.open = this.open.bind(this);
-      this.close = this.close.bind(this);
       this.state = {};
     }
 
@@ -42,16 +40,18 @@ export function withModal<O, P extends ModalOpenerProps>(
         </ReRenderBarrier>
         {this.state.modalType !== undefined &&
         ReactDOM.createPortal(
-          <this.state.modalType {...{ close: this.close }}/>,
+          <div onClick={this.close}>
+            <this.state.modalType {...{ close: this.close }}/>
+          </div>,
           document.body)}
       </React.Fragment>;
     }
 
-    private open(modalType: React.ComponentType<ModalProps>) {
+    private open = (modalType: React.ComponentType<ModalProps>) => {
       this.setState({ ...this.state, modalType });
     }
 
-    private close(): void {
+    private close = (): void => {
       this.setState({ ...this.state, modalType: undefined });
     }
   };

@@ -23,6 +23,7 @@ export interface Trade {
   block: number; // Block height
   time: Date; // Block timestamp
   tx?: string; // Transaction hash
+  idx?: number; // Transaction number within block
 }
 
 // TODO: move to all trades?
@@ -41,6 +42,7 @@ const parseTrade = (
     block,
     time,
     tx,
+    idx,
   }: any): Trade => {
     const sellAmount = new BigNumber(lotAmt);
     const buyAmount = new BigNumber(bidAmt);
@@ -60,6 +62,7 @@ const parseTrade = (
       quoteToken,
       block,
       tx,
+      idx,
       offerId: new BigNumber(offerId),
       time: new Date(time),
       role: account && (maker === account ? 'maker' : 'taker'),
@@ -71,11 +74,11 @@ export const getTrades = (
   context: NetworkConfig,
   baseToken: string,
   quoteToken: string,
-  filters: {account?: string, from?: Date, to?: Date},
+  filters: {account?: string, from?: Date, to?: Date, offset?: number, limit?: number},
 ): Observable<Trade[]> => {
   const accountVal = filters.account ? (web3 as any).toChecksumAddress(filters.account) : null;
 
-  const fields = ['offerId', 'maker', 'bidAmt', 'bidTkn', 'lotAmt', 'block', 'time', 'tx'];
+  const fields = ['offerId', 'maker', 'bidAmt', 'bidTkn', 'lotAmt', 'block', 'time', 'tx', 'idx'];
   const order = `[TIME_DESC, IDX_DESC]`;
   const filter = {
     or: [
@@ -114,7 +117,9 @@ export const getTrades = (
     {},
     filter,
     fields,
-    order
+    order,
+    filters.limit,
+    filters.offset,
   ).pipe(
     map(trades => trades.map(parseTrade(accountVal, quoteToken, baseToken, quoteToken)))
   );
