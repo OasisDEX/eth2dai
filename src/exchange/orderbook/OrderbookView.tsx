@@ -16,6 +16,7 @@ import { Currency, InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
 import { Offer, Orderbook } from './orderbook';
+import { Scrollbar } from "../../utils/Scrollbar/Scrollbar";
 
 export interface Props extends LoadableWithTradingPair<Orderbook> {
   account: string | undefined;
@@ -71,46 +72,50 @@ export class OrderbookView extends React.Component<Props> {
     }
 
     return (
-      <div className={styles.orderbook} >
-        <PanelHeader>
-          <span>Order book</span>
-          <div style={{ marginLeft: 'auto', display: 'flex' }}>
-            <MediaQuery maxWidth={768}>
-              {(matches) => {
-                let isDisabled = false;
+      <>
+      <PanelHeader>
+        <span>Order book</span>
+        <div style={{ marginLeft: 'auto', display: 'flex' }}>
+          <MediaQuery maxWidth={768}>
+            {(matches) => {
+              let isDisabled = false;
 
-                if (matches) {
-                  isDisabled = true;
-                }
+              if (matches) {
+                isDisabled = true;
+              }
 
-                return <Button
-                  disabled={isDisabled}
-                  className={styles.switchBtn}
-                  onClick={this.changeChartListView}
-                  data-test-id={`orderbook-type-list`}
-                >
-                  <ToChartSwitchBtn/>
-                </Button>;
-              }}
-            </MediaQuery>
-          </div>
-        </PanelHeader>
-        <WithLoadingIndicator loadable={this.props}>
-          { (orderbook: Orderbook) => (<Table align="right" scrollable={true}
-                                              className={styles.orderbookTable}>
-              <thead>
-              <tr>
-                <th>
-                  <InfoLabel>Price</InfoLabel> <Currency value={this.props.tradingPair.quote}/>
-                </th>
-                <th>
-                  <InfoLabel>Amount</InfoLabel> <Currency value={this.props.tradingPair.base}/>
-                </th>
-                <th>
-                  <InfoLabel>Total</InfoLabel> <Currency value={this.props.tradingPair.quote}/>
-                </th>
-              </tr>
-              </thead>
+              return <Button
+                disabled={isDisabled}
+                className={styles.switchBtn}
+                onClick={this.changeChartListView}
+                data-test-id={`orderbook-type-list`}
+              >
+                <ToChartSwitchBtn/>
+              </Button>;
+            }}
+          </MediaQuery>
+        </div>
+      </PanelHeader>
+      <WithLoadingIndicator loadable={this.props}>
+        { (orderbook: Orderbook) => (
+          <>
+          <Table align="right" className={styles.orderbookTable}>
+            <thead>
+            <tr>
+              <th>
+                <InfoLabel>Price</InfoLabel> <Currency value={this.props.tradingPair.quote}/>
+              </th>
+              <th>
+                <InfoLabel>Amount</InfoLabel> <Currency value={this.props.tradingPair.base}/>
+              </th>
+              <th>
+                <InfoLabel>Total</InfoLabel> <Currency value={this.props.tradingPair.quote}/>
+              </th>
+            </tr>
+            </thead>
+          </Table>
+          <Scrollbar>
+            <Table align="right" className={styles.orderbookTable}>
               <TransitionGroup
                 component="tbody"
                 ref={(el: any) =>
@@ -152,9 +157,11 @@ export class OrderbookView extends React.Component<Props> {
                 )) }
               </TransitionGroup>
             </Table>
-          )}
-        </WithLoadingIndicator>
-      </div>
+          </Scrollbar>
+          </>
+        )}
+      </WithLoadingIndicator>
+      </>
     );
   }
 
