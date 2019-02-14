@@ -300,7 +300,10 @@ function applyChange(state: OfferFormState,
         newState,
         {
           kind: FormChangeKind.priceFieldChange,
-          value: new BigNumber(change.offer.price.toFixed(tokens[state.quoteToken].digits))
+          value: new BigNumber(change.offer.price.toFixed(
+            tokens[state.quoteToken].digits,
+            change.offer.type === OfferType.buy ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP,
+          ))
         }
       );
     case OfferMakeChangeKind.pickerOpenChange:
