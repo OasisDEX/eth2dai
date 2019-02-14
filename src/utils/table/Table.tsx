@@ -3,10 +3,9 @@ import * as React from 'react';
 
 import * as styles from './Table.scss';
 
-export const Table = ({ children, align, scrollable, className }:
+export const Table = ({ children, align, className }:
       { children: any,
         align?: 'right' | 'left' | 'center',
-        scrollable?: boolean,
         className?: any }) => (
   <table className={ classnames({ [styles.table] : true,
     [styles.extendOnBorders]: true,

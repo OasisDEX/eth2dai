@@ -11,12 +11,12 @@ import { Button } from '../../utils/forms/Buttons';
 import { LoadableStatus, LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { PanelHeader } from '../../utils/panel/Panel';
+import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
 import { RowClickable, RowHighlighted, Table } from '../../utils/table/Table';
 import { Currency, InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
 import { Offer, Orderbook } from './orderbook';
-import { Scrollbar } from "../../utils/Scrollbar/Scrollbar";
 
 export interface Props extends LoadableWithTradingPair<Orderbook> {
   account: string | undefined;
