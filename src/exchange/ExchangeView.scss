@@ -21,6 +21,7 @@ $twoColumnsPanelWidth: 454px;
 
 .offerMakePanel {
   height: $offerMakePanelHeight;
+  width: $twoColumnsPanelWidth;
   margin-right: 24px;
   flex-grow: 1;
   @include media-breakpoint-down(lg) {
@@ -32,9 +33,11 @@ $twoColumnsPanelWidth: 454px;
 
 .orderbookPanel {
   height: $offerMakePanelHeight;
+  width: $twoColumnsPanelWidth;
+
   @include media-breakpoint-down(lg) {
     width: 100%;
-    height: auto;
+    height: $historyPanelsHeight;
   }
 }
 
