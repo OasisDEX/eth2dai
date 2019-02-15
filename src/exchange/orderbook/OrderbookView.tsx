@@ -1,6 +1,5 @@
 // tslint:disable:no-console
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import * as styles from './OrderbookView.scss';
 
@@ -28,31 +27,25 @@ export class OrderbookView extends React.Component<Props> {
 
   private lastTradingPair?: TradingPair;
   private lastStatus?: LoadableStatus;
-  private tbody?: HTMLElement;
   private spreadRow?: HTMLElement;
+  private scrollRef = React.createRef<Scrollbar>();
 
-  public center(force: boolean, offset: number = 0) {
-    if (this.tbody && this.spreadRow && typeof(this.tbody.scrollTo) === 'function') {
-      const position = this.spreadRow.offsetTop - this.tbody.offsetTop - this.tbody.scrollTop;
-      const spreadVisible = position > -this.spreadRow.clientHeight && position < this.tbody.clientHeight;
-      if (force || spreadVisible) {
-        const firstRow: HTMLElement = this.tbody.children[0] as HTMLElement;
-        this.tbody.scrollTo(0, this.spreadRow.offsetTop - firstRow.offsetTop -
-          (this.tbody.clientHeight - firstRow.clientHeight) / 2 + offset * firstRow.clientHeight);
-      }
+  public center() {
+    if (this.scrollRef.current && this.spreadRow) {
+      this.scrollRef.current.center(this.spreadRow.offsetTop, this.spreadRow.clientHeight);
     }
   }
 
   public componentDidMount() {
-    this.center(true);
+    this.center();
   }
 
   public enter = () => {
-    this.center(false);
+    this.center();
   }
 
   public exit = () => {
-    this.center(false, -1);
+    this.center();
   }
 
   public render() {
@@ -67,7 +60,7 @@ export class OrderbookView extends React.Component<Props> {
 
     if (justLoaded || tradingPairChanged) {
       setTimeout(() => {
-        this.center(true);
+        this.center();
       });
     }
 
@@ -114,13 +107,10 @@ export class OrderbookView extends React.Component<Props> {
             </tr>
             </thead>
           </Table>
-          <Scrollbar>
+          <Scrollbar ref={this.scrollRef}>
             <Table align="right" className={styles.orderbookTable}>
               <TransitionGroup
                 component="tbody"
-                ref={(el: any) =>
-                  this.tbody = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
-                }
               >
                 { orderbook.sell.slice().reverse().map((offer: Offer) => (
                   <CSSTransition
