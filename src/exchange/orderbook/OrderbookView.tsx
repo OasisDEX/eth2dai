@@ -30,9 +30,9 @@ export class OrderbookView extends React.Component<Props> {
   private spreadRow?: HTMLElement;
   private scrollRef = React.createRef<Scrollbar>();
 
-  public center(offset: number = 0) {
+  public center() {
     if (this.scrollRef.current && this.spreadRow) {
-      this.scrollRef.current.center(this.spreadRow.offsetTop, this.spreadRow.clientHeight, offset);
+      this.scrollRef.current.center(this.spreadRow.offsetTop, this.spreadRow.clientHeight);
     }
   }
 
@@ -94,7 +94,7 @@ export class OrderbookView extends React.Component<Props> {
         </div>
       </PanelHeader>
       <WithLoadingIndicator loadable={this.props}>
-        { (orderbook: Orderbook) => (
+        {(orderbook: Orderbook) => (
           <>
           <Table align="right" className={styles.orderbookTable}>
             <thead>
@@ -116,7 +116,7 @@ export class OrderbookView extends React.Component<Props> {
               <TransitionGroup
                 component="tbody"
               >
-                { orderbook.sell.slice().reverse().map((offer: Offer) => (
+                {orderbook.sell.slice().reverse().map((offer: Offer) => (
                   <CSSTransition
                     key={offer.offerId.toString()}
                     classNames="order"
@@ -124,7 +124,7 @@ export class OrderbookView extends React.Component<Props> {
                     onEntering={this.enter}
                     onExited={this.exit}
                   >
-                    <this.OfferRow offer={offer} kind="sell" parent={this} />
+                    <this.OfferRow offer={offer} kind="sell" parent={this}/>
                   </CSSTransition>
                 ))
                 }
@@ -134,7 +134,7 @@ export class OrderbookView extends React.Component<Props> {
                   <RowHighlighted>
                     <td ref={el => this.spreadRow = el || undefined}>
                       {orderbook.spread
-                        ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote} />
+                        ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote}/>
                         : '-'}
                     </td>
                     <td/>
@@ -144,11 +144,11 @@ export class OrderbookView extends React.Component<Props> {
                   </RowHighlighted>
                 </CSSTransition>
 
-                { orderbook.buy.map((offer: Offer) => (
+                {orderbook.buy.map((offer: Offer) => (
                   <CSSTransition key={offer.offerId.toString()} classNames="order" timeout={1000}>
-                    <this.OfferRow offer={offer} kind="buy" parent={this} />
+                    <this.OfferRow offer={offer} kind="buy" parent={this}/>
                   </CSSTransition>
-                )) }
+                ))}
               </TransitionGroup>
             </Table>
           </Scrollbar>
@@ -159,25 +159,22 @@ export class OrderbookView extends React.Component<Props> {
     );
   }
 
-  public OfferRow(
-    { offer, kind, parent } :
-    { offer: Offer, kind: string, parent: any }
-  ) {
+  public OfferRow({ offer, kind, parent }: { offer: Offer, kind: string, parent: any }) {
     return (
       <RowClickable
         data-test-id={kind}
         clickable={parent.canTakeOffer(offer)}
-        onClick={ parent.takeOffer(offer)}>
+        onClick={parent.takeOffer(offer)}>
         <td data-test-id="price">
           <SellBuySpan type={kind}>
-            <FormatPrice value={offer.price} token={offer.quoteToken} />
+            <FormatPrice value={offer.price} token={offer.quoteToken}/>
           </SellBuySpan>
         </td>
         <td data-test-id="amount">
-          <FormatAmount value={offer.baseAmount} token={offer.baseToken} />
+          <FormatAmount value={offer.baseAmount} token={offer.baseToken}/>
         </td>
         <td data-test-id="total">
-          <FormatAmount value={offer.quoteAmount} token={offer.quoteToken} />
+          <FormatAmount value={offer.quoteAmount} token={offer.quoteToken}/>
         </td>
       </RowClickable>
     );
@@ -208,7 +205,8 @@ class ToChartSwitchBtn extends React.PureComponent {
       <svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1">
         <g transform="translate(-6.000000, -6.000000)" fill="white" fillRule="nonzero">
           <g transform="translate(3.000000, 3.000000)">
-            <path d="M19,3 L5,3 C3.9,3 3,3.9 3,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,5 C21,3.9 20.1,3 19,3 Z M10,19 L5,19 L5,12 L12,12 L12,17 C12,18.1045695 11.1045695,19 10,19 Z M19,12 L12,12 L12,7 C12,5.8954305 12.8954305,5 14,5 L19,5 L19,12 Z"/>
+            <path
+              d="M19,3 L5,3 C3.9,3 3,3.9 3,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,5 C21,3.9 20.1,3 19,3 Z M10,19 L5,19 L5,12 L12,12 L12,17 C12,18.1045695 11.1045695,19 10,19 Z M19,12 L12,12 L12,7 C12,5.8954305 12.8954305,5 14,5 L19,5 L19,12 Z"/>
           </g>
         </g>
       </svg>
