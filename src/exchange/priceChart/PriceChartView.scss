@@ -120,4 +120,12 @@
 
 .infoBoxItem {
   width: 200px;
+
+  @include media-breakpoint-down(md) {
+    width: auto;
+  }
+
+  @include media-breakpoint-down(sm) {
+    font-size: 9px;
+  }
 }
