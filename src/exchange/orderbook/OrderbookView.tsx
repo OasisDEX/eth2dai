@@ -47,7 +47,9 @@ export class OrderbookView extends React.Component<Props> {
 
   public exit = () => {
     console.log('Exiting...');
-    this.center(-32);
+    setTimeout(() => {
+      this.center();
+    });
   }
 
   public render() {
