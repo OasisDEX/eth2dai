@@ -4,7 +4,7 @@
 @include checklistBorderBox();
 
 .checklistLine {
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     font-size: 14px;
     flex-direction: column;
   }
@@ -15,7 +15,7 @@
   justify-content: space-between;
   align-items: center;
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     font-size:14px;
   }
 }
