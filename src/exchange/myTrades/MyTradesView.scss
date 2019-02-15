@@ -19,8 +19,14 @@
   max-height: 400px;
 
   td, th {
-    flex-grow: 1;
+    &:first-child {
+      @include media-breakpoint-up(lg) {
+        width: 100px;
+      }
+    }
   }
+
+
 }
 
 .myOpenTradesTable {
