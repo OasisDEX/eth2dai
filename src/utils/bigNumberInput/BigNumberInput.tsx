@@ -19,7 +19,7 @@ export class BigNumberInput extends React.Component<any> {
       this.lastValue &&
       currentValue &&
       new BigNumber(this.lastValue.replace(/\,/g, '')).eq(
-        new BigNumber(currentValue)
+        new BigNumber(currentValue.replace(/\,/g, ''))
       )
     ) {
       value = this.lastValue;
