@@ -1,10 +1,6 @@
 @import "../Variables";
 @import "../Mixins";
 
-$padding-vertical: 8px;
-$padding-horizontal: 15px;
-$padding-horizontal-edges-mod: 15px;
-
 .table {
   display: table;
   table-layout: fixed;
@@ -41,13 +37,7 @@ $padding-horizontal-edges-mod: 15px;
   }
 
   th, td {
-    padding: $padding-vertical $padding-horizontal;
-    &:first-child {
-      padding-left: $padding-horizontal + $padding-horizontal-edges-mod;
-    }
-    &:last-child {
-      padding-right: 16px;
-    }
+    padding: 8px 28px 8px 0;
   }
 
   @include media-breakpoint-down(md) {
