@@ -10,6 +10,21 @@
     }
   }
 
+  th, td {
+    &:first-child {
+      padding-left: 28px;
+
+      @include  media-breakpoint-down(md) {
+        padding-left: 16px;
+      }
+    }
+  }
+
+  th:nth-child(2) {
+    padding-left: 16px;
+  }
+
+
   .center {
     text-align: center;
   }
