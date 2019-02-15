@@ -20,6 +20,7 @@
 
   td, th {
     &:first-child {
+      padding-left: 28px;
       @include media-breakpoint-up(lg) {
         width: 100px;
       }
