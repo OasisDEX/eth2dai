@@ -6,11 +6,10 @@ export class Scrollbar extends React.Component {
 
   private scroll = React.createRef<Scrollbars>();
 
-  public center(elementOffset:number, elementHeight: number, offset:number = 0) : void {
+  public center(elementOffset: number, elementHeight: number): void {
     if (this.scroll.current) {
       const { clientHeight } = this.scroll.current.getValues();
-      this.scroll.current.scrollTop(elementOffset - ((clientHeight - elementHeight) / 2) - offset);
-
+      this.scroll.current.scrollTop(elementOffset - ((clientHeight - elementHeight) / 2));
     }
   }
 
@@ -18,11 +17,11 @@ export class Scrollbar extends React.Component {
 
     return (
       <Scrollbars
-        ref = {this.scroll}
-        renderThumbVertical={(props:any) => <div {...props} className={styles.scrollbarThumb}/>}
-        renderThumbHorizontal={(props:any) => <div {...props} className={styles.scrollbarThumb}/>}
+        ref={this.scroll}
+        renderThumbVertical={(props: any) => <div {...props} className={styles.scrollbarThumb}/>}
+        renderThumbHorizontal={(props: any) => <div {...props} className={styles.scrollbarThumb}/>}
       >
-        { this.props.children}
+        {this.props.children}
       </Scrollbars>
     );
   }
