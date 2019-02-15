@@ -30,9 +30,9 @@ export class OrderbookView extends React.Component<Props> {
   private spreadRow?: HTMLElement;
   private scrollRef = React.createRef<Scrollbar>();
 
-  public center() {
+  public center(offset: number = 0) {
     if (this.scrollRef.current && this.spreadRow) {
-      this.scrollRef.current.center(this.spreadRow.offsetTop, this.spreadRow.clientHeight);
+      this.scrollRef.current.center(this.spreadRow.offsetTop, this.spreadRow.clientHeight, offset);
     }
   }
 
@@ -41,11 +41,13 @@ export class OrderbookView extends React.Component<Props> {
   }
 
   public enter = () => {
+    console.log('Entering...');
     this.center();
   }
 
   public exit = () => {
-    this.center();
+    console.log('Exiting...');
+    this.center(-32);
   }
 
   public render() {
