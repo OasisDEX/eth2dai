@@ -5,7 +5,7 @@ import * as React from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { NavLink } from 'react-router-dom';
 
-import { theAppContext } from 'src/AppContext';
+import { theAppContext } from '../AppContext';
 import { account$ } from '../blockchain/network';
 import { Logo } from '../logo/Logo';
 import { routerContext } from '../Main';
