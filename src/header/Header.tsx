@@ -3,7 +3,7 @@ import * as React from 'react';
 // @ts-ignore
 // tslint:disable:import-name
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { theAppContext } from 'src/AppContext';
 import { account$ } from '../blockchain/network';
