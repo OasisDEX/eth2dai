@@ -1,15 +1,23 @@
 @import "../Variables";
 @import "../Mixins";
 
-$padding-vertical: 8px;
-$padding-horizontal: 15px;
-$padding-horizontal-edges-mod: 15px;
-
 .table {
-
+  display: table;
   table-layout: fixed;
   border-collapse: collapse;
   width: 100%;
+
+  @include media-breakpoint-down(md) {
+    // in mobile it's important that scrollable table is short enough
+    // to allow user scroll the page, not only table
+    max-height: calc(100vh - 70px) !important;
+
+    th {
+      position: sticky;
+      top: -1px;
+      background-color: $grey-dark;
+    }
+  }
 
   thead {
     @extend .trHighlighted;
@@ -29,12 +37,19 @@ $padding-horizontal-edges-mod: 15px;
   }
 
   th, td {
-    padding: $padding-vertical $padding-horizontal;
-    &:first-child {
-      padding-left: $padding-horizontal + $padding-horizontal-edges-mod;
+    padding: 8px 28px 8px 0;
+  }
+
+  @include media-breakpoint-down(md) {
+    th, td,
+    th:first-child,
+    td:first-child {
+      padding-right: 16px;
     }
-    &:last-child {
-      padding-right: $padding-horizontal + $padding-horizontal-edges-mod;
+
+    th:last-child,
+    td:last-child {
+      padding-right: 24px;
     }
   }
 }
@@ -46,7 +61,6 @@ $padding-horizontal-edges-mod: 15px;
   margin-left: -1px;
   width: calc(100% + 2px);
 }
-
 
 // Align text
 //
@@ -80,32 +94,4 @@ $padding-horizontal-edges-mod: 15px;
   &:active {
     background-color: lighten($grey-dark, 2.5%);
   }
-}
-
-// With scrollable tbody
-.scrollable {
-  // table
-  display: flex;
-  flex-direction: column;
-
-  thead {
-    display: table;
-    width: 100%;
-  }
-
-  tbody {
-    display: block;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  tr {
-    display: flex;
-  }
-
-  //td, th {
-  //  &:last-child {
-  //    padding-right: $padding-horizontal;
-  //  }
-  //}
 }

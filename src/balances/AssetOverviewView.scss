@@ -4,7 +4,26 @@
 .table {
   th {
     text-transform: unset;
+
+    @include media-breakpoint-down(md) {
+      font-size: 10px;
+    }
   }
+
+  th, td {
+    &:first-child {
+      padding-left: 28px;
+
+      @include  media-breakpoint-down(md) {
+        padding-left: 16px;
+      }
+    }
+  }
+
+  th:nth-child(2) {
+    padding-left: 16px;
+  }
+
 
   .center {
     text-align: center;
@@ -14,10 +33,24 @@
     text-align: right;
   }
 
+  td {
+    @include media-breakpoint-down(md) {
+      font-size: 11px;
+    }
+
+    @include media-breakpoint-down(sm) {
+      font-size: 9px;
+    }
+  }
+
   // align tokens icons so they look like they
   // aligned to left with column name "Asset"
   td:nth-child(2) {
     padding-left: 8px;
+
+    @include media-breakpoint-down(sm) {
+      padding-left: 0;
+    }
   }
 
   // those columns contains tall elements,
@@ -31,6 +64,10 @@
   td:nth-child(4) {
     padding-top: 0;
     padding-bottom: 0;
+
+    @include media-breakpoint-down(sm){
+      padding-left: 0;
+    }
   }
 }
 
@@ -70,4 +107,16 @@
 .transferBtnLeft {
   transform: rotate(180deg);
   margin-right: 5px;
+}
+
+.wrapUnwrapBtn {
+  @include media-breakpoint-down(lg) {
+    font-size: 11px;
+  }
+
+  @include media-breakpoint-down(md){
+    width: 64px;
+    height: 20px;
+    font-size: 9px;
+  }
 }

@@ -9,25 +9,56 @@ import { Muted } from '../../utils/text/Text';
 import { GroupMode, groupModeMapper, PriceChartDataPoint } from './pricechart';
 import * as styles from './PriceChartView.scss';
 
-const margin = { top: 5, right: 45, bottom: 40, left: 10 };
-const width = 440;
-const height = 270;
-const bars = { width: 7, padding: 2, delta: -4 };
-const maxDataLength = 38;
+interface ChartParams {
+  width: number;
+  height: number;
+  margin: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+  bars: { width: number, padding: number, delta: number };
+  maxDataLength: number;
+  bothChartSize: any;
+  candleChartSize: any;
+  volumeChartSize: any;
+  ticksNumber: number;
+}
 
-const bothChartSize = {
-  width: width - margin.left - margin.right, // chart's width
-  height: height - margin.top - margin.bottom, // chart's height
-};
-
-const candleChartSize = {
-  width: bothChartSize.width, // candle chart's width
-  height: bothChartSize.height * 4 / 5, // chart's height
-};
-const volumeChartSize = {
-  width: bothChartSize.width, // chart's width
-  height: bothChartSize.height / 5,
-};
+function calculateChartParams(windowWidth?: number): ChartParams {
+  const maxChartWidth = 440;
+  const width = !windowWidth ? maxChartWidth : Math.min(maxChartWidth, windowWidth - 50);
+  const height = 270;
+  const margin = { top: 5, right: 45, bottom: 40, left: 10 };
+  const bothChartSize = {
+    width: width - margin.left - margin.right, // chart's width
+    height: height - margin.top - margin.bottom, // chart's height
+  };
+  const candleChartSize = {
+    width: bothChartSize.width, // candle chart's width
+    height: bothChartSize.height * 4 / 5, // chart's height
+  };
+  const volumeChartSize = {
+    width: bothChartSize.width, // volume's chart's width
+    height: bothChartSize.height / 5,
+  };
+  const ticksNumber = width > 400 ? 5 : (width > 350 ? 3 : 2);
+  const barsWidth = width > 400 ? 7 : 5;
+  // cut data length when narrow chart
+  const maxDataLength = width > 390 ? 38 : Math.floor(width / 10) - 2;
+  return {
+    width,
+    height,
+    margin,
+    bothChartSize,
+    candleChartSize,
+    volumeChartSize,
+    ticksNumber,
+    maxDataLength,
+    bars: { width: barsWidth, padding: 2, delta: -4 },
+  };
+}
 
 export interface PriceChartInternalProps {
   data: PriceChartDataPoint[];
@@ -37,6 +68,7 @@ export interface PriceChartInternalProps {
 export class PriceChartView extends React.Component<PriceChartInternalProps, {
   hoverId: number,
   hoverData: any,
+  chartParams: ChartParams,
 }> {
 
   public constructor(props: PriceChartInternalProps) {
@@ -44,12 +76,36 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
 
     this.state = {
       hoverId: -1,
-      hoverData: {}
+      hoverData: {},
+      chartParams: calculateChartParams(undefined),
     };
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+  }
+
+  public componentDidMount() {
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions);
+  }
+
+  public componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions);
+  }
+
+  public updateWindowDimensions() {
+    this.setState({ chartParams: calculateChartParams(window.innerWidth) });
   }
 
   public render() {
-
+    const p = this.state.chartParams;
+    const {
+      maxDataLength,
+      width,
+      height,
+      margin,
+      bothChartSize,
+      volumeChartSize,
+      candleChartSize
+    } = p;
     const data = this.props.data
       .slice(-maxDataLength);
     const groupModeMap = groupModeMapper[this.props.groupMode];
@@ -95,7 +151,8 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
                                                 // in case the candle label is at the bottom
       .range([volumeChartSize.height, 0]);
 
-    axes(data,
+    axes(p,
+         data,
          svgMainGraphic,
          xScale,
          yCandleScale,
@@ -103,9 +160,9 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
          volumeMaximal,
          groupModeMap.format
     );
-    volumeChart(data, svgMainGraphic, xScale, yVolumeScale, this.state.hoverId);
-    candleChart(data, svgMainGraphic, xScale, yCandleScale, this.state.hoverId);
-    hoverBarChart(data, svgMainGraphic, xScale);
+    volumeChart(p, data, svgMainGraphic, xScale, yVolumeScale, this.state.hoverId);
+    candleChart(p, data, svgMainGraphic, xScale, yCandleScale, this.state.hoverId);
+    hoverBarChart(p, data, svgMainGraphic, xScale);
 
     svgMainGraphic.select('.hoverbar').selectAll('rect')
       .on('mouseover', (d, i) => {
@@ -119,6 +176,7 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
       position: 'relative',
       display: 'flex',
       justifyContent: 'center',
+      minHeight: `${height}px`,
     }}>
         {chart.toReact()}
         <DataDetails data={this.state.hoverData}
@@ -133,11 +191,12 @@ export class PriceChartView extends React.Component<PriceChartInternalProps, {
 
 // bars created only to bind hover on them
 // no styles, noe view, full-height
-function hoverBarChart(data: PriceChartDataPoint[],
+function hoverBarChart(chartParams: ChartParams,
+                       data: PriceChartDataPoint[],
                        svgContainer: Selection<BaseType, any, null, undefined>,
                        xScale: ScaleTime<number, number>,
 ) {
-
+  const { bars, bothChartSize } = chartParams;
   const mbar = svgContainer.selectAll('.hoverbar')
     .data([data])
     .enter().append('g')
@@ -153,12 +212,14 @@ function hoverBarChart(data: PriceChartDataPoint[],
     .attr('width', bars.width);
 }
 
-function volumeChart(data: PriceChartDataPoint[],
+function volumeChart(chartParams: ChartParams,
+                     data: PriceChartDataPoint[],
                      svgContainer: Selection<BaseType, any, null, undefined>,
                      xScale: ScaleTime<number, number>,
                      yVolumeScale: ScaleLinear<number, number>,
                      hoverId: number,
 ) {
+  const { bars, candleChartSize } = chartParams;
   const svg = svgContainer
     .append('g')
     .attr('transform',
@@ -181,12 +242,14 @@ function volumeChart(data: PriceChartDataPoint[],
     .attr('width', bars.width);
 }
 
-function candleChart(data: PriceChartDataPoint[],
+function candleChart(chartParams: ChartParams,
+                     data: PriceChartDataPoint[],
                      svgContainer: Selection<BaseType, any, null, undefined>,
                      xScale: ScaleTime<number, number>,
                      yScale: ScaleLinear<number, number>,
                      hoverId: number,
 ) {
+  const { bars } = chartParams;
   const svg = svgContainer
     .append('g')
     .classed('candleChart', true);
@@ -229,7 +292,8 @@ function candleChart(data: PriceChartDataPoint[],
 
 }
 
-function axes(_data: PriceChartDataPoint[],
+function axes(chartParams: ChartParams,
+              _data: PriceChartDataPoint[],
               svgContainer: Selection<BaseType, any, null, undefined>,
               xScale: ScaleTime<number, number>,
               yCandleScale: ScaleLinear<number, number>,
@@ -237,6 +301,7 @@ function axes(_data: PriceChartDataPoint[],
               volumeMaximal: number,
               xTimestampFormat: string,
 ) {
+  const { ticksNumber, bothChartSize, candleChartSize, volumeChartSize } = chartParams;
   const svg = svgContainer
     .append('g')
     .classed('axes', true);
@@ -244,7 +309,7 @@ function axes(_data: PriceChartDataPoint[],
   const xGridAxis = d3.axisBottom(xScale)
   // .ticks(d3.timeDay.every(1))
     .tickPadding(10)
-    .ticks(5)
+    .ticks(ticksNumber)
     .tickSize(bothChartSize.height)
     .tickFormat((d: any) => moment(d).format(xTimestampFormat));
 

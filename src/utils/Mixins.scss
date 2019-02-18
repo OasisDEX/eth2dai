@@ -5,8 +5,7 @@
 @mixin tableColumnWidth($column, $width) {
   th, td {
     &:nth-child(#{$column}) {
-      width: $width;
-      flex-basis: $width;
+      max-width: $width;
     }
   }
 }
@@ -14,12 +13,22 @@
 // For scrollable tables
 // Shorthand for tableColumnWidth
 // $widths: list of widths ordered from 1
+// $breakpoint-down: name of max breakpoint to apply widths
+//    See also: Variables to find list of breakpoint names
 // sample:
-// @include tableColumnsWidth(150px 150px 132px);
-@mixin tableColumnsWidth($widths) {
+// @include tableColumnsWidth(150px 150px 132px, md);
+@mixin tableColumnsWidth($widths, $breakpoint-down: null) {
+
   @for $i from 1 through length($widths) {
     $width: nth($widths, $i);
-    @include tableColumnWidth($i, $width);
+    @if $breakpoint-down {
+      @include media-breakpoint-down($breakpoint-down) {
+        @include tableColumnWidth($i, $width);
+      }
+    }
+    @else {
+        @include tableColumnWidth($i, $width);
+    }
   }
 }
 
@@ -178,4 +187,30 @@ $inputFontSize: (
 @mixin fontLatoMedium() {
   font-family: $font-additional;
   font-weight: 500;
+}
+
+
+// ----------------------------- media queries / mobile mixin ------------------------
+
+// Media of at most the maximum breakpoint width. No query for the largest breakpoint.
+// Makes the @content apply to the given breakpoint and narrower.
+// Checks if grid-breakpoint is enabled
+@mixin media-breakpoint-down($name) {
+  $max: map-get($grid-breakpoints, $name);
+
+  @if $max and $grid-breakpoints-enabled == true {
+    @media (max-width: $max) {
+      @content;
+    }
+  }
+}
+
+@mixin media-breakpoint-up($name) {
+  $max: map-get($grid-breakpoints, $name);
+
+  @if $max and $grid-breakpoints-enabled == true {
+    @media (min-width: $max) {
+      @content;
+    }
+  }
 }

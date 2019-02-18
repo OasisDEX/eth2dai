@@ -4,6 +4,10 @@
 .ownedResourcesInfoBox {
   display: flex;
   justify-content: space-between;
+
+  @include media-breakpoint-down(md){
+    flex-direction: column;
+  }
 }
 
 .btnGroup {
@@ -12,6 +16,11 @@
 
 .btn {
   width: 72px;
+
+  @include media-breakpoint-down(sm){
+    width: 64px;
+    font-size: 11px;
+  }
 }
 
 .balanceBtn {
@@ -39,12 +48,34 @@
   &:last-child {
     margin-left: 10px;
   }
+
+  @include media-breakpoint-down(md){
+    max-height:38px;
+    width: 100%;
+
+    &:first-child {
+      margin-right: 0;
+      margin-bottom: 16px;
+    }
+
+    &:last-child {
+      margin-left: 0;
+    }
+  }
 }
 
 .summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @include media-breakpoint-down(sm) {
+    font-size: 14px;
+
+    button {
+      font-size: 11px;
+    }
+  }
 }
 
 .confirmButton {
@@ -67,6 +98,11 @@
   flex-shrink: 0;
   padding: 10px 16px;
   white-space: nowrap;
+
+  @include media-breakpoint-down(sm){
+    padding: 10px;
+    flex-basis: 80px;
+  }
 }
 
 .input {
@@ -82,6 +118,11 @@
   justify-content: start;
   padding: 10px 16px;
   white-space: nowrap;
+
+  @include media-breakpoint-down(sm) {
+    flex-basis: 64px;
+    padding: 10px;
+  }
 }
 
 .inputPercentAddon {
@@ -124,6 +165,10 @@
 .directSummaryLeft {
   flex-basis: 50%;
   padding: 12px;
+
+  @include media-breakpoint-down(sm) {
+    font-size: 11px;
+  }
 }
 
 .directSummaryRight {

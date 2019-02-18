@@ -1,0 +1,13 @@
+@import './Mixins';
+
+:global(.hide-md) {
+  @include media-breakpoint-down(md) {
+    display: none !important;
+  }
+}
+
+:global(.hide-lg) {
+  @include media-breakpoint-down(lg) {
+    display: none !important;
+  }
+}
