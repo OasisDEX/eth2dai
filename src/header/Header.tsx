@@ -3,44 +3,46 @@ import * as React from 'react';
 // @ts-ignore
 // tslint:disable:import-name
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { Link, NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import { theAppContext } from 'src/AppContext';
 import { account$ } from '../blockchain/network';
 import { Logo } from '../logo/Logo';
+import { routerContext } from '../Main';
 import { connect } from '../utils/connect';
 import { Loadable, loadablifyLight } from '../utils/loadable';
 import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
 import * as styles from './Header.scss';
 
-interface HeaderProps extends RouteComponentProps<any>{}
-
-class Header extends React.Component<HeaderProps, any> {
+export class Header extends React.Component {
   public render() {
-    const matchUrl = this.props.match.url;
     return (
-      <header>
-        <section>
-          <Link to={matchUrl} className={styles.logo}>
-            <Logo />
-          </Link>
-          <nav>
-            <ul>
-              <HeaderNavLink to={matchUrl.concat('exchange')} name="Exchange" />
-              <HeaderNavLink to={matchUrl.concat('balances')} name="Balances" />
-            </ul>
-          </nav>
-        </section>
-        <section>
-          <StatusTxRx />
-          <theAppContext.Consumer>
-            { ({ NetworkTxRx }) =>
-              // @ts-ignore
-              <NetworkTxRx/>
-            }
-          </theAppContext.Consumer>
-        </section>
-      </header>
+      <routerContext.Consumer>
+      { ({ rootUrl }) =>
+        <header>
+          <section>
+            <Link to={rootUrl} className={styles.logo}>
+              <Logo />
+            </Link>
+            <nav>
+              <ul>
+                <HeaderNavLink to={rootUrl.concat('exchange')} name="Exchange" />
+                <HeaderNavLink to={rootUrl.concat('balances')} name="Balances" />
+              </ul>
+            </nav>
+          </section>
+          <section>
+            <StatusTxRx />
+            <theAppContext.Consumer>
+              { ({ NetworkTxRx }) =>
+                // @ts-ignore
+                <NetworkTxRx/>
+              }
+            </theAppContext.Consumer>
+          </section>
+        </header>
+      }
+      </routerContext.Consumer>
     );
   }
 }
@@ -81,5 +83,3 @@ export const HeaderNavLink = ({ to, name }: {to: string, name: string}) => (
     </NavLink>
   </li>
 );
-
-export const HeaderWithRouter = withRouter(Header);

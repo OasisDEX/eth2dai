@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
 
 import { tokens } from '../../blockchain/config';
+import { routerContext } from '../../Main';
 import { BigNumberInput } from '../../utils/bigNumberInput/BigNumberInput';
 import { FormChangeKind, OfferMatchType } from '../../utils/form';
 import { formatAmount, formatPrice } from '../../utils/formatters/format';
@@ -528,7 +529,11 @@ function messageContent(msg: Message) {
     case MessageKind.noAllowance:
       return <span>
         {`Unlock ${msg.token} for Trading in the `}
-        <Link to="/balances" style={{ whiteSpace: 'nowrap' }}>Balances Page</Link>
+        <routerContext.Consumer>
+        { ({ rootUrl }) =>
+          <Link to={`${rootUrl}balances`} style={{ whiteSpace: 'nowrap' }}>Balances Page</Link>
+        }
+        </routerContext.Consumer>
       </span>;
     case MessageKind.insufficientAmount:
       return  <>
