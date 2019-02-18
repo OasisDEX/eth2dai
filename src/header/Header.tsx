@@ -3,7 +3,7 @@ import * as React from 'react';
 // @ts-ignore
 // tslint:disable:import-name
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
+import { Link, NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
 
 import { theAppContext } from 'src/AppContext';
 import { account$ } from '../blockchain/network';
@@ -21,13 +21,13 @@ class Header extends React.Component<HeaderProps, any> {
     return (
       <header>
         <section>
-          <a href="/" className={styles.logo}>
+          <Link to={matchUrl} className={styles.logo}>
             <Logo />
-          </a>
+          </Link>
           <nav>
             <ul>
-              <HeaderNavLink path={matchUrl.concat('exchange')} name="Exchange" />
-              <HeaderNavLink path={matchUrl.concat('balances')} name="Balances" />
+              <HeaderNavLink to={matchUrl.concat('exchange')} name="Exchange" />
+              <HeaderNavLink to={matchUrl.concat('balances')} name="Balances" />
             </ul>
           </nav>
         </section>
@@ -70,11 +70,11 @@ class Status extends React.Component<StatusProps> {
 
 export const StatusTxRx = connect(Status, loadablifyLight(account$));
 
-export const HeaderNavLink = ({ path, name }: {path: string, name: string}) => (
+export const HeaderNavLink = ({ to, name }: {to: string, name: string}) => (
   <li>
     <NavLink
       data-test-id={name}
-      to={path}
+      to={to}
       className={styles.navLink}
       activeClassName={styles.activeNavLink}>
       {name}
