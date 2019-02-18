@@ -5,7 +5,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import * as styles from './OrderbookView.scss';
 
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
-import { FormatAmount, FormatPrice } from '../../utils/formatters/Formatters';
+import { FormatAmount, FormatPriceOrderbook } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { LoadableStatus, LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
@@ -157,7 +157,7 @@ export class OrderbookView extends React.Component<Props> {
         onClick={ parent.takeOffer(offer)}>
         <td data-test-id="price">
           <SellBuySpan type={kind}>
-            <FormatPrice value={offer.price} token={offer.quoteToken} />
+            <FormatPriceOrderbook value={offer.price} token={offer.quoteToken} kind={kind} />
           </SellBuySpan>
         </td>
         <td data-test-id="amount">

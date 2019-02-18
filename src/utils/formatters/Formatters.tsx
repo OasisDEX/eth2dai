@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Omit } from '../omit';
 import { Currency } from '../text/Text';
 import { zero } from '../zero';
-import { formatAmount, formatPercent, formatPrice } from './format';
+import { formatAmount, formatPercent, formatPrice, formatPriceDown, formatPriceUp } from './format';
 
 export type FormatNumberProps = React.HTMLAttributes<HTMLSpanElement> & {
   value: BigNumber;
@@ -47,6 +47,11 @@ export const FormatAmount = (props: FormatAmountProps) => {
 
 export const FormatPrice: React.SFC<any> = ({ ...props } : any) =>
   <FormatNumber formatter={formatPrice} {...props} />;
+
+export const FormatPriceOrderbook: React.SFC<any> = ({ kind, ...props } : any) =>
+  kind === 'sell' ?
+    <FormatNumber formatter={formatPriceUp} {...props} /> :
+    <FormatNumber formatter={formatPriceDown} {...props} />;
 
 // Format percent
 type FormatPercentProps = React.HTMLAttributes<HTMLSpanElement> & {
