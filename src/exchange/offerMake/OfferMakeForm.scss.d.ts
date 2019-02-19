@@ -6,6 +6,7 @@ export const summary: string;
 export const confirmButton: string;
 export const hrMargin: string;
 export const inputHeader: string;
+export const inputTail: string;
 export const input: string;
 export const inputCurrencyAddon: string;
 export const inputPercentAddon: string;

@@ -164,34 +164,34 @@ export class WrapUnwrapFormView
           <InputGroupAddon className={styles.inputHeader}>
             Amount
           </InputGroupAddon>
-
-          <BigNumberInput
-            data-test-id="type-amount"
-            ref={ (el: any) =>
-              this.amountInput = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
-            }
-            type="text"
-            mask={createNumberMask({
-              allowDecimal: true,
-              decimalLimit: 5,
-              prefix: ''
-            })}
-            onChange={this.handleAmountChange}
-            value={
-              (state.amount || null) &&
-              formatAmount(state.amount as BigNumber, 'ETH')
-            }
-            guide={true}
-            placeholder={'0'}
-            disabled={state.progress !== undefined }
-          />
-
-          <InputGroupAddon
-            className={styles.inputCurrencyAddon}
-            onClick={ this.handleAmountFocus }
-          >
-            { this.props.kind === WrapUnwrapFormKind.wrap ? 'ETH' : 'WETH' }
-          </InputGroupAddon>
+          <div className={styles.inputTail}>
+            <BigNumberInput
+              data-test-id="type-amount"
+              ref={(el: any) =>
+                this.amountInput = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
+              }
+              type="text"
+              mask={createNumberMask({
+                allowDecimal: true,
+                decimalLimit: 5,
+                prefix: ''
+              })}
+              onChange={this.handleAmountChange}
+              value={
+                (state.amount || null) &&
+                formatAmount(state.amount as BigNumber, 'ETH')
+              }
+              guide={true}
+              placeholder={'0'}
+              disabled={state.progress !== undefined}
+            />
+            <InputGroupAddon
+              className={styles.inputCurrencyAddon}
+              onClick={this.handleAmountFocus}
+            >
+              {this.props.kind === WrapUnwrapFormKind.wrap ? 'ETH' : 'WETH'}
+            </InputGroupAddon>
+          </div>
         </InputGroup>
 
         <ErrorMessage data-test-id="error-msg" messages={errorMessages} />

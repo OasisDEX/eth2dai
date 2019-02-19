@@ -85,6 +85,16 @@
   }
 }
 
+.inputTail {
+  display: inline-flex;
+  border-left: 1px solid $grey-light;
+  width: 100%;
+
+  &:hover {
+    border-color: $button-border-hover;
+  }
+}
+
 .inputCurrencyAddon {
   flex-basis: 82px;
   flex-grow: 1;

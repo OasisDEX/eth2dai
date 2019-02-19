@@ -333,7 +333,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
                 value={this.props.total || new BigNumber(0)} token={this.props.quoteToken}
               />
             &#x20;
-            <Currency value={this.props.quoteToken}/>
+            <Currency theme="semi-bold" value={this.props.quoteToken}/>
           </span>
         </div>
         <Error field="total" messages={this.props.messages} />
@@ -383,47 +383,34 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
                                     .filter((message: Message) => message.field === 'amount')
                                     .length > 0}>
       <InputGroupAddon className={styles.inputHeader}>Amount</InputGroupAddon>
-      <BigNumberInput
-        data-test-id="type-amount"
-        ref={ (el: any) =>
-          this.amountInput = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
-        }
-        type="text"
-        mask={createNumberMask({
-          allowDecimal: true,
-          decimalLimit: this.props.baseTokenDigits,
-          prefix: ''
-        })}
-        onChange={this.handleAmountChange}
-        value={
-          (this.props.amount || null) &&
-          formatAmount(this.props.amount as BigNumber, this.props.baseToken)
-        }
-        guide={true}
-        placeholder={'0'}
-        className={styles.input}
-        disabled={this.props.stage === 'waitingForApproval'}
-      />
-      <InputGroupAddon className={styles.inputCurrencyAddon} onClick={ this.handleAmountFocus }>
-        {this.props.baseToken}
-      </InputGroupAddon>
-
+      <div className={styles.inputTail}>
+        <BigNumberInput
+          data-test-id="type-amount"
+          ref={(el: any) =>
+            this.amountInput = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
+          }
+          type="text"
+          mask={createNumberMask({
+            allowDecimal: true,
+            decimalLimit: this.props.baseTokenDigits,
+            prefix: ''
+          })}
+          onChange={this.handleAmountChange}
+          value={
+            (this.props.amount || null) &&
+            formatAmount(this.props.amount as BigNumber, this.props.baseToken)
+          }
+          guide={true}
+          placeholder={'0'}
+          className={styles.input}
+          disabled={this.props.stage === 'waitingForApproval'}
+        />
+        <InputGroupAddon className={styles.inputCurrencyAddon} onClick={this.handleAmountFocus}>
+          {this.props.baseToken}
+        </InputGroupAddon>
+      </div>
     </InputGroup>
     );
-  }
-
-  private getBestSellOffer = () => {
-    const orderBook = this.props.orderbook;
-
-    if (orderBook) {
-      const bestSellOffer = orderBook.sell[0];
-
-      if (bestSellOffer) {
-        return bestSellOffer.price;
-      }
-    }
-
-    return null;
   }
 
   private priceGroup() {
@@ -432,30 +419,32 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           .filter((message: Message) => message.field === 'price')
           .length > 0}>
         <InputGroupAddon className={styles.inputHeader}>Price</InputGroupAddon>
-        <BigNumberInput
-          data-test-id="type-price"
-          ref={(el: any) =>
-            this.priceInput = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
-          }
-          type="text"
-          mask={createNumberMask({
-            allowDecimal: true,
-            decimalLimit: this.props.quoteTokenDigits,
-            prefix: ''
-          })}
-          onChange={this.handlePriceChange}
-          value={
-            (this.props.price || this.getBestSellOffer() || null) &&
-            formatPrice(this.props.price as BigNumber || this.getBestSellOffer(), this.props.quoteToken)
-        }
-          guide={true}
-          placeholder={'0'}
-          className={styles.input}
-          disabled={this.props.stage === 'waitingForApproval'}
-        />
-        <InputGroupAddon className={styles.inputCurrencyAddon} onClick={this.handlePriceFocus}>
-          {this.props.quoteToken}
-        </InputGroupAddon>
+        <div className={styles.inputTail}>
+          <BigNumberInput
+            data-test-id="type-price"
+            ref={(el: any) =>
+              this.priceInput = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
+            }
+            type="text"
+            mask={createNumberMask({
+              allowDecimal: true,
+              decimalLimit: this.props.quoteTokenDigits,
+              prefix: ''
+            })}
+            onChange={this.handlePriceChange}
+            value={
+              (this.props.price || null) &&
+              formatPrice(this.props.price as BigNumber, this.props.quoteToken)
+            }
+            guide={true}
+            placeholder={'0'}
+            className={styles.input}
+            disabled={this.props.stage === 'waitingForApproval'}
+          />
+          <InputGroupAddon className={styles.inputCurrencyAddon} onClick={this.handlePriceFocus}>
+            {this.props.quoteToken}
+          </InputGroupAddon>
+        </div>
       </InputGroup>
     );
   }
@@ -474,27 +463,29 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         <InputGroupAddon border="right" className={styles.inputHeader}>
           Slippage limit
         </InputGroupAddon>
-        <BigNumberInput
-          data-test-id="type-price"
-          type="text"
-          mask={createNumberMask({
-            allowDecimal: true,
-            decimalLimit: 5,
-            prefix: ''
-          })}
-          onChange={this.handleSlippageLimitChange}
-          value={
-            (this.props.slippageLimit || null) &&
-            formatPrice(this.props.slippageLimit as BigNumber, this.props.quoteToken)
-          }
-          guide={true}
-          placeholder={'0'}
-          className={styles.input}
-          disabled={!enabled}
-        />
-        <InputGroupAddon className={styles.inputPercentAddon}>
-          %
-        </InputGroupAddon>
+        <div className={styles.inputTail}>
+          <BigNumberInput
+            data-test-id="type-price"
+            type="text"
+            mask={createNumberMask({
+              allowDecimal: true,
+              decimalLimit: 5,
+              prefix: ''
+            })}
+            onChange={this.handleSlippageLimitChange}
+            value={
+              (this.props.slippageLimit || null) &&
+              formatPrice(this.props.slippageLimit as BigNumber, this.props.quoteToken)
+            }
+            guide={true}
+            placeholder={'0'}
+            className={styles.input}
+            disabled={!enabled}
+          />
+          <InputGroupAddon className={styles.inputPercentAddon}>
+            %
+          </InputGroupAddon>
+        </div>
       </InputGroup>
     );
   }

@@ -16,18 +16,10 @@
     border-left: 1px solid $grey-light;
   }
 
-  & > *:nth-child(2) {
-    border-left: 1px solid $grey-light;
-  }
-
   & > *:last-child {
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
     border-right: 1px solid $grey-light;
-  }
-
-  &:hover > *:nth-child(2), &:hover > *:last-child {
-    border-color: $button-border-hover;
   }
 }
 
