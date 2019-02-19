@@ -161,7 +161,7 @@ export class WrapUnwrapFormView
     return (
       <div>
         <InputGroup hasError={ (state.messages || []).length > 0}>
-          <InputGroupAddon border="right" className={styles.inputHeader}>
+          <InputGroupAddon className={styles.inputHeader}>
             Amount
           </InputGroupAddon>
 
@@ -182,7 +182,7 @@ export class WrapUnwrapFormView
               formatAmount(state.amount as BigNumber, 'ETH')
             }
             guide={true}
-            placeholderChar={' '}
+            placeholder={'0'}
             disabled={state.progress !== undefined }
           />
 

@@ -71,8 +71,7 @@
           bg: $grey-darkest,
           border-color: $grey-light,
           color-hover: $font-color-base,
-          border-color-hover: lighten($grey-light, 2%),
-          bg-hover: lighten($grey-light, 5%)
+    border-color-hover: lighten($button-border-hover, 2%),
   ));
 }
 
@@ -93,7 +92,9 @@
 
 .green {
   opacity: 0.99; // in buttonGroup it makes this button stand out
-                 // in front of buttons next to it, so both left and right border are visible
+  font-weight: 600;
+  letter-spacing: .4px;
+  // in front of buttons next to it, so both left and right border are visible
   @include button((
           color: $font-color-base,
           bg: $green,
@@ -107,7 +108,9 @@
 
 .red {
   opacity: 0.99; // in buttonGroup it makes this button stand out
-                 // in front of buttons next to it, so both left and right border are visible
+  font-weight: 600;
+  letter-spacing: .4px;
+  // in front of buttons next to it, so both left and right border are visible
   @include button((
           color: $font-color-base,
           bg: $red,

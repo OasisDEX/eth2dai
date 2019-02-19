@@ -3,9 +3,32 @@
 
 .inputGroup {
   display: flex;
-  border: 1px solid $grey-light;
   background-color: $grey-darkest;
-  border-radius: 2px;
+
+  & > * {
+    border-top: 1px solid $grey-light;
+    border-bottom: 1px solid $grey-light;
+  }
+
+  & > *:first-child {
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-left: 1px solid $grey-light;
+  }
+
+  & > *:nth-child(2) {
+    border-left: 1px solid $grey-light;
+  }
+
+  & > *:last-child {
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-right: 1px solid $grey-light;
+  }
+
+  &:hover > *:nth-child(2), &:hover > *:last-child {
+    border-color: $button-border-hover;
+  }
 }
 
 .addon {

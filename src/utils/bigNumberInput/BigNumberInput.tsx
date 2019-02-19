@@ -1,4 +1,4 @@
-import  { BigNumber } from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
 import { default as MaskedInput } from 'react-text-mask';
@@ -15,6 +15,7 @@ export class BigNumberInput extends React.Component<any> {
   public render() {
     const currentValue: string | undefined = this.props.value;
     let value: string | undefined;
+    console.log('Current value is:', currentValue);
     if (
       this.lastValue &&
       currentValue &&
