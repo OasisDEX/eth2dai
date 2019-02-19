@@ -85,6 +85,6 @@ export const Money = (props: FormatAmountProps) => {
   return (<span className={className} style={style}>
     <FormatAmount {...otherProps} />
     &nbsp;
-    <Currency value={otherProps.token}/>
+    <Currency theme="semi-bold" value={otherProps.token}/>
   </span>);
 };

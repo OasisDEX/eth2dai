@@ -16,3 +16,15 @@
 :global(::placeholder) {
   color: $grey-light;
 }
+
+:global(.bold) {
+  font-weight: 700;
+}
+
+:global(.semi-bold) {
+  font-weight: 600;
+}
+
+:global(.medium) {
+  font-weight: 500;
+}

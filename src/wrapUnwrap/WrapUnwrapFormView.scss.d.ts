@@ -14,6 +14,7 @@ export const warningIcon: string;
 export const warningText: string;
 export const buttons: string;
 export const inputHeader: string;
+export const inputTail: string;
 export const inputCurrencyAddon: string;
 export const panel: string;
 export const panelBody: string;

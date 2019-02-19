@@ -63,6 +63,6 @@ export const BoundarySpan = ({ children, value, middleValue = zero, middleAs = '
   return (<span>{children}</span>);
 };
 
-export const Currency = ({ value }: { value: string }) => (
-  <span className={styles.currency}>{value}</span>
+export const Currency = ({ value, theme = 'none' }: { value: string, theme?: 'bold' | 'semi-bold' | 'medium' | 'none' }) => (
+  <span className={classnames(styles.currency, theme)}>{value}</span>
 );

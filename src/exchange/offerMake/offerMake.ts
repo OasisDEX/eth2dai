@@ -410,8 +410,14 @@ function applyChange(state: OfferFormState,
         dustLimitQuote: change.dustLimitQuote
       };
     case FormChangeKind.orderbookChange:
+      let price = state.price;
+      if (!state.price && change.orderbook && change.orderbook.sell[0]) {
+        price = change.orderbook.sell[0].price;
+      }
+
       return {
         ...state,
+        price,
         orderbook: change.orderbook
       };
     case FormChangeKind.balancesChange:

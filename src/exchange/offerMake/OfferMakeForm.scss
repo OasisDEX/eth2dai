@@ -93,7 +93,7 @@
 
 // ---------- input group modifiers
 .inputHeader {
-  flex-basis: 94px;
+  width: 94px;
   flex-grow: 2;
   flex-shrink: 0;
   padding: 10px 16px;
@@ -102,6 +102,16 @@
   @include media-breakpoint-down(sm){
     padding: 10px;
     flex-basis: 80px;
+  }
+}
+
+.inputTail {
+  display: inline-flex;
+  border-left: 1px solid $grey-light;
+  width: 100%;
+
+  &:hover {
+    border-color: $button-border-hover;
   }
 }
 
