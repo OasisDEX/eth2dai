@@ -84,6 +84,7 @@
 
 .green {
   font-weight: 600;
+  opacity: .99;
   @include button((
           color: $font-color-base,
           bg: $green,
@@ -97,6 +98,8 @@
 
 .red {
   font-weight: 600;
+  opacity: .99;
+
   @include button((
           color: $font-color-base,
           bg: $red,
