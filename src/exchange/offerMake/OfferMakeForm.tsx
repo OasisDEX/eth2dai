@@ -1,9 +1,11 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { Link } from 'react-router-dom';
 import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
 
 import { tokens } from '../../blockchain/config';
+import { routerContext } from '../../Main';
 import { BigNumberInput } from '../../utils/bigNumberInput/BigNumberInput';
 import { FormChangeKind, OfferMatchType } from '../../utils/form';
 import { formatAmount, formatPrice } from '../../utils/formatters/format';
@@ -543,7 +545,11 @@ function messageContent(msg: Message) {
     case MessageKind.noAllowance:
       return <span>
         {`Unlock ${msg.token} for Trading in the `}
-        <a href="/balances" style={{ whiteSpace: 'nowrap' }}>Balances Page</a>
+        <routerContext.Consumer>
+        { ({ rootUrl }) =>
+          <Link to={`${rootUrl}balances`} style={{ whiteSpace: 'nowrap' }}>Balances Page</Link>
+        }
+        </routerContext.Consumer>
       </span>;
     case MessageKind.insufficientAmount:
       return  <>

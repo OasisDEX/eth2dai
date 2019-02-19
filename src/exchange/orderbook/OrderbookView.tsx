@@ -5,7 +5,7 @@ import * as styles from './OrderbookView.scss';
 
 import { default as MediaQuery } from 'react-responsive';
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
-import { FormatAmount, FormatPrice } from '../../utils/formatters/Formatters';
+import { FormatAmount, FormatPriceOrderbook } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { LoadableStatus, LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
@@ -41,12 +41,10 @@ export class OrderbookView extends React.Component<Props> {
   }
 
   public enter = () => {
-    console.log('Entering...');
     this.center();
   }
 
   public exit = () => {
-    console.log('Exiting...');
     setTimeout(() => {
       this.center();
     });
@@ -167,7 +165,7 @@ export class OrderbookView extends React.Component<Props> {
         onClick={parent.takeOffer(offer)}>
         <td data-test-id="price">
           <SellBuySpan type={kind}>
-            <FormatPrice value={offer.price} token={offer.quoteToken}/>
+            <FormatPriceOrderbook value={offer.price} token={offer.quoteToken}/>
           </SellBuySpan>
         </td>
         <td data-test-id="amount">

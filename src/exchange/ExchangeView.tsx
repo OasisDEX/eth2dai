@@ -104,7 +104,7 @@ export class ExchangeView extends React.Component<ExchangeViewProps> {
                  />
             )}
           />
-          <Redirect push={true} from={'/exchange'} to={`/exchange/${tp.base}/${tp.quote}`} />
+          <Redirect push={false} from={'/exchange'} to={`/exchange/${tp.base}/${tp.quote}`} />
         </Switch>
       </div>
     );
