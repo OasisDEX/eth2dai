@@ -23,7 +23,10 @@ import {
   ManualChange,
   Message,
   MessageKind,
-  OfferFormState, OfferMakeChangeKind, PickerOpenChange, SlippageLimitChange,
+  OfferFormState,
+  OfferMakeChangeKind,
+  PickerOpenChange,
+  SlippageLimitChange,
 } from './offerMake';
 import * as styles from './OfferMakeForm.scss';
 
@@ -326,12 +329,12 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         <div className={styles.summary}>
           <span><Muted>Total</Muted></span>
           <span>
-              {this.props.total && <FormatAmount
-                value={this.props.total} token={this.props.quoteToken}
-              />}
+              <FormatAmount
+                value={this.props.total || new BigNumber(0)} token={this.props.quoteToken}
+              />
             &#x20;
-            {this.props.quoteToken}
-            </span>
+            <Currency value={this.props.quoteToken}/>
+          </span>
         </div>
         <Error field="total" messages={this.props.messages} />
       </React.Fragment>
@@ -379,7 +382,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
     <InputGroup hasError={ (this.props.messages || [])
                                     .filter((message: Message) => message.field === 'amount')
                                     .length > 0}>
-      <InputGroupAddon border="right" className={styles.inputHeader}>Amount</InputGroupAddon>
+      <InputGroupAddon className={styles.inputHeader}>Amount</InputGroupAddon>
       <BigNumberInput
         data-test-id="type-amount"
         ref={ (el: any) =>
@@ -397,7 +400,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           formatAmount(this.props.amount as BigNumber, this.props.baseToken)
         }
         guide={true}
-        placeholderChar={' '}
+        placeholder={'0'}
         className={styles.input}
         disabled={this.props.stage === 'waitingForApproval'}
       />
@@ -409,15 +412,29 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
     );
   }
 
+  private getBestSellOffer = () => {
+    const orderBook = this.props.orderbook;
+
+    if (orderBook) {
+      const bestSellOffer = orderBook.sell[0];
+
+      if (bestSellOffer) {
+        return bestSellOffer.price;
+      }
+    }
+
+    return null;
+  }
+
   private priceGroup() {
     return (
       <InputGroup hasError={ (this.props.messages || [])
           .filter((message: Message) => message.field === 'price')
           .length > 0}>
-      <InputGroupAddon border="right" className={styles.inputHeader}>Price</InputGroupAddon>
-      <BigNumberInput
+        <InputGroupAddon className={styles.inputHeader}>Price</InputGroupAddon>
+        <BigNumberInput
           data-test-id="type-price"
-          ref={ (el: any) =>
+          ref={(el: any) =>
             this.priceInput = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
           }
           type="text"
@@ -427,20 +444,19 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
             prefix: ''
           })}
           onChange={this.handlePriceChange}
-        value={
-          (this.props.price || null) &&
-          formatPrice(this.props.price as BigNumber, this.props.quoteToken)
+          value={
+            (this.props.price || this.getBestSellOffer() || null) &&
+            formatPrice(this.props.price as BigNumber || this.getBestSellOffer(), this.props.quoteToken)
         }
-        guide={true}
-        placeholderChar={' '}
-        className={styles.input}
-        disabled={this.props.stage === 'waitingForApproval'}
+          guide={true}
+          placeholder={'0'}
+          className={styles.input}
+          disabled={this.props.stage === 'waitingForApproval'}
         />
-      <InputGroupAddon className={styles.inputCurrencyAddon} onClick={ this.handlePriceFocus }>
-        {this.props.quoteToken}
+        <InputGroupAddon className={styles.inputCurrencyAddon} onClick={this.handlePriceFocus}>
+          {this.props.quoteToken}
         </InputGroupAddon>
-
-    </InputGroup>
+      </InputGroup>
     );
   }
 
@@ -472,7 +488,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
             formatPrice(this.props.slippageLimit as BigNumber, this.props.quoteToken)
           }
           guide={true}
-          placeholderChar={' '}
+          placeholder={'0'}
           className={styles.input}
           disabled={!enabled}
         />

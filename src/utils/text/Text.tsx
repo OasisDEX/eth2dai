@@ -64,5 +64,5 @@ export const BoundarySpan = ({ children, value, middleValue = zero, middleAs = '
 };
 
 export const Currency = ({ value }: { value: string }) => (
-  <span style={{ whiteSpace: 'nowrap' }}>{value}</span>
+  <span className={styles.currency}>{value}</span>
 );

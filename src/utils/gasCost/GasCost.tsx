@@ -19,8 +19,8 @@ export const GasCost = (props: HasGasEstimation) => {
       const usd = gasEstimationUsd || new BigNumber(0);
       const eth = gasEstimationEth || new BigNumber(0);
       return (<span>
-        <Muted>~<Money value={usd} token="USD" /></Muted>
-        <Money value={eth} token="ETH" style={{ marginLeft: '0.75em' }} />
+        <Muted>~<Money value={eth} token="ETH"/></Muted>
+        <Money value={usd} token="USD" style={{ marginLeft: '0.75em' }}/>
       </span>);
   }
 };
