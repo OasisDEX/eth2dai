@@ -219,6 +219,7 @@ export class WrapUnwrapFormView
           Close
         </Button>
         <Button
+          className={styles.btn}
           data-test-id="proceed"
           disabled={!state.readyToProceed || state.progress !== undefined}
           onClick={() => state.proceed(state)}

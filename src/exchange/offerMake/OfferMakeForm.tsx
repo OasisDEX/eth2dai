@@ -326,7 +326,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   private total() {
     return (
       <React.Fragment>
-        <div className={styles.summary}>
+        <div data-test-id="type-total" className={styles.summary}>
           <span><Muted>Total</Muted></span>
           <span>
               <FormatAmount
@@ -460,7 +460,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
           .length > 0}
         disabled={!enabled}
       >
-        <InputGroupAddon border="right" className={styles.inputHeader}>
+        <InputGroupAddon className={styles.inputHeader}>
           Slippage limit
         </InputGroupAddon>
         <div className={styles.inputTail}>

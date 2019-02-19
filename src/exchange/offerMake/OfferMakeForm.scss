@@ -36,7 +36,6 @@
   &:disabled,
   &:disabled:hover {
     background-color: transparent;
-    border-color: rgba($grey-light, 0.2);
     color: $font-color-base;
     opacity: 1;
   }
@@ -79,7 +78,7 @@
 }
 
 .confirmButton {
-  font-size: $font-size-base;
+  font-size: 14px;
   height: 35px;
   margin-top: 2px;
   width: 100%;
@@ -93,7 +92,7 @@
 
 // ---------- input group modifiers
 .inputHeader {
-  width: 94px;
+  flex-basis: 94px;
   flex-grow: 2;
   flex-shrink: 0;
   padding: 10px 16px;
