@@ -15,7 +15,6 @@ export class BigNumberInput extends React.Component<any> {
   public render() {
     const currentValue: string | undefined = this.props.value;
     let value: string | undefined;
-    console.log('Current value is:', currentValue);
     if (
       this.lastValue &&
       currentValue &&

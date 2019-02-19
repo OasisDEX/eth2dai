@@ -71,6 +71,10 @@
   align-items: center;
 }
 
+.btn:disabled {
+  color: #87878c;
+}
+
 // ---------- input group modifiers
 .inputHeader {
   flex-basis: 94px;
