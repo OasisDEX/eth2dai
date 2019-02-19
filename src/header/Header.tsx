@@ -42,6 +42,7 @@ export class Header extends React.Component {
           <section className={classnames(section, sectionNavigation)}>
             <nav className={nav}>
               <ul className={list}>
+                <HeaderNavLink to={`${rootUrl}instant`} name="Instant"/>
                 <HeaderNavLink to={`${rootUrl}exchange`} name="Exchange"/>
                 <HeaderNavLink to={`${rootUrl}balances`} name="Balances"/>
               </ul>
