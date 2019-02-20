@@ -12,12 +12,14 @@ import {
 } from './wrapUnwrapForm';
 
 const defaultCalls = {
-  offerMakeEstimateGas: () => of(20),
+  instantOrder: null as any,
+  instantOrderEstimateGas: () => of(40),
   offerMake: null as any,
-  cancelOffer: null as any,
-  cancelOfferEstimateGas: null as any,
+  offerMakeEstimateGas: () => of(20),
   offerMakeDirect: null as any,
   offerMakeDirectEstimateGas: null as any,
+  cancelOffer: null as any,
+  cancelOfferEstimateGas: null as any,
   setupMTProxy: null as any,
   setupMTProxyEstimateGas: null as any,
   approve: null as any,

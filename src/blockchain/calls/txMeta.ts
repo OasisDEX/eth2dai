@@ -7,7 +7,8 @@ export enum TxMetaKind {
   approveWallet = 'approveWallet',
   disapproveWallet = 'disapproveWallet',
   wrap = 'wrap',
-  unwrap = 'unwrap'
+  unwrap = 'unwrap',
+  instantOrder = 'instantOrder',
 }
 
 export type TxMeta = {
@@ -36,4 +37,10 @@ export type TxMeta = {
 } | {
   kind: TxMetaKind.unwrap,
   amount: BigNumber,
+} | {
+  kind: TxMetaKind.instantOrder,
+  buyAmount: BigNumber,
+  sellAmount: BigNumber,
+  buyToken: string,
+  sellToken: string,
 });

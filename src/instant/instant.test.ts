@@ -5,6 +5,7 @@ setupFakeWeb3ForTesting();
 import { BigNumber } from 'bignumber.js';
 import { omit } from 'lodash';
 import { of } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 import { Calls$ } from '../blockchain/calls/calls';
 import { createFakeOrderbook, emptyOrderBook } from '../exchange/depthChart/fakeOrderBook';
@@ -18,12 +19,14 @@ function snapshotify(object: any): any {
 const tradingPair = { base: 'WETH', quote: 'DAI' };
 
 const defaultCalls = {
-  offerMakeEstimateGas: () => of(20),
+  instantOrder: null as any,
+  instantOrderEstimateGas: () => of(40),
   offerMake: null as any,
-  cancelOffer: null as any,
-  cancelOfferEstimateGas: null as any,
+  offerMakeEstimateGas: () => of(20),
   offerMakeDirect: null as any,
   offerMakeDirectEstimateGas: () => of(30),
+  cancelOffer: null as any,
+  cancelOfferEstimateGas: null as any,
   setupMTProxy: null as any,
   setupMTProxyEstimateGas: null as any,
   approve: null as any,
@@ -111,5 +114,30 @@ test('buy a bit', done => {
   controller.subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
     done();
+  });
+});
+
+test('complex scenario', done => {
+  const controller = controllerWithFakeOrderBook(...fakeOrderBook);
+  const { change } = unpack(controller);
+
+  controller.pipe(first()).subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+    done();
+  });
+
+  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(180) });
+  controller.pipe(first()).subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+  });
+
+  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(2) });
+  controller.pipe(first()).subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+  });
+
+  change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+  controller.pipe(first()).subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
   });
 });

@@ -22,12 +22,14 @@ function snapshotify(object: any): any {
 const tradingPair = { base: 'WETH', quote: 'DAI' };
 
 const defaultCalls = {
-  offerMakeEstimateGas: () => of(20),
+  instantOrder: null as any,
+  instantOrderEstimateGas: () => of(40),
   offerMake: null as any,
-  cancelOffer: null as any,
-  cancelOfferEstimateGas: null as any,
+  offerMakeEstimateGas: () => of(20),
   offerMakeDirect: null as any,
   offerMakeDirectEstimateGas: () => of(30),
+  cancelOffer: null as any,
+  cancelOfferEstimateGas: null as any,
   setupMTProxy: null as any,
   setupMTProxyEstimateGas: null as any,
   approve: null as any,
