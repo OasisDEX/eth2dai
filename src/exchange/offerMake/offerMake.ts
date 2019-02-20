@@ -205,7 +205,7 @@ function offerMakeDirectData(state: OfferFormState): OfferMakeDirectData {
   };
 }
 
-function directMatchTotal(amount: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
+export function directMatchTotal(amount: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
   if (!amount) return undefined;
   let baseAmount = amount;
   let quoteAmount = new BigNumber(0);
