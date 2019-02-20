@@ -6,13 +6,14 @@ import { Balances, DustLimits } from '../balances/balances';
 import { /*Calls, */Calls$ } from '../blockchain/calls/calls';
 import { tokens } from '../blockchain/config';
 // import { TxState, TxStatus } from '../blockchain/transactions';
-import { directMatchTotal } from '../exchange/offerMake/offerMake';
 import { /*Offer, */OfferType, Orderbook } from '../exchange/orderbook/orderbook';
 import { TradingPair } from '../exchange/tradingPair/tradingPair';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
   AllowanceChange,
   BalancesChange,
+  calculateAmount,
+  calculateTotal,
   DustLimitChange,
   FormResetChange,
   GasEstimationStatus,
@@ -146,7 +147,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         sellAmount: change.value,
-        buyAmount: directMatchTotal(change.value, state.orderbook.buy),
+        buyAmount: calculateTotal(change.value, state.orderbook.buy),
       };
     case FormChangeKind.buyAmountFieldChange:
       if (!state.orderbook) {
@@ -155,7 +156,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         buyAmount: change.value,
-        sellAmount: undefined, // TODO
+        sellAmount: calculateAmount(change.value, state.orderbook.buy),
       };
     case FormChangeKind.gasPriceChange:
       return {

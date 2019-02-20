@@ -304,3 +304,45 @@ export function doGasEstimation<S extends HasGasEstimation>(
       gasEstimationStatus: GasEstimationStatus.calculating } as S)
   );
 }
+
+export function calculateTotal(amount: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
+  if (!amount) return undefined;
+  let base = amount;
+  let quote = new BigNumber(0);
+  for (const offer of orders) {
+    if (base.lte(new BigNumber(0))) {
+      break;
+    }
+    if (base.gte(offer.baseAmount)) {
+      quote = quote.plus(offer.quoteAmount);
+      base = base.minus(offer.baseAmount);
+    } else {
+      quote = quote.plus(
+        offer.quoteAmount.times(base).dividedBy(offer.baseAmount)
+      );
+      base = new BigNumber(0);
+    }
+  }
+  return !base.isZero() ? undefined : quote;
+}
+
+export function calculateAmount(total: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
+  if (!total) return undefined;
+  let base = new BigNumber(0);
+  let quote = total;
+  for (const offer of orders) {
+    if (quote.lte(new BigNumber(0))) {
+      break;
+    }
+    if (quote.gte(offer.quoteAmount)) {
+      quote = quote.minus(offer.quoteAmount);
+      base = base.plus(offer.baseAmount);
+    } else {
+      base = base.plus(
+        offer.baseAmount.times(quote).dividedBy(offer.quoteAmount)
+      );
+      quote = new BigNumber(0);
+    }
+  }
+  return !quote.isZero() ? undefined : base;
+}
