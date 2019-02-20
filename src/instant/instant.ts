@@ -1,9 +1,11 @@
 import { BigNumber } from 'bignumber.js';
+import { curry } from 'ramda';
 import { merge, Observable, Subject } from 'rxjs';
-import { map, scan, shareReplay, startWith } from 'rxjs/operators';
+import { map, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
 import { Balances, DustLimits } from '../balances/balances';
-import { /*Calls, */Calls$ } from '../blockchain/calls/calls';
+import { Calls, Calls$ } from '../blockchain/calls/calls';
+import { InstantOrderData } from '../blockchain/calls/instant';
 import { tokens } from '../blockchain/config';
 // import { TxState, TxStatus } from '../blockchain/transactions';
 import { /*Offer, */OfferType, Orderbook } from '../exchange/orderbook/orderbook';
@@ -12,6 +14,7 @@ import { combineAndMerge } from '../utils/combineAndMerge';
 import {
   calculateAmount,
   calculateTotal,
+  doGasEstimation,
   FormResetChange,
   GasEstimationStatus,
   HasGasEstimation,
@@ -21,8 +24,6 @@ import {
   toGasPriceChange,
   toOrderbookChange$,
 } from '../utils/form';
-// import { firstOfOrTrue } from '../utils/operators';
-// import { zero } from '../utils/zero';
 
 export enum FormStage {
   editing = 'editing',
@@ -160,10 +161,25 @@ export type StageChange =
 
 export type InstantFormChange = ManualChange | EnvironmentChange | StageChange;
 
+function instantOrderData(state: InstantFormState): InstantOrderData {
+  return {
+    buyAmount: state.buyAmount as BigNumber,
+    buyToken: state.buyToken,
+    sellAmount: state.sellAmount as BigNumber,
+    sellToken: state.sellToken,
+  };
+}
+
 function applyChange(state: InstantFormState, change: InstantFormChange): InstantFormState {
   switch (change.kind) {
     case FormChangeKind.pairChange:
-      return { ...state, buyToken: change.buyToken, sellToken: change.sellToken };
+      return {
+        ...state,
+        buyToken: change.buyToken,
+        sellToken: change.sellToken,
+        buyAmount: undefined,
+        sellAmount: undefined,
+      };
     case FormChangeKind.sellAmountFieldChange:
       if (!state.orderbook) {
         return state;
@@ -221,6 +237,43 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
   return state;
 }
 
+function addGasEstimation(theCalls$: Calls$,
+                          state: InstantFormState): Observable<InstantFormState> {
+  return doGasEstimation(theCalls$, state, (calls: Calls) =>
+    state.messages.length !== 0 ||
+    !state.buyAmount ||
+    !state.sellAmount ?
+      undefined :
+      calls.instantOrderEstimateGas(instantOrderData(state))
+  );
+}
+
+function preValidate(state: InstantFormState): InstantFormState {
+  if (state.stage !== FormStage.editing) {
+    return state;
+  }
+
+  const messages: Message[] = [];
+
+  return {
+    ...state,
+    messages,
+    gasEstimationStatus: GasEstimationStatus.unset,
+  } as InstantFormState;
+}
+
+function postValidate(state: InstantFormState): InstantFormState {
+  if (state.stage !== FormStage.editing) {
+    return state;
+  }
+  if (state.gasEstimationStatus === GasEstimationStatus.calculated &&
+    state.buyAmount && state.sellAmount &&
+    state.messages.length === 0) {
+    return { ...state, stage: FormStage.readyToProceed };
+  }
+  return { ...state, stage: FormStage.editing };
+}
+
 export function createFormController$(
   params: {
     gasPrice$: Observable<BigNumber>;
@@ -268,6 +321,9 @@ export function createFormController$(
     environmentChange$,
   ).pipe(
     scan(applyChange, initialState),
+    map(preValidate),
+    switchMap(curry(addGasEstimation)(params.calls$)),
+    map(postValidate),
     startWith(initialState),
     shareReplay(1),
   );

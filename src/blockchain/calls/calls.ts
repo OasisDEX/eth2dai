@@ -7,6 +7,7 @@ import { approveWallet, disapproveWallet } from './approveCalls';
 import {
   estimateGasCurried, sendTransactionCurried, sendTransactionWithGasConstraintsCurried
 } from './callsHelpers';
+import { instantOrder } from './instant';
 import { cancelOffer, offerMake, offerMakeDirect } from './offerMake';
 import { unwrap, wrap } from './wrapUnwrapCalls';
 
@@ -28,6 +29,8 @@ function calls([context, account]: [NetworkConfig, string]) {
     wrapEstimateGas: estimateGas(wrap),
     unwrap: sendTransaction(unwrap),
     unwrapEstimateGas: estimateGas(unwrap),
+    instantOrder: sendTransaction(instantOrder),
+    instantOrderEstimateGas: estimateGas(instantOrder),
   };
 }
 
