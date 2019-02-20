@@ -109,10 +109,10 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                         }
                         { this.props.kind === MyTradesKind.open &&
                         trade.status !== undefined &&
-                        <td className={styles.right}>
-                        <span className={classnames('hide-md', styles.statusText)}>
-                          pending
-                        </span>
+                        <td className={classnames(styles.status, styles.right)}>
+                          <span className={classnames('hide-md', styles.statusText)}>
+                            pending
+                          </span>
                           <ProgressIcon className={styles.statusProgress}/>
                         </td>
                         }

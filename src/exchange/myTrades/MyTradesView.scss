@@ -46,6 +46,13 @@
   @include tableColumnsWidth(60px 100px 100px 100px 90px, lg);
 }
 
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
 .statusText {
   display: inline-block;
   margin-right: 1em;
@@ -56,5 +63,4 @@
 .statusProgress {
   display: inline-block;
   position: relative;
-  top: 2px;
 }
