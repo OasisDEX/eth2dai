@@ -28,7 +28,6 @@
 .currency {
   @include fontMontserratMedium;
   white-space: nowrap;
-  font-size: 15px;
 
   &.highlight {
     font-weight: 600;
