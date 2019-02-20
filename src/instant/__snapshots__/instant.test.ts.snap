@@ -1,0 +1,153 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`buy a bit 1`] = `
+Object {
+  "buyAllowance": undefined,
+  "buyAmount": "300",
+  "buyToken": "DAI",
+  "buyTokenDigits": 2,
+  "etherPriceUsd": "1",
+  "gasEstimationStatus": "unset",
+  "gasPrice": "0.01",
+  "kind": undefined,
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "180",
+        "quoteAmount": "1800",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "sell": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "200",
+        "quoteAmount": "2000",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "spread": "20",
+  },
+  "sellAllowance": undefined,
+  "sellAmount": undefined,
+  "sellToken": "WETH",
+  "sellTokenDigits": 5,
+  "stage": "editing",
+  "submit": null,
+}
+`;
+
+exports[`change pair 1`] = `
+Object {
+  "buyAllowance": undefined,
+  "buyAmount": undefined,
+  "buyToken": "WETH",
+  "buyTokenDigits": 2,
+  "etherPriceUsd": "1",
+  "gasEstimationStatus": "unset",
+  "gasPrice": "0.01",
+  "kind": undefined,
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [],
+    "sell": Array [],
+    "spread": undefined,
+  },
+  "sellAllowance": undefined,
+  "sellAmount": undefined,
+  "sellToken": "DAI",
+  "sellTokenDigits": 5,
+  "stage": "editing",
+  "submit": null,
+}
+`;
+
+exports[`initial state 1`] = `
+Object {
+  "buyAllowance": undefined,
+  "buyAmount": undefined,
+  "buyToken": "DAI",
+  "buyTokenDigits": 2,
+  "etherPriceUsd": "1",
+  "gasEstimationStatus": "unset",
+  "gasPrice": "0.01",
+  "kind": undefined,
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [],
+    "sell": Array [],
+    "spread": undefined,
+  },
+  "sellAllowance": undefined,
+  "sellAmount": undefined,
+  "sellToken": "WETH",
+  "sellTokenDigits": 5,
+  "stage": "editing",
+  "submit": null,
+}
+`;
+
+exports[`sell a bit 1`] = `
+Object {
+  "buyAllowance": undefined,
+  "buyAmount": "180",
+  "buyToken": "DAI",
+  "buyTokenDigits": 2,
+  "etherPriceUsd": "1",
+  "gasEstimationStatus": "unset",
+  "gasPrice": "0.01",
+  "kind": undefined,
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "180",
+        "quoteAmount": "1800",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "sell": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "200",
+        "quoteAmount": "2000",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "spread": "20",
+  },
+  "sellAllowance": undefined,
+  "sellAmount": "1",
+  "sellToken": "WETH",
+  "sellTokenDigits": 5,
+  "stage": "editing",
+  "submit": null,
+}
+`;
