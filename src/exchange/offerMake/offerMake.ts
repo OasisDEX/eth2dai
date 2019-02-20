@@ -267,6 +267,19 @@ function applyChange(state: OfferFormState,
       if (change.matchType === OfferMatchType.direct && state.orderbook) {
         return directMatchState(state, {}, state.orderbook);
       }
+
+      if (change.matchType === OfferMatchType.limitOrder && state.orderbook && state.orderbook.sell[0]) {
+        const updatedPrice = applyChange(state, {
+          kind: FormChangeKind.priceFieldChange,
+          value: new BigNumber(state.orderbook.sell[0].price)
+        });
+
+        return {
+          ...updatedPrice,
+          matchType: change.matchType
+        };
+      }
+
       return {
         ...state,
         matchType: change.matchType,
