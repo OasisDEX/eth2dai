@@ -165,7 +165,7 @@ export class OrderbookView extends React.Component<Props> {
         onClick={parent.takeOffer(offer)}>
         <td data-test-id="price">
           <SellBuySpan type={kind}>
-            <FormatPriceOrderbook value={offer.price} token={offer.quoteToken}/>
+            <FormatPriceOrderbook value={offer.price} token={offer.quoteToken} kind={kind}/>
           </SellBuySpan>
         </td>
         <td data-test-id="amount">
