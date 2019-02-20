@@ -1,4 +1,4 @@
-import { cypressVisitWithWeb3 } from '../utils/index';
+import { cypressVisitWithWeb3, multiply } from '../utils/index';
 
 import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
@@ -191,7 +191,3 @@ describe('Buy Order', () => {
     Trades.countIs(1);
   });
 });
-
-const multiply = (first: any, second: any): string => {
-  return (parseFloat(first) * parseFloat(second)).toString();
-};
