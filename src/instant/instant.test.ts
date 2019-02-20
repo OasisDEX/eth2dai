@@ -106,7 +106,7 @@ test('buy a bit', done => {
   const controller = controllerWithFakeOrderBook(...fakeOrderBook);
   const { change } = unpack(controller);
 
-  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(300) });
+  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
 
   controller.subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();

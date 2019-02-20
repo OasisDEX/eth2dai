@@ -3,7 +3,7 @@
 exports[`buy a bit 1`] = `
 Object {
   "buyAllowance": undefined,
-  "buyAmount": "300",
+  "buyAmount": "90",
   "buyToken": "DAI",
   "buyTokenDigits": 2,
   "etherPriceUsd": "1",
@@ -42,7 +42,7 @@ Object {
     "spread": "20",
   },
   "sellAllowance": undefined,
-  "sellAmount": undefined,
+  "sellAmount": "0.5",
   "sellToken": "WETH",
   "sellTokenDigits": 5,
   "stage": "editing",
