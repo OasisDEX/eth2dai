@@ -2,14 +2,20 @@
 
 exports[`buy a bit 1`] = `
 Object {
-  "buyAllowance": undefined,
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "buyAllowance": true,
   "buyAmount": "90",
   "buyToken": "DAI",
   "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
   "etherPriceUsd": "1",
   "gasEstimationStatus": "unset",
   "gasPrice": "0.01",
-  "kind": undefined,
+  "kind": "buy",
   "messages": Array [],
   "orderbook": Object {
     "blockNumber": 1,
@@ -41,7 +47,7 @@ Object {
     ],
     "spread": "20",
   },
-  "sellAllowance": undefined,
+  "sellAllowance": true,
   "sellAmount": "0.5",
   "sellToken": "WETH",
   "sellTokenDigits": 5,
@@ -52,10 +58,16 @@ Object {
 
 exports[`change pair 1`] = `
 Object {
-  "buyAllowance": undefined,
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "buyAllowance": true,
   "buyAmount": undefined,
   "buyToken": "WETH",
   "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
   "etherPriceUsd": "1",
   "gasEstimationStatus": "unset",
   "gasPrice": "0.01",
@@ -67,7 +79,7 @@ Object {
     "sell": Array [],
     "spread": undefined,
   },
-  "sellAllowance": undefined,
+  "sellAllowance": true,
   "sellAmount": undefined,
   "sellToken": "DAI",
   "sellTokenDigits": 5,
@@ -78,10 +90,16 @@ Object {
 
 exports[`initial state 1`] = `
 Object {
-  "buyAllowance": undefined,
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "buyAllowance": true,
   "buyAmount": undefined,
   "buyToken": "DAI",
   "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
   "etherPriceUsd": "1",
   "gasEstimationStatus": "unset",
   "gasPrice": "0.01",
@@ -93,7 +111,7 @@ Object {
     "sell": Array [],
     "spread": undefined,
   },
-  "sellAllowance": undefined,
+  "sellAllowance": true,
   "sellAmount": undefined,
   "sellToken": "WETH",
   "sellTokenDigits": 5,
@@ -104,14 +122,20 @@ Object {
 
 exports[`sell a bit 1`] = `
 Object {
-  "buyAllowance": undefined,
+  "balances": Object {
+    "DAI": "10",
+    "WETH": "10",
+  },
+  "buyAllowance": true,
   "buyAmount": "180",
   "buyToken": "DAI",
   "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
   "etherPriceUsd": "1",
   "gasEstimationStatus": "unset",
   "gasPrice": "0.01",
-  "kind": undefined,
+  "kind": "sell",
   "messages": Array [],
   "orderbook": Object {
     "blockNumber": 1,
@@ -143,7 +167,7 @@ Object {
     ],
     "spread": "20",
   },
-  "sellAllowance": undefined,
+  "sellAllowance": true,
   "sellAmount": "1",
   "sellToken": "WETH",
   "sellTokenDigits": 5,
