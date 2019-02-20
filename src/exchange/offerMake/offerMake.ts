@@ -410,14 +410,8 @@ function applyChange(state: OfferFormState,
         dustLimitQuote: change.dustLimitQuote
       };
     case FormChangeKind.orderbookChange:
-      let price = state.price;
-      if (!state.price && change.orderbook && change.orderbook.sell[0]) {
-        price = change.orderbook.sell[0].price;
-      }
-
       return {
         ...state,
-        price,
         orderbook: change.orderbook
       };
     case FormChangeKind.balancesChange:
@@ -616,6 +610,18 @@ function prepareSubmit(calls$: Calls$): [
   return [submit, stageChange$];
 }
 
+const fetchBestSellOrder$ = (orderbook$: Observable<Orderbook>) => {
+  return orderbook$.pipe(
+    first(),
+    switchMap((orderbook: Orderbook) =>
+      of({
+        kind: FormChangeKind.priceFieldChange,
+        value: (orderbook.sell[0] ? orderbook.sell[0].price : undefined)
+      })
+    )
+  );
+};
+
 export function createFormController$(
   params: {
     gasPrice$: Observable<BigNumber>;
@@ -667,7 +673,8 @@ export function createFormController$(
   return merge(
     manualChange$,
     submitChange$,
-    environmentChange$
+    environmentChange$,
+    fetchBestSellOrder$(params.orderbook$)
   ).pipe(
     scan(applyChange, initialState),
     map(preValidate),

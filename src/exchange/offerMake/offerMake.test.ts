@@ -1,11 +1,8 @@
-import { setupFakeWeb3ForTesting } from '../../blockchain/web3';
-
-setupFakeWeb3ForTesting();
-
 import { BigNumber } from 'bignumber.js';
 import { omit } from 'lodash';
 import { of } from 'rxjs';
 import { throwError } from 'rxjs/internal/observable/throwError';
+import { setupFakeWeb3ForTesting } from '../../blockchain/web3';
 
 import { Calls$ } from '../../blockchain/calls/calls';
 import { TxState, TxStatus } from '../../blockchain/transactions';
@@ -14,6 +11,8 @@ import { unpack } from '../../utils/testHelpers';
 import { createFakeOrderbook, emptyOrderBook } from '../depthChart/fakeOrderBook';
 import { Offer, OfferType } from '../orderbook/orderbook';
 import { createFormController$, FormStage, MessageKind, OfferMakeChangeKind } from './offerMake';
+
+setupFakeWeb3ForTesting();
 
 function snapshotify(object: any): any {
   return omit(object, 'change');
@@ -195,7 +194,7 @@ test('calculate position in orderbook for sell', () => {
 
   change({ kind: FormChangeKind.kindChange, newKind: OfferType.sell });
   expect(unpack(controller).kind).toEqual(OfferType.sell);
-  expect(unpack(controller).position).toBeUndefined();
+  expect(unpack(controller).position).toEqual(new BigNumber(2));
 
   change({ kind: FormChangeKind.priceFieldChange, value: new BigNumber(3.5) });
   expect(unpack(controller).price).toEqual(new BigNumber(3.5));
