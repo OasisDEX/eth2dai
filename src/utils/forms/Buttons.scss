@@ -71,6 +71,7 @@
 
 .whiteOutlined {
   font-weight: 600; //semibold
+  opacity: .99;
 
   @include button((
           color: $font-color-base,
