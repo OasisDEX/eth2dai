@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { merge, Observable, Subject } from 'rxjs';
-import { scan, shareReplay, startWith } from 'rxjs/operators';
+import { map, scan, shareReplay, startWith } from 'rxjs/operators';
 
 import { Balances, DustLimits } from '../balances/balances';
 import { /*Calls, */Calls$ } from '../blockchain/calls/calls';
@@ -10,14 +10,13 @@ import { /*Offer, */OfferType, Orderbook } from '../exchange/orderbook/orderbook
 import { TradingPair } from '../exchange/tradingPair/tradingPair';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
-  AllowanceChange,
-  BalancesChange,
   calculateAmount,
   calculateTotal,
-  DustLimitChange,
   FormResetChange,
   GasEstimationStatus,
   HasGasEstimation,
+  toBalancesChange,
+  toDustLimitChange$,
   toEtherPriceUSDChange,
   toGasPriceChange,
   toOrderbookChange$,
@@ -90,6 +89,10 @@ export enum FormChangeKind {
   gasPriceChange = 'gasPrice',
   etherPriceUSDChange = 'etherPriceUSDChange',
   orderbookChange = 'orderbook',
+  sellAllowanceChange = 'sellAllowance',
+  buyAllowanceChange = 'buyAllowance',
+  balancesChange = 'balancesChange',
+  dustLimitChange = 'dustLimitChange',
 }
 export interface BuyAmountChange {
   kind: FormChangeKind.buyAmountFieldChange;
@@ -115,6 +118,27 @@ export interface EtherPriceUSDChange {
 export interface OrderbookChange {
   kind: FormChangeKind.orderbookChange;
   orderbook: Orderbook;
+}
+export interface AllowanceChange {
+  kind: FormChangeKind.buyAllowanceChange | FormChangeKind.sellAllowanceChange;
+  allowance: boolean;
+}
+export interface BalancesChange {
+  kind: FormChangeKind.balancesChange;
+  balances: Balances;
+}
+export interface DustLimitChange {
+  kind: FormChangeKind.dustLimitChange;
+  dustLimitBase: BigNumber;
+  dustLimitQuote: BigNumber;
+}
+function toAllowanceChange$(
+  kind: FormChangeKind.buyAllowanceChange | FormChangeKind.sellAllowanceChange,
+  token: string,
+  theAllowance$: (token: string) => Observable<boolean>): Observable<AllowanceChange> {
+  return theAllowance$(token).pipe(
+    map((allowance: boolean) => ({ kind, allowance } as AllowanceChange))
+  );
 }
 
 export type ManualChange =
@@ -146,6 +170,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       }
       return {
         ...state,
+        kind: OfferType.sell,
         sellAmount: change.value,
         buyAmount: calculateTotal(change.value, state.orderbook.buy),
       };
@@ -155,6 +180,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       }
       return {
         ...state,
+        kind: OfferType.buy,
         buyAmount: change.value,
         sellAmount: calculateAmount(change.value, state.orderbook.buy),
       };
@@ -174,6 +200,22 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         orderbook: change.orderbook
+      };
+    case FormChangeKind.buyAllowanceChange:
+      return { ...state, buyAllowance: change.allowance };
+    case FormChangeKind.sellAllowanceChange:
+      return { ...state, sellAllowance: change.allowance };
+    case FormChangeKind.balancesChange:
+      return {
+        ...state,
+        balances: change.balances,
+        gasEstimationStatus: GasEstimationStatus.unset
+      };
+    case FormChangeKind.dustLimitChange:
+      return {
+        ...state,
+        dustLimitBase: change.dustLimitBase,
+        dustLimitQuote: change.dustLimitQuote
       };
   }
   return state;
@@ -198,6 +240,10 @@ export function createFormController$(
     toGasPriceChange(params.gasPrice$),
     toEtherPriceUSDChange(params.etherPriceUsd$),
     toOrderbookChange$(params.orderbook$),
+    toDustLimitChange$(params.dustLimits$, tradingPair.base, tradingPair.quote),
+    toAllowanceChange$(FormChangeKind.buyAllowanceChange, tradingPair.base, params.allowance$),
+    toAllowanceChange$(FormChangeKind.sellAllowanceChange, tradingPair.quote, params.allowance$),
+    toBalancesChange(params.balances$),
   );
 
   const initialState: InstantFormState = {
