@@ -333,7 +333,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
                 value={this.props.total || new BigNumber(0)} token={this.props.quoteToken}
               />
             &#x20;
-            <Currency theme="semi-bold" value={this.props.quoteToken}/>
+            <Currency value={this.props.quoteToken}/>
           </span>
         </div>
         <Error field="total" messages={this.props.messages} />

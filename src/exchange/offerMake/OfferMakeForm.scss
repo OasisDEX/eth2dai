@@ -68,6 +68,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 15px;
 
   @include media-breakpoint-down(sm) {
     font-size: 14px;
