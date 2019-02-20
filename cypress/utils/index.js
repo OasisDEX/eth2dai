@@ -66,3 +66,7 @@ export const mineBlock = rpcCommand("evm_mine");
 export const increaseTime = rpcCommand("evm_increaseTime");
 export const saveBlockchain = rpcCommand("evm_snapshot");
 export const restoreBlockchain = rpcCommand("evm_revert");
+
+export const multiply = (first, second) => {
+  return (parseFloat(first) * parseFloat(second)).toString();
+};
