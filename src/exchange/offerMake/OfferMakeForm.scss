@@ -15,7 +15,7 @@
 }
 
 .btn {
-  width: 72px;
+  width: 68px;
 
   @include media-breakpoint-down(sm){
     width: 64px;
@@ -36,9 +36,9 @@
   &:disabled,
   &:disabled:hover {
     background-color: transparent;
-    border-color: rgba($grey-light, 0.2);
     color: $font-color-base;
     opacity: 1;
+    font-weight: 700;
   }
 
   &:first-child {
@@ -68,6 +68,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 15px;
 
   @include media-breakpoint-down(sm) {
     font-size: 14px;
@@ -79,7 +80,7 @@
 }
 
 .confirmButton {
-  font-size: $font-size-base;
+  font-size: 14px;
   height: 35px;
   margin-top: 2px;
   width: 100%;
@@ -102,6 +103,16 @@
   @include media-breakpoint-down(sm){
     padding: 10px;
     flex-basis: 80px;
+  }
+}
+
+.inputTail {
+  display: inline-flex;
+  border-left: 1px solid $grey-light;
+  width: 100%;
+
+  &:hover {
+    border-color: $button-border-hover;
   }
 }
 

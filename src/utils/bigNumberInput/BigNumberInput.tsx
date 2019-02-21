@@ -1,4 +1,4 @@
-import  { BigNumber } from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
 import { default as MaskedInput } from 'react-text-mask';

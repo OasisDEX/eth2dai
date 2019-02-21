@@ -247,6 +247,19 @@ function applyChange(state: OfferFormState,
       if (change.matchType === OfferMatchType.direct && state.orderbook) {
         return directMatchState(state, {}, state.orderbook);
       }
+
+      if (change.matchType === OfferMatchType.limitOrder && state.orderbook && state.orderbook.sell[0]) {
+        const updatedPrice = applyChange(state, {
+          kind: FormChangeKind.priceFieldChange,
+          value: new BigNumber(state.orderbook.sell[0].price)
+        });
+
+        return {
+          ...updatedPrice,
+          matchType: change.matchType
+        };
+      }
+
       return {
         ...state,
         matchType: change.matchType,
@@ -590,6 +603,18 @@ function prepareSubmit(calls$: Calls$): [
   return [submit, stageChange$];
 }
 
+const fetchBestSellOrder$ = (orderbook$: Observable<Orderbook>) => {
+  return orderbook$.pipe(
+    first(),
+    switchMap((orderbook: Orderbook) =>
+      of({
+        kind: FormChangeKind.priceFieldChange,
+        value: (orderbook.sell[0] ? orderbook.sell[0].price : undefined)
+      })
+    )
+  );
+};
+
 export function createFormController$(
   params: {
     gasPrice$: Observable<BigNumber>;
@@ -641,7 +666,8 @@ export function createFormController$(
   return merge(
     manualChange$,
     submitChange$,
-    environmentChange$
+    environmentChange$,
+    fetchBestSellOrder$(params.orderbook$)
   ).pipe(
     scan(applyChange, initialState),
     map(preValidate),

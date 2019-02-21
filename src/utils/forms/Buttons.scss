@@ -11,6 +11,7 @@
   font-size: 12px;
   text-transform: uppercase;
   padding: 5px 0.833em;
+  letter-spacing: .8px;
 
   &:hover {
     cursor: pointer;
@@ -23,9 +24,9 @@
 
   &[disabled],
   &.disabled {
-    color: $grey-lightest;
-    border-color: rgba($grey-light, 0.2);
-    background-color: $grey-dark;
+    border-color: $button-border-disabled;
+    background: transparent;
+    font-weight: 500;
   }
 }
 
@@ -55,13 +56,6 @@
     background-color: map-get($map, bg-hover);
     border-color: map-get($map, border-color-hover);
   }
-
-  &[disabled]:hover,
-  &[disabled],
-  &.disabled:hover,
-  &.disabled {
-    opacity: 0.5;
-  }
 }
 
 
@@ -71,15 +65,13 @@
           bg: $grey-darkest,
           border-color: $grey-light,
           color-hover: $font-color-base,
-          border-color-hover: lighten($grey-light, 2%),
-          bg-hover: lighten($grey-light, 5%)
+    border-color-hover: lighten($button-border-hover, 2%),
   ));
 }
 
 .whiteOutlined {
-  opacity: 0.99; // in buttonGroup it makes this button stand out
-                 // in front of buttons next to it, so both left and right border are visible
   font-weight: 600; //semibold
+  opacity: .99;
 
   @include button((
           color: $font-color-base,
@@ -92,8 +84,8 @@
 }
 
 .green {
-  opacity: 0.99; // in buttonGroup it makes this button stand out
-                 // in front of buttons next to it, so both left and right border are visible
+  font-weight: 600;
+  opacity: .99;
   @include button((
           color: $font-color-base,
           bg: $green,
@@ -106,8 +98,9 @@
 
 
 .red {
-  opacity: 0.99; // in buttonGroup it makes this button stand out
-                 // in front of buttons next to it, so both left and right border are visible
+  font-weight: 600;
+  opacity: .99;
+
   @include button((
           color: $font-color-base,
           bg: $red,

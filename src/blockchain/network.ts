@@ -123,6 +123,7 @@ export const gasPrice$: GasPrice$ = web3Ready$.pipe(
     //   ),
     // )
   ).pipe(
+    map(x => x.mul(1.25)),
     distinctUntilChanged((x: BigNumber, y: BigNumber) => x.eq(y)),
     shareReplay(1),
   )

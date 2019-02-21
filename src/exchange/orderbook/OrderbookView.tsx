@@ -98,13 +98,13 @@ export class OrderbookView extends React.Component<Props> {
             <thead>
             <tr>
               <th>
-                <InfoLabel>Price</InfoLabel> <Currency value={this.props.tradingPair.quote}/>
+                <InfoLabel>Price</InfoLabel> <Currency theme="semi-bold" value={this.props.tradingPair.quote}/>
               </th>
               <th>
-                <InfoLabel>Amount</InfoLabel> <Currency value={this.props.tradingPair.base}/>
+                <InfoLabel>Amount</InfoLabel> <Currency theme="semi-bold" value={this.props.tradingPair.base}/>
               </th>
               <th>
-                <InfoLabel>Total</InfoLabel> <Currency value={this.props.tradingPair.quote}/>
+                <InfoLabel>Total</InfoLabel> <Currency theme="semi-bold" value={this.props.tradingPair.quote}/>
               </th>
             </tr>
             </thead>
@@ -165,7 +165,7 @@ export class OrderbookView extends React.Component<Props> {
         onClick={parent.takeOffer(offer)}>
         <td data-test-id="price">
           <SellBuySpan type={kind}>
-            <FormatPriceOrderbook value={offer.price} token={offer.quoteToken}/>
+            <FormatPriceOrderbook value={offer.price} token={offer.quoteToken} kind={kind}/>
           </SellBuySpan>
         </td>
         <td data-test-id="amount">
