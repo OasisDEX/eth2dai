@@ -280,6 +280,59 @@ function preValidate(state: InstantFormState): InstantFormState {
   }
 
   const messages: Message[] = [];
+  const [spendField, receiveField] = ['sellToken', 'buyToken'];
+  const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
+  const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
+  const dustLimit = state.buyToken === state.baseToken ? state.dustLimitBase : state.dustLimitQuote;
+  if (receiveAmount && spendAmount) {
+    if (state.balances && state.balances[spendToken].lt(spendAmount)) {
+      messages.push({
+        kind: MessageKind.insufficientAmount,
+        field: spendField,
+        priority: 1,
+        token: spendToken,
+      });
+    }
+    if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
+      messages.push({
+        kind: MessageKind.dustAmount,
+        field: spendField,
+        priority: 2,
+        token: spendToken,
+        amount: dustLimit || new BigNumber(0),
+      });
+    }
+  }
+  if (spendAmount && new BigNumber(tokens[spendToken].maxSell).lt(spendAmount)) {
+    messages.push({
+      kind: MessageKind.incredibleAmount,
+      field: spendField,
+      priority: 2,
+      token: spendToken,
+    });
+  }
+  if (receiveAmount && new BigNumber(tokens[receiveToken].maxSell).lt(receiveAmount)) {
+    messages.push({
+      kind: MessageKind.incredibleAmount,
+      field: receiveField,
+      priority: 1,
+      token: receiveToken,
+    });
+  }
+  if (spendAmount && !receiveAmount) {
+    messages.push({
+      kind: MessageKind.orderbookTotalExceeded,
+      field: spendField,
+      priority: 3,
+    });
+  }
+  if (!spendAmount && receiveAmount) {
+    messages.push({
+      kind: MessageKind.orderbookTotalExceeded,
+      field: receiveField,
+      priority: 3,
+    });
+  }
 
   return {
     ...state,

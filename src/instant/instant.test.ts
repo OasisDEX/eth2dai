@@ -44,7 +44,7 @@ const defParams = {
   gasPrice$: of(new BigNumber(0.01)),
   etherPriceUsd$: of(new BigNumber(1)),
   allowance$: () => of(true),
-  balances$: of({ DAI: new BigNumber(10), WETH: new BigNumber(10) }),
+  balances$: of({ DAI: new BigNumber(1000), WETH: new BigNumber(10) }),
   dustLimits$: of({ DAI: new BigNumber(0.1), WETH: new BigNumber(0.1) }),
   orderbook$: of(emptyOrderBook),
   calls$: of(defaultCalls) as Calls$,
@@ -206,5 +206,80 @@ test('complex scenario', done => {
   change({ kind: FormChangeKind.formResetChange });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
+  });
+});
+
+test('validation - insufficient balance', done => {
+  const controller = controllerWithFakeOrderBook(...fakeOrderBook);
+  const { change } = unpack(controller);
+
+  change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(1100) });
+
+  controller.subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+    done();
+  });
+});
+
+test('validation - dust limit', done => {
+  const controller = controllerWithFakeOrderBook(...fakeOrderBook);
+  const { change } = unpack(controller);
+
+  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(0.001) });
+
+  controller.subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+    done();
+  });
+});
+
+test('validation - incredible amount base', done => {
+  const controller = controllerWithFakeOrderBook(...fakeOrderBook);
+  const { change } = unpack(controller);
+
+  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(1000000000000001) });
+
+  controller.subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+    done();
+  });
+});
+
+test('validation - incredible amount quote', done => {
+  const controller = controllerWithFakeOrderBook(...fakeOrderBook);
+  const { change } = unpack(controller);
+
+  change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(1000000000000001) });
+
+  controller.subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+    done();
+  });
+});
+
+test('validation - orderbook exceeded quote', done => {
+  const controller = controllerWithFakeOrderBook(...fakeOrderBook);
+  const { change } = unpack(controller);
+
+  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(2001) });
+
+  controller.subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+    done();
+  });
+});
+
+test('validation - orderbook exceeded base', done => {
+  const controller = controllerWithFakeOrderBook(...fakeOrderBook);
+  const { change } = unpack(controller);
+
+  change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(11) });
+
+  controller.subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+    done();
   });
 });
