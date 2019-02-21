@@ -69,6 +69,7 @@ export type Message = {
 };
 
 export interface InstantFormState extends HasGasEstimation {
+  baseToken: string;
   buyToken: string;
   sellToken: string;
   buyTokenDigits: number;
@@ -199,7 +200,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         kind: OfferType.sell,
         sellAmount: change.value,
-        buyAmount: calculateTotal(change.value, state.orderbook.buy),
+        buyAmount: state.baseToken !== state.buyToken ?
+          calculateTotal(change.value, state.orderbook.buy) :
+          calculateAmount(change.value, state.orderbook.sell),
       };
     case FormChangeKind.buyAmountFieldChange:
       if (!state.orderbook) {
@@ -209,7 +212,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         kind: OfferType.buy,
         buyAmount: change.value,
-        sellAmount: calculateAmount(change.value, state.orderbook.buy),
+        sellAmount: state.baseToken !== state.buyToken ?
+          calculateAmount(change.value, state.orderbook.buy) :
+          calculateTotal(change.value, state.orderbook.sell),
       };
     case FormChangeKind.gasPriceChange:
       return {
@@ -355,6 +360,7 @@ export function createFormController$(
   const initialState: InstantFormState = {
     submit,
     change: manualChange$.next.bind(manualChange$),
+    baseToken: tradingPair.base,
     buyToken: tradingPair.quote,
     sellToken: tradingPair.base,
     buyTokenDigits: tokens[tradingPair.quote].digits,
