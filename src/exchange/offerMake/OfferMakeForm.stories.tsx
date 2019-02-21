@@ -1,6 +1,8 @@
 import { storiesOf } from '@storybook/react';
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+
 import { GasEstimationStatus, OfferMatchType } from '../../utils/form';
 import { FlexLayoutRow } from '../../utils/layout/FlexLayoutRow';
 import { Loadable, LoadableStatus } from '../../utils/loadable';
@@ -196,6 +198,7 @@ stories.add('Validations on form', () => {
   //   },
   // ];
   return (
+    <BrowserRouter>
     <div>
     <Panel style={{ ...normalPanelStyle, marginBottom: '2em' }}>
       <OfferMakePanel {...offerMakeFormProps({
@@ -305,25 +308,26 @@ stories.add('Validations on form', () => {
     </Panel>
 
     </div>
+    </BrowserRouter>
   );
 });
 
 stories.add('Three validations error on one element', () => {
   const messages: Message[] = [
     {
-      kind: MessageKind.noAllowance,
+      kind: MessageKind.insufficientAmount,
       field: 'amount',
       priority: 1,
       token: '1st error, priority 1',
     },
     {
-      kind: MessageKind.noAllowance,
+      kind: MessageKind.insufficientAmount,
       field: 'amount',
       priority: 2,
       token: '2nd error, priority 2',
     },
     {
-      kind: MessageKind.noAllowance,
+      kind: MessageKind.insufficientAmount,
       field: 'amount',
       priority: -1,
       token: '3th error, priority -1',

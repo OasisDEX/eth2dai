@@ -3,12 +3,13 @@
 
 .inputBase {
   background: none;
-  border: 1px solid transparent;
-  color: rgba(white, 0.6);
+  border: 0;
+  color: $input-number-color;
   @include fontLatoBold;
+  font-size: 15px;
   letter-spacing: 0.5px;
   padding-left: 1em;
-  padding-right: 1em;
+  padding-right: .25em;
   text-align: right;
   width: 100%;
   min-width: 0;
