@@ -178,12 +178,12 @@ test('complex scenario', done => {
     done();
   });
 
-  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(180) });
+  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(2) });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
 
-  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(2) });
+  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
@@ -193,7 +193,12 @@ test('complex scenario', done => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
 
-  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(2) });
+  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(2) });
+  controller.pipe(first()).subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+  });
+
+  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(100) });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
