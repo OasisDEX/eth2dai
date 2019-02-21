@@ -1,4 +1,5 @@
 @import "../Variables";
+@import "../Mixins";
 
 .muted {
   color: $grey-lightest;
@@ -22,4 +23,13 @@
 
 .greenSpan {
   color: $green;
+}
+
+.currency {
+  @include fontMontserratMedium;
+  white-space: nowrap;
+
+  &.highlight {
+    font-weight: 600;
+  }
 }

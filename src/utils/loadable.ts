@@ -1,6 +1,7 @@
-import { Observable, of } from 'rxjs';
-import { catchError, map, startWith } from 'rxjs/operators';
+import { concat, Observable, of } from 'rxjs';
+import { catchError, first, map, skip, startWith } from 'rxjs/operators';
 
+import { onEveryBlock$ } from '../blockchain/network';
 import { TradingPair } from '../exchange/tradingPair/tradingPair';
 
 export type LoadableStatus = 'loading' | 'loaded' | 'error';
@@ -15,9 +16,13 @@ export function loadablifyLight<T>(observable: Observable<T>): Observable<Loadab
   return observable.pipe(
     map(value => ({ value, status: 'loaded' })),
     startWith({ status: 'loading' } as Loadable<T>),
-    catchError(error => {
+    catchError((error, source) => {
       console.log(error);
-      return of({ error, status: 'error' });
+      return concat(
+        of({ error, status: 'error' }),
+        onEveryBlock$.pipe(skip(1), first()),
+        source,
+      );
     })
   );
 }
