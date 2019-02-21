@@ -8,12 +8,13 @@ import { of } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 import { Calls$ } from '../blockchain/calls/calls';
+import { TxState, TxStatus } from '../blockchain/transactions';
 import { createFakeOrderbook, emptyOrderBook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
 import { createFormController$, FormChangeKind } from './instant';
 
 function snapshotify(object: any): any {
-  return omit(object, 'change');
+  return omit(object, 'change', 'submit');
 }
 
 const tradingPair = { base: 'WETH', quote: 'DAI' };
@@ -49,7 +50,7 @@ const defParams = {
   calls$: of(defaultCalls) as Calls$,
 };
 
-const controllerWithFakeOrderBook = (buys: any = [], sells: any = []) => {
+const controllerWithFakeOrderBook = (buys: any = [], sells: any = [], overrides: {} = {}) => {
   const orderbook = createFakeOrderbook(buys, sells);
   orderbook.buy.forEach((v, i) => v.offerId = new BigNumber(i + 1));
   orderbook.sell.forEach((v, i) => v.offerId = new BigNumber(i + 1));
@@ -58,6 +59,7 @@ const controllerWithFakeOrderBook = (buys: any = [], sells: any = []) => {
   return createFormController$(
     {
       ...defParams,
+      ...overrides,
       orderbook$: of(orderbook),
     },
     tradingPair
@@ -93,7 +95,7 @@ test('change pair', done => {
   });
 });
 
-test('sell a bit', done => {
+test('sell attempt', done => {
   const controller = controllerWithFakeOrderBook(...fakeOrderBook);
   const { change } = unpack(controller);
 
@@ -105,11 +107,61 @@ test('sell a bit', done => {
   });
 });
 
-test('buy a bit', done => {
+test('buy attempt', done => {
   const controller = controllerWithFakeOrderBook(...fakeOrderBook);
   const { change } = unpack(controller);
 
   change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
+
+  controller.subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+    done();
+  });
+});
+
+test('sell a bit', done => {
+  const instantOrderMock = jest.fn(
+    () => of({
+      status: TxStatus.WaitingForApproval
+    } as TxState),
+  ).mockName('instantOrder');
+
+  const controller = controllerWithFakeOrderBook(fakeOrderBook[0], fakeOrderBook[1], {
+    calls$: of({
+      ...defaultCalls,
+      instantOrder: instantOrderMock,
+    })
+  });
+  const { change } = unpack(controller);
+
+  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(1) });
+  unpack(controller).submit(unpack(controller));
+  expect(instantOrderMock.mock.calls).toMatchSnapshot();
+
+  controller.subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+    done();
+  });
+});
+
+test('buy a bit', done => {
+  const instantOrderMock = jest.fn(
+    () => of({
+      status: TxStatus.WaitingForApproval
+    } as TxState),
+  ).mockName('instantOrder');
+
+  const controller = controllerWithFakeOrderBook(fakeOrderBook[0], fakeOrderBook[1], {
+    calls$: of({
+      ...defaultCalls,
+      instantOrder: instantOrderMock,
+    })
+  });
+  const { change } = unpack(controller);
+
+  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
+  unpack(controller).submit(unpack(controller));
+  expect(instantOrderMock.mock.calls).toMatchSnapshot();
 
   controller.subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
@@ -137,6 +189,16 @@ test('complex scenario', done => {
   });
 
   change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+  controller.pipe(first()).subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+  });
+
+  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(2) });
+  controller.pipe(first()).subscribe(state => {
+    expect(snapshotify(state)).toMatchSnapshot();
+  });
+
+  change({ kind: FormChangeKind.formResetChange });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });

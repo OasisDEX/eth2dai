@@ -1,21 +1,20 @@
 import { BigNumber } from 'bignumber.js';
 import { curry } from 'ramda';
-import { merge, Observable, Subject } from 'rxjs';
-import { map, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import { merge, Observable, of, Subject } from 'rxjs';
+import { first, map, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
 import { Balances, DustLimits } from '../balances/balances';
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { InstantOrderData } from '../blockchain/calls/instant';
 import { tokens } from '../blockchain/config';
-// import { TxState, TxStatus } from '../blockchain/transactions';
-import { /*Offer, */OfferType, Orderbook } from '../exchange/orderbook/orderbook';
+import { TxState, TxStatus } from '../blockchain/transactions';
+import { OfferType, Orderbook } from '../exchange/orderbook/orderbook';
 import { TradingPair } from '../exchange/tradingPair/tradingPair';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
   calculateAmount,
   calculateTotal,
   doGasEstimation,
-  FormResetChange,
   GasEstimationStatus,
   HasGasEstimation,
   toBalancesChange,
@@ -34,6 +33,13 @@ export enum FormStage {
 interface FormStageChange {
   kind: FormChangeKind.formStageChange;
   stage: FormStage;
+}
+export interface FormResetChange {
+  kind: FormChangeKind.formResetChange;
+}
+
+function formStageChange(stage: FormStage): FormStageChange {
+  return { stage, kind: FormChangeKind.formStageChange };
 }
 
 export enum MessageKind {
@@ -87,6 +93,7 @@ export enum FormChangeKind {
   sellAmountFieldChange = 'sellAmountFieldChange',
   pairChange = 'pairChange',
   formStageChange = 'stage',
+  formResetChange = 'reset',
   gasPriceChange = 'gasPrice',
   etherPriceUSDChange = 'etherPriceUSDChange',
   orderbookChange = 'orderbook',
@@ -163,10 +170,13 @@ export type InstantFormChange = ManualChange | EnvironmentChange | StageChange;
 
 function instantOrderData(state: InstantFormState): InstantOrderData {
   return {
+    kind: state.kind as OfferType,
     buyAmount: state.buyAmount as BigNumber,
     buyToken: state.buyToken,
     sellAmount: state.sellAmount as BigNumber,
     sellToken: state.sellToken,
+    gasEstimation: state.gasEstimation as number,
+    gasPrice: state.gasPrice as BigNumber,
   };
 }
 
@@ -177,6 +187,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         buyToken: change.buyToken,
         sellToken: change.sellToken,
+        kind: undefined,
         buyAmount: undefined,
         sellAmount: undefined,
       };
@@ -233,6 +244,16 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         dustLimitBase: change.dustLimitBase,
         dustLimitQuote: change.dustLimitQuote
       };
+    case FormChangeKind.formStageChange:
+      return { ...state, stage: change.stage };
+    case FormChangeKind.formResetChange:
+      return {
+        ...state,
+        stage: FormStage.editing,
+        buyAmount: undefined,
+        sellAmount: undefined,
+        gasEstimationStatus: GasEstimationStatus.unset
+      };
   }
   return state;
 }
@@ -274,6 +295,36 @@ function postValidate(state: InstantFormState): InstantFormState {
   return { ...state, stage: FormStage.editing };
 }
 
+function prepareSubmit(calls$: Calls$):
+  [(state: InstantFormState) => void, Observable<StageChange | FormResetChange>] {
+
+  const stageChange$ = new Subject<StageChange>();
+
+  function submit(state: InstantFormState) {
+
+    calls$.pipe(
+      first(),
+      switchMap((calls: Calls) => {
+        return calls.instantOrder(instantOrderData(state)).pipe(
+          switchMap((transactionState: TxState) => {
+            switch (transactionState.status) {
+              case TxStatus.CancelledByTheUser:
+                return of(formStageChange(FormStage.editing));
+              case TxStatus.WaitingForConfirmation:
+                return of({ kind: FormChangeKind.formResetChange });
+              default:
+                return of();
+            }
+          }),
+          startWith(formStageChange(FormStage.waitingForApproval)),
+        );
+      })
+    ).subscribe(change => stageChange$.next(change));
+  }
+
+  return [submit, stageChange$];
+}
+
 export function createFormController$(
   params: {
     gasPrice$: Observable<BigNumber>;
@@ -299,8 +350,10 @@ export function createFormController$(
     toBalancesChange(params.balances$),
   );
 
+  const [submit, submitChange$] = prepareSubmit(params.calls$);
+
   const initialState: InstantFormState = {
-    submit: null as any,
+    submit,
     change: manualChange$.next.bind(manualChange$),
     buyToken: tradingPair.quote,
     sellToken: tradingPair.base,
@@ -318,6 +371,7 @@ export function createFormController$(
 
   return merge(
     manualChange$,
+    submitChange$,
     environmentChange$,
   ).pipe(
     scan(applyChange, initialState),
