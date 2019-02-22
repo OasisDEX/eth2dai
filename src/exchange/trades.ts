@@ -141,3 +141,7 @@ export function compareTrades({ act: type1, price: price1, time: t1 }: Trade, { 
 
   return type2 > type1 ? 1 : -1;
 }
+
+export function compareByTimestampOnly({ time: t1 }: Trade, { time: t2 }: Trade) {
+  return t2.getTime() - t1.getTime();
+}
