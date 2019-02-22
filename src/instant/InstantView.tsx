@@ -64,9 +64,9 @@ export class InstantView extends React.Component {
           </TopLeftCorner>
         </header>
 
-        {/*<div className={styles.details}>*/}
-
-        {/*</div>*/}
+        <div className={styles.details}>
+          <h1> placeholder </h1>
+        </div>
 
         <div className={styles.assets}>
           <AssetPicker inputPlaceholder="Deposit Amount"/>
@@ -74,8 +74,9 @@ export class InstantView extends React.Component {
           <AssetPicker inputPlaceholder="Receive Amount"/>
         </div>
 
-        {/*<div className={styles.errors}>*/}
-        {/*</div>*/}
+        <div className={styles.errors}>
+          <h1>placeholder</h1>
+        </div>
 
         <footer>
           <Button size="lg" color="greyWhite" onClick={this.startTx} style={{ width: '100%' }}>
