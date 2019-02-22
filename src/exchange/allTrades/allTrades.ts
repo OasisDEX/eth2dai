@@ -28,27 +28,27 @@ export function loadAllTrades(
 ): Observable<Trade[]> {
   const borderline = moment().subtract(1, 'hour').toDate();
 
-  return combineLatest(
-    combineLatest(context$$, onEveryBlock$$).pipe(
-      exhaustMap(([context]) =>
-        getTrades(context, base, quote, {
-          from: borderline,
-        })
-      ),
-      distinctUntilChanged((x, y) => equals(x, y)),
-      shareReplay(1),
-    ),
-    context$$.pipe(
-      switchMap(context =>
+  return context$$.pipe(
+    switchMap(context =>
+      combineLatest(
+        onEveryBlock$$.pipe(
+          exhaustMap(() =>
+            getTrades(context, base, quote, {
+              from: borderline,
+            })
+          ),
+          distinctUntilChanged((x, y) => equals(x, y)),
+          shareReplay(1),
+        ),
         getTrades(context, base, quote, {
           limit: TRADES_PAGE_SIZE,
           to: borderline,
-        })
-      ),
-      distinctUntilChanged((x, y) => equals(x, y)),
-      shareReplay(1),
-    )
-  ).pipe(
+        }).pipe(
+          distinctUntilChanged((x, y) => equals(x, y)),
+          shareReplay(1),
+        )
+      )
+    ),
     map(([recent, later]) => [...recent, ...later]),
   );
 }

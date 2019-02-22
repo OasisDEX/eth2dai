@@ -42,15 +42,15 @@ export class WrapUnwrapFormView
       overlayClassName={styles.modalOverlay}
       closeTimeoutMS={250}
     >
-      <Panel style={{ width: '454px', height: '528px' }} className={styles.modalChild}
-        onClick={event => event.stopPropagation()}>
+      <Panel className={classnames(styles.panel, styles.modalChild)}
+             onClick={event => event.stopPropagation()}>
         <PanelHeader bordered={true}>
           <div>{this.props.kind} ether</div>
         </PanelHeader>
         <WithLoadingIndicator loadable={this.props}>
         { state =>
           (<React.Fragment>
-            <PanelBody style={{ height: '390px' }}>
+            <PanelBody className={styles.panelBody}>
               { this.summary(state) }
               <Hr color="light" className={styles.hrMargin}/>
               {this.formOrTransactionState(state)}
@@ -161,37 +161,37 @@ export class WrapUnwrapFormView
     return (
       <div>
         <InputGroup hasError={ (state.messages || []).length > 0}>
-          <InputGroupAddon border="right" className={styles.inputHeader}>
+          <InputGroupAddon className={styles.inputHeader}>
             Amount
           </InputGroupAddon>
-
-          <BigNumberInput
-            data-test-id="type-amount"
-            ref={ (el: any) =>
-              this.amountInput = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
-            }
-            type="text"
-            mask={createNumberMask({
-              allowDecimal: true,
-              decimalLimit: 5,
-              prefix: ''
-            })}
-            onChange={this.handleAmountChange}
-            value={
-              (state.amount || null) &&
-              formatAmount(state.amount as BigNumber, 'ETH')
-            }
-            guide={true}
-            placeholderChar={' '}
-            disabled={state.progress !== undefined }
-          />
-
-          <InputGroupAddon
-            className={styles.inputCurrencyAddon}
-            onClick={ this.handleAmountFocus }
-          >
-            { this.props.kind === WrapUnwrapFormKind.wrap ? 'ETH' : 'WETH' }
-          </InputGroupAddon>
+          <div className={styles.inputTail}>
+            <BigNumberInput
+              data-test-id="type-amount"
+              ref={(el: any) =>
+                this.amountInput = (el && ReactDOM.findDOMNode(el) as HTMLElement) || undefined
+              }
+              type="text"
+              mask={createNumberMask({
+                allowDecimal: true,
+                decimalLimit: 5,
+                prefix: ''
+              })}
+              onChange={this.handleAmountChange}
+              value={
+                (state.amount || null) &&
+                formatAmount(state.amount as BigNumber, 'ETH')
+              }
+              guide={true}
+              placeholder={'0'}
+              disabled={state.progress !== undefined}
+            />
+            <InputGroupAddon
+              className={styles.inputCurrencyAddon}
+              onClick={this.handleAmountFocus}
+            >
+              {this.props.kind === WrapUnwrapFormKind.wrap ? 'ETH' : 'WETH'}
+            </InputGroupAddon>
+          </div>
         </InputGroup>
 
         <ErrorMessage data-test-id="error-msg" messages={errorMessages} />
@@ -219,6 +219,7 @@ export class WrapUnwrapFormView
           Close
         </Button>
         <Button
+          className={styles.btn}
           data-test-id="proceed"
           disabled={!state.readyToProceed || state.progress !== undefined}
           onClick={() => state.proceed(state)}

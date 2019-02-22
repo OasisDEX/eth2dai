@@ -29,7 +29,7 @@ export const cancelOffer: TransactionDef<CancelData> = {
   kind: TxMetaKind.cancel,
   description: ({ type, amount, token }: CancelData) =>
     <React.Fragment>
-      Cancel <span style={{ textTransform: 'capitalize' }}>{type}</span> Order {amount.valueOf()} {token.toUpperCase()}
+      Cancel <span style={{ textTransform: 'capitalize' }}>{type}</span> Order <Money value={amount} token={token}/>
     </React.Fragment>,
 };
 

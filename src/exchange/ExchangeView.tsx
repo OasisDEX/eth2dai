@@ -6,6 +6,7 @@ import { theAppContext } from '../AppContext';
 import { connect } from '../utils/connect';
 import { FlexLayoutRow } from '../utils/layout/FlexLayoutRow';
 import { Panel } from '../utils/panel/Panel';
+import * as styles from './ExchangeView.scss';
 import { currentTradingPair$, TradingPair } from './tradingPair/tradingPair';
 
 export interface ExchangeViewOwnProps {
@@ -27,7 +28,7 @@ const Content = (props: any | { parentMatch: string }) => {
   return (
     <div>
       <FlexLayoutRow>
-        <Panel style={{ flexGrow: 1 }}>
+        <Panel className={styles.tradingPairPanel}>
           <theAppContext.Consumer>
             { ({ TradingPairsTxRx }) =>
               // @ts-ignore
@@ -37,14 +38,14 @@ const Content = (props: any | { parentMatch: string }) => {
         </Panel>
       </FlexLayoutRow>
       <FlexLayoutRow>
-        <Panel style={{ width: '454px', height: '341px' }} footerBordered={true}>
+        <Panel className={styles.priceChartPanel} footerBordered={true}>
           <theAppContext.Consumer>
             { ({ PriceChartWithLoadingTxRx }) =>
               <PriceChartWithLoadingTxRx />
             }
           </theAppContext.Consumer>
         </Panel>
-        <Panel style={{ width: '454px' }} footerBordered={true}>
+        <Panel className={styles.allTradesPanel} footerBordered={true}>
           <theAppContext.Consumer>
             { ({ AllTradesTxRx }) =>
               <AllTradesTxRx />
@@ -53,7 +54,7 @@ const Content = (props: any | { parentMatch: string }) => {
         </Panel>
       </FlexLayoutRow>
       <FlexLayoutRow>
-        <Panel style={{ height: '474px', marginRight: '24px', flexGrow: 1 }}>
+        <Panel className={styles.offerMakePanel}>
 
           <theAppContext.Consumer>
             { ({ OfferMakePanelTxRx }) =>
@@ -61,7 +62,7 @@ const Content = (props: any | { parentMatch: string }) => {
             }
           </theAppContext.Consumer>
         </Panel>
-        <Panel footerBordered={true} style={{ height: '474px' }}>
+        <Panel footerBordered={true} className={styles.orderbookPanel}>
           <theAppContext.Consumer>
             { ({ OrderbookPanelTxRx }) =>
               <OrderbookPanelTxRx />
@@ -70,7 +71,7 @@ const Content = (props: any | { parentMatch: string }) => {
         </Panel>
       </FlexLayoutRow>
       <FlexLayoutRow>
-        <Panel style={{ flexGrow: 1, minHeight: '230px' }} footerBordered={true}>
+        <Panel className={styles.myOrdersPanel} footerBordered={true}>
           <theAppContext.Consumer>
             { ({ MyTradesTxRx }) =>
               <MyTradesTxRx />
@@ -103,7 +104,7 @@ export class ExchangeView extends React.Component<ExchangeViewProps> {
                  />
             )}
           />
-          <Redirect push={true} from={'/exchange'} to={`/exchange/${tp.base}/${tp.quote}`} />
+          <Redirect push={false} from={'/exchange'} to={`/exchange/${tp.base}/${tp.quote}`} />
         </Switch>
       </div>
     );

@@ -4,7 +4,7 @@ import { distinctUntilChanged, exhaustMap, map, shareReplay, switchMap } from 'r
 
 import { NetworkConfig } from '../../blockchain/config';
 import { every10Seconds$ } from '../../blockchain/network';
-import { compareTrades, getTrades, Trade } from '../trades';
+import { compareByTimestampOnly, getTrades, Trade } from '../trades';
 import { TradingPair } from '../tradingPair/tradingPair';
 
 export function createMyClosedTrades$(
@@ -20,7 +20,7 @@ export function createMyClosedTrades$(
             getTrades(context, base, quote, {
               account
             }).pipe(
-              map(trades => trades.sort(compareTrades)),
+              map(trades => trades.sort(compareByTimestampOnly)),
             )
           ),
           distinctUntilChanged(isEqual),

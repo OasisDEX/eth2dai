@@ -62,8 +62,10 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
   public static PairInfoVP({ value, label }: PairInfoVP) {
     return (
       <div className={styles.pairInfo}>
-        {value}
-        <InfoLabel className={styles.pairInfoLabel}>{label}</InfoLabel>
+        <div className={styles.mobileWrapper}>
+          <span className={styles.pairInfoValue}>{value}</span>
+          <InfoLabel className={styles.pairInfoLabel}>{label}</InfoLabel>
+        </div>
       </div>
     );
   }

@@ -1,7 +1,16 @@
+@import "../utils/Mixins";
 @import "../utils/Variables";
 
-header {
+:global(.paper) {
+  @include media-breakpoint-down(md) {
+    height: 20px !important;
+    width: 20px !important;
+  }
+}
+
+.header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   margin-top: 1em;
@@ -17,31 +26,57 @@ header {
   }
 }
 
-section {
+.section {
   display: inline-flex;
+
+  &Navigation {
+    margin-right: auto;
+
+    @include media-breakpoint-down(md) {
+      order: 3;
+      width: 100%;
+    }
+  }
+
+  &Status {
+    @include media-breakpoint-down(md) {
+      flex: 1 1 auto;
+      justify-content: flex-end;
+    }
+  }
 }
 
-nav ul {
+.nav, .list, .item {
+  @include media-breakpoint-down(md) {
+    width: 100%;
+  }
+}
+
+.list {
     display: flex;
     list-style-type: none;
     padding: 0;
 
-    li + li {
+    @include media-breakpoint-down(md) {
+      margin-top: 24px;
+    }
+
+    .item + .item {
         margin-left: -1px;
     }
 
     // left and right item border radius
-    li:first-child > * {
+    .item:first-child > * {
         border-bottom-left-radius: $border-radius;
         border-top-left-radius: $border-radius;
     }
 
-    li:last-child > * {
+    .item:last-child > * {
         border-bottom-right-radius: $border-radius;
         border-top-right-radius: $border-radius;
     }
 
-    li:last-child {
+    .item:last-child {
       margin-right: 0;
     }
 }
@@ -59,16 +94,19 @@ nav ul {
 }
 
 .navLink {
-    @extend .navElement;
-    text-decoration: none;
-    width: 108px;
-    color: $grey-lightest;
-    &:hover {
-        background-color: rgba($white, 0.1);
-        cursor: pointer;
-    }
-}
+  @extend .navElement;
+  text-decoration: none;
+  width: 108px;
+  color: $grey-lightest;
+  &:hover {
+    background-color: rgba($white, 0.1);
+    cursor: pointer;
+  }
 
+  @include media-breakpoint-down(md) {
+    width: 100%;
+  }
+}
 .activeNavLink {
     &,
     &:hover {
@@ -82,6 +120,17 @@ nav ul {
   width: 196px;
   border-radius: $border-radius;
   margin-right: 12px;
+
+  @include media-breakpoint-down(md) {
+    width: 32px;
+    height: 32px;
+  }
+
+  & span {
+    @include media-breakpoint-down(md) {
+      display: none
+    }
+  }
 }
 
 .networkIndicator {
@@ -100,6 +149,12 @@ nav ul {
   letter-spacing: 1.4px;
 
   text-transform: capitalize;
+
+  @include media-breakpoint-down(md) {
+    max-width: 68px;
+    font-size: 14px;
+    height: 32px;
+  }
 }
 
 .networkIndicator.kovan {

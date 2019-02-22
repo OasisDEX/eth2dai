@@ -1,0 +1,30 @@
+@import './Mixins';
+@import './Variables';
+
+:global(.hide-md) {
+  @include media-breakpoint-down(md) {
+    display: none !important;
+  }
+}
+
+:global(.hide-lg) {
+  @include media-breakpoint-down(lg) {
+    display: none !important;
+  }
+}
+
+:global(::placeholder) {
+  color: $grey-light;
+}
+
+:global(.bold) {
+  font-weight: 700;
+}
+
+:global(.semi-bold) {
+  font-weight: 600;
+}
+
+:global(.medium) {
+  font-weight: 500;
+}

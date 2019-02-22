@@ -34,7 +34,7 @@ async function visReg() {
 
     const reportData = require('./.reg/out.json');
     report(
-      `[Vis reg report](${superCI.getArtifactLink('/storybook-vis-reg-report/index.html')})
+      `[Vis reg report — Storybook](${superCI.getArtifactLink('/storybook-vis-reg-report/index.html')})
       Changed files: **${reportData.failedItems.length}**
       New files: **${reportData.newItems.length}**
       Deleted files: **${reportData.deletedItems.length}**

@@ -3,11 +3,21 @@
 @include modal();
 @include checklistBorderBox();
 
+.checklistLine {
+  @include media-breakpoint-down(md) {
+    font-size: 14px;
+    flex-direction: column;
+  }
+}
 
 .infoRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @include media-breakpoint-down(md) {
+    font-size:14px;
+  }
 }
 
 .infoRowMargin {
@@ -29,6 +39,10 @@
 .warning {
   display: flex;
   align-items: stretch;
+
+  @include media-breakpoint-down(md) {
+    min-height: 120px;
+  }
 }
 
 .warningIcon {
@@ -42,6 +56,11 @@
 
 .warningText {
   font-size: 14px;
+
+  @include media-breakpoint-down(md){
+    display: inline-flex;
+    align-items: center;
+  }
 }
 
 // footer with buttons
@@ -52,12 +71,32 @@
   align-items: center;
 }
 
+.btn:disabled {
+  color: #87878c;
+}
+
 // ---------- input group modifiers
 .inputHeader {
   flex-basis: 94px;
   flex-grow: 2;
   flex-shrink: 0;
   padding: 10px 16px;
+
+  @include media-breakpoint-down(sm) {
+    flex-basis: 72px;
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+}
+
+.inputTail {
+  display: inline-flex;
+  border-left: 1px solid $grey-light;
+  width: 100%;
+
+  &:hover {
+    border-color: $button-border-hover;
+  }
 }
 
 .inputCurrencyAddon {
@@ -67,4 +106,24 @@
   justify-content: start;
   padding: 10px 16px;
   white-space: nowrap;
+
+  @include media-breakpoint-down(sm) {
+    flex-basis: 42px;
+    padding: 10px 8px;
+    font-size: 12px;
+    justify-content: center;
+  }
+}
+
+.panel {
+  width: 454px;
+  max-height: 528px;
+
+  &Body {
+    height: 390px;
+
+    @include media-breakpoint-down(sm){
+      height: 340px;
+    }
+  }
 }

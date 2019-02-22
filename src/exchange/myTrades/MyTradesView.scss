@@ -6,6 +6,11 @@
 
 .orderTypeBtn {
   width: 86px;
+
+  @include media-breakpoint-down(sm){
+    width: 72px;
+    font-size: 11px;
+  }
 }
 
 @include tableTextAlign(right);
@@ -14,16 +19,38 @@
   max-height: 400px;
 
   td, th {
-    flex-grow: 1;
+    &:first-child {
+      padding-left: 16px;
+      @include media-breakpoint-up(lg) {
+        padding-left: 24px;
+        width: 100px;
+      }
+    }
   }
+
+
 }
 
 .myOpenTradesTable {
   @include tableColumnsWidth(100px 165px 165px 165px 165px 165px);
+  @include tableColumnsWidth(50px 85px 85px 85px 60px 75px, lg);
+
+  // status with icon
+  td:last-child {
+    white-space: nowrap;
+  }
 }
 
 .myCloseTradesTable {
   @include tableColumnsWidth(100px 165px 165px 165px 165px);
+  @include tableColumnsWidth(60px 100px 100px 100px 90px, lg);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
 }
 
 .statusText {
@@ -36,5 +63,4 @@
 .statusProgress {
   display: inline-block;
   position: relative;
-  top: 2px;
 }

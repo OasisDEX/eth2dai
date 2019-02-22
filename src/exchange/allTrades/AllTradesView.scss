@@ -2,11 +2,13 @@
 
 .allTradesTable {
   max-height: 254px;
-  @include tableColumnsWidth(152px 152px 135px);
+  @include tableColumnsWidth(152px 152px 142px);
 
   td, th {
+    // time column
     &:last-child {
       flex-grow: 1;
+      white-space: nowrap;
     }
   }
 

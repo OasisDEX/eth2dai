@@ -20,7 +20,7 @@ body {
   width: 932px;
   margin: 0 auto;
 
-  @media (max-width: $breakpoint-md) {
+  @include media-breakpoint-down(lg) {
     width: auto;
     margin-left: 1em;
     margin-right: 1em;
@@ -31,6 +31,7 @@ body {
 // ----------- Scrollbar styling for webkit -----------
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -40,7 +41,12 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background-color: #eeeeee;
-  border-radius: 5.5px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: rgba(white, 0.25);
+  border-radius: 100%;
 }
 
 :global(.ReactModal__Content) {

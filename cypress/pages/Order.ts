@@ -37,7 +37,13 @@ export class Order {
   }
 
   public atPrice = (price: string) => {
-    cy.get(tid('type-price')).type(price);
+    cy.get(tid('type-price')).type(`{selectall}${price}`);
+    return this;
+  }
+
+  public total = (total: string) => {
+    console.log(total);
+    cy.get(tid('type-total')).contains('span', total, { timeout: 5000 });
     return this;
   }
 

@@ -6,6 +6,8 @@ cd ../
 ./node_modules/.bin/http-server -p 3000 ./build &
 server_pid=$!
 
+mkdir -p ./cypress/screenshots
+
 yarn cypress:run:ci
 
 kill -9 $server_pid

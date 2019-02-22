@@ -1,9 +1,19 @@
 @import "../../utils/Variables";
 @import "../../utils/Mixins";
 
+// panel size
+.depthChartWithLoading {
+  width: 508px;
+  @include media-breakpoint-down(lg) {
+    width: 100%;
+  }
+
+}
+
 // general depth chart style
 .depthChart {
   position: relative;
+  display: inline-block;
 }
 
 // chart colors

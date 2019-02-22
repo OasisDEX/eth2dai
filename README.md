@@ -28,13 +28,17 @@ yarn test
 yarn storybook
 ```
 
-### Visual Regression
+## Visual Regression
 
-We use SuperCI + reg-suit + storybook-chrome-screenshot to conduct visual regression tests with every PR.
+We use SuperCI + reg-suit + storybook-chrome-screenshot or cypress to conduct visual regression tests with every PR.
 
-To ignore given story use `ignoreDuringVisualRegression` helper.
+#### Storybook
 
-To create screenshots locally, run: `yarn storybook:screenshots`.
+To ignore given story use `ignoreDuringVisualRegression` helper. To create screenshots locally, run: `yarn storybook:screenshots`.
+
+#### Cypress E2E tests screenshots
+
+E2E screenshots are pretty hard to make deterministic. We use two two attribute helpers: `data-vis-reg-mask` (to mask with black rectangle) and `data-vis-reg-hide` to hide entirely. Each screenshot is made in multiple sizes.
 
 ### E2E tests
 ```

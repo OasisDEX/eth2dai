@@ -1,5 +1,6 @@
 export const container: string;
 export const dropdown: string;
+export const mobileWrapper: string;
 export const dropdownBtn: string;
 export const dropdownBtnDisabled: string;
 export const dropdownBtnActive: string;
@@ -13,3 +14,4 @@ export const active: string;
 export const passive: string;
 export const pairInfo: string;
 export const pairInfoLabel: string;
+export const pairInfoValue: string;

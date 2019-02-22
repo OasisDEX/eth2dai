@@ -1,4 +1,5 @@
 @import "../Variables";
+@import "../Mixins";
 
 $panel-padding-horizontal: 16px;
 $panel-padding-vertical: 12px;
@@ -12,6 +13,8 @@ $panel-padding-vertical: 12px;
   border-radius: $border-radius;
   display: flex;
   flex-direction: column;
+
+  margin-bottom: 24px;
 }
 
 .panelWithFooterBordered {
@@ -38,6 +41,13 @@ $panel-padding-vertical: 12px;
   font-weight: 500;
   letter-spacing: 0.36px;
   min-height: 64px;
+
+  @include media-breakpoint-down(md) {
+    font-size: 14px;
+    line-height: 18px;
+    padding: 14px 16px;
+    height: 58px;
+  }
 }
 
 .panelHeaderBordered {

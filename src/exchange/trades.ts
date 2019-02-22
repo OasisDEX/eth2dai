@@ -125,6 +125,23 @@ export const getTrades = (
   );
 };
 
-export function compareTrades({ time: t1 }: Trade, { time: t2 }: Trade) {
+export function compareTrades({ act: type1, price: price1, time: t1 }: Trade, { act: type2, price: price2, time: t2 }: Trade) {
+  /* Sorting the trades in the following order:
+  * - Sell orders are before buy orders
+  * - For each order type we sort by price (DESC)
+  * - For each order with the same price we order by timestamp (DESC)
+  * */
+  if (type1 === type2) {
+    if (price2.gt(price1)) return 1;
+    if (price2.lt(price1)) return -1;
+    if (price2.eq(price1)) {
+      return t2.getTime() - t1.getTime();
+    }
+  }
+
+  return type2 > type1 ? 1 : -1;
+}
+
+export function compareByTimestampOnly({ time: t1 }: Trade, { time: t2 }: Trade) {
   return t2.getTime() - t1.getTime();
 }
