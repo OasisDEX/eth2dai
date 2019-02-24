@@ -12997,10 +12997,10 @@ subarg@^1.0.0:
   dependencies:
     minimist "^1.1.0"
 
-super-ci@^0.0.27:
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/super-ci/-/super-ci-0.0.27.tgz#f752b20455c84f375ef65f227899662e3471be72"
-  integrity sha512-s170OpYTQ6SxQsaubcNdP6gwmCptOvcxaPACplaJOFwjMDjcPk9NPacJyeHxQANzxTL+LHoBh1qzCuhDyszQig==
+super-ci@^0.0.29:
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/super-ci/-/super-ci-0.0.29.tgz#7857aae79bdf900882a6324c7988e27d742328b8"
+  integrity sha512-RoHdJ5Amg0Crp2pTwjDDRSabtc90e1smKkiC/ymsizefJsBUKcp09f1G5eLvWOuuz0U5h+vbBIYDcFjlJ1hLyQ==
   dependencies:
     commander "^2.19.0"
     glob "^7.1.3"
