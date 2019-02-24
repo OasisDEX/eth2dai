@@ -17,7 +17,11 @@ export async function main() {
 async function deploy(path: string) {
   if (superCI.isPr()) {
     await superCI.saveCollection('build', path);
-    report(`[Branch deployment](${superCI.getArtifactLink('/build/index.html')})`);
+    report({
+      name: 'Commit deployment',
+      shortDescription: 'Deployment for commit ready.',
+      detailsUrl: superCI.getArtifactLink('/build/index.html'),
+    });
   }
 }
 
@@ -33,12 +37,10 @@ async function visReg() {
     await superCI.saveCollection('storybook-vis-reg-report', join(__dirname, '.reg'));
 
     const reportData = require('./.reg/out.json');
-    report(
-      `[Vis reg report — Storybook](${superCI.getArtifactLink('/storybook-vis-reg-report/index.html')})
-      Changed files: **${reportData.failedItems.length}**
-      New files: **${reportData.newItems.length}**
-      Deleted files: **${reportData.deletedItems.length}**
-      `,
-    );
+    report({
+      name: 'Vis reg report — Storybook',
+      shortDescription: `Changed: ${reportData.failedItems.length}, New: ${reportData.newItems.length}, Deleted: ${reportData.deletedItems.length}`,
+      detailsUrl: superCI.getArtifactLink('/storybook-vis-reg-report/index.html'),
+    });
   }
 }
