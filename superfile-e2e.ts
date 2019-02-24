@@ -20,7 +20,7 @@ async function visReg() {
 
     const reportData = require('./.reg/out.json');
     report({
-      name: "Vis reg report — E2E",
+      name: 'Visual regression for E2E',
       shortDescription: `Changed: ${reportData.failedItems.length}, New: ${reportData.newItems.length}, Deleted: ${reportData.deletedItems.length}`,
       detailsUrl: superCI.getArtifactLink('/e2e-vis-reg-report/index.html'),
     });

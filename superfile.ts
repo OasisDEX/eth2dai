@@ -38,7 +38,7 @@ async function visReg() {
 
     const reportData = require('./.reg/out.json');
     report({
-      name: 'Vis reg report — Storybook',
+      name: 'Visual regression for Storybook',
       shortDescription: `Changed: ${reportData.failedItems.length}, New: ${reportData.newItems.length}, Deleted: ${reportData.deletedItems.length}`,
       detailsUrl: superCI.getArtifactLink('/storybook-vis-reg-report/index.html'),
     });
