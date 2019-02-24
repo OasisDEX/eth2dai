@@ -19,14 +19,21 @@ export interface InstantOrderData {
 }
 
 export const instantOrder: TransactionDef<InstantOrderData> = {
-  call: ({ kind }: InstantOrderData, context: NetworkConfig) => kind === 'buy' ?
-    context.directProxyCreationAndExecute.contract.buyAllAmount :
-    context.directProxyCreationAndExecute.contract.sellAllAmount,
+  call: ({ kind, buyToken, sellToken }: InstantOrderData, context: NetworkConfig) => {
+    const fn = `${kind === 'buy' ? 'buyAllAmount' : 'sellAllAmount'}${buyToken === 'ETH' ? 'BuyEth' : ''}${sellToken === 'ETH' ? 'PayEth' : ''}`;
+    return context.directProxyCreationAndExecute.contract[fn];
+  },
   prepareArgs: ({ kind, buyToken, buyAmount, sellToken, sellAmount }: InstantOrderData, context: NetworkConfig) => [
     context.otc.address,
     ...kind === 'buy' ?
-      [buyToken, buyAmount, sellToken, sellAmount] :
-      [sellToken, sellAmount, buyToken, buyAmount],
+      ([
+        ...buyToken === 'ETH' ? [] : [buyToken], buyAmount,
+        ...sellToken === 'ETH' ? [] : [sellToken], sellAmount,
+      ]) :
+      ([
+        ...sellToken === 'ETH' ? [] : [sellToken], sellAmount,
+        ...buyToken === 'ETH' ? [] : [buyToken], buyAmount,
+      ]),
   ],
   options: ({ gasPrice, gasEstimation }: InstantOrderData) => ({
     gasPrice: gasPrice.toFixed(0),

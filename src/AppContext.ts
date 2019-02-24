@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { BehaviorSubject, interval, Observable } from 'rxjs';
-import { first, flatMap, shareReplay, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, interval, Observable } from 'rxjs';
+import { first, flatMap, map, shareReplay, switchMap } from 'rxjs/operators';
 
 import { curry } from 'ramda';
 import {
@@ -105,6 +105,10 @@ export function setupAppContext() {
   ).pipe(
     shareReplay(1)
   );
+  const balancesWithEth$ = combineLatest(balances$, etherBalance$).pipe(
+    map(([balances, etherBalance]) => ({ ...balances, ETH: etherBalance })),
+  );
+  balancesWithEth$.subscribe(console.log);
 
   const wethBalance$ = createWethBalances$(context$, initializedAccount$, onEveryBlock$);
 

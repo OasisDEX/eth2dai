@@ -1,143 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`buy a bit 1`] = `
-Array [
-  Array [
-    Object {
-      "buyAmount": "90",
-      "buyToken": "DAI",
-      "gasEstimation": 40,
-      "gasPrice": "0.01",
-      "kind": "buy",
-      "sellAmount": "0.5",
-      "sellToken": "WETH",
-    },
-  ],
-]
-`;
-
-exports[`buy a bit 2`] = `
-Object {
-  "balances": Object {
-    "DAI": "1000",
-    "WETH": "10",
-  },
-  "baseToken": "WETH",
-  "buyAllowance": true,
-  "buyAmount": "90",
-  "buyToken": "DAI",
-  "buyTokenDigits": 2,
-  "dustLimitBase": "0.1",
-  "dustLimitQuote": "0.1",
-  "etherPriceUsd": "1",
-  "gasEstimation": 40,
-  "gasEstimationEth": "4e-19",
-  "gasEstimationStatus": "calculated",
-  "gasEstimationUsd": "4e-19",
-  "gasPrice": "0.01",
-  "kind": "buy",
-  "messages": Array [],
-  "orderbook": Object {
-    "blockNumber": 1,
-    "buy": Array [
-      Object {
-        "baseAmount": "10",
-        "baseToken": "",
-        "offerId": "1",
-        "ownerId": "",
-        "price": "180",
-        "quoteAmount": "1800",
-        "quoteToken": "",
-        "timestamp": 2019-02-19T00:00:00.000Z,
-        "type": "buy",
-      },
-    ],
-    "sell": Array [
-      Object {
-        "baseAmount": "10",
-        "baseToken": "",
-        "offerId": "1",
-        "ownerId": "",
-        "price": "200",
-        "quoteAmount": "2000",
-        "quoteToken": "",
-        "timestamp": 2019-02-19T00:00:00.000Z,
-        "type": "buy",
-      },
-    ],
-    "spread": "20",
-  },
-  "sellAllowance": true,
-  "sellAmount": "0.5",
-  "sellToken": "WETH",
-  "sellTokenDigits": 5,
-  "stage": "waitingForApproval",
-}
-`;
-
-exports[`buy attempt 1`] = `
-Object {
-  "balances": Object {
-    "DAI": "1000",
-    "WETH": "10",
-  },
-  "baseToken": "WETH",
-  "buyAllowance": true,
-  "buyAmount": "90",
-  "buyToken": "DAI",
-  "buyTokenDigits": 2,
-  "dustLimitBase": "0.1",
-  "dustLimitQuote": "0.1",
-  "etherPriceUsd": "1",
-  "gasEstimation": 40,
-  "gasEstimationEth": "4e-19",
-  "gasEstimationStatus": "calculated",
-  "gasEstimationUsd": "4e-19",
-  "gasPrice": "0.01",
-  "kind": "buy",
-  "messages": Array [],
-  "orderbook": Object {
-    "blockNumber": 1,
-    "buy": Array [
-      Object {
-        "baseAmount": "10",
-        "baseToken": "",
-        "offerId": "1",
-        "ownerId": "",
-        "price": "180",
-        "quoteAmount": "1800",
-        "quoteToken": "",
-        "timestamp": 2019-02-19T00:00:00.000Z,
-        "type": "buy",
-      },
-    ],
-    "sell": Array [
-      Object {
-        "baseAmount": "10",
-        "baseToken": "",
-        "offerId": "1",
-        "ownerId": "",
-        "price": "200",
-        "quoteAmount": "2000",
-        "quoteToken": "",
-        "timestamp": 2019-02-19T00:00:00.000Z,
-        "type": "buy",
-      },
-    ],
-    "spread": "20",
-  },
-  "sellAllowance": true,
-  "sellAmount": "0.5",
-  "sellToken": "WETH",
-  "sellTokenDigits": 5,
-  "stage": "readyToProceed",
-}
-`;
-
 exports[`change pair 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -170,6 +37,7 @@ exports[`complex scenario 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -226,6 +94,7 @@ exports[`complex scenario 2`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -285,6 +154,7 @@ exports[`complex scenario 3`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -344,6 +214,7 @@ exports[`complex scenario 4`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -400,6 +271,7 @@ exports[`complex scenario 5`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -459,6 +331,7 @@ exports[`complex scenario 6`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -518,6 +391,7 @@ exports[`complex scenario 7`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -574,6 +448,7 @@ exports[`initial state 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -602,31 +477,16 @@ Object {
 }
 `;
 
-exports[`sell a bit 1`] = `
-Array [
-  Array [
-    Object {
-      "buyAmount": "180",
-      "buyToken": "DAI",
-      "gasEstimation": 40,
-      "gasPrice": "0.01",
-      "kind": "sell",
-      "sellAmount": "1",
-      "sellToken": "WETH",
-    },
-  ],
-]
-`;
-
-exports[`sell a bit 2`] = `
+exports[`transaction - buy 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
   "buyAllowance": true,
-  "buyAmount": "180",
+  "buyAmount": "90",
   "buyToken": "DAI",
   "buyTokenDigits": 2,
   "dustLimitBase": "0.1",
@@ -637,7 +497,7 @@ Object {
   "gasEstimationStatus": "calculated",
   "gasEstimationUsd": "4e-19",
   "gasPrice": "0.01",
-  "kind": "sell",
+  "kind": "buy",
   "messages": Array [],
   "orderbook": Object {
     "blockNumber": 1,
@@ -670,17 +530,366 @@ Object {
     "spread": "20",
   },
   "sellAllowance": true,
-  "sellAmount": "1",
+  "sellAmount": "0.5",
+  "sellToken": "WETH",
+  "sellTokenDigits": 5,
+  "stage": "readyToProceed",
+}
+`;
+
+exports[`transaction - buy 2`] = `
+Array [
+  Array [
+    Object {
+      "buyAmount": "90",
+      "buyToken": "DAI",
+      "gasEstimation": 40,
+      "gasPrice": "0.01",
+      "kind": "buy",
+      "sellAmount": "0.5",
+      "sellToken": "WETH",
+    },
+  ],
+]
+`;
+
+exports[`transaction - buy 3`] = `
+Object {
+  "balances": Object {
+    "DAI": "1000",
+    "ETH": "5",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "buyAmount": "90",
+  "buyToken": "DAI",
+  "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 40,
+  "gasEstimationEth": "4e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "4e-19",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "180",
+        "quoteAmount": "1800",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "sell": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "200",
+        "quoteAmount": "2000",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "spread": "20",
+  },
+  "sellAllowance": true,
+  "sellAmount": "0.5",
   "sellToken": "WETH",
   "sellTokenDigits": 5,
   "stage": "waitingForApproval",
 }
 `;
 
-exports[`sell attempt 1`] = `
+exports[`transaction - buy eth 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "buyAmount": "2",
+  "buyToken": "ETH",
+  "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 40,
+  "gasEstimationEth": "4e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "4e-19",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "180",
+        "quoteAmount": "1800",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "sell": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "200",
+        "quoteAmount": "2000",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "spread": "20",
+  },
+  "sellAllowance": true,
+  "sellAmount": "400",
+  "sellToken": "DAI",
+  "sellTokenDigits": 5,
+  "stage": "readyToProceed",
+}
+`;
+
+exports[`transaction - buy eth 2`] = `
+Array [
+  Array [
+    Object {
+      "buyAmount": "2",
+      "buyToken": "ETH",
+      "gasEstimation": 40,
+      "gasPrice": "0.01",
+      "kind": "buy",
+      "sellAmount": "400",
+      "sellToken": "DAI",
+    },
+  ],
+]
+`;
+
+exports[`transaction - buy eth 3`] = `
+Object {
+  "balances": Object {
+    "DAI": "1000",
+    "ETH": "5",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "buyAmount": "2",
+  "buyToken": "ETH",
+  "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 40,
+  "gasEstimationEth": "4e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "4e-19",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "180",
+        "quoteAmount": "1800",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "sell": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "200",
+        "quoteAmount": "2000",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "spread": "20",
+  },
+  "sellAllowance": true,
+  "sellAmount": "400",
+  "sellToken": "DAI",
+  "sellTokenDigits": 5,
+  "stage": "waitingForApproval",
+}
+`;
+
+exports[`transaction - pay eth 1`] = `
+Object {
+  "balances": Object {
+    "DAI": "1000",
+    "ETH": "5",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "buyAmount": "90",
+  "buyToken": "DAI",
+  "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 40,
+  "gasEstimationEth": "4e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "4e-19",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "180",
+        "quoteAmount": "1800",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "sell": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "200",
+        "quoteAmount": "2000",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "spread": "20",
+  },
+  "sellAllowance": true,
+  "sellAmount": "0.5",
+  "sellToken": "ETH",
+  "sellTokenDigits": 5,
+  "stage": "readyToProceed",
+}
+`;
+
+exports[`transaction - pay eth 2`] = `
+Array [
+  Array [
+    Object {
+      "buyAmount": "90",
+      "buyToken": "DAI",
+      "gasEstimation": 40,
+      "gasPrice": "0.01",
+      "kind": "buy",
+      "sellAmount": "0.5",
+      "sellToken": "ETH",
+    },
+  ],
+]
+`;
+
+exports[`transaction - pay eth 3`] = `
+Object {
+  "balances": Object {
+    "DAI": "1000",
+    "ETH": "5",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "buyAmount": "90",
+  "buyToken": "DAI",
+  "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 40,
+  "gasEstimationEth": "4e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "4e-19",
+  "gasPrice": "0.01",
+  "kind": "buy",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "180",
+        "quoteAmount": "1800",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "sell": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "200",
+        "quoteAmount": "2000",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "spread": "20",
+  },
+  "sellAllowance": true,
+  "sellAmount": "0.5",
+  "sellToken": "ETH",
+  "sellTokenDigits": 5,
+  "stage": "waitingForApproval",
+}
+`;
+
+exports[`transaction - sell 1`] = `
+Object {
+  "balances": Object {
+    "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -736,10 +945,87 @@ Object {
 }
 `;
 
+exports[`transaction - sell 2`] = `
+Array [
+  Array [
+    Object {
+      "buyAmount": "180",
+      "buyToken": "DAI",
+      "gasEstimation": 40,
+      "gasPrice": "0.01",
+      "kind": "sell",
+      "sellAmount": "1",
+      "sellToken": "WETH",
+    },
+  ],
+]
+`;
+
+exports[`transaction - sell 3`] = `
+Object {
+  "balances": Object {
+    "DAI": "1000",
+    "ETH": "5",
+    "WETH": "10",
+  },
+  "baseToken": "WETH",
+  "buyAllowance": true,
+  "buyAmount": "180",
+  "buyToken": "DAI",
+  "buyTokenDigits": 2,
+  "dustLimitBase": "0.1",
+  "dustLimitQuote": "0.1",
+  "etherPriceUsd": "1",
+  "gasEstimation": 40,
+  "gasEstimationEth": "4e-19",
+  "gasEstimationStatus": "calculated",
+  "gasEstimationUsd": "4e-19",
+  "gasPrice": "0.01",
+  "kind": "sell",
+  "messages": Array [],
+  "orderbook": Object {
+    "blockNumber": 1,
+    "buy": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "180",
+        "quoteAmount": "1800",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "sell": Array [
+      Object {
+        "baseAmount": "10",
+        "baseToken": "",
+        "offerId": "1",
+        "ownerId": "",
+        "price": "200",
+        "quoteAmount": "2000",
+        "quoteToken": "",
+        "timestamp": 2019-02-19T00:00:00.000Z,
+        "type": "buy",
+      },
+    ],
+    "spread": "20",
+  },
+  "sellAllowance": true,
+  "sellAmount": "1",
+  "sellToken": "WETH",
+  "sellTokenDigits": 5,
+  "stage": "waitingForApproval",
+}
+`;
+
 exports[`validation - dust limit 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -804,6 +1090,7 @@ exports[`validation - incredible amount base 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -872,6 +1159,7 @@ exports[`validation - incredible amount quote 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -940,6 +1228,7 @@ exports[`validation - insufficient balance 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -1003,6 +1292,7 @@ exports[`validation - orderbook exceeded base 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",
@@ -1065,6 +1355,7 @@ exports[`validation - orderbook exceeded quote 1`] = `
 Object {
   "balances": Object {
     "DAI": "1000",
+    "ETH": "5",
     "WETH": "10",
   },
   "baseToken": "WETH",

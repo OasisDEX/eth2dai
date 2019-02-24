@@ -169,6 +169,10 @@ export type StageChange =
 
 export type InstantFormChange = ManualChange | EnvironmentChange | StageChange;
 
+function isBaseToken(token: string, base: string) {
+  return base === token || base === 'WETH' && token === 'ETH';
+}
+
 function instantOrderData(state: InstantFormState): InstantOrderData {
   return {
     kind: state.kind as OfferType,
@@ -200,9 +204,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         kind: OfferType.sell,
         sellAmount: change.value,
-        buyAmount: state.baseToken !== state.buyToken ?
-          calculateTotal(change.value, state.orderbook.buy) :
-          calculateAmount(change.value, state.orderbook.sell),
+        buyAmount: isBaseToken(state.buyToken, state.baseToken)  ?
+          calculateAmount(change.value, state.orderbook.sell) :
+          calculateTotal(change.value, state.orderbook.buy),
       };
     case FormChangeKind.buyAmountFieldChange:
       if (!state.orderbook) {
@@ -212,9 +216,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         kind: OfferType.buy,
         buyAmount: change.value,
-        sellAmount: state.baseToken !== state.buyToken ?
-          calculateAmount(change.value, state.orderbook.buy) :
-          calculateTotal(change.value, state.orderbook.sell),
+        sellAmount: isBaseToken(state.buyToken, state.baseToken) ?
+          calculateTotal(change.value, state.orderbook.sell) :
+          calculateAmount(change.value, state.orderbook.buy),
       };
     case FormChangeKind.gasPriceChange:
       return {
@@ -283,7 +287,7 @@ function preValidate(state: InstantFormState): InstantFormState {
   const [spendField, receiveField] = ['sellToken', 'buyToken'];
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
   const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
-  const dustLimit = state.buyToken === state.baseToken ? state.dustLimitBase : state.dustLimitQuote;
+  const dustLimit = isBaseToken(state.buyToken, state.baseToken) ? state.dustLimitBase : state.dustLimitQuote;
   if (receiveAmount && spendAmount) {
     if (state.balances && state.balances[spendToken].lt(spendAmount)) {
       messages.push({
