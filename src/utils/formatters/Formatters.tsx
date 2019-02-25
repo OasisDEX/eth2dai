@@ -48,7 +48,7 @@ export const FormatAmount = (props: FormatAmountProps) => {
 export const FormatPrice: React.SFC<any> = ({ ...props } : any) =>
   <FormatNumber formatter={formatPrice} {...props} />;
 
-export const FormatPriceOrderbook: React.SFC<any> = ({ kind, ...props } : any) =>
+export const FormatPriceOrder: React.SFC<any> = ({ kind, ...props } : any) =>
   kind === 'sell' ?
     <FormatNumber formatter={formatPriceUp} {...props} /> :
     <FormatNumber formatter={formatPriceDown} {...props} />;
