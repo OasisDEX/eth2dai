@@ -429,6 +429,7 @@ export function createFormController$(
     sellAllowance: undefined,
     stage: FormStage.editing,
     messages: [],
+    balances: {} as Balances,
     gasEstimationStatus: GasEstimationStatus.unset,
   };
 

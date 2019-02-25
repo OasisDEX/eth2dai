@@ -1,11 +1,13 @@
 import classnames from 'classnames';
 import * as React from 'react';
 import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
-import { ETHicon } from '../blockchain/coinIcons/coinIcons';
+import { theAppContext } from '../AppContext';
 import { BigNumberInput } from '../utils/bigNumberInput/BigNumberInput';
 import { Button } from '../utils/forms/Buttons';
 import { SettingsIcon, SwapArrows } from '../utils/icons/Icons';
 import * as panelStyling from '../utils/panel/Panel.scss';
+import { Asset } from './asset/Asset';
+import { InstantFormState } from './instant';
 import * as styles from './Instant.scss';
 
 class TopLeftCorner extends React.Component<any> {
@@ -20,17 +22,13 @@ class TopLeftCorner extends React.Component<any> {
   }
 }
 
-class AssetPicker extends React.Component<any> {
+class TradingSide extends React.Component<any> {
 
   public render() {
+    console.log(this.props);
     return (
       <div className={styles.assetPicker}>
-        <div className={styles.assetToggle}>
-          <span className={styles.icon}>
-            <ETHicon theme="circle"/>
-          </span>
-          12.345 ETH
-        </div>
+        <Asset currency={this.props.asset} balance={this.props.balance}/>
         <BigNumberInput
           type="text"
           className={styles.input}
@@ -52,7 +50,10 @@ class AssetPicker extends React.Component<any> {
   }
 }
 
-export class InstantView extends React.Component {
+const Selling = (props: any) => (<TradingSide inputPlaceholder="Deposit Amount" {...props}/>);
+const Buying = (props: any) => (<TradingSide inputPlaceholder="Receive Amount" {...props}/>);
+
+export class InstantView extends React.Component<InstantFormState> {
 
   public render() {
     return (
@@ -69,9 +70,11 @@ export class InstantView extends React.Component {
         </div>
 
         <div className={styles.assets}>
-          <AssetPicker inputPlaceholder="Deposit Amount"/>
+          <Selling asset={this.props.sellToken}
+                   balance={this.props.balances ? this.props.balances.WETH : undefined}/>
           <div className={styles.swapIcon}><SwapArrows/></div>
-          <AssetPicker inputPlaceholder="Receive Amount"/>
+          <Buying asset={this.props.buyToken}
+                  balance={this.props.balances ? this.props.balances.DAI : undefined}/>
         </div>
 
         <div className={styles.errors}>
@@ -92,4 +95,14 @@ export class InstantView extends React.Component {
   }
 }
 
-export const InstantViewTxRx = InstantView;
+export class InstantExchange extends React.Component<any> {
+  public render() {
+    return (
+      <theAppContext.Consumer>
+        {({ InstantTxRx }) =>
+          <InstantTxRx/>
+        }
+      </theAppContext.Consumer>
+    );
+  }
+}
