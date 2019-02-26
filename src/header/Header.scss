@@ -20,13 +20,8 @@
     width: 132px;
     max-height: 37px;
     margin: auto 1.5em auto auto;
-
-    &:hover {
-      :global {
-        #bg {
-          fill-opacity: 0.35;
-        }
-      }
+    svg:hover :global(#bg) {
+      fill-opacity: 0.35;
     }
   }
 }

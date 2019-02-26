@@ -4,7 +4,7 @@ import * as React from 'react';
 import { BigNumber } from 'bignumber.js';
 import { etherscan } from '../../blockchain/etherscan';
 import { formatDateTime } from '../../utils/formatters/format';
-import { FormatAmount, FormatPrice } from '../../utils/formatters/Formatters';
+import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button, ButtonGroup, CloseButton } from '../../utils/forms/Buttons';
 import { ProgressIcon } from '../../utils/icons/Icons';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
@@ -85,7 +85,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                           <SellBuySpan type={trade.act}>{trade.act}</SellBuySpan>
                         </td>
                         <td data-test-id="price" className={styles.right}>
-                          <FormatPrice value={trade.price} token={trade.quoteToken} />
+                          <FormatPriceOrder value={trade.price} token={trade.quoteToken} kind={trade.kind} />
                         </td>
                         <td data-test-id="amount" className={styles.right}>
                           <FormatAmount value={trade.baseAmount} token={trade.baseToken} />

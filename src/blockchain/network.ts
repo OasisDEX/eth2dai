@@ -3,6 +3,7 @@ import { BigNumber } from 'bignumber.js';
 import { bindNodeCallback, combineLatest, concat, interval, Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import {
+  catchError,
   delayWhen,
   distinctUntilChanged,
   filter,
@@ -51,6 +52,13 @@ export const initializedAccount$ = account$.pipe(
 
 export const onEveryBlock$ = every5Seconds$.pipe(
   switchMap(() => bindNodeCallback(web3.eth.getBlockNumber)()),
+  catchError((error, source) => {
+    console.log(error);
+    return concat(
+      every5Seconds$.pipe(skip(1), first()),
+      source,
+    );
+  }),
   distinctUntilChanged(),
   shareReplay(1)
 );

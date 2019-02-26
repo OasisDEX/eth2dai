@@ -37,19 +37,16 @@ export function loadAllTrades(
               from: borderline,
             })
           ),
-          distinctUntilChanged((x, y) => equals(x, y)),
-          shareReplay(1),
         ),
         getTrades(context, base, quote, {
           limit: TRADES_PAGE_SIZE,
           to: borderline,
-        }).pipe(
-          distinctUntilChanged((x, y) => equals(x, y)),
-          shareReplay(1),
-        )
+        })
       )
     ),
     map(([recent, later]) => [...recent, ...later]),
+    distinctUntilChanged((x, y) => equals(x, y)),
+    shareReplay(1),
   );
 }
 

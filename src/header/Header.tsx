@@ -7,12 +7,13 @@ import { NavLink } from 'react-router-dom';
 
 import { theAppContext } from '../AppContext';
 import { account$ } from '../blockchain/network';
-import { Logo } from '../logo/Logo';
 import { routerContext } from '../Main';
 import { connect } from '../utils/connect';
+import { SvgImage } from '../utils/icons/utils';
 import { Loadable, loadablifyLight } from '../utils/loadable';
 import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
 import * as styles from './Header.scss';
+import Logo from './Logo.svg';
 
 const {
   header,
@@ -36,7 +37,7 @@ export class Header extends React.Component {
         <header className={header}>
           <section className={section}>
             <a href="/" className={logo}>
-              <Logo/>
+              <SvgImage image={Logo} />
             </a>
           </section>
           <section className={classnames(section, sectionNavigation)}>
