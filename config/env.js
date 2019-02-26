@@ -31,8 +31,11 @@ var dotenvFiles = [
 // that have already been set.  Variable expansion is supported in .env files.
 // https://github.com/motdotla/dotenv
 // https://github.com/motdotla/dotenv-expand
+let dotEnvLoaded = false;
 dotenvFiles.forEach(dotenvFile => {
-  if (fs.existsSync(dotenvFile)) {
+  if (!dotEnvLoaded && fs.existsSync(dotenvFile)) {
+    dotEnvLoaded = true;
+    console.log("Loading: ", dotenvFile)
     require('dotenv-expand')(
       require('dotenv').config({
         path: dotenvFile,
