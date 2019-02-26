@@ -59,4 +59,4 @@ By default app will try to load .env.$NODE_ENV file and fallback to .env. You ca
 REACT_APP_INSTANT_ENABLED
 ```
 
-Inside the app always check `process.env.REACT_APP_INSTANT_ENABLED = "1"` do not use any helpers to enable simple dead code elimination done by webpack.
+Inside the app always check `process.env.<REACT_APP_SWITCH_NAME> = "1"`. Do not use any helpers to enable dead code elimination done by Webpack.
