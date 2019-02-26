@@ -42,6 +42,13 @@ function formStageChange(stage: FormStage): FormStageChange {
   return { stage, kind: FormChangeKind.formStageChange };
 }
 
+export enum Position {
+  TOP = 'top',
+  BOTTOM = 'bottom'
+}
+
+export type Placement = Position.TOP | Position.BOTTOM;
+
 export enum MessageKind {
   noAllowance = 'noAllowance',
   insufficientAmount = 'insufficientAmount',
@@ -56,16 +63,19 @@ export type Message = {
   field: string;
   priority: number;
   token: string;
+  placement: Placement;
 } | {
   kind: MessageKind.dustAmount;
   field: string;
   priority: number;
   token: string;
   amount: BigNumber;
+  placement: Placement;
 } | {
   kind: MessageKind.orderbookTotalExceeded
   field: string;
   priority: number;
+  placement: Placement;
 };
 
 export interface InstantFormState extends HasGasEstimation {
@@ -269,13 +279,16 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
 
 function addGasEstimation(theCalls$: Calls$,
                           state: InstantFormState): Observable<InstantFormState> {
-  return doGasEstimation(theCalls$, state, (calls: Calls) =>
+  return doGasEstimation(theCalls$, state, (calls: Calls) => {
+
+    return (
     state.messages.length !== 0 ||
     !state.buyAmount ||
     !state.sellAmount ?
       undefined :
       calls.instantOrderEstimateGas(instantOrderData(state))
-  );
+    );
+  });
 }
 
 function preValidate(state: InstantFormState): InstantFormState {
@@ -295,6 +308,7 @@ function preValidate(state: InstantFormState): InstantFormState {
         field: spendField,
         priority: 1,
         token: spendToken,
+        placement: Position.BOTTOM
       });
     }
     if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
@@ -304,6 +318,7 @@ function preValidate(state: InstantFormState): InstantFormState {
         priority: 2,
         token: spendToken,
         amount: dustLimit || new BigNumber(0),
+        placement: Position.BOTTOM
       });
     }
   }
@@ -313,6 +328,7 @@ function preValidate(state: InstantFormState): InstantFormState {
       field: spendField,
       priority: 2,
       token: spendToken,
+      placement: Position.BOTTOM
     });
   }
   if (receiveAmount && new BigNumber(tokens[receiveToken].maxSell).lt(receiveAmount)) {
@@ -321,6 +337,7 @@ function preValidate(state: InstantFormState): InstantFormState {
       field: receiveField,
       priority: 1,
       token: receiveToken,
+      placement: Position.BOTTOM
     });
   }
   if (spendAmount && !receiveAmount) {
@@ -328,6 +345,7 @@ function preValidate(state: InstantFormState): InstantFormState {
       kind: MessageKind.orderbookTotalExceeded,
       field: spendField,
       priority: 3,
+      placement: Position.TOP
     });
   }
   if (!spendAmount && receiveAmount) {
@@ -335,14 +353,19 @@ function preValidate(state: InstantFormState): InstantFormState {
       kind: MessageKind.orderbookTotalExceeded,
       field: receiveField,
       priority: 3,
+      placement: Position.TOP
     });
   }
 
   return {
     ...state,
-    messages,
+    messages: messages.sort(byPriority),
     gasEstimationStatus: GasEstimationStatus.unset,
   } as InstantFormState;
+}
+
+function byPriority(firstMessage: Message, secondMessage: Message) {
+  return secondMessage.priority - firstMessage.priority;
 }
 
 function postValidate(state: InstantFormState): InstantFormState {
@@ -429,7 +452,6 @@ export function createFormController$(
     sellAllowance: undefined,
     stage: FormStage.editing,
     messages: [],
-    balances: {} as Balances,
     gasEstimationStatus: GasEstimationStatus.unset,
   };
 

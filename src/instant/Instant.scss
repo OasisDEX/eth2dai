@@ -28,6 +28,9 @@
   }
 }
 
+.footer {
+  margin-top: auto;
+}
 
 // Particular view ( Step 1 )
 .details {
@@ -47,19 +50,19 @@
 }
 
 .errors {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: map-get($inputHeight, lg);
   border: 1px solid $button-border-disabled;
   border-radius: .25rem;
-  margin: auto;
-}
+  margin-top: 1rem;
 
-// positioning
-
-.topLeftCorner {
-  position: absolute;
-  top: 1.2rem;
-  right: 1.5rem;
+  @include fontMontserratMedium;
+  font-size: 12px;
+  color: $errors;
+  letter-spacing: 1.10px;
 }
 
 // Asset Picker
@@ -76,6 +79,8 @@
   position: relative;
   bottom: 1.5rem;
   margin: auto .5rem;
+
+  cursor: pointer;
 }
 
 .input {

@@ -1,6 +1,10 @@
 @import './Mixins';
 @import './Variables';
 
+:global(.hide-all) {
+  display: none !important;
+}
+
 :global(.hide-md) {
   @include media-breakpoint-down(md) {
     display: none !important;

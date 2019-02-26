@@ -57,7 +57,7 @@ import { TradingPairView } from './exchange/tradingPair/TradingPairView';
 import { createFooter$, TheFooter } from './footer/Footer';
 import { Network } from './header/Network';
 import { createFormController$ as createInstantFormController$ } from './instant/instant';
-import { InstantView } from './instant/InstantView';
+import { InstantViewPanel } from './instant/InstantViewPanel';
 import { createTransactionNotifier$ } from './transactionNotifier/transactionNotifier';
 import { TransactionNotifierView } from './transactionNotifier/TransactionNotifierView';
 import { connect } from './utils/connect';
@@ -234,7 +234,7 @@ function instant(
     shareReplay(1)
   );
 
-  return connect(InstantView, instant$);
+  return connect(InstantViewPanel, loadablifyLight(instant$));
 }
 
 function offerMake(

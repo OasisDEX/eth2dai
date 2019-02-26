@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { ETHicon } from '../../blockchain/coinIcons/coinIcons';
+import { DAIicon, ETHicon } from '../../blockchain/coinIcons/coinIcons';
 import { FormatAmount } from '../../utils/formatters/Formatters';
-import { LoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
+import { ProgressIcon } from '../../utils/icons/Icons';
 import * as styles from './Asset.scss';
 
 interface AssetProps {
@@ -9,18 +9,32 @@ interface AssetProps {
   balance?: any;
 }
 
+const iconOf = (asset: string) => {
+  switch (asset.toLowerCase()) {
+    case 'eth':
+      return <ETHicon theme="circle"/>;
+    case 'weth':
+      return <ETHicon theme="circle"/>;
+    case 'dai':
+      return <DAIicon theme="circle"/>;
+    default:
+      throw new Error(`unknown asset ${asset}`);
+  }
+};
+
 export class Asset extends React.Component<AssetProps> {
   public render() {
+    const { balance, currency } = this.props;
     return (
       <div className={styles.asset}>
         <span className={styles.icon}>
-          <ETHicon theme="circle"/>
+          {iconOf(currency)}
         </span>
         {
-          !this.props.balance && <LoadingIndicator inline={true} light={true}/>
+          !balance && <ProgressIcon small={true}/>
         }
         {
-          this.props.balance && <FormatAmount value={this.props.balance} token={this.props.currency} fallback=""/>
+          balance && <FormatAmount value={balance} token={currency} fallback=""/>
         }
       </div>
     );
