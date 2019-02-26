@@ -48,3 +48,15 @@ yarn cypress:dev  # to develop tests
 ```
 yarn cypress:run  # to run all tests
 ```
+
+## Env files
+
+By default app will try to load .env.$NODE_ENV file and fallback to .env. You can use ENV env variable to override this mechanism for example: ENV=dev will load .env.dev file.
+
+### Feature switches
+
+```
+REACT_APP_INSTANT_ENABLED
+```
+
+Inside the app always check `process.env.REACT_APP_INSTANT_ENABLED = "1"` do not use any helpers to enable simple dead code elimination done by webpack.

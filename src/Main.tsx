@@ -38,7 +38,7 @@ export class MainContent extends React.Component<RouterProps> {
           </theAppContext.Consumer>
           <Header />
           <Switch>
-            <Route exact={false} path={'/instant'} component={InstantExchange}/>
+            { process.env.REACT_APP_INSTANT_ENABLED === '1' && <Route exact={false} path={'/instant'} component={InstantExchange}/> }
             <Route exact={false} path={'/exchange'} component={ExchangeViewTxRx}/>
             <Route path={'/balances'} component={BalancesView} />
             <Redirect from={'/'} to={'/exchange'}/>
