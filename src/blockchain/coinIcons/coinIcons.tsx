@@ -65,7 +65,7 @@ export class DAIicon extends React.Component<IconProps> {
     switch (this.props.theme) {
       case 'circle':
         return (
-          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <svg width="100%" height="100%" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
             <g id="Symbols" fill="none" fillRule="evenodd">
               <g transform="translate(-16 -20)">
                 <g id="Group" transform="translate(16 20)">
