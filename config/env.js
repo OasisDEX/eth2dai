@@ -13,11 +13,12 @@ if (!NODE_ENV) {
     'The NODE_ENV environment variable is required but was not specified.'
   );
 }
+const ENV = process.env.ENV || NODE_ENV; // allows to select env file to load 
 
 // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
 var dotenvFiles = [
-  `${paths.dotenv}.${NODE_ENV}.local`,
-  `${paths.dotenv}.${NODE_ENV}`,
+  `${paths.dotenv}.${ENV}.local`,
+  `${paths.dotenv}.${ENV}`,
   // Don't include `.env.local` for `test` environment
   // since normally you expect tests to produce the same
   // results for everyone
@@ -30,8 +31,11 @@ var dotenvFiles = [
 // that have already been set.  Variable expansion is supported in .env files.
 // https://github.com/motdotla/dotenv
 // https://github.com/motdotla/dotenv-expand
+let dotEnvLoaded = false;
 dotenvFiles.forEach(dotenvFile => {
-  if (fs.existsSync(dotenvFile)) {
+  if (!dotEnvLoaded && fs.existsSync(dotenvFile)) {
+    dotEnvLoaded = true;
+    console.log("Loading: ", dotenvFile)
     require('dotenv-expand')(
       require('dotenv').config({
         path: dotenvFile,
