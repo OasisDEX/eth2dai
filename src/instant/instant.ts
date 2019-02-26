@@ -357,6 +357,7 @@ function preValidate(state: InstantFormState): InstantFormState {
     });
   }
 
+  // TODO: Figure out a way to have a single error message
   return {
     ...state,
     messages: messages.sort(byPriority),

@@ -18,6 +18,7 @@ class TradingSide extends React.Component<any> {
     return (
       <div className={styles.assetPicker}>
         <Asset currency={this.props.asset} balance={this.props.balance}/>
+        {/* TODO: Make it parameterized like the tokens in offerMakeForm.*/}
         <BigNumberInput
           type="text"
           className={styles.input}

@@ -216,7 +216,6 @@ function instant(
   orderbook$: Observable<Orderbook>,
   balances$: Observable<Balances>
 ) {
-  // TODO: find a way to wait for at least each  of the observables to emit a value
   const instant$ = currentTradingPair$.pipe(
     flatMap(tp => createInstantFormController$(
       {
