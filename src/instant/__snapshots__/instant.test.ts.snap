@@ -1044,6 +1044,7 @@ Object {
       "amount": "0.1",
       "field": "sellToken",
       "kind": "dustAmount",
+      "placement": "bottom",
       "priority": 2,
       "token": "WETH",
     },
@@ -1107,14 +1108,16 @@ Object {
   "messages": Array [
     Object {
       "field": "sellToken",
-      "kind": "incredibleAmount",
-      "priority": 2,
-      "token": "WETH",
+      "kind": "orderbookTotalExceeded",
+      "placement": "top",
+      "priority": 3,
     },
     Object {
       "field": "sellToken",
-      "kind": "orderbookTotalExceeded",
-      "priority": 3,
+      "kind": "incredibleAmount",
+      "placement": "bottom",
+      "priority": 2,
+      "token": "WETH",
     },
   ],
   "orderbook": Object {
@@ -1176,14 +1179,16 @@ Object {
   "messages": Array [
     Object {
       "field": "sellToken",
-      "kind": "incredibleAmount",
-      "priority": 2,
-      "token": "DAI",
+      "kind": "orderbookTotalExceeded",
+      "placement": "top",
+      "priority": 3,
     },
     Object {
       "field": "sellToken",
-      "kind": "orderbookTotalExceeded",
-      "priority": 3,
+      "kind": "incredibleAmount",
+      "placement": "bottom",
+      "priority": 2,
+      "token": "DAI",
     },
   ],
   "orderbook": Object {
@@ -1246,6 +1251,7 @@ Object {
     Object {
       "field": "sellToken",
       "kind": "insufficientAmount",
+      "placement": "bottom",
       "priority": 1,
       "token": "DAI",
     },
@@ -1310,6 +1316,7 @@ Object {
     Object {
       "field": "buyToken",
       "kind": "orderbookTotalExceeded",
+      "placement": "top",
       "priority": 3,
     },
   ],
@@ -1373,6 +1380,7 @@ Object {
     Object {
       "field": "buyToken",
       "kind": "orderbookTotalExceeded",
+      "placement": "top",
       "priority": 3,
     },
   ],
