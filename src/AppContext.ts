@@ -195,7 +195,7 @@ export function setupAppContext() {
     createTransactionNotifier$(transactions$, interval(5 * 1000));
   const TransactionNotifierTxRx = connect(TransactionNotifierView, transactionNotifier$);
 
-  const InstantTxRx = instant(currentOrderbook$, currentOrderBookWithTradingPair$, balances$);
+  const InstantTxRx = instant(currentOrderbook$, balances$);
 
   return {
     AllTradesTxRx,
@@ -214,7 +214,6 @@ export function setupAppContext() {
 
 function instant(
   orderbook$: Observable<Orderbook>,
-  orderbookWithTradingPair$: Observable<LoadableWithTradingPair<Orderbook>>,
   balances$: Observable<Balances>
 ) {
   // TODO: find a way to wait for at least each  of the observables to emit a value
