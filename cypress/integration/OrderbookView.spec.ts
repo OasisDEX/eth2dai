@@ -13,6 +13,6 @@ describe('Orderbook view ', () => {
     cy.wait(1000);
     cy.get(tid('orderbook-type-list')).click();
 
-    makeScreenshots('depth-chart');
+    makeScreenshots('depth-chart', ["macbook-15"]);
   });
 });
