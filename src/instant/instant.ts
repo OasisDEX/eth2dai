@@ -1,8 +1,20 @@
 import { BigNumber } from 'bignumber.js';
-import { curry } from 'ramda';
-import { merge, Observable, of, Subject } from 'rxjs';
-import { first, map, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
+import { isEqual } from 'lodash';
+import { curry } from 'ramda';
+import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import {
+  catchError,
+  distinctUntilChanged,
+  first,
+  flatMap,
+  map,
+  scan,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import { Balances, DustLimits } from '../balances/balances';
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { InstantOrderData } from '../blockchain/calls/instant';
@@ -12,9 +24,6 @@ import { OfferType, Orderbook } from '../exchange/orderbook/orderbook';
 import { TradingPair } from '../exchange/tradingPair/tradingPair';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
-  calculateAmount,
-  calculateTotal,
-  doGasEstimation,
   GasEstimationStatus,
   HasGasEstimation,
   toBalancesChange,
@@ -78,12 +87,19 @@ export type Message = {
   placement: Placement;
 };
 
+export enum TradeEvaluationStatus {
+  unset = 'unset',
+  calculating = 'calculating',
+  calculated = 'calculated',
+  error = 'error',
+}
+
 export interface InstantFormState extends HasGasEstimation {
   baseToken: string;
   buyToken: string;
   sellToken: string;
-  buyTokenDigits: number;
-  sellTokenDigits: number;
+  // buyTokenDigits: number;
+  // sellTokenDigits: number;
   buyAmount?: BigNumber;
   sellAmount?: BigNumber;
   kind?: OfferType;
@@ -93,10 +109,12 @@ export interface InstantFormState extends HasGasEstimation {
   stage: FormStage;
   submit: (state: InstantFormState) => void;
   change: (change: ManualChange) => void;
-  orderbook?: Orderbook;
   dustLimitQuote?: BigNumber;
   dustLimitBase?: BigNumber;
   balances?: Balances;
+  tradeEvaluationStatus: TradeEvaluationStatus;
+  tradeEvaluationError?: any;
+  bestPrice?: BigNumber;
 }
 
 export enum FormChangeKind {
@@ -205,57 +223,44 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         kind: undefined,
         buyAmount: undefined,
         sellAmount: undefined,
+        tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
     case FormChangeKind.sellAmountFieldChange:
-      if (!state.orderbook) {
-        return state;
-      }
       return {
         ...state,
         kind: OfferType.sell,
         sellAmount: change.value,
-        buyAmount: isBaseToken(state.buyToken, state.baseToken)  ?
-          calculateAmount(change.value, state.orderbook.sell) :
-          calculateTotal(change.value, state.orderbook.buy),
       };
     case FormChangeKind.buyAmountFieldChange:
-      if (!state.orderbook) {
-        return state;
-      }
       return {
         ...state,
         kind: OfferType.buy,
         buyAmount: change.value,
-        sellAmount: isBaseToken(state.buyToken, state.baseToken) ?
-          calculateTotal(change.value, state.orderbook.sell) :
-          calculateAmount(change.value, state.orderbook.buy),
       };
     case FormChangeKind.gasPriceChange:
       return {
         ...state,
         gasPrice: change.value,
-        gasEstimationStatus: GasEstimationStatus.unset
       };
     case FormChangeKind.etherPriceUSDChange:
       return {
         ...state,
         etherPriceUsd: change.value,
-        gasEstimationStatus: GasEstimationStatus.unset
-      };
-    case FormChangeKind.orderbookChange:
-      return {
-        ...state,
-        orderbook: change.orderbook
       };
     case FormChangeKind.buyAllowanceChange:
-      return { ...state, buyAllowance: change.allowance };
+      return {
+        ...state,
+        buyAllowance: change.allowance,
+      };
     case FormChangeKind.sellAllowanceChange:
-      return { ...state, sellAllowance: change.allowance };
+      return {
+        ...state,
+        sellAllowance: change.allowance,
+      };
     case FormChangeKind.balancesChange:
       return {
         ...state,
         balances: change.balances,
-        gasEstimationStatus: GasEstimationStatus.unset
       };
     case FormChangeKind.dustLimitChange:
       return {
@@ -277,18 +282,97 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
   return state;
 }
 
-function addGasEstimation(theCalls$: Calls$,
-                          state: InstantFormState): Observable<InstantFormState> {
-  return doGasEstimation(theCalls$, state, (calls: Calls) => {
+// function addGasEstimation(theCalls$: Calls$,
+//                           state: InstantFormState): Observable<InstantFormState> {
+//   return doGasEstimation(theCalls$, state, (calls: Calls) => {
+//
+//     return (
+//     state.messages.length !== 0 ||
+//     !state.buyAmount ||
+//     !state.sellAmount ?
+//       undefined :
+//       calls.instantOrderEstimateGas(instantOrderData(state))
+//     );
+//   });
+// }
 
-    return (
-    state.messages.length !== 0 ||
-    !state.buyAmount ||
-    !state.sellAmount ?
-      undefined :
-      calls.instantOrderEstimateGas(instantOrderData(state))
-    );
-  });
+function evaluateBuy(calls: Calls, state: InstantFormState) {
+
+  const { buyToken, sellToken, buyAmount } = state;
+
+  if (!buyToken || !sellToken || !buyAmount) {
+    return of(state);
+  }
+
+  // console.log('calling otcGetPayAmount', buyToken, sellToken, buyAmount.toString());
+
+  return calls.otcGetPayAmount({
+    sellToken,
+    buyToken,
+    amount: buyAmount,
+  }).pipe(
+    map(sellAmount => ({ sellAmount })),
+  );
+}
+
+function evaluateSell(calls: Calls, state: InstantFormState) {
+
+  const { buyToken, sellToken, sellAmount } = state;
+
+  if (!buyToken || !sellToken || !sellAmount) {
+    return of(state);
+  }
+
+  // console.log('calling otcGetBuyAmount', buyToken, sellToken, sellAmount.toString());
+  return calls.otcGetBuyAmount({
+    sellToken,
+    buyToken,
+    amount: sellAmount,
+  }).pipe(
+    map(buyAmount => ({ buyAmount }))
+  );
+}
+
+function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observable<BigNumber> {
+  return calls.otcGetBestOffer({ sellToken, buyToken }).pipe(
+    flatMap(offerId =>
+      calls.otcOffers(offerId).pipe(
+        map(([a, _, b]: BigNumber[]) => {
+          // console.log(sellToken, buyToken, a.toString(), b.toString());
+          return (sellToken === 'DAI' || (sellToken === 'WETH' && buyToken !== 'DAI')) ?
+            a.div(b) : b.div(a);
+        })
+      )
+    )
+  );
+}
+
+function evaluateTrade(
+    theCalls$: Calls$, state: InstantFormState
+): Observable<InstantFormState> {
+  return theCalls$.pipe(
+      first(),
+      flatMap(calls =>
+        combineLatest(
+          state.kind === OfferType.buy ? evaluateBuy(calls, state) : evaluateSell(calls, state),
+          getBestPrice(calls, state.sellToken, state.buyToken)
+        )
+      ),
+      map(([result, bestPrice]) => ({
+        ...state,
+        ...result,
+        bestPrice,
+        tradeEvaluationStatus: TradeEvaluationStatus.calculated,
+      })),
+      catchError(err => of({
+        ...state,
+        ...(state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }),
+        bestPrice: undefined,
+        tradeEvaluationStatus: TradeEvaluationStatus.error,
+        tradeEvaluationError: err,
+      })),
+      startWith({ ...state, tradeEvaluationStatus: TradeEvaluationStatus.calculating }),
+  );
 }
 
 function preValidate(state: InstantFormState): InstantFormState {
@@ -444,8 +528,8 @@ export function createFormController$(
     baseToken: tradingPair.base,
     buyToken: tradingPair.quote,
     sellToken: tradingPair.base,
-    buyTokenDigits: tokens[tradingPair.quote].digits,
-    sellTokenDigits: tokens[tradingPair.base].digits,
+    // buyTokenDigits: tokens[tradingPair.quote].digits,
+    // sellTokenDigits: tokens[tradingPair.base].digits,
     buyAmount: undefined,
     sellAmount: undefined,
     kind: undefined,
@@ -454,6 +538,7 @@ export function createFormController$(
     stage: FormStage.editing,
     messages: [],
     gasEstimationStatus: GasEstimationStatus.unset,
+    tradeEvaluationStatus: TradeEvaluationStatus.unset,
   };
 
   return merge(
@@ -463,7 +548,14 @@ export function createFormController$(
   ).pipe(
     scan(applyChange, initialState),
     map(preValidate),
-    switchMap(curry(addGasEstimation)(params.calls$)),
+    distinctUntilChanged(isEqual),
+    switchMap(curry(evaluateTrade)(params.calls$)),
+    tap(state => console.log(
+      'tradeEvaluationStatus:', state.tradeEvaluationStatus,
+      'tradeEvaluationError:', state.tradeEvaluationError,
+      'bestPrice:', state.bestPrice && state.bestPrice.toString()
+    )),
+    // switchMap(curry(addGasEstimation)(params.calls$)),
     map(postValidate),
     startWith(initialState),
     shareReplay(1),

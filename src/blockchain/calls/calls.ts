@@ -5,14 +5,18 @@ import { NetworkConfig } from '../config';
 import { context$, initializedAccount$ } from '../network';
 import { approveWallet, disapproveWallet } from './approveCalls';
 import {
-  estimateGasCurried, sendTransactionCurried, sendTransactionWithGasConstraintsCurried
+  callCurried,
+  estimateGasCurried,
+  sendTransactionCurried,
+  sendTransactionWithGasConstraintsCurried
 } from './callsHelpers';
-import { instantOrder } from './instant';
+import { getBestOffer, getBuyAmount, getPayAmount, instantOrder, offers} from './instant';
 import { cancelOffer, offerMake, offerMakeDirect } from './offerMake';
 import { unwrap, wrap } from './wrapUnwrapCalls';
 
 function calls([context, account]: [NetworkConfig, string]) {
 
+  const call = callCurried(context, account);
   const estimateGas = estimateGasCurried(context, account);
   const sendTransaction = sendTransactionCurried(context, account);
   const sendTransactionWithGasConstraints = sendTransactionWithGasConstraintsCurried(context, account);
@@ -31,6 +35,10 @@ function calls([context, account]: [NetworkConfig, string]) {
     unwrapEstimateGas: estimateGas(unwrap),
     instantOrder: sendTransaction(instantOrder),
     instantOrderEstimateGas: estimateGas(instantOrder),
+    otcGetBuyAmount: call(getBuyAmount),
+    otcGetPayAmount: call(getPayAmount),
+    otcGetBestOffer: call(getBestOffer),
+    otcOffers: call(offers)
   };
 }
 

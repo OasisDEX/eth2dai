@@ -21,7 +21,7 @@ async function deploy(path: string) {
       name: 'Commit deployment',
       shortDescription: 'Deployment for commit ready.',
       detailsUrl: superCI.getArtifactLink('/build/index.html'),
-    });
+    } as any);
   }
 }
 
@@ -41,6 +41,6 @@ async function visReg() {
       name: 'Visual regression for Storybook',
       shortDescription: `Changed: ${reportData.failedItems.length}, New: ${reportData.newItems.length}, Deleted: ${reportData.deletedItems.length}`,
       detailsUrl: superCI.getArtifactLink('/storybook-vis-reg-report/index.html'),
-    });
+    } as any);
   }
 }
