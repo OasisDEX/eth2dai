@@ -1,8 +1,14 @@
 import * as React from 'react';
-import { default as Scrollbars } from 'react-custom-scrollbars';
+import { default as Scrollbars, positionValues } from 'react-custom-scrollbars';
 import * as styles from './Scrollbar.scss';
 
-export class Scrollbar extends React.Component {
+export type ScrollState = positionValues;
+
+interface ScrollbarProps {
+  onScroll?: () => void;
+}
+
+export class Scrollbar extends React.Component<ScrollbarProps> {
 
   private scroll = React.createRef<Scrollbars>();
 
@@ -13,6 +19,16 @@ export class Scrollbar extends React.Component {
     }
   }
 
+  public onScroll = () => {
+    if (this.props.onScroll && this.scroll.current) {
+      this.props.onScroll();
+    }
+  }
+
+  public scrollState = (): ScrollState => {
+    return (this.scroll.current && this.scroll.current.getValues()) as ScrollState;
+  }
+
   public render() {
 
     return (
@@ -20,6 +36,7 @@ export class Scrollbar extends React.Component {
         ref={this.scroll}
         renderThumbVertical={(props: any) => <div {...props} className={styles.scrollbarThumb}/>}
         renderThumbHorizontal={(props: any) => <div {...props} className={styles.scrollbarThumb}/>}
+        onScroll={this.onScroll}
       >
         {this.props.children}
       </Scrollbars>
