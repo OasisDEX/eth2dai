@@ -8,7 +8,7 @@ export class Balance {
     return {
       shouldBe: (amount: string | number | RegExp) => {
         cy.get(`@${symbol}`).within(() => {
-          cy.get(tid(`${symbol}-balance`)).contains(amount, { timeout: 10000 });
+          (cy.get(tid(`${symbol}-balance`)) as any).contains(amount, { timeout: 10000 });
         });
       },
     };
