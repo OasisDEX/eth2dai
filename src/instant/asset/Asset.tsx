@@ -34,7 +34,7 @@ export class Asset extends React.Component<AssetProps> {
           !balance && <ProgressIcon small={true}/>
         }
         {
-          balance && <FormatAmount value={balance} token={currency} fallback=""/>
+          balance && <FormatAmount data-test-id="balance" value={balance} token={currency} fallback=""/>
         }
       </div>
     );

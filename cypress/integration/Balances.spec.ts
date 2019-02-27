@@ -17,6 +17,6 @@ describe('Balances', () => {
     Balance.of('WETH').shouldBe(/1,001.../);
     Balance.of('DAI').shouldBe(/170.../);
 
-    makeScreenshots("balances");
+    makeScreenshots('balances');
   });
 });

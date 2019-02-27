@@ -8,17 +8,17 @@ const blackoutStyle = `
         display: none;
       }
     </style>`;
-const commonScreenshotOptions = { capture: "fullPage" };
+const commonScreenshotOptions = { capture: 'fullPage' };
 
 export function makeScreenshots(name: string): void {
-  cy.get("html > head").then(e => e.append(blackoutStyle));
+  cy.get('html > head').then(e => e.append(blackoutStyle));
 
   // if we are in interactive mode just do one screenshot to speed up development cycle
   if ((Cypress.config() as any).isInteractive) {
     cy.screenshot(name, commonScreenshotOptions as any);
   } else {
     // see: https://docs.cypress.io/api/commands/viewport.html#Argumentsvalues
-    const viewports = ["macbook-15", "iphone-6+", "iphone-6", "iphone-5"];
+    const viewports = ['macbook-15', 'iphone-6+', 'iphone-6', 'iphone-5'];
 
     for (const viewport of viewports) {
       cy.viewport(viewport as any);
@@ -27,10 +27,10 @@ export function makeScreenshots(name: string): void {
     }
   }
 
-  cy.get("#cypress-blackout").then(e => e.remove());
+  cy.get('#cypress-blackout').then(e => e.remove());
 }
 
 // we need to get rid of special characters that can be part of viewport names but are not valid as filenames
 function normalizeViewportName(viewport: string): string {
-  return viewport.replace("+", "plus")
+  return viewport.replace('+', 'plus');
 }

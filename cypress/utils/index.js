@@ -42,14 +42,14 @@ export function tid(id, rest = "") {
 export const promisify = func => async (...args) =>
   new Promise((accept, reject) => func(...args, (error, result) => (error ? reject(error) : accept(result))));
 
-export const rpcCommand = method => web3 => (...params) => {
+export const rpcCommand = method => web3Instance => (...params) => {
   return new Promise((resolve, reject) => {
-    web3.currentProvider.sendAsync(
+    web3Instance.currentProvider.sendAsync(
       {
+        id: Date.now(),
         jsonrpc: "2.0",
         method,
         params,
-        id: Date.now(),
       },
       (err, res) => {
         if (err) {
