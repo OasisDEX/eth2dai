@@ -4,7 +4,7 @@ import { cypressVisitWithWeb3, tid } from '../utils';
 
 import { makeScreenshots } from '../utils/makeScreenshots';
 
-const defaultTimeout = { timeout: 15000 };
+const defaultTimeout = { timeout: 40000 };
 
 const waitForBalancesToLoad = () => {
   cy.get(tid('selling-token', tid('balance')), defaultTimeout).contains(/1,001.../);
