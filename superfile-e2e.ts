@@ -19,12 +19,10 @@ async function visReg() {
     await superCI.saveCollection('e2e-vis-reg-report', join(__dirname, '.reg'));
 
     const reportData = require('./.reg/out.json');
-    report(
-      `[Vis reg report — E2E](${superCI.getArtifactLink('/e2e-vis-reg-report/index.html')})
-      Changed files: **${reportData.failedItems.length}**
-      New files: **${reportData.newItems.length}**
-      Deleted files: **${reportData.deletedItems.length}**
-      `,
-    );
+    report({
+      name: 'Visual regression for E2E',
+      shortDescription: `Changed: ${reportData.failedItems.length}, New: ${reportData.newItems.length}, Deleted: ${reportData.deletedItems.length}`,
+      detailsUrl: superCI.getArtifactLink('/e2e-vis-reg-report/index.html'),
+    });
   }
 }

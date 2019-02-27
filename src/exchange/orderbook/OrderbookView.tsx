@@ -5,7 +5,7 @@ import * as styles from './OrderbookView.scss';
 
 import { default as MediaQuery } from 'react-responsive';
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
-import { FormatAmount, FormatPriceOrderbook } from '../../utils/formatters/Formatters';
+import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { LoadableStatus, LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
@@ -71,7 +71,7 @@ export class OrderbookView extends React.Component<Props> {
       <PanelHeader>
         <span>Order book</span>
         <div style={{ marginLeft: 'auto', display: 'flex' }}>
-          <MediaQuery maxWidth={768}>
+          <MediaQuery maxWidth={992}>
             {(matches) => {
               let isDisabled = false;
 
@@ -83,7 +83,7 @@ export class OrderbookView extends React.Component<Props> {
                 disabled={isDisabled}
                 className={styles.switchBtn}
                 onClick={this.changeChartListView}
-                data-test-id={`orderbook-type-list`}
+                data-test-id="orderbook-type-list"
               >
                 <ToChartSwitchBtn/>
               </Button>;
@@ -165,7 +165,7 @@ export class OrderbookView extends React.Component<Props> {
         onClick={parent.takeOffer(offer)}>
         <td data-test-id="price">
           <SellBuySpan type={kind}>
-            <FormatPriceOrderbook value={offer.price} token={offer.quoteToken} kind={kind}/>
+            <FormatPriceOrder value={offer.price} token={offer.quoteToken} kind={kind}/>
           </SellBuySpan>
         </td>
         <td data-test-id="amount">

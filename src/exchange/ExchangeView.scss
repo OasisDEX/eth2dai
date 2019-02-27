@@ -33,7 +33,8 @@ $twoColumnsPanelWidth: 454px;
 
 .orderbookPanel {
   height: $offerMakePanelHeight;
-  width: $twoColumnsPanelWidth;
+  flex-basis: $twoColumnsPanelWidth;
+  flex-grow: 1;
 
   @include media-breakpoint-down(lg) {
     width: 100%;

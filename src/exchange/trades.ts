@@ -12,6 +12,7 @@ export type TradeRole = 'taker' | 'maker';
 export interface Trade {
   offerId: BigNumber;
   act: TradeAct; // Market action (buy|sell)
+  kind: TradeAct; // Raw market action (buy|sell)
   role: TradeRole; // Role (taker|maker)
   // maker:    string     // Offer creator address
   // taker:    string     // Trade creator address (msg.sender)
@@ -52,11 +53,13 @@ const parseTrade = (
       baseAmount: sellAmount,
       quoteAmount: buyAmount,
       act: account && maker === account ? 'sell' : 'buy',
+      kind: 'sell',
     } : {
       price: sellAmount.div(buyAmount),
       baseAmount: buyAmount,
       quoteAmount: sellAmount,
       act: account && maker === account ? 'buy' : 'sell',
+      kind: 'buy',
     }, ...{
       baseToken,
       quoteToken,

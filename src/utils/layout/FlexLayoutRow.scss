@@ -3,5 +3,9 @@
 .flr {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap;
+
+  @include media-breakpoint-down(lg) {
+    flex-wrap: wrap;
+  }
+
 }
