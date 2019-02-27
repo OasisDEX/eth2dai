@@ -10,7 +10,7 @@ import { SettingsIcon, SwapArrows } from '../utils/icons/Icons';
 import * as panelStyling from '../utils/panel/Panel.scss';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
 import { Asset } from './asset/Asset';
-import { FormChangeKind, InstantFormState, ManualChange, Message, MessageKind } from './instant';
+import { FormChangeKind, FormStage, InstantFormState, ManualChange, Message, MessageKind } from './instant';
 import * as styles from './Instant.scss';
 
 class TradingSide extends React.Component<any> {
@@ -46,7 +46,12 @@ const Selling = (props: any) => (
 const Buying = (props: any) => (
   <TradingSide data-test-id="buying-token" inputPlaceholder="Receive Amount" {...props}/>);
 
-export const error = (msg: Message) => {
+function error(msg: Message | undefined) {
+
+  if (!msg) {
+    return <></>;
+  }
+
   switch (msg.kind) {
     case MessageKind.insufficientAmount:
       return <>Balance too low</>;
@@ -57,14 +62,14 @@ export const error = (msg: Message) => {
     case MessageKind.orderbookTotalExceeded:
       return <>Not enough orders </>;
     default:
-      return <></>;
+      return <>Don't know how to show message: {msg.kind}</>;
   }
-};
+}
 
 export class InstantView extends React.Component<InstantFormState> {
 
   public render() {
-    const { sellToken, sellAmount, buyToken, buyAmount, balances, messages } = this.props;
+    const { sellToken, sellAmount, buyToken, buyAmount, balances, message } = this.props;
     return (
       <section className={classnames(styles.panel, panelStyling.panel)}>
         <header className={styles.header}>
@@ -90,12 +95,18 @@ export class InstantView extends React.Component<InstantFormState> {
                   balance={balances ? balances[buyToken] : undefined}/>
         </div>
 
-        <div data-test-id="error" className={classnames(styles.errors, messages.length ? '' : 'hide-all')}>
-          {error(messages[0] || {})}
+        <div data-test-id="error" className={classnames(styles.errors, message ? '' : 'hide-all')}>
+          {error(message)}
         </div>
 
         <footer className={styles.footer}>
-          <Button size="lg" color="greyWhite" onClick={this.startTx} style={{ width: '100%' }}>
+          <Button
+            size="lg"
+            color="greyWhite"
+            onClick={this.startTx}
+            style={{ width: '100%' }}
+            disabled={this.props.stage !== FormStage.readyToProceed}
+          >
             Start Transaction
           </Button>
         </footer>

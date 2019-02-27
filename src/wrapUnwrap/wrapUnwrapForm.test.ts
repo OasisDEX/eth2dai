@@ -30,6 +30,10 @@ const defaultCalls = {
   wrapEstimateGas: () => of(100),
   unwrap: null as any,
   unwrapEstimateGas: () => of(100),
+  otcGetBuyAmount: undefined as any,
+  otcGetPayAmount: undefined as any,
+  otcGetBestOffer: undefined as any,
+  otcOffers: undefined as any,
 };
 
 const gasPrice$ = of(new BigNumber(0.01));

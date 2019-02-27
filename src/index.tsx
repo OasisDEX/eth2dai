@@ -9,7 +9,6 @@ import { networks } from './blockchain/config';
 import { account$, networkId$ } from './blockchain/network';
 import { Web3Status, web3Status$ } from './blockchain/web3';
 import { LoadingState } from './landingPage/LandingPage';
-import { Migration } from './landingPage/Migration';
 import { Main } from './Main';
 import { connect } from './utils/connect';
 import { UnreachableCaseError } from './utils/UnreachableCaseError';
@@ -50,9 +49,9 @@ class App extends React.Component<Props, { migrationAccepted: boolean }> {
         if (!this.props.tosAccepted) {
           return LoadingState.ACCEPT_TOS;
         }
-        if (!this.state.migrationAccepted) {
-          return <Migration continue={this.continue} />;
-        }
+        // if (!this.state.migrationAccepted) {
+        //   return <Migration continue={this.continue} />;
+        // }
 
         return <Main/>;
       default:

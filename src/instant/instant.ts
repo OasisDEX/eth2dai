@@ -4,7 +4,7 @@ import { isEqual } from 'lodash';
 import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
-  catchError,
+  catchError, delay,
   distinctUntilChanged,
   first,
   flatMap,
@@ -18,12 +18,12 @@ import {
 import { Balances, DustLimits } from '../balances/balances';
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { InstantOrderData } from '../blockchain/calls/instant';
-import { tokens } from '../blockchain/config';
 import { TxState, TxStatus } from '../blockchain/transactions';
 import { OfferType, Orderbook } from '../exchange/orderbook/orderbook';
 import { TradingPair } from '../exchange/tradingPair/tradingPair';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
+  doGasEstimation,
   GasEstimationStatus,
   HasGasEstimation,
   toBalancesChange,
@@ -85,6 +85,7 @@ export type Message = {
   field: string;
   priority: number;
   placement: Placement;
+  error: any
 };
 
 export enum TradeEvaluationStatus {
@@ -105,7 +106,7 @@ export interface InstantFormState extends HasGasEstimation {
   kind?: OfferType;
   buyAllowance?: boolean;
   sellAllowance?: boolean;
-  messages: Message[];
+  message?: Message;
   stage: FormStage;
   submit: (state: InstantFormState) => void;
   change: (change: ManualChange) => void;
@@ -197,9 +198,9 @@ export type StageChange =
 
 export type InstantFormChange = ManualChange | EnvironmentChange | StageChange;
 
-function isBaseToken(token: string, base: string) {
-  return base === token || base === 'WETH' && token === 'ETH';
-}
+// function isBaseToken(token: string, base: string) {
+//   return base === token || base === 'WETH' && token === 'ETH';
+// }
 
 function instantOrderData(state: InstantFormState): InstantOrderData {
   return {
@@ -312,6 +313,14 @@ function evaluateBuy(calls: Calls, state: InstantFormState) {
     amount: buyAmount,
   }).pipe(
     map(sellAmount => ({ sellAmount })),
+    catchError(error => of({
+      sellAmount: undefined,
+      message: {
+        error,
+        kind: MessageKind.orderbookTotalExceeded,
+        placement: Position.TOP,
+      }
+    }))
   );
 }
 
@@ -329,7 +338,15 @@ function evaluateSell(calls: Calls, state: InstantFormState) {
     buyToken,
     amount: sellAmount,
   }).pipe(
-    map(buyAmount => ({ buyAmount }))
+    map(buyAmount => ({ buyAmount })),
+    catchError(error => of({
+      buyAmount: undefined,
+      message: {
+        error,
+        kind: MessageKind.orderbookTotalExceeded,
+        placement: Position.TOP,
+      }
+    }))
   );
 }
 
@@ -347,6 +364,12 @@ function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observ
   );
 }
 
+function gasEstimation(_calls: Calls, _state: InstantFormState): Observable<number> {
+  return of(100000).pipe(
+    delay(500)
+  );
+}
+
 function evaluateTrade(
     theCalls$: Calls$, state: InstantFormState
 ): Observable<InstantFormState> {
@@ -356,14 +379,23 @@ function evaluateTrade(
         combineLatest(
           state.kind === OfferType.buy ? evaluateBuy(calls, state) : evaluateSell(calls, state),
           getBestPrice(calls, state.sellToken, state.buyToken)
+        ).pipe(
+          map(([evaluation, bestPrice]) => ({
+            ...state,
+            ...evaluation,
+            bestPrice,
+          })),
+          flatMap(stateWithoutGasEstimation =>
+            stateWithoutGasEstimation.message ?
+              of(stateWithoutGasEstimation) :
+              doGasEstimation(theCalls$, stateWithoutGasEstimation, gasEstimation)
+          ),
+          map(stateWithGasEstimation => ({
+            ...stateWithGasEstimation,
+            tradeEvaluationStatus: TradeEvaluationStatus.calculated,
+          }))
         )
       ),
-      map(([result, bestPrice]) => ({
-        ...state,
-        ...result,
-        bestPrice,
-        tradeEvaluationStatus: TradeEvaluationStatus.calculated,
-      })),
       catchError(err => of({
         ...state,
         ...(state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }),
@@ -376,93 +408,91 @@ function evaluateTrade(
 }
 
 function preValidate(state: InstantFormState): InstantFormState {
-  if (state.stage !== FormStage.editing) {
-    return state;
-  }
+  // if (state.stage !== FormStage.editing) {
+  //   return state;
+  // }
+  //
+  // let message: Message | undefined ;
+  // const [spendField, receiveField] = ['sellToken', 'buyToken'];
+  // const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
+  // const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
+  // const dustLimit = isBaseToken(state.buyToken, state.baseToken) ? state.dustLimitBase : state.dustLimitQuote;
+  // if (receiveAmount && spendAmount) {
+  //   if (state.balances && state.balances[spendToken].lt(spendAmount)) {
+  //     message = {
+  //       kind: MessageKind.insufficientAmount,
+  //       field: spendField,
+  //       priority: 1,
+  //       token: spendToken,
+  //       placement: Position.BOTTOM
+  //     };
+  //   }
+  //   if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
+  //     message = {
+  //       kind: MessageKind.dustAmount,
+  //       field: spendField,
+  //       priority: 2,
+  //       token: spendToken,
+  //       amount: dustLimit || new BigNumber(0),
+  //       placement: Position.BOTTOM
+  //     };
+  //   }
+  // }
+  // if (spendAmount && new BigNumber(tokens[spendToken].maxSell).lt(spendAmount)) {
+  //   message = {
+  //     kind: MessageKind.incredibleAmount,
+  //     field: spendField,
+  //     priority: 2,
+  //     token: spendToken,
+  //     placement: Position.BOTTOM
+  //   };
+  // }
+  // if (receiveAmount && new BigNumber(tokens[receiveToken].maxSell).lt(receiveAmount)) {
+  //   message = {
+  //     kind: MessageKind.incredibleAmount,
+  //     field: receiveField,
+  //     priority: 1,
+  //     token: receiveToken,
+  //     placement: Position.BOTTOM
+  //   };
+  // }
+  // if (spendAmount && !receiveAmount) {
+  //   message = {
+  //     kind: MessageKind.orderbookTotalExceeded,
+  //     field: spendField,
+  //     priority: 3,
+  //     placement: Position.TOP
+  //   };
+  // }
+  // if (!spendAmount && receiveAmount) {
+  //   message = {
+  //     kind: MessageKind.orderbookTotalExceeded,
+  //     field: receiveField,
+  //     priority: 3,
+  //     placement: Position.TOP
+  //   };
+  // }
 
-  const messages: Message[] = [];
-  const [spendField, receiveField] = ['sellToken', 'buyToken'];
-  const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
-  const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
-  const dustLimit = isBaseToken(state.buyToken, state.baseToken) ? state.dustLimitBase : state.dustLimitQuote;
-  if (receiveAmount && spendAmount) {
-    if (state.balances && state.balances[spendToken].lt(spendAmount)) {
-      messages.push({
-        kind: MessageKind.insufficientAmount,
-        field: spendField,
-        priority: 1,
-        token: spendToken,
-        placement: Position.BOTTOM
-      });
-    }
-    if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
-      messages.push({
-        kind: MessageKind.dustAmount,
-        field: spendField,
-        priority: 2,
-        token: spendToken,
-        amount: dustLimit || new BigNumber(0),
-        placement: Position.BOTTOM
-      });
-    }
-  }
-  if (spendAmount && new BigNumber(tokens[spendToken].maxSell).lt(spendAmount)) {
-    messages.push({
-      kind: MessageKind.incredibleAmount,
-      field: spendField,
-      priority: 2,
-      token: spendToken,
-      placement: Position.BOTTOM
-    });
-  }
-  if (receiveAmount && new BigNumber(tokens[receiveToken].maxSell).lt(receiveAmount)) {
-    messages.push({
-      kind: MessageKind.incredibleAmount,
-      field: receiveField,
-      priority: 1,
-      token: receiveToken,
-      placement: Position.BOTTOM
-    });
-  }
-  if (spendAmount && !receiveAmount) {
-    messages.push({
-      kind: MessageKind.orderbookTotalExceeded,
-      field: spendField,
-      priority: 3,
-      placement: Position.TOP
-    });
-  }
-  if (!spendAmount && receiveAmount) {
-    messages.push({
-      kind: MessageKind.orderbookTotalExceeded,
-      field: receiveField,
-      priority: 3,
-      placement: Position.TOP
-    });
-  }
+  // return {
+  //   ...state,
+  //   message,
+  // } as InstantFormState;
 
-  // TODO: Figure out a way to have a single error message
-  return {
-    ...state,
-    messages: messages.sort(byPriority),
-    gasEstimationStatus: GasEstimationStatus.unset,
-  } as InstantFormState;
-}
-
-function byPriority(firstMessage: Message, secondMessage: Message) {
-  return secondMessage.priority - firstMessage.priority;
+  return state;
 }
 
 function postValidate(state: InstantFormState): InstantFormState {
-  if (state.stage !== FormStage.editing) {
-    return state;
-  }
-  if (state.gasEstimationStatus === GasEstimationStatus.calculated &&
-    state.buyAmount && state.sellAmount &&
-    state.messages.length === 0) {
-    return { ...state, stage: FormStage.readyToProceed };
-  }
-  return { ...state, stage: FormStage.editing };
+  return state;
+  // if (state.stage !== FormStage.editing) {
+  //   return state;
+  // }
+  // if (
+  //   state.tradeEvaluationStatus === TradeEvaluationStatus.calculated &&
+  //   state.buyAmount && state.sellAmount && !state.message
+  // ) {
+  //   return { ...state, stage: FormStage.readyToProceed };
+  // }
+  // return { ...state, stage: FormStage.editing };
 }
 
 function prepareSubmit(calls$: Calls$):
@@ -528,15 +558,12 @@ export function createFormController$(
     baseToken: tradingPair.base,
     buyToken: tradingPair.quote,
     sellToken: tradingPair.base,
-    // buyTokenDigits: tokens[tradingPair.quote].digits,
-    // sellTokenDigits: tokens[tradingPair.base].digits,
     buyAmount: undefined,
     sellAmount: undefined,
     kind: undefined,
     buyAllowance: undefined,
     sellAllowance: undefined,
     stage: FormStage.editing,
-    messages: [],
     gasEstimationStatus: GasEstimationStatus.unset,
     tradeEvaluationStatus: TradeEvaluationStatus.unset,
   };
@@ -551,13 +578,14 @@ export function createFormController$(
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.calls$)),
     tap(state => console.log(
+      'state.message', state.message,
+      'state.gasEstimationStatus', state.gasEstimationStatus,
       'tradeEvaluationStatus:', state.tradeEvaluationStatus,
       'tradeEvaluationError:', state.tradeEvaluationError,
       'bestPrice:', state.bestPrice && state.bestPrice.toString()
     )),
     // switchMap(curry(addGasEstimation)(params.calls$)),
     map(postValidate),
-    startWith(initialState),
     shareReplay(1),
   );
 }
