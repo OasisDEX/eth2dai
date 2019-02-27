@@ -71,7 +71,7 @@ export class OrderbookView extends React.Component<Props> {
       <PanelHeader>
         <span>Order book</span>
         <div style={{ marginLeft: 'auto', display: 'flex' }}>
-          <MediaQuery maxWidth={768}>
+          <MediaQuery maxWidth={992}>
             {(matches) => {
               let isDisabled = false;
 
@@ -83,7 +83,7 @@ export class OrderbookView extends React.Component<Props> {
                 disabled={isDisabled}
                 className={styles.switchBtn}
                 onClick={this.changeChartListView}
-                data-test-id={`orderbook-type-list`}
+                data-test-id="orderbook-type-list"
               >
                 <ToChartSwitchBtn/>
               </Button>;
