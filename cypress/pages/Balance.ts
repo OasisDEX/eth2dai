@@ -1,4 +1,4 @@
-import { tid } from "../utils/index";
+import { tid } from '../utils/index';
 
 export class Balance {
   public static of = (tokenSymbol: string) => {
@@ -12,5 +12,5 @@ export class Balance {
         });
       },
     };
-  };
+  }
 }
