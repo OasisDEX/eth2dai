@@ -16,10 +16,11 @@ import * as styles from './Instant.scss';
 class TradingSide extends React.Component<any> {
   public render() {
     return (
-      <div className={styles.assetPicker}>
+      <div className={styles.assetPicker} {...this.props}>
         <Asset currency={this.props.asset} balance={this.props.balance}/>
         {/* TODO: Make it parameterized like the tokens in offerMakeForm.*/}
         <BigNumberInput
+          data-test-id={'amount'}
           type="text"
           className={styles.input}
           mask={createNumberMask({
@@ -40,10 +41,12 @@ class TradingSide extends React.Component<any> {
   }
 }
 
-const Selling = (props: any) => (<TradingSide inputPlaceholder="Deposit Amount" {...props}/>);
-const Buying = (props: any) => (<TradingSide inputPlaceholder="Receive Amount" {...props}/>);
+const Selling = (props: any) => (
+  <TradingSide data-test-id="selling-token" inputPlaceholder="Deposit Amount" {...props}/>);
+const Buying = (props: any) => (
+  <TradingSide data-test-id="buying-token" inputPlaceholder="Receive Amount" {...props}/>);
 
-const error = (msg: Message) => {
+export const error = (msg: Message) => {
   switch (msg.kind) {
     case MessageKind.insufficientAmount:
       return <>Balance too low</>;
@@ -80,14 +83,14 @@ export class InstantView extends React.Component<InstantFormState> {
                    amount={sellAmount}
                    onAmountChange={this.updateSellingAmount}
                    balance={balances ? balances[sellToken] : undefined}/>
-          <div className={styles.swapIcon} onClick={this.swap}><SwapArrows/></div>
+          <div data-test-id="swap" className={styles.swapIcon} onClick={this.swap}><SwapArrows/></div>
           <Buying asset={buyToken}
                   amount={buyAmount}
                   onAmountChange={this.updateBuyingAmount}
                   balance={balances ? balances[buyToken] : undefined}/>
         </div>
 
-        <div className={classnames(styles.errors, messages.length ? '' : 'hide-all')}>
+        <div data-test-id="error" className={classnames(styles.errors, messages.length ? '' : 'hide-all')}>
           {error(messages[0] || {})}
         </div>
 
