@@ -39,6 +39,10 @@ const defaultCalls = {
   wrapEstimateGas: null as any,
   unwrap: null as any,
   unwrapEstimateGas: null as any,
+  otcGetBuyAmount: undefined as any,
+  otcGetPayAmount: undefined as any,
+  otcGetBestOffer: undefined as any,
+  otcOffers: undefined as any,
 };
 
 const defParams = {
