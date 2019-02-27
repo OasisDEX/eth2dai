@@ -61,7 +61,7 @@ jobs:
           name: Run build & e2e tests
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            yarn build:ci
+            ENV=dev yarn build:ci
             ./.circleci/run-e2e.sh
 
       - persist_to_workspace:
