@@ -13,11 +13,21 @@ import { Asset } from './asset/Asset';
 import { FormChangeKind, FormStage, InstantFormState, ManualChange, Message, MessageKind } from './instant';
 import * as styles from './Instant.scss';
 
-class TradingSide extends React.Component<any> {
+interface TradingSideProps {
+  placeholder: string;
+  dataTestId: string;
+  asset: string;
+  amount: BigNumber;
+  balance: BigNumber;
+  onAmountChange: () => void;
+}
+
+class TradingSide extends React.Component<TradingSideProps> {
   public render() {
+    const { amount, asset, balance, placeholder, onAmountChange, ...theRest } = this.props;
     return (
-      <div className={styles.assetPicker} {...this.props}>
-        <Asset currency={this.props.asset} balance={this.props.balance}/>
+      <div className={styles.assetPicker} {...theRest}>
+        <Asset currency={asset} balance={balance}/>
         {/* TODO: Make it parameterized like the tokens in offerMakeForm.*/}
         <BigNumberInput
           data-test-id={'amount'}
@@ -28,13 +38,13 @@ class TradingSide extends React.Component<any> {
             decimalLimit: 5,
             prefix: ''
           })}
-          onChange={this.props.onAmountChange}
+          onChange={onAmountChange}
           value={
-            (this.props.amount || null) &&
-            formatPrice(this.props.amount as BigNumber, this.props.asset)
+            (amount || null) &&
+            formatPrice(amount as BigNumber, asset)
           }
           guide={true}
-          placeholder={this.props.inputPlaceholder}
+          placeholder={placeholder}
         />
       </div>
     );
@@ -42,9 +52,11 @@ class TradingSide extends React.Component<any> {
 }
 
 const Selling = (props: any) => (
-  <TradingSide data-test-id="selling-token" inputPlaceholder="Deposit Amount" {...props}/>);
+  <TradingSide data-test-id="selling-token" placeholder="Deposit Amount" {...props}/>
+);
 const Buying = (props: any) => (
-  <TradingSide data-test-id="buying-token" inputPlaceholder="Receive Amount" {...props}/>);
+  <TradingSide data-test-id="buying-token" placeholder="Receive Amount" {...props}/>
+);
 
 function error(msg: Message | undefined) {
 
@@ -69,7 +81,7 @@ function error(msg: Message | undefined) {
 export class InstantView extends React.Component<InstantFormState> {
 
   public render() {
-    const { sellToken, sellAmount, buyToken, buyAmount, balances, message } = this.props;
+    const { sellToken, sellAmount, buyToken, buyAmount, balances, tradeEvaluationError } = this.props;
     return (
       <section className={classnames(styles.panel, panelStyling.panel)}>
         <header className={styles.header}>
@@ -95,8 +107,8 @@ export class InstantView extends React.Component<InstantFormState> {
                   balance={balances ? balances[buyToken] : undefined}/>
         </div>
 
-        <div data-test-id="error" className={classnames(styles.errors, message ? '' : 'hide-all')}>
-          {error(message)}
+        <div data-test-id="error" className={classnames(styles.errors, tradeEvaluationError ? '' : 'hide-all')}>
+          {error(tradeEvaluationError)}
         </div>
 
         <footer className={styles.footer}>

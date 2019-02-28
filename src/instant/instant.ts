@@ -32,6 +32,7 @@ import {
   toGasPriceChange,
   toOrderbookChange$,
 } from '../utils/form';
+import { tokens } from 'src/blockchain/config';
 
 export enum FormStage {
   editing = 'editing',
@@ -64,6 +65,7 @@ export enum MessageKind {
   incredibleAmount = 'incredibleAmount',
   dustAmount = 'dustAmount',
   orderbookTotalExceeded = 'orderbookTotalExceeded',
+  custom = 'custom'
 }
 
 export type Message = {
@@ -82,6 +84,12 @@ export type Message = {
   placement: Placement;
 } | {
   kind: MessageKind.orderbookTotalExceeded
+  field: string;
+  priority: number;
+  placement: Placement;
+  error: any
+} | {
+  kind: MessageKind.custom
   field: string;
   priority: number;
   placement: Placement;
@@ -198,9 +206,9 @@ export type StageChange =
 
 export type InstantFormChange = ManualChange | EnvironmentChange | StageChange;
 
-// function isBaseToken(token: string, base: string) {
-//   return base === token || base === 'WETH' && token === 'ETH';
-// }
+function isBaseToken(token: string, base: string) {
+  return base === token || base === 'WETH' && token === 'ETH';
+}
 
 function instantOrderData(state: InstantFormState): InstantOrderData {
   return {
@@ -315,10 +323,12 @@ function evaluateBuy(calls: Calls, state: InstantFormState) {
     map(sellAmount => ({ sellAmount })),
     catchError(error => of({
       sellAmount: undefined,
-      message: {
-        error,
+      tradeEvaluationStatus: TradeEvaluationStatus.error,
+      tradeEvaluationError: {
         kind: MessageKind.orderbookTotalExceeded,
-        placement: Position.TOP,
+        field: "buyToken",
+        priority: 3,
+        placement: Position.TOP
       }
     }))
   );
@@ -341,10 +351,12 @@ function evaluateSell(calls: Calls, state: InstantFormState) {
     map(buyAmount => ({ buyAmount })),
     catchError(error => of({
       buyAmount: undefined,
-      message: {
-        error,
+      tradeEvaluationStatus: TradeEvaluationStatus.error,
+      tradeEvaluationError: {
         kind: MessageKind.orderbookTotalExceeded,
-        placement: Position.TOP,
+        field: "sellToken",
+        priority: 3,
+        placement: Position.TOP
       }
     }))
   );
@@ -396,103 +408,81 @@ function evaluateTrade(
           }))
         )
       ),
-      catchError(err => of({
+      catchError(err => {        
+        return of({
         ...state,
         ...(state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }),
         bestPrice: undefined,
         tradeEvaluationStatus: TradeEvaluationStatus.error,
-        tradeEvaluationError: err,
-      })),
+        tradeEvaluationError: {
+          kind: MessageKind.custom,
+          error: err,
+          field: state.kind === OfferType.buy ? "buyToken" : "sellToken",
+          priority: 3,
+          placement: Position.TOP
+        },
+      })}),
       startWith({ ...state, tradeEvaluationStatus: TradeEvaluationStatus.calculating }),
   );
 }
 
-function preValidate(state: InstantFormState): InstantFormState {
-  // if (state.stage !== FormStage.editing) {
-  //   return state;
-  // }
-  //
-  // let message: Message | undefined ;
-  // const [spendField, receiveField] = ['sellToken', 'buyToken'];
-  // const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
-  // const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
-  // const dustLimit = isBaseToken(state.buyToken, state.baseToken) ? state.dustLimitBase : state.dustLimitQuote;
-  // if (receiveAmount && spendAmount) {
-  //   if (state.balances && state.balances[spendToken].lt(spendAmount)) {
-  //     message = {
-  //       kind: MessageKind.insufficientAmount,
-  //       field: spendField,
-  //       priority: 1,
-  //       token: spendToken,
-  //       placement: Position.BOTTOM
-  //     };
-  //   }
-  //   if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
-  //     message = {
-  //       kind: MessageKind.dustAmount,
-  //       field: spendField,
-  //       priority: 2,
-  //       token: spendToken,
-  //       amount: dustLimit || new BigNumber(0),
-  //       placement: Position.BOTTOM
-  //     };
-  //   }
-  // }
-  // if (spendAmount && new BigNumber(tokens[spendToken].maxSell).lt(spendAmount)) {
-  //   message = {
-  //     kind: MessageKind.incredibleAmount,
-  //     field: spendField,
-  //     priority: 2,
-  //     token: spendToken,
-  //     placement: Position.BOTTOM
-  //   };
-  // }
-  // if (receiveAmount && new BigNumber(tokens[receiveToken].maxSell).lt(receiveAmount)) {
-  //   message = {
-  //     kind: MessageKind.incredibleAmount,
-  //     field: receiveField,
-  //     priority: 1,
-  //     token: receiveToken,
-  //     placement: Position.BOTTOM
-  //   };
-  // }
-  // if (spendAmount && !receiveAmount) {
-  //   message = {
-  //     kind: MessageKind.orderbookTotalExceeded,
-  //     field: spendField,
-  //     priority: 3,
-  //     placement: Position.TOP
-  //   };
-  // }
-  // if (!spendAmount && receiveAmount) {
-  //   message = {
-  //     kind: MessageKind.orderbookTotalExceeded,
-  //     field: receiveField,
-  //     priority: 3,
-  //     placement: Position.TOP
-  //   };
-  // }
+function postValidate(state: InstantFormState): InstantFormState {  
+  
+  if (state.stage !== FormStage.editing) {
+    return state;
+  }
 
-  // return {
-  //   ...state,
-  //   message,
-  // } as InstantFormState;
+  let message: Message | undefined  = state.tradeEvaluationError;
+  const [spendField, receiveField] = ['sellToken', 'buyToken'];
+  const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
+  const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
+  const dustLimit = isBaseToken(state.buyToken, state.baseToken) ? state.dustLimitBase : state.dustLimitQuote;
+  
+  if (receiveAmount && spendAmount) {
+    if (state.balances && state.balances[spendToken].lt(spendAmount)) {
+      message = prioritize(message, {
+        kind: MessageKind.insufficientAmount,
+        field: spendField,
+        priority: 1,
+        token: spendToken,
+        placement: Position.BOTTOM
+      });
+    }
+    if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
+      message = prioritize(message,{
+        kind: MessageKind.dustAmount,
+        field: spendField,
+        priority: 2,
+        token: spendToken,
+        amount: dustLimit || new BigNumber(0),
+        placement: Position.BOTTOM
+      });
+    }
+  }
+  if (spendAmount && new BigNumber(tokens[spendToken].maxSell).lt(spendAmount)) {
+    message = prioritize(message,{
+      kind: MessageKind.incredibleAmount,
+      field: spendField,
+      priority: 2,
+      token: spendToken,
+      placement: Position.BOTTOM
+    });
+  }
+  if (receiveAmount && new BigNumber(tokens[receiveToken].maxSell).lt(receiveAmount)) {
+    message = prioritize(message,{
+      kind: MessageKind.incredibleAmount,
+      field: receiveField,
+      priority: 1,
+      token: receiveToken,
+      placement: Position.BOTTOM
+    });
+  }
 
-  return state;
-}
-
-function postValidate(state: InstantFormState): InstantFormState {
-  return state;
-  // if (state.stage !== FormStage.editing) {
-  //   return state;
-  // }
-  // if (
-  //   state.tradeEvaluationStatus === TradeEvaluationStatus.calculated &&
-  //   state.buyAmount && state.sellAmount && !state.message
-  // ) {
-  //   return { ...state, stage: FormStage.readyToProceed };
-  // }
-  // return { ...state, stage: FormStage.editing };
+  return {
+    ...state,
+    tradeEvaluationStatus : message ? TradeEvaluationStatus.error : state.tradeEvaluationStatus,
+    tradeEvaluationError: message
+  } as InstantFormState;
 }
 
 function prepareSubmit(calls$: Calls$):
@@ -574,18 +564,18 @@ export function createFormController$(
     environmentChange$,
   ).pipe(
     scan(applyChange, initialState),
-    map(preValidate),
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.calls$)),
-    tap(state => console.log(
-      'state.message', state.message,
-      'state.gasEstimationStatus', state.gasEstimationStatus,
-      'tradeEvaluationStatus:', state.tradeEvaluationStatus,
-      'tradeEvaluationError:', state.tradeEvaluationError,
-      'bestPrice:', state.bestPrice && state.bestPrice.toString()
-    )),
     // switchMap(curry(addGasEstimation)(params.calls$)),
     map(postValidate),
     shareReplay(1),
   );
+}
+
+const prioritize = (current: Message = { priority: 0 } as Message, candidate: Message) => {
+  if(current.priority < candidate.priority) {
+    return candidate;
+  }
+
+  return current;
 }
