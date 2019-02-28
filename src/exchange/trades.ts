@@ -116,7 +116,7 @@ export const getTrades = (
 
   return vulcan0x(
     context.oasisDataService.url,
-    'allOasisTrades',
+    'allOasisSimpleTrades',
     {},
     filter,
     fields,
