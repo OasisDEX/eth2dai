@@ -1,18 +1,17 @@
-import { setupFakeWeb3ForTesting } from '../blockchain/web3';
-
-setupFakeWeb3ForTesting();
-
 import { BigNumber } from 'bignumber.js';
 import jestEach from 'jest-each';
 import { omit } from 'lodash';
 import { of } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { setupFakeWeb3ForTesting } from '../blockchain/web3';
 
 import { Calls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
 import { createFakeOrderbook, emptyOrderBook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
 import { createFormController$, FormChangeKind } from './instant';
+
+setupFakeWeb3ForTesting();
 
 function snapshotify(object: any): any {
   return omit(object, 'change', 'submit');
@@ -39,10 +38,10 @@ const defaultCalls = {
   wrapEstimateGas: null as any,
   unwrap: null as any,
   unwrapEstimateGas: null as any,
-  otcGetBuyAmount: undefined as any,
-  otcGetPayAmount: undefined as any,
-  otcGetBestOffer: undefined as any,
-  otcOffers: undefined as any,
+  otcGetBuyAmount: () => of(new BigNumber(100)),
+  otcGetPayAmount: () => of(new BigNumber(100)),
+  otcGetBestOffer: () => of(new BigNumber(100)),
+  otcOffers: () => of(fakeOrderBook),
 };
 
 const defParams = {
