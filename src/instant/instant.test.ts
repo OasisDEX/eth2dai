@@ -9,7 +9,7 @@ import { Calls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
 import { createFakeOrderbook, emptyOrderBook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
-import { createFormController$, FormChangeKind } from './instant';
+import { createFormController$, InstantFormChangeKind } from './instant';
 
 setupFakeWeb3ForTesting();
 
@@ -91,7 +91,7 @@ test.skip('change pair', done => {
   const controller = createFormController$(defParams, tradingPair);
   const { change } = unpack(controller);
 
-  change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+  change({ kind: InstantFormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
 
   controller.subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
@@ -101,18 +101,18 @@ test.skip('change pair', done => {
 
 jestEach([
   ['sell', (change: any) => {
-    change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(1) });
+    change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(1) });
   }],
   ['buy', (change: any) => {
-    change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
+    change({ kind: InstantFormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
   }],
   ['pay eth', (change: any) => {
-    change({ kind: FormChangeKind.pairChange, buyToken: 'DAI', sellToken: 'ETH' });
-    change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
+    change({ kind: InstantFormChangeKind.pairChange, buyToken: 'DAI', sellToken: 'ETH' });
+    change({ kind: InstantFormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
   }],
   ['buy eth', (change: any) => {
-    change({ kind: FormChangeKind.pairChange, buyToken: 'ETH', sellToken: 'DAI' });
-    change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(2) });
+    change({ kind: InstantFormChangeKind.pairChange, buyToken: 'ETH', sellToken: 'DAI' });
+    change({ kind: InstantFormChangeKind.buyAmountFieldChange, value: new BigNumber(2) });
   }],
 ]).test.skip('transaction - %s', (_test, perform, done) => {
   const instantOrderMock = jest.fn(
@@ -152,32 +152,32 @@ test.skip('complex scenario', done => {
     done();
   });
 
-  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(2) });
+  change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(2) });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
 
-  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
+  change({ kind: InstantFormChangeKind.buyAmountFieldChange, value: new BigNumber(90) });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
 
-  change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+  change({ kind: InstantFormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
 
-  change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(2) });
+  change({ kind: InstantFormChangeKind.buyAmountFieldChange, value: new BigNumber(2) });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
 
-  change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(100) });
+  change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(100) });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
 
-  change({ kind: FormChangeKind.formResetChange });
+  change({ kind: InstantFormChangeKind.formResetChange });
   controller.pipe(first()).subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
   });
@@ -185,25 +185,25 @@ test.skip('complex scenario', done => {
 
 jestEach([
   ['insufficient balance', (change: any) => {
-    change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
-    change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(1100) });
+    change({ kind: InstantFormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+    change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(1100) });
   }],
   ['dust limit', (change: any) => {
-    change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(0.001) });
+    change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(0.001) });
   }],
   ['incredible amount base', (change: any) => {
-    change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(1000000000000001) });
+    change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(1000000000000001) });
   }],
   ['incredible amount quote', (change: any) => {
-    change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
-    change({ kind: FormChangeKind.sellAmountFieldChange, value: new BigNumber(1000000000000001) });
+    change({ kind: InstantFormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+    change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(1000000000000001) });
   }],
   ['orderbook exceeded quote', (change: any) => {
-    change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(2001) });
+    change({ kind: InstantFormChangeKind.buyAmountFieldChange, value: new BigNumber(2001) });
   }],
   ['orderbook exceeded base', (change: any) => {
-    change({ kind: FormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
-    change({ kind: FormChangeKind.buyAmountFieldChange, value: new BigNumber(11) });
+    change({ kind: InstantFormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
+    change({ kind: InstantFormChangeKind.buyAmountFieldChange, value: new BigNumber(11) });
   }],
 ]).test.skip('validation - %s', (_test, perform, done) => {
   const controller = controllerWithFakeOrderBook(...fakeOrderBook);

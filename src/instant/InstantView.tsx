@@ -10,7 +10,7 @@ import { SettingsIcon, SwapArrows } from '../utils/icons/Icons';
 import * as panelStyling from '../utils/panel/Panel.scss';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
 import { Asset } from './asset/Asset';
-import { FormChangeKind, FormStage, InstantFormState, ManualChange, Message, MessageKind } from './instant';
+import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind } from './instant';
 import * as styles from './Instant.scss';
 
 interface TradingSideProps {
@@ -81,7 +81,7 @@ function error(msg: Message | undefined) {
 export class InstantView extends React.Component<InstantFormState> {
 
   public render() {
-    const { sellToken, sellAmount, buyToken, buyAmount, balances, tradeEvaluationError } = this.props;
+    const { sellToken, sellAmount, buyToken, buyAmount, balances, message } = this.props;
     return (
       <section className={classnames(styles.panel, panelStyling.panel)}>
         <header className={styles.header}>
@@ -107,8 +107,8 @@ export class InstantView extends React.Component<InstantFormState> {
                   balance={balances ? balances[buyToken] : undefined}/>
         </div>
 
-        <div data-test-id="error" className={classnames(styles.errors, tradeEvaluationError ? '' : 'hide-all')}>
-          {error(tradeEvaluationError)}
+        <div data-test-id="error" className={classnames(styles.errors, message ? '' : 'hide-all')}>
+          {error(message)}
         </div>
 
         <footer className={styles.footer}>
@@ -117,7 +117,7 @@ export class InstantView extends React.Component<InstantFormState> {
             color="greyWhite"
             onClick={this.startTx}
             style={{ width: '100%' }}
-            disabled={this.props.stage !== FormStage.readyToProceed}
+            disabled={!this.props.readyToProceed}
           >
             Start Transaction
           </Button>
@@ -128,7 +128,7 @@ export class InstantView extends React.Component<InstantFormState> {
 
   private swap = () => {
     this.props.change({
-      kind: FormChangeKind.pairChange,
+      kind: InstantFormChangeKind.pairChange,
       buyToken: this.props.sellToken,
       sellToken: this.props.buyToken,
     });
@@ -137,7 +137,7 @@ export class InstantView extends React.Component<InstantFormState> {
   private updateSellingAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/,/g, '');
     this.props.change({
-      kind: FormChangeKind.sellAmountFieldChange,
+      kind: InstantFormChangeKind.sellAmountFieldChange,
       value: value === '' ? undefined : new BigNumber(value)
     } as ManualChange);
   }
@@ -145,7 +145,7 @@ export class InstantView extends React.Component<InstantFormState> {
   private updateBuyingAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/,/g, '');
     this.props.change({
-      kind: FormChangeKind.buyAmountFieldChange,
+      kind: InstantFormChangeKind.buyAmountFieldChange,
       value: value === '' ? undefined : new BigNumber(value)
     } as ManualChange);
   }

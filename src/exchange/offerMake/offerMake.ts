@@ -152,7 +152,7 @@ export type EnvironmentChange =
   DustLimitChange;
 
 // export interface FormStageChange {
-//   kind: FormChangeKind.formStageChange;
+//   kind: InstantFormChangeKind.formStageChange;
 //   stage: FormStage;
 // }
 
