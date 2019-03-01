@@ -1,5 +1,6 @@
 // tslint:disable:no-console
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import * as styles from './OrderbookView.scss';
 
@@ -27,12 +28,17 @@ export class OrderbookView extends React.Component<Props> {
 
   private lastTradingPair?: TradingPair;
   private lastStatus?: LoadableStatus;
-  private spreadRow?: HTMLElement;
-  private scrollRef = React.createRef<Scrollbar>();
+  private centerRow?: HTMLElement;
+  private scrollbar?: Scrollbar;
+  private autoScroll: boolean = false;
 
   public center() {
-    if (this.scrollRef.current && this.spreadRow) {
-      this.scrollRef.current.center(this.spreadRow.offsetTop, this.spreadRow.clientHeight);
+    if (this.centerRow && this.centerRow.clientHeight === 0) {
+      this.trackCenter();
+    }
+    this.autoScroll = true;
+    if (this.scrollbar && this.centerRow) {
+      this.scrollbar.center(this.centerRow.offsetTop, this.centerRow.clientHeight);
     }
   }
 
@@ -48,6 +54,24 @@ export class OrderbookView extends React.Component<Props> {
     setTimeout(() => {
       this.center();
     });
+  }
+
+  public scrolled = () => {
+    if (!this.autoScroll && this.scrollbar) {
+      this.trackCenter();
+    }
+    this.autoScroll = false;
+  }
+
+  public trackCenter = () => {
+    if (!this.scrollbar) {
+      return;
+    }
+    const element: Element = ReactDOM.findDOMNode(this.scrollbar) as Element;
+    this.centerRow = document.elementFromPoint(
+      element.getBoundingClientRect().left + 5,
+      element.getBoundingClientRect().top + this.scrollbar.scrollState().clientHeight / 2,
+    ) as HTMLDivElement;
   }
 
   public render() {
@@ -71,7 +95,7 @@ export class OrderbookView extends React.Component<Props> {
       <PanelHeader>
         <span>Order book</span>
         <div style={{ marginLeft: 'auto', display: 'flex' }}>
-          <MediaQuery maxWidth={768}>
+          <MediaQuery maxWidth={992}>
             {(matches) => {
               let isDisabled = false;
 
@@ -83,7 +107,7 @@ export class OrderbookView extends React.Component<Props> {
                 disabled={isDisabled}
                 className={styles.switchBtn}
                 onClick={this.changeChartListView}
-                data-test-id={`orderbook-type-list`}
+                data-test-id="orderbook-type-list"
               >
                 <ToChartSwitchBtn/>
               </Button>;
@@ -109,7 +133,7 @@ export class OrderbookView extends React.Component<Props> {
             </tr>
             </thead>
           </Table>
-          <Scrollbar ref={this.scrollRef}>
+          <Scrollbar ref={el => this.scrollbar = el || undefined} onScroll={this.scrolled}>
             <Table align="right" className={styles.orderbookTable}>
               <TransitionGroup
                 component="tbody"
@@ -130,7 +154,7 @@ export class OrderbookView extends React.Component<Props> {
                 {/* better don't remove me! */}
                 <CSSTransition key="0" classNames="order" timeout={1000}>
                   <RowHighlighted>
-                    <td ref={el => this.spreadRow = el || undefined}>
+                    <td ref={el => this.centerRow = this.centerRow || el || undefined }>
                       {orderbook.spread
                         ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote}/>
                         : '-'}
@@ -143,7 +167,13 @@ export class OrderbookView extends React.Component<Props> {
                 </CSSTransition>
 
                 {orderbook.buy.map((offer: Offer) => (
-                  <CSSTransition key={offer.offerId.toString()} classNames="order" timeout={1000}>
+                  <CSSTransition
+                    key={offer.offerId.toString()}
+                    classNames="order"
+                    timeout={1000}
+                    onEntering={this.enter}
+                    onExited={this.exit}
+                  >
                     <this.OfferRow offer={offer} kind="buy" parent={this}/>
                   </CSSTransition>
                 ))}

@@ -41,6 +41,7 @@ export function loadAllTrades(
         getTrades(context, base, quote, {
           limit: TRADES_PAGE_SIZE,
           to: borderline,
+          from: moment(borderline).subtract(14, 'day').toDate()
         })
       )
     ),

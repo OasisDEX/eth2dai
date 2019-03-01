@@ -1,6 +1,6 @@
 {
   "name": "Eth2Dai",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "private": true,
   "license": "AGPL-3.0-or-later",
   "scripts": {

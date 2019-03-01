@@ -10,7 +10,7 @@ const blackoutStyle = `
     </style>`;
 const commonScreenshotOptions = { capture: 'fullPage' };
 
-export function makeScreenshots(name: string): void {
+export function makeScreenshots(name: string, viewports: string[] = ['macbook-15', 'iphone-6+', 'iphone-6', 'iphone-5']): void {
   cy.get('html > head').then(e => e.append(blackoutStyle));
 
   // if we are in interactive mode just do one screenshot to speed up development cycle
@@ -18,7 +18,6 @@ export function makeScreenshots(name: string): void {
     cy.screenshot(name, commonScreenshotOptions as any);
   } else {
     // see: https://docs.cypress.io/api/commands/viewport.html#Argumentsvalues
-    const viewports = ['macbook-15', 'iphone-6+', 'iphone-6', 'iphone-5'];
 
     for (const viewport of viewports) {
       cy.viewport(viewport as any);
