@@ -8,9 +8,7 @@ import { map } from 'rxjs/operators';
 import { networks } from './blockchain/config';
 import { account$, networkId$ } from './blockchain/network';
 import { Web3Status, web3Status$ } from './blockchain/web3';
-import { Announcement } from './landingPage/Announcement';
 import { LoadingState } from './landingPage/LandingPage';
-import { Migration } from './landingPage/Migration';
 import { Main } from './Main';
 import { connect } from './utils/connect';
 import { UnreachableCaseError } from './utils/UnreachableCaseError';
@@ -42,13 +40,18 @@ class App extends React.Component<Props> {
         if (!this.props.tosAccepted) {
           return LoadingState.ACCEPT_TOS;
         }
-        return <Announcement
-          id="migration"
-          headline="We are updating the Oasis Contract"
-          buttonLabel="Continue with new contract"
-          visibility="none"
-          content={<Migration/>}
-          nextView={<Main/>}/>;
+
+        /*
+        * The way to present announcement before loading the app is:
+        * <Announcement
+        *     id="<unique_id">  - shouldn't change with each component rendering
+        *     visibility="always | once"
+        *     headline="string" - heading of the announcement
+        *     buttonLabel="string" - the label of the button that user clicks to continue to next view
+        *     content={ string | React.ReactNode } - this is the announcement itself
+        *     nextView={<Main/>}/>
+        * */
+        return <Main/>;
       default:
         throw new UnreachableCaseError(this.props.status);
     }
