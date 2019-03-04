@@ -10,21 +10,17 @@ import * as MdCheck from 'react-icons/lib/md/check';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 import { Button } from '../utils/forms/Buttons';
-import { Panel } from '../utils/panel/Panel';
 import { Muted } from '../utils/text/Text';
 import * as styles from './Migration.scss';
 
-interface Props {
-  continue: () => void;
-}
-
-export class Migration extends React.Component<Props> {
+export class Migration extends React.Component {
 
   public gotoOld = () => {
     window.open('https://old.eth2dai.com', '_blank');
   }
 
   public render() {
+
     const blog = 'https://www.reddit.com/r/MakerDAO/comments/aoimcy/announcement_the_oasis_team_is_performing_an/';
     const oldContract = '0xB7ac09C2c0217B07d7c103029B4918a2C401eeCB';
     const newContract = '0x39755357759ce0d7f32dc8dc45414cca409ae24e';
@@ -35,81 +31,66 @@ export class Migration extends React.Component<Props> {
     const closingIn = minutes < 0 ? undefined : `${d}d ${h < 10 ? '0' : ''}${h}:${m < 10 ? '0' : ''}${m}`;
 
     return (
-      <section className={styles.section}>
-        <Panel style={{ padding: '10px' }}>
-
-          <div className={styles.container}>
-            <h4 style={{ fontSize: '120%' }}>We are updating the Oasis contract!</h4>
-          </div>
-          <div className={styles.container} style={{ marginBottom: '10px' }}>
-            <h4>For more information, check out the&ensp;
-              <a target="_new" href={blog}>Blogpost</a>
-            </h4>
-          </div>
-
-          <div className={styles.container}>
-            <h4 style={{ fontWeight: 'bold' }}><Muted>Old contract</Muted></h4>
-          </div>
-          <div className={styles.container}>
-            {closingIn
+      <>
+        <div className={styles.container} style={{ marginBottom: '10px' }}>
+          <h4>For more information, check out the&ensp;
+            <a target="_new" href={blog}>Blogpost</a>
+          </h4>
+        </div>
+        <div className={styles.container}>
+          <h4 style={{ fontWeight: 'bold' }}><Muted>Old contract</Muted></h4>
+        </div>
+        <div className={styles.container}>
+          {closingIn
             ? <h4>
-                <Muted>
-                  <MdAccessTime size="20" style={{ marginBottom: '2px' }} /> will be closed in
-                </Muted>
-                &ensp;{closingIn}
-              </h4>
+              <Muted>
+                <MdAccessTime size="20" style={{ marginBottom: '2px' }}/> will be closed in
+              </Muted>
+              &ensp;{closingIn}
+            </h4>
             : <>
               <h4 className={styles.info}>
-                <MdCheck size="20" style={{ verticalAlign: 'text-bottom' }} /> Contract and active orders have been closed!
+                <MdCheck size="20" style={{ verticalAlign: 'text-bottom' }}/> Contract and active orders have been
+                                                                              closed!
               </h4>
               <h4 className={styles.info}>
-                <MdCheck size="20" style={{ verticalAlign: 'text-bottom' }} /> Remaining funds have been returned
+                <MdCheck size="20" style={{ verticalAlign: 'text-bottom' }}/> Remaining funds have been returned
               </h4>
             </>
           }
-          </div>
-          <div className={styles.container}>
-            <h4 className={classnames(styles.border, styles.address)}>
+        </div>
+        <div className={styles.container}>
+          <h4 className={classnames(styles.border, styles.address)}>
               <span className={styles.icon}>
-                <Jazzicon diameter={25} seed={jsNumberForAddress(oldContract)} />
+                <Jazzicon diameter={25} seed={jsNumberForAddress(oldContract)}/>
               </span>
-              <a target="_new" href={`https://etherscan.io/address/${oldContract}`}>
-                {oldContract}
-              </a>
-            </h4>
-          </div>
-          <div className={styles.container}>
-            <Button disabled={!closingIn} size="md" color="greyWhite" onClick={this.gotoOld} style={{ width: '100%' }}>
-              Cancel orders on old contract
-            </Button>
-          </div>
-
-          <div className={styles.container}>
-            <hr style={{ width: '100%' }} />
-          </div>
-
-          <div className={styles.container}>
-            <h4 style={{ fontWeight: 'bold' }}><Muted>New contract</Muted></h4>
-          </div>
-          <div className={styles.container}>
-            <h4 className={classnames(styles.border, styles.address)}>
+            <a target="_new" href={`https://etherscan.io/address/${oldContract}`}>
+              {oldContract}
+            </a>
+          </h4>
+        </div>
+        <div className={styles.container}>
+          <Button disabled={!closingIn} size="md" color="greyWhite" onClick={this.gotoOld} style={{ width: '100%' }}>
+            Cancel orders on old contract
+          </Button>
+        </div>
+        <div className={styles.container}>
+          <hr style={{ width: '100%' }}/>
+        </div>
+        <div className={styles.container}>
+          <h4 style={{ fontWeight: 'bold' }}><Muted>New contract</Muted></h4>
+        </div>
+        <div className={styles.container}>
+          <h4 className={classnames(styles.border, styles.address)}>
               <span className={styles.icon}>
-                <Jazzicon diameter={25} seed={jsNumberForAddress(newContract)} />
+                <Jazzicon diameter={25} seed={jsNumberForAddress(newContract)}/>
               </span>
-              <a target="_new" href={`https://etherscan.io/address/${newContract}`}>
-                {newContract}
-              </a>
-            </h4>
-          </div>
-          <div className={styles.container}>
-            <Button data-test-id="continue-with-new-contract" size="md" color="greyWhite" onClick={this.props.continue} style={{ width: '100%' }}>
-              Continue with new contract
-            </Button>
-          </div>
-
-        </Panel>
-      </section>
+            <a target="_new" href={`https://etherscan.io/address/${newContract}`}>
+              {newContract}
+            </a>
+          </h4>
+        </div>
+      </>
     );
   }
-
 }
