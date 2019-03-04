@@ -1,6 +1,6 @@
 import { buildSize }  from 'build-size-super-plugin';
 import { join } from 'path';
-import { report, superCI } from 'super-ci';
+import { superCI } from 'super-ci';
 // tslint:disable-next-line
 const exec = require('await-exec') as (cmd: string, opt: any) => Promise<void>;
 
@@ -19,7 +19,7 @@ async function visReg() {
     await superCI.saveCollection('e2e-vis-reg-report', join(__dirname, '.reg'));
 
     const reportData = require('./.reg/out.json');
-    report({
+    await superCI.success({
       name: 'Visual regression for E2E',
       shortDescription: `Changed: ${reportData.failedItems.length}, New: ${reportData.newItems.length}, Deleted: ${reportData.deletedItems.length}`,
       detailsUrl: superCI.getArtifactLink('/e2e-vis-reg-report/index.html'),
