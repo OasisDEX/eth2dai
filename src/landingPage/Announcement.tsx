@@ -68,7 +68,7 @@ export class Announcement extends React.Component<AnnouncementProps & Announceme
   }
 
   public render() {
-    const { nextView, visibility } = this.props;
+    const { id, nextView, visibility } = this.props;
 
     switch (visibility) {
       case 'always':
@@ -78,7 +78,7 @@ export class Announcement extends React.Component<AnnouncementProps & Announceme
 
         return <AnnouncementView {...this.props} continue={this.proceed}/>;
       case 'once':
-        if (this.hasSeenAnnouncementAlready()) {
+        if (this.hasSeenAnnouncementAlready(id)) {
           return nextView;
         }
 
@@ -89,17 +89,12 @@ export class Announcement extends React.Component<AnnouncementProps & Announceme
 
   }
 
-  private hasSeenAnnouncementAlready = () => {
-    const hasSeenAnnouncementFor = JSON.parse((localStorage.getItem('announcements') || '{}') as any);
-    return hasSeenAnnouncementFor[this.props.id];
+  private hasSeenAnnouncementAlready(id: string) {
+    return JSON.parse(localStorage.getItem(id) || 'false');
   }
 
   private proceed = () => {
-    const hasSeenAnnouncementFor = JSON.parse((localStorage.getItem('announcements') || '{}') as any);
-    console.log(hasSeenAnnouncementFor);
-    hasSeenAnnouncementFor[this.props.id] = true;
-
-    localStorage.setItem('announcements', JSON.stringify(hasSeenAnnouncementFor));
+    localStorage.setItem(this.props.id, 'true');
     this.setState({ shouldViewNext: true });
   }
 
