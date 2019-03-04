@@ -16,6 +16,7 @@ interface AnnouncementViewProps {
 }
 
 interface AnnouncementProps extends AnnouncementViewProps {
+  id: string;
   nextView: React.ReactNode;
   /* Visibility property defines when the announcement content will be visible
   *  - 'none' - It won't display any announcement and instead it will proceed with the next view
@@ -89,11 +90,16 @@ export class Announcement extends React.Component<AnnouncementProps & Announceme
   }
 
   private hasSeenAnnouncementAlready = () => {
-    return JSON.parse(localStorage.getItem('hasSeenAnnouncement') || 'false');
+    const hasSeenAnnouncementFor = JSON.parse((localStorage.getItem('announcements') || '{}') as any);
+    return hasSeenAnnouncementFor[this.props.id];
   }
 
   private proceed = () => {
-    localStorage.setItem('hasSeenAnnouncement', 'true');
+    const hasSeenAnnouncementFor = JSON.parse((localStorage.getItem('announcements') || '{}') as any);
+    console.log(hasSeenAnnouncementFor);
+    hasSeenAnnouncementFor[this.props.id] = true;
+
+    localStorage.setItem('announcements', JSON.stringify(hasSeenAnnouncementFor));
     this.setState({ shouldViewNext: true });
   }
 

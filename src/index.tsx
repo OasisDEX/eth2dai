@@ -43,6 +43,7 @@ class App extends React.Component<Props> {
           return LoadingState.ACCEPT_TOS;
         }
         return <Announcement
+          id="migration"
           headline="We are updating the Oasis Contract"
           buttonLabel="Continue with new contract"
           visibility="none"
