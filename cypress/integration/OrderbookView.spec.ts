@@ -10,7 +10,7 @@ describe('Orderbook view ', () => {
   });
 
   it('should render depth chart in the panel', () => {
-    cy.wait(1000);
+    cy.wait(3000);
     cy.get(tid('orderbook-type-list')).click();
 
     makeScreenshots('depth-chart', ['macbook-15']);
