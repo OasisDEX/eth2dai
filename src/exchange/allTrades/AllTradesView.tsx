@@ -11,11 +11,11 @@ import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndica
 import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { RowClickable, Table } from '../../utils/table/Table';
+import * as tableStyles from '../../utils/table/Table.scss';
 import { InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { Trade } from '../trades';
 import { AllTradesProps } from './allTrades';
 import * as styles from './AllTradesView.scss';
-import * as tableStyles from '../../utils/table/Table.scss';
 
 export class AllTrades extends React.Component<AllTradesProps> {
   public render() {
