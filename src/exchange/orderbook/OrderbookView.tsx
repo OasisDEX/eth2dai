@@ -13,6 +13,7 @@ import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndica
 import { PanelHeader } from '../../utils/panel/Panel';
 import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
 import { RowClickable, RowHighlighted, Table } from '../../utils/table/Table';
+import * as tableStyles from '../../utils/table/Table.scss';
 import { Currency, InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
@@ -198,10 +199,10 @@ export class OrderbookView extends React.Component<Props> {
             <FormatPriceOrder value={offer.price} token={offer.quoteToken} kind={kind}/>
           </SellBuySpan>
         </td>
-        <td data-test-id="amount">
+        <td className={tableStyles.numerical} data-test-id="amount">
           <FormatAmount value={offer.baseAmount} token={offer.baseToken}/>
         </td>
-        <td data-test-id="total">
+        <td className={tableStyles.numerical} data-test-id="total">
           <FormatAmount value={offer.quoteAmount} token={offer.quoteToken}/>
         </td>
       </RowClickable>

@@ -6,12 +6,7 @@ import * as erc20 from './abi/erc20.abi.json';
 import * as otc from './abi/matching-market.abi.json';
 import * as otcSupport from './abi/otc-support-methods.abi.json';
 import * as saiTub from './abi/sai-tub.abi.json';
-import {
-  DAIcoin,
-  DAIicon,
-  ETHcoin,
-  ETHicon,
-} from './coinIcons/coinIcons';
+import { DAIcoin, DAIicon, ETHcoin, ETHicon, } from './coinIcons/coinIcons';
 import { web3 } from './web3';
 
 export const tradingPairs: TradingPair[] = [
@@ -27,7 +22,7 @@ export const tokens = asMap('symbol', [
     symbol: 'ETH',
     precision: 18,
     digits: 5,
-    maxSell: '1000000000000000',
+    maxSell: '10000000',
     name: 'Ether',
     icon: ETHicon,
     iconInverse: ETHcoin,
@@ -36,7 +31,7 @@ export const tokens = asMap('symbol', [
     symbol: 'WETH',
     precision: 18,
     digits: 5,
-    maxSell: '1000000000000000',
+    maxSell: '10000000',
     name: 'Wrapped Ether',
     icon: ETHicon,
     iconInverse: ETHcoin,
@@ -45,7 +40,7 @@ export const tokens = asMap('symbol', [
     symbol: 'DAI',
     precision: 18,
     digits: 2,
-    maxSell: '1000000000000000',
+    maxSell: '10000000',
     name: 'Dai',
     icon: DAIicon,
     iconInverse: DAIcoin,
