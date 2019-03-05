@@ -7,6 +7,10 @@
   box-sizing: border-box;
 }
 
+html {
+  margin-left: calc(100vw - 100%);
+}
+
 body {
   @include fontMontserratMedium;
   margin: 0;
