@@ -9,7 +9,6 @@ import { networks } from './blockchain/config';
 import { account$, networkId$ } from './blockchain/network';
 import { Web3Status, web3Status$ } from './blockchain/web3';
 import { LoadingState } from './landingPage/LandingPage';
-import { Migration } from './landingPage/Migration';
 import { Main } from './Main';
 import { connect } from './utils/connect';
 import { UnreachableCaseError } from './utils/UnreachableCaseError';
@@ -18,19 +17,10 @@ interface Props {
   status: Web3Status;
   network?: string;
   tosAccepted?: boolean;
-  migrationAccepted?: boolean;
+  hasSeenAnnouncement?: boolean;
 }
 
-class App extends React.Component<Props, { migrationAccepted: boolean }> {
-
-  public constructor(props: Props) {
-    super(props);
-    this.state = { migrationAccepted: false };
-  }
-
-  public continue = () => {
-    this.setState({ migrationAccepted: true });
-  }
+class App extends React.Component<Props> {
 
   public render() {
     switch (this.props.status) {
@@ -50,10 +40,17 @@ class App extends React.Component<Props, { migrationAccepted: boolean }> {
         if (!this.props.tosAccepted) {
           return LoadingState.ACCEPT_TOS;
         }
-        if (!this.state.migrationAccepted) {
-          return <Migration continue={this.continue} />;
-        }
 
+        /*
+        * The way to present announcement before loading the app is:
+        * <Announcement
+        *     id="<unique_id">  - shouldn't change with each component rendering
+        *     visibility="always | once"
+        *     headline="string" - heading of the announcement
+        *     buttonLabel="string" - the label of the button that user clicks to continue to next view
+        *     content={ string | React.ReactNode } - this is the announcement itself
+        *     nextView={<Main/>}/>
+        * */
         return <Main/>;
       default:
         throw new UnreachableCaseError(this.props.status);
