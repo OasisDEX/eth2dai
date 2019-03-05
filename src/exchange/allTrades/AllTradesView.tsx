@@ -15,6 +15,7 @@ import { InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { Trade } from '../trades';
 import { AllTradesProps } from './allTrades';
 import * as styles from './AllTradesView.scss';
+import * as tableStyles from '../../utils/table/Table.scss';
 
 export class AllTrades extends React.Component<AllTradesProps> {
   public render() {
@@ -51,12 +52,12 @@ export class AllTrades extends React.Component<AllTradesProps> {
                     timeout={1000}
                   >
                     <RowClickable clickable={!!trade.tx} onClick={this.tradeDetails(trade)}>
-                      <td>
+                      <td className={tableStyles.numerical}>
                         <SellBuySpan type={trade.act}>
                           <FormatPriceOrder value={trade.price} token={trade.quoteToken} kind={trade.kind}/>
                         </SellBuySpan>
                       </td>
-                      <td>
+                      <td className={tableStyles.numerical}>
                         <FormatAmount value={trade.baseAmount} token={trade.baseToken}/>
                       </td>
                       <td>
@@ -69,7 +70,7 @@ export class AllTrades extends React.Component<AllTradesProps> {
                 {/* don't remove me! */}
                 <CSSTransition key="0" classNames="trade" timeout={1000}>
                   <tr>
-                    <td colSpan={3}>
+                    <td className={styles.loadMore} colSpan={3}>
                       <Button onClick={showMore(more$)}
                               block={true}
                               size="md"

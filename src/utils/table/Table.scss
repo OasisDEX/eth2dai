@@ -40,12 +40,9 @@
     padding: 8px 28px 8px 0;
   }
 
-  td > * {
-    display: inline-block;
-    width: 100%;
-    overflow: hidden;
-    -ms-text-overflow: ellipsis;
-    text-overflow: ellipsis;
+
+  td.numerical {
+    @include ellipsis;
   }
 
   @include media-breakpoint-down(md) {
