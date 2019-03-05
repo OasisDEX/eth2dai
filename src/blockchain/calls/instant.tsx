@@ -42,9 +42,9 @@ export const tradePayWithETH: TransactionDef<InstantOrderData> = {
       proxyAddress,
       kind,
       buyToken, buyAmount,
-      sellToken, sellAmount,
+      // sellToken, sellAmount,
       slippageLimit,
-      gasPrice
+      // gasPrice
     }: InstantOrderData,
     context: NetworkConfig
   ) => {
@@ -52,9 +52,9 @@ export const tradePayWithETH: TransactionDef<InstantOrderData> = {
       throw new Error('Not implemented yet!');
     }
 
-    const method = kind === OfferType.sell ?
-      'createAndSellAllAmountPayEth' :
-      'createAndBuyAllAmountPayEth';
+    // const method = kind === OfferType.sell ?
+    //   'createAndSellAllAmountPayEth' :
+    //   'createAndBuyAllAmountPayEth';
 
     return [
       context.instantProxyRegistry.address,
@@ -69,7 +69,7 @@ export const tradePayWithETH: TransactionDef<InstantOrderData> = {
   },
   options: ({
     kind,
-    buyToken, buyAmount,
+              // buyToken, buyAmount,
     sellToken, sellAmount,
     slippageLimit,
     gasPrice, gasEstimation

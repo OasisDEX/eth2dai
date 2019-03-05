@@ -7,9 +7,9 @@ import { setupFakeWeb3ForTesting } from '../blockchain/web3';
 
 import { Calls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
-import { createFakeOrderbook, emptyOrderBook } from '../exchange/depthChart/fakeOrderBook';
+import { createFakeOrderbook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
-import {zero} from '../utils/zero';
+import { zero } from '../utils/zero';
 import { createFormController$, InstantFormChangeKind } from './instant';
 
 setupFakeWeb3ForTesting();
@@ -17,8 +17,6 @@ setupFakeWeb3ForTesting();
 function snapshotify(object: any): any {
   return omit(object, 'change', 'submit');
 }
-
-const tradingPair = { base: 'WETH', quote: 'DAI' };
 
 const defaultCalls = {
   instantOrder: null as any,

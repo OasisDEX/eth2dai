@@ -41,7 +41,7 @@ class TradingSide extends React.Component<TradingSideProps> {
           onChange={onAmountChange}
           value={
             (amount || null) &&
-            formatPrice(amount as BigNumber, asset)
+            formatPrice(amount, asset)
           }
           guide={true}
           placeholder={placeholder}

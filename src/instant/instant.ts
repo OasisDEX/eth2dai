@@ -20,7 +20,7 @@ import { tokens } from 'src/blockchain/config';
 import { Balances, DustLimits } from '../balances/balances';
 
 import { Calls, Calls$ } from '../blockchain/calls/calls';
-import {eth2weth, InstantOrderData} from '../blockchain/calls/instant';
+import { eth2weth, InstantOrderData } from '../blockchain/calls/instant';
 import { TxState, TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';

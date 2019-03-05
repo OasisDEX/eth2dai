@@ -10,7 +10,7 @@ import {
   sendTransactionCurried,
   sendTransactionWithGasConstraintsCurried
 } from './callsHelpers';
-import {getBestOffer, getBuyAmount, getPayAmount, tradePayWithETH, offers, proxyAddress$} from './instant';
+import { getBestOffer, getBuyAmount, getPayAmount, offers, proxyAddress$, tradePayWithETH } from './instant';
 import { cancelOffer, offerMake, offerMakeDirect } from './offerMake';
 import { unwrap, wrap } from './wrapUnwrapCalls';
 
