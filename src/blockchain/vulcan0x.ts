@@ -1,4 +1,4 @@
-import { fromPairs, toPairs } from 'lodash';
+import { flattenDepth, fromPairs, isEmpty, toPairs, uniqBy } from 'lodash';
 import { Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map } from 'rxjs/operators';
@@ -10,26 +10,66 @@ function filterize(filter: any): string {
     case 'string':
       return `"${filter}"`;
     case 'object':
-      return filter.length === undefined ?
-        '{' + toPairs(filter).map(([k, v]) => `${k}: ${filterize(v)}`).join(', ') + '}' :
-        '[' + (filter as []).map((v: any) => filterize(v)).join(', ') + ']';
+      return filter instanceof Placeholder ?
+        `$${filter.name}` :
+        filter.length === undefined ?
+          '{' + toPairs(filter).map(([k, v]) => `${k}: ${filterize(v)}`).join(', ') + '}' :
+          '[' + (filter as []).map((v: any) => filterize(v)).join(', ') + ']';
     default:
       throw new Error(`unknown filter type: ${typeof(filter)}`);
   }
 }
 
+function placeholders(object: any): Placeholder[] {
+  switch (typeof(object)) {
+    case 'object':
+      return object instanceof Placeholder ?
+        [object] :
+        object.length === undefined ?
+          flattenDepth(Object.values(object).map((o: any) => placeholders(o)), 1) :
+          flattenDepth(object.map((o: any) => placeholders(o)), 1);
+    default:
+      return [];
+  }
+}
+
+export class Placeholder {
+  public name: string;
+  public type: string;
+  public value: any;
+  constructor(name: string, type: string, value: any) {
+    this.name = name;
+    this.type = type;
+    this.value = value;
+  }
+}
+
 export function vulcan0x(
-  url: string, resource: string, params: {[key: string]: any},
-  filter: any, fields: string[], order: string|undefined,
-  limit: number|undefined, offset: number|undefined
+  url: string, id: string, resource: string, fields: string[],
+  { params, filter, order, limit, offset } : {
+    params?: Placeholder[],
+    filter?: any,
+    order?: string,
+    limit?: number,
+    offset?: number,
+  },
 ): Observable<any[]> {
   const options = toPairs({
-    ...fromPairs(toPairs(params).map(([k, v]) => [k, filterize(v)]) as any),
-    filter: filterize(filter),
+    ...params ? fromPairs(params.map(({ name }) => [name, `$${name}`]) as any) : {},
+    ...filter ? { filter: filterize(filter) } : {},
     ...order ? { orderBy: order } : {},
-    ...limit ? { first: limit } : {},
-    ...offset ? { offset } : {},
+    ...limit ? { first: '$limit' } : {},
+    ...offset ? { offset: '$offset' } : {},
   }).map(([k, v]) => `${k}: ${v}`).join('\n');
+  const variables = [
+    ...params ? params : [],
+    ...uniqBy(placeholders(filter), 'name'),
+    ...limit ? [new Placeholder('limit', 'Int', limit)] : [],
+    ...offset ? [new Placeholder('offset', 'Int', offset)] : [],
+  ];
+  const queryParams = isEmpty(variables) ? '' :
+    `(${variables.map(({ name, type }) => `$${name}: ${type}`).join(', ')})`;
+
   return ajax({
     url,
     method: 'POST',
@@ -38,11 +78,13 @@ export function vulcan0x(
     },
     body: {
       query:
-      '{\n' +
-      `    ${resource}(\n${options}\n){\n` +
+      `query ${id}${queryParams} {\n` +
+      `    ${resource}(\n${options}\n) {\n` +
       `      nodes { ${fields.join(' ')} }\n` +
       '    }\n' +
-      '}'
+      '}',
+      variables: fromPairs(variables.map(({ name, value }) => [name, value])),
+      operationName: id,
     }
   }).pipe(
     map(({ response }) => {
