@@ -1,12 +1,15 @@
 import { buildSize }  from 'build-size-super-plugin';
 import { join } from 'path';
-import { report, superCI } from 'super-ci';
+import { superCI } from 'super-ci';
 // tslint:disable-next-line
 const exec = require('await-exec') as (cmd: string, opt: any) => Promise<void>;
 
 export async function main() {
   await buildSize({
-    path: './build/static/js',
+    files: [
+      { path: './build/static/js/*.js' },
+      { path: './build/static/css/*.css' },
+    ]
   });
 
   await deploy(join(__dirname, 'build'));
@@ -17,7 +20,7 @@ export async function main() {
 async function deploy(path: string) {
   if (superCI.isPr()) {
     await superCI.saveCollection('build', path);
-    report({
+    await superCI.success({
       name: 'Commit deployment',
       shortDescription: 'Deployment for commit ready.',
       detailsUrl: superCI.getArtifactLink('/build/index.html'),
@@ -37,7 +40,7 @@ async function visReg() {
     await superCI.saveCollection('storybook-vis-reg-report', join(__dirname, '.reg'));
 
     const reportData = require('./.reg/out.json');
-    report({
+    await superCI.success({
       name: 'Visual regression for Storybook',
       shortDescription: `Changed: ${reportData.failedItems.length}, New: ${reportData.newItems.length}, Deleted: ${reportData.deletedItems.length}`,
       detailsUrl: superCI.getArtifactLink('/storybook-vis-reg-report/index.html'),
