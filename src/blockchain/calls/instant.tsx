@@ -31,11 +31,15 @@ export function eth2weth(token: string): string {
 
 export const tradePayWithETH: TransactionDef<InstantOrderData> = {
   call: ({ kind, proxyAddress }: InstantOrderData, context: NetworkConfig) => {
-    return proxyAddress ?
-      undefined : // not implemented yet!
-      kind === OfferType.sell ?
-        context.instantProxyCreationAndExecute.contract.createAndSellAllAmountPayEth :
-        context.instantProxyCreationAndExecute.contract.createAndBuyAllAmountPayEth;
+    if (proxyAddress) {
+      return kind === OfferType.sell ?
+        context.instantProxyCreationAndExecute.contract.sellAllAmountPayEth :
+        context.instantProxyCreationAndExecute.contract.buyAllAmountPayEth;
+    }
+
+    return kind === OfferType.sell ?
+      context.instantProxyCreationAndExecute.contract.createAndSellAllAmountPayEth :
+      context.instantProxyCreationAndExecute.contract.createAndBuyAllAmountPayEth;
   },
   prepareArgs: (
     {
@@ -48,23 +52,24 @@ export const tradePayWithETH: TransactionDef<InstantOrderData> = {
     }: InstantOrderData,
     context: NetworkConfig
   ) => {
-    if (proxyAddress) {
-      throw new Error('Not implemented yet!');
-    }
+    const amount = kind === OfferType.sell ?
+      buyAmount.times(one.minus(slippageLimit)) :
+      buyAmount;
 
-    // const method = kind === OfferType.sell ?
-    //   'createAndSellAllAmountPayEth' :
-    //   'createAndBuyAllAmountPayEth';
+    if (proxyAddress) {
+      return [
+        context.otc.address,
+        context.tokens.WETH.address,
+        context.tokens[buyToken].address,
+        amountToWei(amount, buyToken).toFixed(0)
+      ];
+    }
 
     return [
       context.instantProxyRegistry.address,
       context.otc.address,
       context.tokens[buyToken].address,
-      amountToWei(
-        kind === OfferType.sell ?
-          buyAmount.times(one.minus(slippageLimit)) :
-          buyAmount,
-        buyToken).toFixed(0)
+      amountToWei(amount, buyToken).toFixed(0)
     ];
   },
   options: ({
@@ -72,10 +77,11 @@ export const tradePayWithETH: TransactionDef<InstantOrderData> = {
               // buyToken, buyAmount,
     sellToken, sellAmount,
     slippageLimit,
-    gasPrice, gasEstimation
+    gasPrice,
+    // gasEstimation
   }: InstantOrderData) => ({
     gasPrice,
-    gas: gasEstimation,
+    gas: 1000000,
     value: amountToWei(
       kind === OfferType.sell ?
         sellAmount :

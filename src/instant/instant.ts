@@ -21,7 +21,7 @@ import { Balances, DustLimits } from '../balances/balances';
 
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { eth2weth, InstantOrderData } from '../blockchain/calls/instant';
-import { TxState, TxStatus } from '../blockchain/transactions';
+import { isDone, TxState, TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
@@ -33,7 +33,8 @@ import {
   GasEstimationStatus,
   GasPriceChange,
   HasGasEstimation,
-  toBalancesChange, toEtherBalanceChange,
+  toBalancesChange,
+  toEtherBalanceChange,
   toEtherPriceUSDChange,
   toGasPriceChange,
 } from '../utils/form';
@@ -93,17 +94,36 @@ export enum TradeEvaluationStatus {
   error = 'error',
 }
 
-enum ProgressStage {
-  ethWaitingForApproval = 'ethWaitingForApproval',
-  ethWaitingForConfirmation = 'ethWaitingForConfirmation',
-  ethFiasco = 'ethFiasco',
-  ethDone = 'ethDone',
-  ethCanceled = 'ethCanceled'
+enum ProgressKind {
+  proxyPayWithETH = 'proxyPayWithETH',
+  noProxyPayWithETH = 'noProxyPayWithETH',
+  noProxyNoAllowancePayWithERC20 = 'noProxyNoAllowancePayWithERC20',
+  proxyNoAllowancePayWithERC20 = 'proxyNoAllowancePayWithERC20',
+  proxyAllowancePayWithERC20 = 'proxyAllowancePayWithERC20',
 }
+
+type Progress = {
+  done: boolean;
+} & ({
+  kind: ProgressKind.proxyPayWithETH | ProgressKind.noProxyPayWithETH
+  tradeTxStatus: TxStatus;
+} | {
+  kind: ProgressKind.noProxyNoAllowancePayWithERC20
+  proxyTxStatus: TxStatus;
+  allowanceTxStatus: TxStatus;
+  tradeTxStatus: TxStatus;
+} | {
+  kind: ProgressKind.proxyNoAllowancePayWithERC20;
+  allowanceTxStatus: TxStatus;
+  tradeTxStatus: TxStatus;
+} | {
+  kind: ProgressKind.proxyAllowancePayWithERC20;
+  tradeTxStatus: TxStatus;
+});
 
 export interface InstantFormState extends HasGasEstimation {
   readyToProceed?: boolean;
-  progress?: ProgressStage;
+  progress?: Progress;
   buyToken: string;
   sellToken: string;
   buyAmount?: BigNumber;
@@ -135,10 +155,10 @@ export enum InstantFormChangeKind {
 
 export interface ProgressChange {
   kind: InstantFormChangeKind.progressChange;
-  progress?: ProgressStage;
+  progress?: Progress;
 }
 
-function progressChange(progress?: ProgressStage): ProgressChange {
+function progressChange(progress?: Progress): ProgressChange {
   return { progress, kind: InstantFormChangeKind.progressChange };
 }
 
@@ -166,7 +186,8 @@ export interface DustLimitsChange {
 export type ManualChange =
   BuyAmountChange |
   SellAmountChange |
-  PairChange;
+  PairChange |
+  FormResetChange;
 
 export type EnvironmentChange =
   GasPriceChange |
@@ -178,8 +199,7 @@ export type EnvironmentChange =
 export type InstantFormChange =
   ManualChange |
   EnvironmentChange |
-  ProgressChange |
-  FormResetChange;
+  ProgressChange;
 
 // function instantOrderData(state: InstantFormState): InstantOrderData {
 //   return {
@@ -452,18 +472,21 @@ function tradePayWithETH(
     throw new Error('Empty buy of sell amount. Should not get here!');
   }
 
+  const initialProgress: Progress = {
+    kind: proxyAddress ? ProgressKind.proxyPayWithETH : ProgressKind.noProxyPayWithETH,
+    tradeTxStatus: TxStatus.WaitingForApproval,
+    done: false,
+  };
+
   return calls.instantOrder({ ...state, proxyAddress } as InstantOrderData).pipe(
-    switchMap((transactionState: TxState) => {
-      switch (transactionState.status) {
-        case TxStatus.CancelledByTheUser:
-          return of(progressChange());
-        case TxStatus.WaitingForConfirmation:
-          return of({ kind: InstantFormChangeKind.formResetChange });
-        default:
-          return of();
-      }
-    }),
-    startWith(progressChange(ProgressStage.ethWaitingForApproval))
+    switchMap((transactionState: TxState) =>
+      of(progressChange({
+        ...initialProgress,
+        tradeTxStatus: transactionState.status,
+        done: isDone(transactionState.status)
+      }))
+    ),
+    startWith(progressChange(initialProgress))
   );
 }
 

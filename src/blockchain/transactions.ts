@@ -24,6 +24,15 @@ export enum TxStatus {
   Failure = 'Failure',
 }
 
+export function isDone(status: TxStatus) {
+  return [
+    TxStatus.CancelledByTheUser,
+    TxStatus.Error,
+    TxStatus.Failure,
+    TxStatus.Success
+  ].indexOf(status) >= 0;
+}
+
 export type TxState = {
   account: string;
   txNo: number;

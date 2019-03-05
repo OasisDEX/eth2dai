@@ -94,16 +94,25 @@ export class InstantView extends React.Component<InstantFormState> {
       gasEstimationUsd } = this.props;
 
     if (this.props.progress) {
-      return (
-        <section className={classnames(styles.panel, panelStyling.panel)}>
-          <header className={styles.header}>
-            <h1>Transaction in progress</h1>
-          </header>
+      return <section className={classnames(styles.panel, panelStyling.panel)}>
+        <header className={styles.header}>
+          <h1>Transaction in progress</h1>
+        </header>
+        <pre>
+          {JSON.stringify(this.props.progress, null, 2)}
+        </pre>
+        {this.props.progress && this.props.progress.done &&
           <div>
-            {this.props.progress}
+              <Button
+                  size="lg"
+                  color="greyWhite"
+                  onClick={this.resetForm}
+              >
+                  Close
+              </Button>
           </div>
-        </section>
-      );
+        }
+      </section>;
     }
 
     return (
@@ -205,6 +214,13 @@ export class InstantView extends React.Component<InstantFormState> {
   private startTx = () => {
     this.props.submit(this.props);
   }
+
+  private resetForm = () => {
+    this.props.change({
+      kind: InstantFormChangeKind.formResetChange
+    });
+  }
+
 }
 
 export class InstantExchange extends React.Component<any> {
