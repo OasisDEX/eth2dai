@@ -83,7 +83,10 @@ export function vulcan0x(
       `      nodes { ${fields.join(' ')} }\n` +
       '    }\n' +
       '}',
-      variables: fromPairs(variables.map(({ name, value }) => [name, value])),
+      variables: {
+        ...fromPairs(variables.map(({ name, value }) => [name, value])),
+        ...process.env.REACT_APP_GRAPHQL_DEVMODE ? { devMode: process.env.REACT_APP_GRAPHQL_DEVMODE } : {},
+      },
       operationName: id,
     }
   }).pipe(
