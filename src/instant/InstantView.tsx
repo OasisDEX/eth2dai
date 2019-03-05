@@ -81,7 +81,21 @@ function error(msg: Message | undefined) {
 export class InstantView extends React.Component<InstantFormState> {
 
   public render() {
-    const { sellToken, sellAmount, buyToken, buyAmount, balances, message } = this.props;
+    const { sellToken, sellAmount, buyToken, buyAmount, balances, etherBalance, message } = this.props;
+
+    if (this.props.progress) {
+      return (
+        <section className={classnames(styles.panel, panelStyling.panel)}>
+          <header className={styles.header}>
+            <h1>Transaction in progress</h1>
+          </header>
+          <div>
+            {this.props.progress}
+          </div>
+        </section>
+      );
+    }
+
     return (
       <section className={classnames(styles.panel, panelStyling.panel)}>
         <header className={styles.header}>
@@ -99,12 +113,18 @@ export class InstantView extends React.Component<InstantFormState> {
           <Selling asset={sellToken}
                    amount={sellAmount}
                    onAmountChange={this.updateSellingAmount}
-                   balance={balances ? balances[sellToken] : undefined}/>
+                   balance={
+                     (sellToken === 'ETH' && etherBalance ||
+                     balances && balances[sellToken]) || undefined
+                   }/>
           <div data-test-id="swap" className={styles.swapIcon} onClick={this.swap}><SwapArrows/></div>
           <Buying asset={buyToken}
                   amount={buyAmount}
                   onAmountChange={this.updateBuyingAmount}
-                  balance={balances ? balances[buyToken] : undefined}/>
+                  balance={
+                    (buyToken === 'ETH' && etherBalance ||
+                    balances && balances[buyToken]) || undefined
+                  }/>
         </div>
 
         <div data-test-id="error" className={classnames(styles.errors, message ? '' : 'hide-all')}>
@@ -151,7 +171,7 @@ export class InstantView extends React.Component<InstantFormState> {
   }
 
   private startTx = () => {
-    return false;
+    this.props.submit(this.props);
   }
 }
 

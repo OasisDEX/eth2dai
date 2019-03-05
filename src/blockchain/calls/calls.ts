@@ -10,7 +10,7 @@ import {
   sendTransactionCurried,
   sendTransactionWithGasConstraintsCurried
 } from './callsHelpers';
-import { getBestOffer, getBuyAmount, getPayAmount, instantOrder, offers } from './instant';
+import {getBestOffer, getBuyAmount, getPayAmount, tradePayWithETH, offers, proxyAddress$} from './instant';
 import { cancelOffer, offerMake, offerMakeDirect } from './offerMake';
 import { unwrap, wrap } from './wrapUnwrapCalls';
 
@@ -33,12 +33,13 @@ function calls([context, account]: [NetworkConfig, string]) {
     wrapEstimateGas: estimateGas(wrap),
     unwrap: sendTransaction(unwrap),
     unwrapEstimateGas: estimateGas(unwrap),
-    instantOrder: sendTransaction(instantOrder),
-    instantOrderEstimateGas: estimateGas(instantOrder),
+    instantOrder: sendTransaction(tradePayWithETH),
+    instantOrderEstimateGas: estimateGas(tradePayWithETH),
     otcGetBuyAmount: call(getBuyAmount),
     otcGetPayAmount: call(getPayAmount),
     otcGetBestOffer: call(getBestOffer),
-    otcOffers: call(offers)
+    otcOffers: call(offers),
+    proxyAddress: () => proxyAddress$(context, account)
   };
 }
 

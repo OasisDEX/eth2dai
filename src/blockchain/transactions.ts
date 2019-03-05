@@ -118,6 +118,8 @@ export function send(
     );
   }
 
+  console.log('sending: ', method, args);
+
   const result: Observable<TxState> = bindNodeCallback(method)(...args).pipe(
     mergeMap((txHash: string) => {
       return onEveryBlock$.pipe(

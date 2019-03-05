@@ -87,13 +87,13 @@ const protoMain = {
   get otcSupportMethods() {
     return load(otcSupport, '0x9b3f075b12513afe56ca2ed838613b7395f57839');
   },
-  get directProxyRegistry() {
+  get instantProxyRegistry() {
     return load(proxyRegistry, '0x4678f0a6958e4d2bc4f1baf7bc52e8f3564f3fe4');
   },
-  get directProxyFactory() {
+  get instantProxyFactory() {
     return load(dsProxyFactory, '0xa26e15c895efc0616177b7c1e7270a4c7d51c997');
   },
-  get directProxyCreationAndExecute() {
+  get instantProxyCreationAndExecute() {
     return load(proxyCreationAndExecute, '0x793ebbe21607e4f04788f89c7a9b97320773ec59');
   },
   oasisDataService: {
@@ -126,13 +126,13 @@ const kovan: NetworkConfig = {
   get otcSupportMethods() {
     return load(otcSupport, '0x303f2bf24d98325479932881657f45567b3e47a8');
   },
-  get directProxyRegistry() {
+  get instantProxyRegistry() {
     return load(proxyRegistry, '0x64a436ae831c1672ae81f674cab8b6775df3475c');
   },
-  get directProxyFactory() {
+  get instantProxyFactory() {
     return load(dsProxyFactory, '0xe11e3b391f7e8bc47247866af32af67dd58dc800');
   },
-  get directProxyCreationAndExecute() {
+  get instantProxyCreationAndExecute() {
     return load(proxyCreationAndExecute, '0xee419971e63734fed782cfe49110b1544ae8a773');
   },
   oasisDataService: {
@@ -161,13 +161,13 @@ const localnet: NetworkConfig =   {
   get otcSupportMethods() {
     return load(otcSupport, '0x5de139dbbfd47dd1d2cd906348fd1887135b2804');
   },
-  get directProxyRegistry() {
+  get instantProxyRegistry() {
     return load(proxyRegistry, '0xA155A86E426CB136334F6B6B6DD2633B73fc0183');
   },
-  get directProxyFactory() {
+  get instantProxyFactory() {
     return load(dsProxyFactory, '0xCb84a6D7A6b708a5a32c33a03F435D3e10C3d7Ad');
   },
-  get directProxyCreationAndExecute() {
+  get instantProxyCreationAndExecute() {
     return load(proxyCreationAndExecute, '0x99C7F543e310A4143D22ce840a348b4EcDbBA8Ce');
   },
   oasisDataService: {

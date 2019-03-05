@@ -38,7 +38,8 @@ export enum FormChangeKind {
   dustLimitChange = 'dustLimitChange',
   matchTypeChange = 'matchType',
   pickOfferChange = 'pickOffer',
-  progress = 'progress'
+  progress = 'progress',
+  etherBalanceChange = 'etherBalanceChange',
 }
 
 export enum OfferMatchType {
@@ -129,8 +130,22 @@ export interface ProgressChange {
   progress?: ProgressStage;
 }
 
+export interface EtherBalanceChange {
+  kind: FormChangeKind.etherBalanceChange;
+  etherBalance: BigNumber;
+}
+
 export function progressChange(progress?: ProgressStage): ProgressChange {
   return { progress, kind: FormChangeKind.progress };
+}
+
+export function toEtherBalanceChange(etherBalance$: Observable<BigNumber>) {
+  return etherBalance$.pipe(
+    map(etherBalance => ({
+      etherBalance,
+      kind: FormChangeKind.etherBalanceChange,
+    }))
+  );
 }
 
 export function toGasPriceChange(gasPrice$: Observable<BigNumber>): Observable<GasPriceChange> {

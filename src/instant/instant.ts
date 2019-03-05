@@ -4,7 +4,8 @@ import { isEqual } from 'lodash';
 import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
-  catchError, delay,
+  catchError,
+  delay,
   distinctUntilChanged,
   first,
   flatMap,
@@ -17,22 +18,24 @@ import {
 } from 'rxjs/operators';
 import { tokens } from 'src/blockchain/config';
 import { Balances, DustLimits } from '../balances/balances';
+
 import { Calls, Calls$ } from '../blockchain/calls/calls';
-import { InstantOrderData } from '../blockchain/calls/instant';
+import {eth2weth, InstantOrderData} from '../blockchain/calls/instant';
 import { TxState, TxStatus } from '../blockchain/transactions';
-import { OfferType, Orderbook } from '../exchange/orderbook/orderbook';
-import { TradingPair } from '../exchange/tradingPair/tradingPair';
+import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
-  AllowanceChange, BalancesChange,
-  doGasEstimation, DustLimitChange, EtherPriceUSDChange, FormChangeKind,
-  GasEstimationStatus, GasPriceChange,
-  HasGasEstimation, toAllowanceChange$,
-  toBalancesChange,
-  toDustLimitChange$,
+  BalancesChange,
+  doGasEstimation,
+  EtherBalanceChange,
+  EtherPriceUSDChange,
+  FormChangeKind,
+  GasEstimationStatus,
+  GasPriceChange,
+  HasGasEstimation,
+  toBalancesChange, toEtherBalanceChange,
   toEtherPriceUSDChange,
   toGasPriceChange,
-  toOrderbookChange$,
 } from '../utils/form';
 
 export interface FormResetChange {
@@ -101,23 +104,21 @@ enum ProgressStage {
 export interface InstantFormState extends HasGasEstimation {
   readyToProceed?: boolean;
   progress?: ProgressStage;
-  baseToken: string;
   buyToken: string;
   sellToken: string;
   buyAmount?: BigNumber;
   sellAmount?: BigNumber;
   kind?: OfferType;
-  buyAllowance?: boolean;
-  sellAllowance?: boolean;
   message?: Message;
   submit: (state: InstantFormState) => void;
   change: (change: ManualChange) => void;
-  dustLimitQuote?: BigNumber;
-  dustLimitBase?: BigNumber;
+  dustLimits?: DustLimits;
   balances?: Balances;
+  etherBalance?: BigNumber;
   tradeEvaluationStatus: TradeEvaluationStatus;
   tradeEvaluationError?: any;
   bestPrice?: BigNumber;
+  slippageLimit: BigNumber;
 }
 
 export enum InstantFormChangeKind {
@@ -125,30 +126,39 @@ export enum InstantFormChangeKind {
   sellAmountFieldChange = 'sellAmountFieldChange',
   pairChange = 'pairChange',
   formResetChange = 'reset',
-  progress = 'progress'
+  progressChange = 'progressChange',
+  proxyChange = 'proxyChange',
+  dustLimitsChange = 'dustLimitsChange'
 }
 
 export interface ProgressChange {
-  kind: InstantFormChangeKind.progress;
+  kind: InstantFormChangeKind.progressChange;
   progress?: ProgressStage;
 }
 
 function progressChange(progress?: ProgressStage): ProgressChange {
-  return { progress, kind: InstantFormChangeKind.progress };
+  return { progress, kind: InstantFormChangeKind.progressChange };
 }
 
 export interface BuyAmountChange {
   kind: InstantFormChangeKind.buyAmountFieldChange;
   value?: BigNumber;
 }
+
 export interface SellAmountChange {
   kind: InstantFormChangeKind.sellAmountFieldChange;
   value?: BigNumber;
 }
+
 export interface PairChange {
   kind: InstantFormChangeKind.pairChange;
   buyToken: string;
   sellToken: string;
+}
+
+export interface DustLimitsChange {
+  kind: InstantFormChangeKind.dustLimitsChange;
+  dustLimits: DustLimits;
 }
 
 export type ManualChange =
@@ -159,9 +169,9 @@ export type ManualChange =
 export type EnvironmentChange =
   GasPriceChange |
   EtherPriceUSDChange |
-  AllowanceChange |
   BalancesChange |
-  DustLimitChange;
+  DustLimitsChange |
+  EtherBalanceChange;
 
 export type InstantFormChange =
   ManualChange |
@@ -169,21 +179,17 @@ export type InstantFormChange =
   ProgressChange |
   FormResetChange;
 
-function isBaseToken(token: string, base: string) {
-  return base === token || base === 'WETH' && token === 'ETH';
-}
-
-function instantOrderData(state: InstantFormState): InstantOrderData {
-  return {
-    kind: state.kind as OfferType,
-    buyAmount: state.buyAmount as BigNumber,
-    buyToken: state.buyToken,
-    sellAmount: state.sellAmount as BigNumber,
-    sellToken: state.sellToken,
-    gasEstimation: state.gasEstimation as number,
-    gasPrice: state.gasPrice as BigNumber,
-  };
-}
+// function instantOrderData(state: InstantFormState): InstantOrderData {
+//   return {
+//     kind: state.kind as OfferType,
+//     buyAmount: state.buyAmount as BigNumber,
+//     buyToken: state.buyToken,
+//     sellAmount: state.sellAmount as BigNumber,
+//     sellToken: state.sellToken,
+//     gasEstimation: state.gasEstimation as number,
+//     gasPrice: state.gasPrice as BigNumber,
+//   };
+// }
 
 function applyChange(state: InstantFormState, change: InstantFormChange): InstantFormState {
   switch (change.kind) {
@@ -219,28 +225,17 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         etherPriceUsd: change.value,
       };
-    case FormChangeKind.buyAllowanceChange:
-      return {
-        ...state,
-        buyAllowance: change.allowance,
-      };
-    case FormChangeKind.sellAllowanceChange:
-      return {
-        ...state,
-        sellAllowance: change.allowance,
-      };
     case FormChangeKind.balancesChange:
       return {
         ...state,
         balances: change.balances,
       };
-    case FormChangeKind.dustLimitChange:
+    case InstantFormChangeKind.dustLimitsChange:
       return {
         ...state,
-        dustLimitBase: change.dustLimitBase,
-        dustLimitQuote: change.dustLimitQuote
+        dustLimits: change.dustLimits
       };
-    case InstantFormChangeKind.progress:
+    case InstantFormChangeKind.progressChange:
       return {
         ...state,
         progress: change.progress
@@ -253,7 +248,13 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         sellAmount: undefined,
         gasEstimationStatus: GasEstimationStatus.unset
       };
+    case FormChangeKind.etherBalanceChange:
+      return {
+        ...state,
+        etherBalance: change.etherBalance
+      };
   }
+
   return state;
 }
 
@@ -281,13 +282,6 @@ function evaluateBuy(calls: Calls, state: InstantFormState) {
         placement: Position.TOP,
         priority: 3
       }
-      // tradeEvaluationStatus: TradeEvaluationStatus.error,
-      // tradeEvaluationError: {
-      //   kind: MessageKind.orderbookTotalExceeded,
-      //   field: "buyToken",
-      //   priority: 3,
-      //   placement: Position.TOP
-      // }
     }))
   );
 }
@@ -315,13 +309,6 @@ function evaluateSell(calls: Calls, state: InstantFormState) {
         placement: Position.TOP,
         priority: 3
       }
-      // tradeEvaluationStatus: TradeEvaluationStatus.error,
-      // tradeEvaluationError: {
-      //   kind: MessageKind.orderbookTotalExceeded,
-      //   field: "sellToken",
-      //   priority: 3,
-      //   placement: Position.TOP
-      // }
     }))
   );
 }
@@ -378,19 +365,13 @@ function evaluateTrade(
         )
       ),
       catchError(err => {
+        console.log(err);
         return of({
           ...state,
           ...(state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }),
           bestPrice: undefined,
           tradeEvaluationStatus: TradeEvaluationStatus.error,
           tradeEvaluationError: err,
-        // tradeEvaluationError: {
-        //   kind: MessageKind.custom,
-        //   error: err,
-        //   field: state.kind === OfferType.buy ? "buyToken" : "sellToken",
-        //   priority: 3,
-        //   placement: Position.TOP
-        // },
         });
       }),
       startWith({ ...state, tradeEvaluationStatus: TradeEvaluationStatus.calculating }),
@@ -404,10 +385,15 @@ function postValidate(state: InstantFormState): InstantFormState {
   const [spendField, receiveField] = ['sellToken', 'buyToken'];
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
   const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
-  const dustLimit = isBaseToken(state.buyToken, state.baseToken) ? state.dustLimitBase : state.dustLimitQuote;
+
+  // const dustLimit = isBaseToken(state.buyToken, state.baseToken) ?
+  //   state.dustLimitBase : state.dustLimitQuote;
 
   if (receiveAmount && spendAmount) {
-    if (state.balances && state.balances[spendToken].lt(spendAmount)) {
+    if (
+      spendToken === 'ETH' && state.etherBalance && state.etherBalance.lt(spendAmount) ||
+      state.balances && state.balances[spendToken] && state.balances[spendToken].lt(spendAmount)
+    ) {
       message = prioritize(message, {
         kind: MessageKind.insufficientAmount,
         field: spendField,
@@ -416,18 +402,20 @@ function postValidate(state: InstantFormState): InstantFormState {
         placement: Position.BOTTOM
       });
     }
-    if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
-      message = prioritize(message, {
-        kind: MessageKind.dustAmount,
-        field: spendField,
-        priority: 2,
-        token: spendToken,
-        amount: dustLimit || new BigNumber(0),
-        placement: Position.BOTTOM
-      });
-    }
+    // if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
+    //   message = prioritize(message, {
+    //     kind: MessageKind.dustAmount,
+    //     field: spendField,
+    //     priority: 2,
+    //     token: spendToken,
+    //     amount: dustLimit || new BigNumber(0),
+    //     placement: Position.BOTTOM
+    //   });
+    // }
   }
-  if (spendAmount && new BigNumber(tokens[spendToken].maxSell).lt(spendAmount)) {
+  if (
+    spendAmount && new BigNumber(tokens[eth2weth(spendToken)].maxSell).lt(spendAmount)
+  ) {
     message = prioritize(message, {
       kind: MessageKind.incredibleAmount,
       field: spendField,
@@ -436,7 +424,7 @@ function postValidate(state: InstantFormState): InstantFormState {
       placement: Position.BOTTOM
     });
   }
-  if (receiveAmount && new BigNumber(tokens[receiveToken].maxSell).lt(receiveAmount)) {
+  if (receiveAmount && new BigNumber(tokens[eth2weth(receiveToken)].maxSell).lt(receiveAmount)) {
     message = prioritize(message, {
       kind: MessageKind.incredibleAmount,
       field: receiveField,
@@ -449,39 +437,71 @@ function postValidate(state: InstantFormState): InstantFormState {
   return {
     ...state,
     message
-    // tradeEvaluationStatus : message ? TradeEvaluationStatus.error : state.tradeEvaluationStatus,
-    // tradeEvaluationError: message
-  } as InstantFormState;
+  };
 }
 
-function prepareSubmit(calls$: Calls$):
-  [(state: InstantFormState) => void, Observable<ProgressChange | FormResetChange>] {
+function tradePayWithETH(
+  calls: Calls,
+  proxyAddress: string | undefined,
+  state: InstantFormState
+): Observable<ProgressChange | FormResetChange> {
+
+  if (!state.buyAmount || !state.sellAmount) {
+    throw new Error('Empty buy of sell amount. Should not get here!');
+  }
+
+  return calls.instantOrder({ ...state, proxyAddress } as InstantOrderData).pipe(
+    switchMap((transactionState: TxState) => {
+      switch (transactionState.status) {
+        case TxStatus.CancelledByTheUser:
+          return of(progressChange());
+        case TxStatus.WaitingForConfirmation:
+          return of({ kind: InstantFormChangeKind.formResetChange });
+        default:
+          return of();
+      }
+    }),
+    startWith(progressChange(ProgressStage.ethWaitingForApproval))
+  );
+}
+
+function tradePayWithERC20(
+  _calls: Calls,
+  _proxyAddress: string | undefined,
+  _state: InstantFormState
+): Observable<ProgressChange | FormResetChange> {
+  return of();
+}
+
+function prepareSubmit(
+  calls$: Calls$,
+): [(state: InstantFormState) => void, Observable<ProgressChange | FormResetChange>] {
 
   const stageChange$ = new Subject<ProgressChange | FormResetChange>();
 
   function submit(state: InstantFormState) {
-
     calls$.pipe(
       first(),
-      switchMap((calls: Calls) => {
-        return calls.instantOrder(instantOrderData(state)).pipe(
-          switchMap((transactionState: TxState) => {
-            switch (transactionState.status) {
-              case TxStatus.CancelledByTheUser:
-                return of(progressChange());
-              case TxStatus.WaitingForConfirmation:
-                return of({ kind: InstantFormChangeKind.formResetChange });
-              default:
-                return of();
-            }
-          }),
-          startWith(progressChange(ProgressStage.ethWaitingForApproval)),
-        );
-      })
-    ).subscribe(change => stageChange$.next(change));
+      flatMap((calls) =>
+        calls.proxyAddress().pipe(
+          switchMap(proxyAddress => {
+            const sell = state.sellToken === 'ETH' ? tradePayWithETH : tradePayWithERC20;
+            return sell(calls, proxyAddress, state);
+          })
+      )
+    )).subscribe(change => stageChange$.next(change));
   }
 
   return [submit, stageChange$];
+}
+
+function toDustLimitsChange(dustLimits$: Observable<DustLimits>): Observable<DustLimitsChange> {
+  return dustLimits$.pipe(
+    map(dustLimits => ({
+      dustLimits,
+      kind: InstantFormChangeKind.dustLimitsChange,
+    } as DustLimitsChange))
+  );
 }
 
 function isReadyToProceed(state: InstantFormState): InstantFormState {
@@ -495,24 +515,20 @@ export function createFormController$(
     gasPrice$: Observable<BigNumber>;
     allowance$: (token: string) => Observable<boolean>;
     balances$: Observable<Balances>;
+    etherBalance$: Observable<BigNumber>
     dustLimits$: Observable<DustLimits>;
-    orderbook$: Observable<Orderbook>,
     calls$: Calls$;
-    etherPriceUsd$: Observable<BigNumber>
-  },
-  tradingPair: TradingPair
+    etherPriceUsd$: Observable<BigNumber>;
+  }
 ): Observable<InstantFormState> {
-
   const manualChange$ = new Subject<ManualChange>();
 
   const environmentChange$ = combineAndMerge(
     toGasPriceChange(params.gasPrice$),
     toEtherPriceUSDChange(params.etherPriceUsd$),
-    toOrderbookChange$(params.orderbook$),
-    toDustLimitChange$(params.dustLimits$, tradingPair.base, tradingPair.quote),
-    toAllowanceChange$(FormChangeKind.buyAllowanceChange, tradingPair.base, params.allowance$),
-    toAllowanceChange$(FormChangeKind.sellAllowanceChange, tradingPair.quote, params.allowance$),
     toBalancesChange(params.balances$),
+    toEtherBalanceChange(params.etherBalance$),
+    toDustLimitsChange(params.dustLimits$),
   );
 
   const [submit, submitChange$] = prepareSubmit(params.calls$);
@@ -520,11 +536,11 @@ export function createFormController$(
   const initialState: InstantFormState = {
     submit,
     change: manualChange$.next.bind(manualChange$),
-    baseToken: tradingPair.base,
-    buyToken: tradingPair.quote,
-    sellToken: tradingPair.base,
+    buyToken: 'DAI',
+    sellToken: 'ETH',
     gasEstimationStatus: GasEstimationStatus.unset,
     tradeEvaluationStatus: TradeEvaluationStatus.unset,
+    slippageLimit: new BigNumber('0.05')
   };
 
   return merge(

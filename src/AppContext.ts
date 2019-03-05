@@ -195,7 +195,22 @@ export function setupAppContext() {
     createTransactionNotifier$(transactions$, interval(5 * 1000));
   const TransactionNotifierTxRx = connect(TransactionNotifierView, transactionNotifier$);
 
-  const InstantTxRx = instant(currentOrderbook$, balances$);
+  // const proxyAddress$ = createProxy$(context$, initializedAccount$, onEveryBlock$, calls$);
+
+  const instant$ = createInstantFormController$(
+    {
+      gasPrice$,
+      allowance$,
+      calls$,
+      etherPriceUsd$,
+      balances$,
+      etherBalance$,
+      // proxyAddress$,
+      dustLimits$: createDustLimits$(context$),
+    }
+  );
+
+  const InstantTxRx = connect(InstantViewPanel, loadablifyLight(instant$));
 
   return {
     AllTradesTxRx,
@@ -210,29 +225,6 @@ export function setupAppContext() {
     NetworkTxRx,
     TheFooterTxRx,
   };
-}
-
-function instant(
-  orderbook$: Observable<Orderbook>,
-  balances$: Observable<Balances>
-) {
-  const instant$ = currentTradingPair$.pipe(
-    flatMap(tp => createInstantFormController$(
-      {
-        gasPrice$,
-        allowance$,
-        calls$,
-        etherPriceUsd$,
-        orderbook$,
-        balances$,
-        dustLimits$: createDustLimits$(context$),
-      },
-      tp)
-    ),
-    shareReplay(1)
-  );
-
-  return connect(InstantViewPanel, loadablifyLight(instant$));
 }
 
 function offerMake(

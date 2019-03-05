@@ -9,6 +9,7 @@ import { Calls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
 import { createFakeOrderbook, emptyOrderBook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
+import {zero} from '../utils/zero';
 import { createFormController$, InstantFormChangeKind } from './instant';
 
 setupFakeWeb3ForTesting();
@@ -42,6 +43,7 @@ const defaultCalls = {
   otcGetPayAmount: () => of(new BigNumber(100)),
   otcGetBestOffer: () => of(new BigNumber(100)),
   otcOffers: () => of(fakeOrderBook),
+  proxyAddress: undefined as any,
 };
 
 const defParams = {
@@ -49,8 +51,8 @@ const defParams = {
   etherPriceUsd$: of(new BigNumber(1)),
   allowance$: () => of(true),
   balances$: of({ DAI: new BigNumber(1000), WETH: new BigNumber(10), ETH: new BigNumber(5) }),
+  etherBalance$: of(zero),
   dustLimits$: of({ DAI: new BigNumber(0.1), WETH: new BigNumber(0.1) }),
-  orderbook$: of(emptyOrderBook),
   calls$: of(defaultCalls) as Calls$,
 };
 
@@ -64,9 +66,7 @@ const controllerWithFakeOrderBook = (buys: any = [], sells: any = [], overrides:
     {
       ...defParams,
       ...overrides,
-      orderbook$: of(orderbook),
-    },
-    tradingPair
+    }
   );
 };
 
@@ -80,7 +80,7 @@ const fakeOrderBook = [
 ];
 
 test.skip('initial state', done => {
-  const controller = createFormController$(defParams, tradingPair);
+  const controller = createFormController$(defParams);
   controller.subscribe(state => {
     expect(snapshotify(state)).toMatchSnapshot();
     done();
@@ -88,7 +88,7 @@ test.skip('initial state', done => {
 });
 
 test.skip('change pair', done => {
-  const controller = createFormController$(defParams, tradingPair);
+  const controller = createFormController$(defParams);
   const { change } = unpack(controller);
 
   change({ kind: InstantFormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
@@ -119,7 +119,7 @@ jestEach([
     () => of({
       status: TxStatus.WaitingForApproval
     } as TxState),
-  ).mockName('instantOrder');
+  ).mockName('tradePayWithETH');
 
   const controller = controllerWithFakeOrderBook(fakeOrderBook[0], fakeOrderBook[1], {
     calls$: of({

@@ -43,6 +43,7 @@ const defaultCalls = {
   otcGetPayAmount: undefined as any,
   otcGetBestOffer: undefined as any,
   otcOffers: undefined as any,
+  proxyAddress: undefined as any,
 };
 
 const defParams = {
