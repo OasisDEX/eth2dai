@@ -2,6 +2,7 @@ import * as React from 'react';
 import { DAIicon, ETHicon } from '../../blockchain/coinIcons/coinIcons';
 import { FormatAmount } from '../../utils/formatters/Formatters';
 import { ProgressIcon } from '../../utils/icons/Icons';
+import { Currency } from '../../utils/text/Text';
 import * as styles from './Asset.scss';
 
 interface AssetProps {
@@ -34,7 +35,12 @@ export class Asset extends React.Component<AssetProps> {
           !balance && <ProgressIcon small={true}/>
         }
         {
-          balance && <FormatAmount data-test-id="balance" value={balance} token={currency} fallback=""/>
+          balance &&
+          <div>
+            <FormatAmount value={balance} token={currency} fallback=""/>
+            &nbsp;
+            <Currency value={currency} theme="semi-bold"/>
+          </div>
         }
       </div>
     );

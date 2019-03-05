@@ -2,6 +2,7 @@ export const panel: string;
 export const header: string;
 export const footer: string;
 export const details: string;
+export const hidden: string;
 export const assets: string;
 export const errors: string;
 export const assetPicker: string;

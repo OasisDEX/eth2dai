@@ -117,6 +117,8 @@ export interface InstantFormState extends HasGasEstimation {
   etherBalance?: BigNumber;
   tradeEvaluationStatus: TradeEvaluationStatus;
   tradeEvaluationError?: any;
+  price?: BigNumber;
+  priceImpact?: BigNumber;
   bestPrice?: BigNumber;
   slippageLimit: BigNumber;
 }
@@ -346,7 +348,8 @@ function evaluateTrade(
       flatMap(calls =>
         combineLatest(
           state.kind === OfferType.buy ? evaluateBuy(calls, state) : evaluateSell(calls, state),
-          getBestPrice(calls, state.sellToken, state.buyToken)
+          // This is some suspicious case. This way it works like we had on OD but needs in-depth investigation.
+          getBestPrice(calls, state.buyToken, state.sellToken)
         ).pipe(
           map(([evaluation, bestPrice]) => ({
             ...state,
@@ -365,7 +368,6 @@ function evaluateTrade(
         )
       ),
       catchError(err => {
-        console.log(err);
         return of({
           ...state,
           ...(state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }),
@@ -473,6 +475,42 @@ function tradePayWithERC20(
   return of();
 }
 
+function calculatePrice(state: InstantFormState): InstantFormState {
+  const { buyAmount, sellAmount } = state;
+  let price: BigNumber | undefined = state.price;
+
+  if (buyAmount && sellAmount) {
+    price = buyAmount.div(sellAmount);
+
+    return {
+      ...state,
+      price
+    };
+  }
+
+  return state;
+}
+
+function calculatePriceImpact(state: InstantFormState): InstantFormState {
+  const { price, bestPrice } = state;
+  let priceImpact: BigNumber | undefined = state.priceImpact;
+
+  if (price && bestPrice) {
+    priceImpact = bestPrice
+      .minus(price)
+      .abs()
+      .div(bestPrice)
+      .times(100);
+
+    return {
+      ...state,
+      priceImpact
+    };
+  }
+
+  return state;
+}
+
 function prepareSubmit(
   calls$: Calls$,
 ): [(state: InstantFormState) => void, Observable<ProgressChange | FormResetChange>] {
@@ -552,6 +590,8 @@ export function createFormController$(
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.calls$)),
     map(postValidate),
+    map(calculatePrice),
+    map(calculatePriceImpact),
     tap(state => console.log(
       'state.message', state.message && state.message.kind,
       'state.gasEstimationStatus', state.gasEstimationStatus,

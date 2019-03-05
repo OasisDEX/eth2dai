@@ -9,12 +9,7 @@ import * as otcSupport from './abi/otc-support-methods.abi.json';
 import * as proxyCreationAndExecute from './abi/proxy-creation-and-execute.abi.json';
 import * as proxyRegistry from './abi/proxy-registry.abi.json';
 import * as saiTub from './abi/sai-tub.abi.json';
-import {
-  DAIcoin,
-  DAIicon,
-  ETHcoin,
-  ETHicon,
-} from './coinIcons/coinIcons';
+import { DAIcoin, DAIicon, ETHcoin, ETHicon, } from './coinIcons/coinIcons';
 import { web3 } from './web3';
 
 export const tradingPairs: TradingPair[] = [

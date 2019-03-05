@@ -4,12 +4,14 @@ import * as React from 'react';
 import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
 import { theAppContext } from '../AppContext';
 import { BigNumberInput } from '../utils/bigNumberInput/BigNumberInput';
-import { formatPrice } from '../utils/formatters/format';
+import { formatAmount, formatPrice } from '../utils/formatters/format';
+import { FormatPercent, Money } from '../utils/formatters/Formatters';
 import { Button } from '../utils/forms/Buttons';
-import { SettingsIcon, SwapArrows } from '../utils/icons/Icons';
+import { ProgressIcon, SettingsIcon, SwapArrows } from '../utils/icons/Icons';
 import * as panelStyling from '../utils/panel/Panel.scss';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
 import { Asset } from './asset/Asset';
+import { TradeData } from './details/TradeData';
 import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind } from './instant';
 import * as styles from './Instant.scss';
 
@@ -21,6 +23,12 @@ interface TradingSideProps {
   balance: BigNumber;
   onAmountChange: () => void;
 }
+
+const Approximate = (props: any) => (
+  <>
+    ~&nbsp; {props.children}
+  </>
+)
 
 class TradingSide extends React.Component<TradingSideProps> {
   public render() {
@@ -81,7 +89,9 @@ function error(msg: Message | undefined) {
 export class InstantView extends React.Component<InstantFormState> {
 
   public render() {
-    const { sellToken, sellAmount, buyToken, buyAmount, balances, etherBalance, message } = this.props;
+    const { sellToken, sellAmount, buyToken, buyAmount, balances, etherBalance, message, price,
+      priceImpact,
+      gasEstimationUsd } = this.props;
 
     if (this.props.progress) {
       return (
@@ -105,8 +115,30 @@ export class InstantView extends React.Component<InstantFormState> {
           </TopRightCorner>
         </header>
 
-        <div className={styles.details}>
-          <h1> placeholder </h1>
+        <div className={classnames(styles.details, price ? '' : styles.hidden)}>
+          <TradeData label="Price"
+                     info="Additional Info"
+                     value={
+                       <Approximate>
+                         {formatAmount(price || new BigNumber(0), 'USD')} {sellToken}/{buyToken}
+                       </Approximate>
+                     }/>
+          <TradeData label="Slippage Limit"
+                     info="Additional Info"
+                     value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}/>
+          <TradeData label="Gas cost"
+                     value={
+                       gasEstimationUsd
+                         ? (
+                           <Approximate>
+                             <Money value={gasEstimationUsd} token="USD"/>
+                           </Approximate>
+                         )
+                         : <ProgressIcon small={true}/>
+                     }/>
+          <TradeData label="Price Impact"
+                     info="Additional Info"
+                     value={<FormatPercent fallback={'N/A'} value={priceImpact} precision={2}/>}/>
         </div>
 
         <div className={styles.assets}>
