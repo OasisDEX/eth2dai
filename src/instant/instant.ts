@@ -21,7 +21,7 @@ import { Balances, DustLimits } from '../balances/balances';
 
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { eth2weth, InstantOrderData } from '../blockchain/calls/instant';
-import { isDone, TxState, TxStatus } from '../blockchain/transactions';
+import {isDone, txHash, TxState, TxStatus} from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
@@ -107,18 +107,25 @@ type Progress = {
 } & ({
   kind: ProgressKind.proxyPayWithETH | ProgressKind.noProxyPayWithETH
   tradeTxStatus: TxStatus;
+  tradeTxHash?: string;
 } | {
   kind: ProgressKind.noProxyNoAllowancePayWithERC20
   proxyTxStatus: TxStatus;
+  proxyTxHash?: string
   allowanceTxStatus: TxStatus;
+  allowanceTxHash?: string
   tradeTxStatus: TxStatus;
+  tradeTxHash?: string
 } | {
   kind: ProgressKind.proxyNoAllowancePayWithERC20;
   allowanceTxStatus: TxStatus;
+  allowanceTxHash?: string
   tradeTxStatus: TxStatus;
+  tradeTxHash?: string
 } | {
   kind: ProgressKind.proxyAllowancePayWithERC20;
   tradeTxStatus: TxStatus;
+  tradeTxHash?: string
 });
 
 export interface InstantFormState extends HasGasEstimation {
@@ -483,6 +490,7 @@ function tradePayWithETH(
       of(progressChange({
         ...initialProgress,
         tradeTxStatus: transactionState.status,
+        tradeTxHash: txHash(transactionState),
         done: isDone(transactionState.status)
       }))
     ),

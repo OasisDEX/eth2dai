@@ -31,6 +31,9 @@ export function eth2weth(token: string): string {
 
 export const tradePayWithETH: TransactionDef<InstantOrderData> = {
   call: ({ kind, proxyAddress }: InstantOrderData, context: NetworkConfig) => {
+
+    console.log('kind:', kind);
+
     if (proxyAddress) {
       return kind === OfferType.sell ?
         context.instantProxyCreationAndExecute.contract.sellAllAmountPayEth :
@@ -52,16 +55,21 @@ export const tradePayWithETH: TransactionDef<InstantOrderData> = {
     }: InstantOrderData,
     context: NetworkConfig
   ) => {
-    const amount = kind === OfferType.sell ?
+    const fixedBuyAmount = kind === OfferType.sell ?
       buyAmount.times(one.minus(slippageLimit)) :
       buyAmount;
 
     if (proxyAddress) {
-      return [
+      return kind === OfferType.sell ? [
         context.otc.address,
         context.tokens.WETH.address,
         context.tokens[buyToken].address,
-        amountToWei(amount, buyToken).toFixed(0)
+        amountToWei(fixedBuyAmount, buyToken).toFixed(0)
+      ] : [
+        context.otc.address,
+        context.tokens[buyToken].address,
+        amountToWei(fixedBuyAmount, buyToken).toFixed(0),
+        context.tokens.WETH.address,
       ];
     }
 
@@ -69,23 +77,22 @@ export const tradePayWithETH: TransactionDef<InstantOrderData> = {
       context.instantProxyRegistry.address,
       context.otc.address,
       context.tokens[buyToken].address,
-      amountToWei(amount, buyToken).toFixed(0)
+      amountToWei(fixedBuyAmount, buyToken).toFixed(0)
     ];
   },
   options: ({
     kind,
-              // buyToken, buyAmount,
     sellToken, sellAmount,
     slippageLimit,
     gasPrice,
     // gasEstimation
   }: InstantOrderData) => ({
     gasPrice,
-    gas: 1000000,
+    gas: 6000000,
     value: amountToWei(
       kind === OfferType.sell ?
         sellAmount :
-        sellAmount.times(one.plus(slippageLimit)),
+        sellAmount.times(one.plus(one.plus(slippageLimit))),
       sellToken).toFixed(0)
   }),
   kind: TxMetaKind.instantOrder,

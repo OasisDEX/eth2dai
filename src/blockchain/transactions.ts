@@ -33,6 +33,18 @@ export function isDone(status: TxStatus) {
   ].indexOf(status) >= 0;
 }
 
+export function txHash(state: TxState): string | undefined {
+  if (
+    state.status === TxStatus.Success ||
+    state.status === TxStatus.Failure ||
+    state.status === TxStatus.Error ||
+    state.status === TxStatus.WaitingForConfirmation
+  ) {
+    return state.txHash;
+  }
+  return undefined;
+}
+
 export type TxState = {
   account: string;
   txNo: number;
