@@ -208,18 +208,6 @@ export type InstantFormChange =
   EnvironmentChange |
   ProgressChange;
 
-// function instantOrderData(state: InstantFormState): InstantOrderData {
-//   return {
-//     kind: state.kind as OfferType,
-//     buyAmount: state.buyAmount as BigNumber,
-//     buyToken: state.buyToken,
-//     sellAmount: state.sellAmount as BigNumber,
-//     sellToken: state.sellToken,
-//     gasEstimation: state.gasEstimation as number,
-//     gasPrice: state.gasPrice as BigNumber,
-//   };
-// }
-
 function applyChange(state: InstantFormState, change: InstantFormChange): InstantFormState {
   switch (change.kind) {
     case InstantFormChangeKind.pairChange:
@@ -485,7 +473,11 @@ function tradePayWithETH(
     done: false,
   };
 
-  return calls.instantOrder({ ...state, proxyAddress } as InstantOrderData).pipe(
+  const tx$ = proxyAddress ?
+    calls.tradePayWithETHWithProxy({ ...state, proxyAddress } as InstantOrderData) :
+    calls.tradePayWithETHNoProxy({ ...state } as InstantOrderData);
+
+  return tx$.pipe(
     switchMap((transactionState: TxState) =>
       of(progressChange({
         ...initialProgress,

@@ -14,7 +14,7 @@ import { CallDef, TransactionDef } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
 export interface InstantOrderData {
-  proxyAddress: string | undefined;
+  proxyAddress?: string;
   kind: OfferType;
   buyAmount: BigNumber;
   sellAmount: BigNumber;
@@ -29,20 +29,9 @@ export function eth2weth(token: string): string {
   return token.replace(/^ETH/, 'WETH');
 }
 
-export const tradePayWithETH: TransactionDef<InstantOrderData> = {
+export const tradePayWithETHWithProxy: TransactionDef<InstantOrderData> = {
   call: ({ kind, proxyAddress }: InstantOrderData, context: NetworkConfig) => {
-
-    console.log('kind:', kind);
-
-    if (proxyAddress) {
-      return kind === OfferType.sell ?
-        context.instantProxyCreationAndExecute.contract.sellAllAmountPayEth :
-        context.instantProxyCreationAndExecute.contract.buyAllAmountPayEth;
-    }
-
-    return kind === OfferType.sell ?
-      context.instantProxyCreationAndExecute.contract.createAndSellAllAmountPayEth :
-      context.instantProxyCreationAndExecute.contract.createAndBuyAllAmountPayEth;
+    return web3.eth.contract(dsProxy as any).at(proxyAddress!).execute['address,bytes']
   },
   prepareArgs: (
     {
@@ -59,19 +48,73 @@ export const tradePayWithETH: TransactionDef<InstantOrderData> = {
       buyAmount.times(one.minus(slippageLimit)) :
       buyAmount;
 
-    if (proxyAddress) {
-      return kind === OfferType.sell ? [
-        context.otc.address,
-        context.tokens.WETH.address,
-        context.tokens[buyToken].address,
-        amountToWei(fixedBuyAmount, buyToken).toFixed(0)
-      ] : [
-        context.otc.address,
-        context.tokens[buyToken].address,
-        amountToWei(fixedBuyAmount, buyToken).toFixed(0),
-        context.tokens.WETH.address,
-      ];
-    }
+    const method = kind === OfferType.sell ?
+      context.instantProxyCreationAndExecute.contract.sellAllAmountPayEth :
+      context.instantProxyCreationAndExecute.contract.buyAllAmountPayEth;
+
+    const params = kind === OfferType.sell ? [
+      context.otc.address,
+      context.tokens.WETH.address,
+      context.tokens[buyToken].address,
+      amountToWei(fixedBuyAmount, buyToken).toFixed(0)
+    ] : [
+      context.otc.address,
+      context.tokens[buyToken].address,
+      amountToWei(fixedBuyAmount, buyToken).toFixed(0),
+      context.tokens.WETH.address,
+    ];
+
+    return [
+      context.instantProxyCreationAndExecute.address,
+      method.getData(...params)
+    ];
+
+  },
+  options: ({
+    kind,
+    sellToken, sellAmount,
+    slippageLimit,
+    gasPrice,
+    // gasEstimation
+  }: InstantOrderData) => ({
+    gasPrice,
+    gas: 6000000,
+    value: amountToWei(
+      kind === OfferType.sell ?
+        sellAmount :
+        sellAmount.times(one.plus(one.plus(slippageLimit))),
+      sellToken).toFixed(0)
+  }),
+  kind: TxMetaKind.tradePayWithETHWithProxy,
+  description: ({ kind, buyToken, buyAmount, sellToken, sellAmount }: InstantOrderData) =>
+    kind === 'sell' ?
+    <>
+      Create Sell Order for: <Money value={sellAmount} token={sellToken}/>
+    </> :
+    <>
+      Create Buy Order for: <Money value={buyAmount} token={buyToken}/>
+    </>
+};
+
+export const tradePayWithETHNoProxy: TransactionDef<InstantOrderData> = {
+  call: ({ kind }: InstantOrderData, context: NetworkConfig) => {
+    return kind === OfferType.sell ?
+      context.instantProxyCreationAndExecute.contract.createAndSellAllAmountPayEth :
+      context.instantProxyCreationAndExecute.contract.createAndBuyAllAmountPayEth;
+  },
+  prepareArgs: (
+    {
+      kind,
+      buyToken, buyAmount,
+      // sellToken, sellAmount,
+      slippageLimit,
+      // gasPrice
+    }: InstantOrderData,
+    context: NetworkConfig
+  ) => {
+    const fixedBuyAmount = kind === OfferType.sell ?
+      buyAmount.times(one.minus(slippageLimit)) :
+      buyAmount;
 
     return [
       context.instantProxyRegistry.address,
@@ -95,15 +138,15 @@ export const tradePayWithETH: TransactionDef<InstantOrderData> = {
         sellAmount.times(one.plus(one.plus(slippageLimit))),
       sellToken).toFixed(0)
   }),
-  kind: TxMetaKind.instantOrder,
+  kind: TxMetaKind.tradePayWithETHNoProxy,
   description: ({ kind, buyToken, buyAmount, sellToken, sellAmount }: InstantOrderData) =>
     kind === 'sell' ?
-    <>
-      Create Sell Order for: <Money value={sellAmount} token={sellToken}/>
-    </> :
-    <>
-      Create Buy Order for: <Money value={buyAmount} token={buyToken}/>
-    </>
+      <>
+        Create Sell Order for: <Money value={sellAmount} token={sellToken}/>
+      </> :
+      <>
+        Create Buy Order for: <Money value={buyAmount} token={buyToken}/>
+      </>
 };
 
 export interface GetBuyAmountData {

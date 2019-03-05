@@ -2,6 +2,7 @@ import { BigNumber } from 'bignumber.js';
 import { omit } from 'lodash';
 import { of } from 'rxjs';
 import { throwError } from 'rxjs/internal/observable/throwError';
+import {tradePayWithETHNoProxy, tradePayWithETHWithProxy} from '../../blockchain/calls/instant';
 import { setupFakeWeb3ForTesting } from '../../blockchain/web3';
 
 import { Calls$ } from '../../blockchain/calls/calls';
@@ -21,8 +22,8 @@ function snapshotify(object: any): any {
 const tradingPair = { base: 'WETH', quote: 'DAI' };
 
 const defaultCalls = {
-  instantOrder: null as any,
-  instantOrderEstimateGas: () => of(40),
+  tradePayWithETHNoProxy: null as any,
+  tradePayWithETHWithProxy: null as any,
   offerMake: null as any,
   offerMakeEstimateGas: () => of(20),
   offerMakeDirect: null as any,

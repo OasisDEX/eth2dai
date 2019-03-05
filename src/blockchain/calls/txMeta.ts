@@ -8,7 +8,8 @@ export enum TxMetaKind {
   disapproveWallet = 'disapproveWallet',
   wrap = 'wrap',
   unwrap = 'unwrap',
-  instantOrder = 'instantOrder',
+  tradePayWithETHWithProxy = 'tradePayWithETHWithProxy',
+  tradePayWithETHNoProxy = 'tradePayWithETHWithProxy'
 }
 
 export type TxMeta = {
@@ -38,7 +39,7 @@ export type TxMeta = {
   kind: TxMetaKind.unwrap,
   amount: BigNumber,
 } | {
-  kind: TxMetaKind.instantOrder,
+  kind: TxMetaKind.tradePayWithETHWithProxy | TxMetaKind.tradePayWithETHNoProxy,
   buyAmount: BigNumber,
   sellAmount: BigNumber,
   buyToken: string,
