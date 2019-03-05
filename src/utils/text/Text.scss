@@ -15,7 +15,7 @@
 
 .buySellSpan {
   @include ellipsis;
-  display: inline-block;
+  display: block;
   width: 100%;
   text-transform: capitalize;
 }
