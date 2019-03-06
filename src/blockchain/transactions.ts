@@ -33,7 +33,7 @@ export function isDone(status: TxStatus) {
   ].indexOf(status) >= 0;
 }
 
-export function txHash(state: TxState): string | undefined {
+export function getTxHash(state: TxState): string | undefined {
   if (
     state.status === TxStatus.Success ||
     state.status === TxStatus.Failure ||

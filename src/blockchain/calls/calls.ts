@@ -10,7 +10,14 @@ import {
   sendTransactionCurried,
   sendTransactionWithGasConstraintsCurried
 } from './callsHelpers';
-import { getBestOffer, getBuyAmount, getPayAmount, offers, proxyAddress$, tradePayWithETH } from './instant';
+import {
+  getBestOffer,
+  getBuyAmount,
+  getPayAmount,
+  offers,
+  proxyAddress$,
+  tradePayWithETHNoProxy, tradePayWithETHWithProxy
+} from './instant';
 import { cancelOffer, offerMake, offerMakeDirect } from './offerMake';
 import { unwrap, wrap } from './wrapUnwrapCalls';
 
@@ -33,8 +40,8 @@ function calls([context, account]: [NetworkConfig, string]) {
     wrapEstimateGas: estimateGas(wrap),
     unwrap: sendTransaction(unwrap),
     unwrapEstimateGas: estimateGas(unwrap),
-    instantOrder: sendTransaction(tradePayWithETH),
-    instantOrderEstimateGas: estimateGas(tradePayWithETH),
+    tradePayWithETHNoProxy: sendTransaction(tradePayWithETHNoProxy),
+    tradePayWithETHWithProxy: sendTransaction(tradePayWithETHWithProxy),
     otcGetBuyAmount: call(getBuyAmount),
     otcGetPayAmount: call(getPayAmount),
     otcGetBestOffer: call(getBestOffer),
@@ -50,9 +57,3 @@ export const calls$ = combineLatest(context$, initializedAccount$).pipe(
 export type Calls$ = typeof calls$;
 
 export type Calls = ObservableItem<Calls$>;
-
-// (window as any).setupCalls = (): any | undefined => {
-//   calls$.subscribe(calls => {
-//     (window as any).calls = calls;
-//   });
-// };
