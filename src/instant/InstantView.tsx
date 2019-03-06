@@ -163,7 +163,7 @@ export class InstantView extends React.Component<InstantFormState> {
           }
 
           {
-            message &&
+            message && message.placement === Position.TOP &&
             <>
               {error(message)}
             </>
