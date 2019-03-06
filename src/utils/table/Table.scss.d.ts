@@ -1,4 +1,5 @@
 export const table: string;
+export const numerical: string;
 export const extendOnBorders: string;
 export const right: string;
 export const center: string;

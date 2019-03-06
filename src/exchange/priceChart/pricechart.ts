@@ -3,7 +3,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { NetworkConfig } from '../../blockchain/config';
-import { vulcan0x } from '../../blockchain/vulcan0x';
+import { Placeholder, vulcan0x } from '../../blockchain/vulcan0x';
 import { IntervalUnit } from '../allTrades/allTrades';
 import { TradingPair } from '../tradingPair/tradingPair';
 
@@ -32,20 +32,22 @@ export function loadAggregatedTrades(
   { base, quote }: TradingPair,
 ): Observable<PriceChartDataPoint[]> {
   const borderline = moment().subtract(interval, unit).startOf('day').toDate();
-  const view = 'tradesAggregated';
-  const options = {
-    timeUnit: unit,
-    tzOffset: { minutes: -new Date().getTimezoneOffset() },
-    dateFrom: borderline.toISOString(),
-  };
+  const params = [
+    new Placeholder('timeUnit', 'String', unit),
+    new Placeholder('tzOffset', 'IntervalInput', { minutes: -new Date().getTimezoneOffset() }),
+    new Placeholder('dateFrom', 'Datetime', borderline.toISOString()),
+  ];
   const fields = ['date', 'open', 'close', 'min', 'max', 'volumeBase'];
   const filter = {
-    market: { equalTo: `${base}${quote}` },
+    market: { equalTo: new Placeholder('market', 'String', `${base}${quote}`) },
   };
 
   return combineLatest(context$$, onEveryBlock$$).pipe(
     switchMap(([context]) =>
-      vulcan0x(context.oasisDataService.url, view, options, filter, fields, undefined, undefined, undefined)
+      vulcan0x(context.oasisDataService.url, 'priceChart', 'tradesAggregated', fields, {
+        params,
+        filter,
+      })
     ),
     map(aggrs => aggrs.map(parseAggregatedData)),
   );
