@@ -414,34 +414,47 @@ function postValidate(state: InstantFormState): InstantFormState {
   const [spendField, receiveField] = ['sellToken', 'buyToken'];
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
   const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
+  const dustLimits = state.dustLimits;
 
-  // const dustLimit = isBaseToken(state.buyToken, state.baseToken) ?
-  //   state.dustLimitBase : state.dustLimitQuote;
-
-  if (receiveAmount && spendAmount) {
-    if (
+  if (spendAmount && (
       spendToken === 'ETH' && state.etherBalance && state.etherBalance.lt(spendAmount) ||
       state.balances && state.balances[spendToken] && state.balances[spendToken].lt(spendAmount)
-    ) {
-      message = prioritize(message, {
-        kind: MessageKind.insufficientAmount,
-        field: spendField,
-        priority: 1,
-        token: spendToken,
-        placement: Position.BOTTOM
-      });
-    }
-    // if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
-    //   message = prioritize(message, {
-    //     kind: MessageKind.dustAmount,
-    //     field: spendField,
-    //     priority: 2,
-    //     token: spendToken,
-    //     amount: dustLimit || new BigNumber(0),
-    //     placement: Position.BOTTOM
-    //   });
-    // }
+  )) {
+    message = prioritize(message, {
+      kind: MessageKind.insufficientAmount,
+      field: spendField,
+      priority: 1,
+      token: spendToken,
+      placement: Position.BOTTOM
+    });
   }
+
+  if (dustLimits) {
+    console.log(dustLimits[eth2weth(spendToken)].valueOf(), dustLimits[eth2weth(receiveToken)].valueOf());
+  }
+
+  if (spendAmount && dustLimits && dustLimits[eth2weth(spendToken)] && dustLimits[eth2weth(spendToken)].gt(spendAmount)) {
+    message = prioritize(message, {
+      kind: MessageKind.dustAmount,
+      amount: spendAmount,
+      field: spendField,
+      priority: 2,
+      token: spendToken,
+      placement: Position.BOTTOM
+    });
+  }
+
+  if (receiveAmount && dustLimits && dustLimits[eth2weth(spendToken)] && dustLimits[eth2weth(spendToken)].gt(receiveAmount)) {
+    message = prioritize(message, {
+      kind: MessageKind.dustAmount,
+      amount: receiveAmount,
+      field: receiveField,
+      priority: 2,
+      token: receiveToken,
+      placement: Position.BOTTOM
+    });
+  }
+
   if (
     spendAmount && new BigNumber(tokens[eth2weth(spendToken)].maxSell).lt(spendAmount)
   ) {
@@ -453,11 +466,12 @@ function postValidate(state: InstantFormState): InstantFormState {
       placement: Position.BOTTOM
     });
   }
+
   if (receiveAmount && new BigNumber(tokens[eth2weth(receiveToken)].maxSell).lt(receiveAmount)) {
     message = prioritize(message, {
       kind: MessageKind.incredibleAmount,
       field: receiveField,
-      priority: 1,
+      priority: 2,
       token: receiveToken,
       placement: Position.BOTTOM
     });
@@ -633,8 +647,14 @@ export function createFormController$(
 }
 
 const prioritize = (current: Message = { priority: 0 } as Message, candidate: Message) => {
+  // Prioritize by priority first
   if (current.priority < candidate.priority) {
     return candidate;
+  }
+
+  // and if we have errors with same priority, the one for paying input is more important
+  if (current.priority === candidate.priority) {
+    return current.field === 'sellToken' ? current : candidate;
   }
 
   return current;
