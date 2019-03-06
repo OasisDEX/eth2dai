@@ -30,12 +30,12 @@ export function eth2weth(token: string): string {
 }
 
 export const tradePayWithETHWithProxy: TransactionDef<InstantOrderData> = {
-  call: ({ kind, proxyAddress }: InstantOrderData, context: NetworkConfig) => {
-    return web3.eth.contract(dsProxy as any).at(proxyAddress!).execute['address,bytes']
+  call: ({ proxyAddress }: InstantOrderData) => {
+    return web3.eth.contract(dsProxy as any).at(proxyAddress!).execute['address,bytes'];
   },
   prepareArgs: (
     {
-      proxyAddress,
+      // proxyAddress,
       kind,
       buyToken, buyAmount,
       // sellToken, sellAmount,
