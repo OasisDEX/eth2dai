@@ -74,13 +74,13 @@ function error(msg: Message | undefined) {
 
   switch (msg.kind) {
     case MessageKind.insufficientAmount:
-      return <>Balance too low</>;
+      return <>You don't have {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} in your wallet</>;
     case MessageKind.dustAmount:
-      return <>Amount too low</>;
+      return <>The Minimum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
     case MessageKind.incredibleAmount:
-      return <>Amount too big</>;
+      return <>The Maximum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
     case MessageKind.orderbookTotalExceeded:
-      return <>Not enough orders </>;
+      return <>No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} </>;
     default:
       return <>Don't know how to show message: {msg.kind}</>;
   }

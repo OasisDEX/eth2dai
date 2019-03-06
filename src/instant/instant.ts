@@ -60,14 +60,16 @@ export enum MessageKind {
 }
 
 export type Message = {
-  kind: MessageKind.noAllowance | MessageKind.insufficientAmount
-    | MessageKind.incredibleAmount;
+  kind: MessageKind.noAllowance;
   field: string;
   priority: number;
   token: string;
   placement: Placement;
 } | {
-  kind: MessageKind.dustAmount;
+  kind: MessageKind.dustAmount
+    | MessageKind.noAllowance
+    | MessageKind.insufficientAmount
+    | MessageKind.incredibleAmount;
   field: string;
   priority: number;
   token: string;
@@ -76,6 +78,9 @@ export type Message = {
 } | {
   kind: MessageKind.orderbookTotalExceeded
   field: string;
+  side: 'sell' | 'buy'
+  amount: BigNumber,
+  token: string;
   priority: number;
   placement: Placement;
   error: any
@@ -308,6 +313,9 @@ function evaluateBuy(calls: Calls, state: InstantFormState) {
       message: {
         error,
         kind: MessageKind.orderbookTotalExceeded,
+        amount: buyAmount,
+        side: 'buy',
+        token: buyToken,
         placement: Position.TOP,
         priority: 3
       }
@@ -335,6 +343,9 @@ function evaluateSell(calls: Calls, state: InstantFormState) {
       message: {
         error,
         kind: MessageKind.orderbookTotalExceeded,
+        amount: sellAmount,
+        side: 'sell',
+        token: sellToken,
         placement: Position.TOP,
         priority: 3
       }
@@ -423,20 +434,17 @@ function postValidate(state: InstantFormState): InstantFormState {
     message = prioritize(message, {
       kind: MessageKind.insufficientAmount,
       field: spendField,
+      amount: spendAmount,
       priority: 1,
       token: spendToken,
       placement: Position.BOTTOM
     });
   }
 
-  if (dustLimits) {
-    console.log(dustLimits[eth2weth(spendToken)].valueOf(), dustLimits[eth2weth(receiveToken)].valueOf());
-  }
-
   if (spendAmount && dustLimits && dustLimits[eth2weth(spendToken)] && dustLimits[eth2weth(spendToken)].gt(spendAmount)) {
     message = prioritize(message, {
       kind: MessageKind.dustAmount,
-      amount: spendAmount,
+      amount: dustLimits[eth2weth(spendToken)],
       field: spendField,
       priority: 2,
       token: spendToken,
@@ -444,10 +452,10 @@ function postValidate(state: InstantFormState): InstantFormState {
     });
   }
 
-  if (receiveAmount && dustLimits && dustLimits[eth2weth(spendToken)] && dustLimits[eth2weth(spendToken)].gt(receiveAmount)) {
+  if (receiveAmount && dustLimits && dustLimits[eth2weth(receiveToken)] && dustLimits[eth2weth(receiveToken)].gt(receiveAmount)) {
     message = prioritize(message, {
       kind: MessageKind.dustAmount,
-      amount: receiveAmount,
+      amount: dustLimits[eth2weth(receiveToken)],
       field: receiveField,
       priority: 2,
       token: receiveToken,
@@ -463,6 +471,7 @@ function postValidate(state: InstantFormState): InstantFormState {
       field: spendField,
       priority: 2,
       token: spendToken,
+      amount: new BigNumber(tokens[eth2weth(spendToken)].maxSell),
       placement: Position.BOTTOM
     });
   }
@@ -473,6 +482,7 @@ function postValidate(state: InstantFormState): InstantFormState {
       field: receiveField,
       priority: 2,
       token: receiveToken,
+      amount: new BigNumber(tokens[eth2weth(receiveToken)].maxSell),
       placement: Position.BOTTOM
     });
   }
