@@ -664,7 +664,7 @@ test('pick buy offer', () => {
   expect(unpack(controller).price).toEqual(new BigNumber(3));
   expect(unpack(controller).amount).toEqual(new BigNumber(2));
   expect(unpack(controller).total).toEqual(new BigNumber(6));
-  expect(unpack(controller).kind).toEqual(OfferType.sell);
+  expect(unpack(controller).kind).toEqual(OfferType.buy);
   expect(unpack(controller).stage).toEqual(FormStage.readyToProceed);
 });
 

@@ -292,22 +292,14 @@ function applyChange(state: OfferFormState,
       if (state.matchType === OfferMatchType.direct && state.orderbook) {
         return directMatchState(
           state, {
-            kind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy,
             amount: change.offer.baseAmount
           },
           state.orderbook
         );
       }
 
-      let newState = applyChange(
+      const newState = applyChange(
         state,
-        {
-          kind: FormChangeKind.kindChange,
-          newKind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy
-        }
-      );
-      newState = applyChange(
-        newState,
         {
           kind: FormChangeKind.amountFieldChange,
           value: new BigNumber(change.offer.baseAmount.toFixed(tokens[state.baseToken].digits))
