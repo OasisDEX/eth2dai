@@ -75,14 +75,8 @@ const protoMain = {
   get saiTub() { return load(saiTub, '0x448a5065aebb8e423f0896e6c5d525c040f59af3'); },
   get tokens() {
     return asMap('token', [
-      {
-        ...tokens,
-        ...loadToken('WETH', eth, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
-      },
-      {
-        ...tokens,
-        ...loadToken('DAI', erc20, '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359')
-      }
+      loadToken('WETH', eth, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
+      loadToken('DAI', erc20, '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'),
     ]);
   },
   get otcSupportMethods() {
@@ -120,14 +114,8 @@ const kovan: NetworkConfig = {
   get saiTub() { return load(saiTub, '0xa71937147b55deb8a530c7229c442fd3f31b7db2'); },
   get tokens() {
     return asMap('token', [
-      {
-        ...tokens.WETH,
-        ...loadToken('WETH', eth, '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
-      },
-      {
-        ...tokens.DAI,
-        ...loadToken('DAI', erc20, '0xc4375b7de8af5a38a93548eb8453a498222c4ff2')
-      }
+      loadToken('WETH', eth, '0xd0a1e359811322d97991e03f863a0c30c2cf029c'),
+      loadToken('DAI', erc20, '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'),
     ]);
   },
   get otcSupportMethods() {
@@ -161,16 +149,8 @@ const localnet: NetworkConfig =   {
   get saiTub() { return { address: '', contract: null }; },
   get tokens() {
     return asMap('token', [
-      {
-        ...tokens,
-        maxSell: '1000',
-        ...loadToken('WETH', eth, '0xd0a1e359811322d97991e03f863a0c30c2cf029c')
-      },
-      {
-        ...tokens,
-        maxSell: '1000',
-        ...loadToken('DAI', erc20, '0xc4375b7de8af5a38a93548eb8453a498222c4ff2')
-      }
+      loadToken('WETH', eth, '0x28085cefa9103d3a55fb5afccf07ed2038d31cd4'),
+      loadToken('DAI', erc20, '0xff500c51399a282f4563f2713ffcbe9e53cfb6fa'),
     ]);
   },
   get otcSupportMethods() {
