@@ -21,8 +21,7 @@ import { Balances, DustLimits } from '../balances/balances';
 
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { eth2weth, InstantOrderData } from '../blockchain/calls/instant';
-import {allowance$} from '../blockchain/network';
-import { isDone, getTxHash, TxState, TxStatus } from '../blockchain/transactions';
+import { getTxHash, isDone, TxState, TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
@@ -61,14 +60,16 @@ export enum MessageKind {
 }
 
 export type Message = {
-  kind: MessageKind.noAllowance | MessageKind.insufficientAmount
-    | MessageKind.incredibleAmount;
+  kind: MessageKind.noAllowance;
   field: string;
   priority: number;
   token: string;
   placement: Placement;
 } | {
-  kind: MessageKind.dustAmount;
+  kind: MessageKind.dustAmount
+    | MessageKind.noAllowance
+    | MessageKind.insufficientAmount
+    | MessageKind.incredibleAmount;
   field: string;
   priority: number;
   token: string;
@@ -77,6 +78,9 @@ export type Message = {
 } | {
   kind: MessageKind.orderbookTotalExceeded
   field: string;
+  side: OfferType
+  amount: BigNumber,
+  token: string;
   priority: number;
   placement: Placement;
   error: any
@@ -297,6 +301,9 @@ function evaluateBuy(calls: Calls, state: InstantFormState) {
       message: {
         error,
         kind: MessageKind.orderbookTotalExceeded,
+        amount: buyAmount,
+        side: 'buy',
+        token: buyToken,
         placement: Position.TOP,
         priority: 3
       }
@@ -324,6 +331,9 @@ function evaluateSell(calls: Calls, state: InstantFormState) {
       message: {
         error,
         kind: MessageKind.orderbookTotalExceeded,
+        amount: sellAmount,
+        side: 'sell',
+        token: sellToken,
         placement: Position.TOP,
         priority: 3
       }
@@ -397,40 +407,53 @@ function evaluateTrade(
 }
 
 function postValidate(state: InstantFormState): InstantFormState {
+  if (state.tradeEvaluationStatus === TradeEvaluationStatus.calculating) {
+    return state;
+  }
 
   let message: Message | undefined  = state.message;
 
   const [spendField, receiveField] = ['sellToken', 'buyToken'];
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
   const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
+  const dustLimits = state.dustLimits;
 
-  // const dustLimit = isBaseToken(state.buyToken, state.baseToken) ?
-  //   state.dustLimitBase : state.dustLimitQuote;
-
-  if (receiveAmount && spendAmount) {
-    if (
+  if (spendAmount && (
       spendToken === 'ETH' && state.etherBalance && state.etherBalance.lt(spendAmount) ||
       state.balances && state.balances[spendToken] && state.balances[spendToken].lt(spendAmount)
-    ) {
-      message = prioritize(message, {
-        kind: MessageKind.insufficientAmount,
-        field: spendField,
-        priority: 1,
-        token: spendToken,
-        placement: Position.BOTTOM
-      });
-    }
-    // if ((dustLimit || new BigNumber(0)).gt(spendAmount)) {
-    //   message = prioritize(message, {
-    //     kind: MessageKind.dustAmount,
-    //     field: spendField,
-    //     priority: 2,
-    //     token: spendToken,
-    //     amount: dustLimit || new BigNumber(0),
-    //     placement: Position.BOTTOM
-    //   });
-    // }
+  )) {
+    message = prioritize(message, {
+      kind: MessageKind.insufficientAmount,
+      field: spendField,
+      amount: spendAmount,
+      priority: 1,
+      token: spendToken,
+      placement: Position.BOTTOM
+    });
   }
+
+  if (spendAmount && dustLimits && dustLimits[eth2weth(spendToken)] && dustLimits[eth2weth(spendToken)].gt(spendAmount)) {
+    message = prioritize(message, {
+      kind: MessageKind.dustAmount,
+      amount: dustLimits[eth2weth(spendToken)],
+      field: spendField,
+      priority: 2,
+      token: spendToken,
+      placement: Position.BOTTOM
+    });
+  }
+
+  if (receiveAmount && dustLimits && dustLimits[eth2weth(receiveToken)] && dustLimits[eth2weth(receiveToken)].gt(receiveAmount)) {
+    message = prioritize(message, {
+      kind: MessageKind.dustAmount,
+      amount: dustLimits[eth2weth(receiveToken)],
+      field: receiveField,
+      priority: 2,
+      token: receiveToken,
+      placement: Position.BOTTOM
+    });
+  }
+
   if (
     spendAmount && new BigNumber(tokens[eth2weth(spendToken)].maxSell).lt(spendAmount)
   ) {
@@ -439,15 +462,18 @@ function postValidate(state: InstantFormState): InstantFormState {
       field: spendField,
       priority: 2,
       token: spendToken,
+      amount: new BigNumber(tokens[eth2weth(spendToken)].maxSell),
       placement: Position.BOTTOM
     });
   }
+
   if (receiveAmount && new BigNumber(tokens[eth2weth(receiveToken)].maxSell).lt(receiveAmount)) {
     message = prioritize(message, {
       kind: MessageKind.incredibleAmount,
       field: receiveField,
-      priority: 1,
+      priority: 2,
       token: receiveToken,
+      amount: new BigNumber(tokens[eth2weth(receiveToken)].maxSell),
       placement: Position.BOTTOM
     });
   }
@@ -619,9 +645,9 @@ export function createFormController$(
     scan(applyChange, initialState),
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.calls$)),
-    map(postValidate),
     map(calculatePrice),
     map(calculatePriceImpact),
+    map(postValidate),
     tap(state => console.log(
       'state.message', state.message && state.message.kind,
       'state.gasEstimationStatus', state.gasEstimationStatus,
@@ -634,8 +660,14 @@ export function createFormController$(
 }
 
 const prioritize = (current: Message = { priority: 0 } as Message, candidate: Message) => {
+  // Prioritize by priority first
   if (current.priority < candidate.priority) {
     return candidate;
+  }
+
+  // and if we have errors with same priority, the one for paying input is more important
+  if (current.priority === candidate.priority) {
+    return current.field === 'sellToken' ? current : candidate;
   }
 
   return current;

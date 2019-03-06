@@ -1,9 +1,8 @@
 import { ApplicationState } from '../pages/Application';
 import { Tab } from '../pages/Tab';
-import { cypressVisitWithWeb3, tid, timeout } from '../utils';
-
 import { Trade } from '../pages/Trade';
 import { TradeData } from '../pages/TradeData';
+import { cypressVisitWithWeb3, tid, timeout } from '../utils';
 import { makeScreenshots } from '../utils/makeScreenshots';
 
 const waitForBalancesToLoad = () => {
@@ -89,6 +88,7 @@ describe('Instant trade', () => {
 
     const trade = new Trade();
     trade.sell().amount('200');
-    trade.resultsInError(`Balance too low`);
+    // Find a way to evaluate the error content returned from the mapping ( no hardcoded values )
+    trade.resultsInError(`You don't have 200.00 DAI in your wallet`);
   });
 });

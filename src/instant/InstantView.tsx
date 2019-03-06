@@ -12,7 +12,7 @@ import * as panelStyling from '../utils/panel/Panel.scss';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
 import { Asset } from './asset/Asset';
 import { TradeData } from './details/TradeData';
-import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind } from './instant';
+import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind, Position } from './instant';
 import * as styles from './Instant.scss';
 
 interface TradingSideProps {
@@ -67,20 +67,19 @@ const Buying = (props: any) => (
 );
 
 function error(msg: Message | undefined) {
-
   if (!msg) {
     return <></>;
   }
 
   switch (msg.kind) {
     case MessageKind.insufficientAmount:
-      return <>Balance too low</>;
+      return <>You don't have {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} in your wallet</>;
     case MessageKind.dustAmount:
-      return <>Amount too low</>;
+      return <>The Minimum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
     case MessageKind.incredibleAmount:
-      return <>Amount too big</>;
+      return <>The Maximum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
     case MessageKind.orderbookTotalExceeded:
-      return <>Not enough orders </>;
+      return <>No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} </>;
     default:
       return <>Don't know how to show message: {msg.kind}</>;
   }
@@ -124,34 +123,51 @@ export class InstantView extends React.Component<InstantFormState> {
           </TopRightCorner>
         </header>
 
-        <div className={classnames(styles.details, price ? '' : styles.hidden)}>
-          <TradeData label="Price"
-                     data-test-id="trade-price"
-                     info="Additional Info"
-                     value={
-                       <Approximate>
-                         {formatAmount(price || new BigNumber(0), 'USD')} {sellToken}/{buyToken}
-                       </Approximate>
-                     }/>
-          <TradeData label="Slippage Limit"
-                     data-test-id="trade-slippage-limit"
-                     info="Additional Info"
-                     value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}/>
-          <TradeData label="Gas cost"
-                     data-test-id="trade-gas-cost"
-                     value={
-                       gasEstimationUsd
-                         ? (
+        <div
+          className={classnames(
+            styles.details,
+            price || message && message.placement === Position.TOP ? '' : styles.hidden,
+            message && message.placement === Position.TOP ? styles.errors : ''
+          )}>
+          {
+            price &&
+            <>
+              <TradeData label="Price"
+                         data-test-id="trade-price"
+                         info="Additional Info"
+                         value={
                            <Approximate>
-                             <Money value={gasEstimationUsd} token="USD"/>
+                             {formatAmount(price || new BigNumber(0), 'USD')} {sellToken}/{buyToken}
                            </Approximate>
-                         )
-                         : <ProgressIcon small={true}/>
-                     }/>
-          <TradeData label="Price Impact"
-                     data-test-id="trade-price-impact"
-                     info="Additional Info"
-                     value={<FormatPercent fallback={'N/A'} value={priceImpact} precision={2}/>}/>
+                         }/>
+              <TradeData label="Slippage Limit"
+                         data-test-id="trade-slippage-limit"
+                         info="Additional Info"
+                         value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}/>
+              <TradeData label="Gas cost"
+                         data-test-id="trade-gas-cost"
+                         value={
+                           gasEstimationUsd
+                             ? (
+                               <Approximate>
+                                 <Money value={gasEstimationUsd} token="USD"/>
+                               </Approximate>
+                             )
+                             : <ProgressIcon small={true}/>
+                         }/>
+              <TradeData label="Price Impact"
+                         data-test-id="trade-price-impact"
+                         info="Additional Info"
+                         value={<FormatPercent fallback={'N/A'} value={priceImpact} precision={2}/>}/>
+            </>
+          }
+
+          {
+            message && message.placement === Position.TOP &&
+            <>
+              {error(message)}
+            </>
+          }
         </div>
 
         <div className={styles.assets}>
@@ -172,7 +188,10 @@ export class InstantView extends React.Component<InstantFormState> {
                   }/>
         </div>
 
-        <div data-test-id="error" className={classnames(styles.errors, message ? '' : 'hide-all')}>
+        <div data-test-id="error"
+             className={
+               classnames(styles.errors, message && message.placement === Position.BOTTOM ? '' : 'hide-all')
+             }>
           {error(message)}
         </div>
 
