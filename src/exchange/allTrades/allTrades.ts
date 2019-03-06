@@ -33,12 +33,12 @@ export function loadAllTrades(
       combineLatest(
         onEveryBlock$$.pipe(
           exhaustMap(() =>
-            getTrades(context, base, quote, {
+            getTrades(context, base, quote, 'allTradesLive', {
               from: borderline,
             })
           ),
         ),
-        getTrades(context, base, quote, {
+        getTrades(context, base, quote, 'allTradesCurrent', {
           limit: TRADES_PAGE_SIZE,
           to: borderline,
           from: moment(borderline).subtract(14, 'day').toDate()
@@ -80,7 +80,7 @@ export function createTradesBrowser$(
       more$.pipe(
         mergeScan<any, { nextPageStart: number, loading: boolean, trades: Trade[] }>(
           ({ nextPageStart, trades }, _more) => {
-            return getTrades(context, tradingPair.base, tradingPair.quote, {
+            return getTrades(context, tradingPair.base, tradingPair.quote, 'allTradesPrevious', {
               offset: nextPageStart,
               limit: TRADES_PAGE_SIZE
             }).pipe(

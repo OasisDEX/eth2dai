@@ -13,7 +13,7 @@
     "tslint": "tslint --project .",
     "tslint:fix": "tslint --project . --format stylish --fix",
     "postinstall": "rm -f node_modules/web3/index.d.ts",
-    "deploy:dev": "yarn build && surge --project ./build --domain http://eth2dai-dev.surge.sh/",
+    "deploy:dev": "ENV=dev yarn build && surge --project ./build --domain http://eth2dai-dev.surge.sh/",
     "deploy:stage": "yarn build && surge --project ./build --domain http://eth2dai-staging.surge.sh/",
     "deploy:prod": "sh ./deploy-prod.sh",
     "storybook": "start-storybook -p 6006",

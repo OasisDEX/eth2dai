@@ -96,7 +96,7 @@ jobs:
       - restore_cache:
             keys:
             - v3-dependencies-{{ checksum "package.json" }}
-      - run: PUBLIC_URL=. yarn build
+      - run: PUBLIC_URL=. ENV=dev yarn build
       - run: yarn super-ci
 
   super-ci-e2e:

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { NetworkConfig } from '../blockchain/config';
-import { vulcan0x } from '../blockchain/vulcan0x';
+import { Placeholder, vulcan0x } from '../blockchain/vulcan0x';
 import { web3 } from '../blockchain/web3';
 
 export type TradeAct = 'buy' | 'sell';
@@ -77,9 +77,10 @@ export const getTrades = (
   context: NetworkConfig,
   baseToken: string,
   quoteToken: string,
+  operation: string,
   filters: {account?: string, from?: Date, to?: Date, offset?: number, limit?: number},
 ): Observable<Trade[]> => {
-  const accountVal = filters.account ? (web3 as any).toChecksumAddress(filters.account) : null;
+  const owner = filters.account ? (web3 as any).toChecksumAddress(filters.account) : null;
 
   const fields = ['offerId', 'maker', 'bidAmt', 'bidTkn', 'lotAmt', 'block', 'time', 'tx', 'idx'];
   const order = `[TIME_DESC, IDX_DESC]`;
@@ -87,44 +88,41 @@ export const getTrades = (
     or: [
       {
         and: [
-          { lotTkn: { equalTo: baseToken } },
-          { bidTkn: { equalTo: quoteToken } },
+          { lotTkn: { equalTo: new Placeholder('baseToken', 'String', baseToken) } },
+          { bidTkn: { equalTo: new Placeholder('quoteToken', 'String', quoteToken) } },
         ],
       },
       {
         and: [
-          { lotTkn: { equalTo: quoteToken } },
-          { bidTkn: { equalTo: baseToken } },
+          { lotTkn: { equalTo: new Placeholder('quoteToken', 'String', quoteToken) } },
+          { bidTkn: { equalTo: new Placeholder('baseToken', 'String', baseToken) } },
         ],
       },
     ],
-    ...accountVal ? {
+    ...owner ? {
       and: [{
         or: [
-          { maker: { equalTo: accountVal } },
-          { taker: { equalTo: accountVal } },
+          { maker: { equalTo: new Placeholder('owner', 'String', owner) } },
+          { taker: { equalTo: new Placeholder('owner', 'String', owner) } },
         ]
       }]
     } : {},
     ...(filters.from || filters.to) ? {
       time: {
-        ...filters.from ? { greaterThan: filters.from.toISOString() } : {},
-        ...filters.to ? { lessThan: filters.to.toISOString() } : {},
+        ...filters.from ? { greaterThan: new Placeholder('timeFrom', 'Datetime', filters.from.toISOString()) } : {},
+        ...filters.to ? { lessThan: new Placeholder('timeTo', 'Datetime', filters.to.toISOString()) } : {},
       }
     } : {},
   };
 
-  return vulcan0x(
-    context.oasisDataService.url,
-    'allOasisSimpleTrades',
-    {},
+  const { limit, offset } = filters;
+  return vulcan0x(context.oasisDataService.url, operation, 'allOasisSimpleTrades', fields, {
     filter,
-    fields,
     order,
-    filters.limit,
-    filters.offset,
-  ).pipe(
-    map(trades => trades.map(parseTrade(accountVal, quoteToken, baseToken, quoteToken)))
+    limit,
+    offset,
+  }).pipe(
+    map(trades => trades.map(parseTrade(owner, quoteToken, baseToken, quoteToken)))
   );
 };
 
