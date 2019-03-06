@@ -78,7 +78,7 @@ export type Message = {
 } | {
   kind: MessageKind.orderbookTotalExceeded
   field: string;
-  side: 'sell' | 'buy'
+  side: OfferType
   amount: BigNumber,
   token: string;
   priority: number;
