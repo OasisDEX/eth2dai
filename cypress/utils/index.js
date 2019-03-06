@@ -70,3 +70,5 @@ export const restoreBlockchain = rpcCommand("evm_revert");
 export const multiply = (first, second) => {
   return (parseFloat(first) * parseFloat(second)).toString();
 };
+
+export const timeout = (milliSeconds = 40000) => ({timeout: milliSeconds});

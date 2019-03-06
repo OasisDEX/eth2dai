@@ -28,7 +28,7 @@ const Approximate = (props: any) => (
   <>
     ~&nbsp; {props.children}
   </>
-)
+);
 
 class TradingSide extends React.Component<TradingSideProps> {
   public render() {
@@ -126,6 +126,7 @@ export class InstantView extends React.Component<InstantFormState> {
 
         <div className={classnames(styles.details, price ? '' : styles.hidden)}>
           <TradeData label="Price"
+                     data-test-id="trade-price"
                      info="Additional Info"
                      value={
                        <Approximate>
@@ -133,9 +134,11 @@ export class InstantView extends React.Component<InstantFormState> {
                        </Approximate>
                      }/>
           <TradeData label="Slippage Limit"
+                     data-test-id="trade-slippage-limit"
                      info="Additional Info"
                      value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}/>
           <TradeData label="Gas cost"
+                     data-test-id="trade-gas-cost"
                      value={
                        gasEstimationUsd
                          ? (
@@ -146,6 +149,7 @@ export class InstantView extends React.Component<InstantFormState> {
                          : <ProgressIcon small={true}/>
                      }/>
           <TradeData label="Price Impact"
+                     data-test-id="trade-price-impact"
                      info="Additional Info"
                      value={<FormatPercent fallback={'N/A'} value={priceImpact} precision={2}/>}/>
         </div>

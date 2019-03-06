@@ -21,7 +21,7 @@ import { Balances, DustLimits } from '../balances/balances';
 
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { eth2weth, InstantOrderData } from '../blockchain/calls/instant';
-import {isDone, txHash, TxState, TxStatus} from '../blockchain/transactions';
+import { isDone, txHash, TxState, TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
@@ -508,10 +508,9 @@ function tradePayWithERC20(
 
 function calculatePrice(state: InstantFormState): InstantFormState {
   const { buyAmount, sellAmount } = state;
-  let price: BigNumber | undefined = state.price;
 
   if (buyAmount && sellAmount) {
-    price = buyAmount.div(sellAmount);
+    const price = buyAmount.div(sellAmount);
 
     return {
       ...state,
@@ -524,10 +523,9 @@ function calculatePrice(state: InstantFormState): InstantFormState {
 
 function calculatePriceImpact(state: InstantFormState): InstantFormState {
   const { price, bestPrice } = state;
-  let priceImpact: BigNumber | undefined = state.priceImpact;
 
   if (price && bestPrice) {
-    priceImpact = bestPrice
+    const priceImpact = bestPrice
       .minus(price)
       .abs()
       .div(bestPrice)

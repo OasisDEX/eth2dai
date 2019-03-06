@@ -11,17 +11,20 @@ interface EntryProps {
 export class TradeData extends React.Component<EntryProps> {
 
   public render() {
-    const { label, value, info } = this.props;
+    const { label, value, info, } = this.props;
 
     return (
-      <div className={styles.entry}>
+      <div className={styles.entry} {...this.props}>
         <span className={styles.label}>
           {label}
         </span>&nbsp;
         {
           info && <InfoIcon className={styles.infoIcon}/>
         }
-        <span className={styles.value}>{value}</span>
+        <span data-test-id="value"
+              className={styles.value}>
+          {value}
+        </span>
       </div>
     );
   }
