@@ -21,8 +21,7 @@ import { Balances, DustLimits } from '../balances/balances';
 
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { eth2weth, InstantOrderData } from '../blockchain/calls/instant';
-import {allowance$} from '../blockchain/network';
-import { isDone, getTxHash, TxState, TxStatus } from '../blockchain/transactions';
+import { getTxHash, isDone, TxState, TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
