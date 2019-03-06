@@ -2,7 +2,6 @@ import { BigNumber } from 'bignumber.js';
 import { omit } from 'lodash';
 import { of } from 'rxjs';
 import { throwError } from 'rxjs/internal/observable/throwError';
-import {tradePayWithETHNoProxy, tradePayWithETHWithProxy} from '../../blockchain/calls/instant';
 import { setupFakeWeb3ForTesting } from '../../blockchain/web3';
 
 import { Calls$ } from '../../blockchain/calls/calls';
@@ -45,6 +44,10 @@ const defaultCalls = {
   otcGetBestOffer: undefined as any,
   otcOffers: undefined as any,
   proxyAddress: undefined as any,
+  setupProxy: undefined as any,
+  approveProxy: undefined as any,
+  disapproveProxy: undefined as any,
+  setOwner: undefined as any,
 };
 
 const defParams = {

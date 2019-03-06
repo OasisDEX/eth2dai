@@ -42,6 +42,10 @@ const defaultCalls = {
   otcGetBestOffer: () => of(new BigNumber(100)),
   otcOffers: () => of(fakeOrderBook),
   proxyAddress: undefined as any,
+  setupProxy: undefined as any,
+  approveProxy: undefined as any,
+  disapproveProxy: undefined as any,
+  setOwner: undefined as any,
 };
 
 const defParams = {

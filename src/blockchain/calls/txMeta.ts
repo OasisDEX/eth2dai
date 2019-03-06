@@ -9,7 +9,10 @@ export enum TxMetaKind {
   wrap = 'wrap',
   unwrap = 'unwrap',
   tradePayWithETHWithProxy = 'tradePayWithETHWithProxy',
-  tradePayWithETHNoProxy = 'tradePayWithETHWithProxy'
+  tradePayWithETHNoProxy = 'tradePayWithETHWithProxy',
+  setupProxy = 'setupProxy',
+  approveProxy = 'approveProxy',
+  disapproveProxy = 'disapproveProxy'
 }
 
 export type TxMeta = {

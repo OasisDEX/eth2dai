@@ -9,7 +9,6 @@ import {
   shareReplay,
   startWith,
   take,
-  tap
 } from 'rxjs/operators';
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import { account$, context$, onEveryBlock$ } from './network';
@@ -24,13 +23,17 @@ export enum TxStatus {
   Failure = 'Failure',
 }
 
-export function isDone(status: TxStatus) {
+export function isDone(state: TxState) {
   return [
     TxStatus.CancelledByTheUser,
     TxStatus.Error,
     TxStatus.Failure,
     TxStatus.Success
-  ].indexOf(status) >= 0;
+  ].indexOf(state.status) >= 0;
+}
+
+export function isSuccess(state: TxState) {
+  return TxStatus.Success === state.status;
 }
 
 export function getTxHash(state: TxState): string | undefined {
@@ -147,13 +150,13 @@ export function send(
         mergeMap(() => bindNodeCallback(web3.eth.getTransactionReceipt)(txHash)),
         filter(receipt => !!receipt),
         // to prevent degenerated infura response...
-        tap((receipt: any) =>
-          console.log('receipt', receipt, receipt.blockNumber)
-        ),
+        // tap((receipt: any) =>
+        //   console.log('receipt', receipt, receipt.blockNumber)
+        // ),
         filter((receipt: any) =>
           receipt.blockNumber !== undefined && receipt.blockNumber !== null
         ),
-        tap(receipt => console.log('filtered receipt', receipt)),
+        // tap(receipt => console.log('filtered receipt', receipt)),
         take(1),
         mergeMap(receipt => successOrFailure(txHash, receipt)),
         catchError(error => {

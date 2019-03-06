@@ -52,3 +52,34 @@ export const disapproveWallet: TransactionDef<ApproveWalletData> = {
     );
   },
 };
+
+export interface ApproveProxyData {
+  token: string;
+  proxyAddress: string;
+}
+
+export const approveProxy = {
+  call: ({ token }: ApproveProxyData, context: NetworkConfig) =>
+    context.tokens[token].contract.approve['address,uint256'],
+  prepareArgs: ({ proxyAddress }: ApproveProxyData, _context: NetworkConfig) => [proxyAddress, -1],
+  options: () => ({ gas: 100000 }),
+  kind: TxMetaKind.approveProxy,
+  description: ({ token }: ApproveProxyData) =>
+    <React.Fragment>Approve proxy to transfer <Currency value={token}/></React.Fragment>
+};
+
+export const disapproveProxy: TransactionDef<ApproveProxyData> = {
+  descriptionIcon,
+  call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
+    context.tokens[token].contract.approve['address,uint256'],
+  prepareArgs: ({ proxyAddress }: ApproveProxyData) => [proxyAddress, 0],
+  options: () => ({ gas: 100000 }),
+  kind: TxMetaKind.disapproveProxy,
+  description: ({ token }: ApproveProxyData) => {
+    return (
+      <React.Fragment>
+        Lock <Currency value={token} /> for trading by proxy
+      </React.Fragment>
+    );
+  },
+};

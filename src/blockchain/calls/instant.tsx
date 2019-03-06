@@ -35,7 +35,6 @@ export const tradePayWithETHWithProxy: TransactionDef<InstantOrderData> = {
   },
   prepareArgs: (
     {
-      // proxyAddress,
       kind,
       buyToken, buyAmount,
       // sellToken, sellAmount,
@@ -237,3 +236,25 @@ export function proxyAddress$(
     })
   );
 }
+
+export const setupProxy = {
+  call: (_data: {}, context: NetworkConfig) => context.instantProxyRegistry.contract.build[''],
+  prepareArgs: () => [],
+  options: () => ({ gas: 1000000 }),
+  kind: TxMetaKind.setupProxy,
+  description: () => <React.Fragment>Setup proxy</React.Fragment>
+};
+
+export interface SetOwnerData {
+  proxyAddress: string;
+  ownerAddress: string;
+}
+
+export const setOwner = {
+  call: ({ proxyAddress }: SetOwnerData) =>
+    web3.eth.contract(dsProxy as any).at(proxyAddress).setOwner,
+  prepareArgs: ({ ownerAddress }: SetOwnerData) => [ownerAddress],
+  options: () => ({ gas: 1000000 }),
+  kind: TxMetaKind.setupProxy,
+  description: () => <React.Fragment>Calling SetOwner on proxy</React.Fragment>
+};

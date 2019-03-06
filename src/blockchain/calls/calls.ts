@@ -3,7 +3,7 @@ import { map } from 'rxjs/operators';
 import { ObservableItem } from '../../utils/observableItem';
 import { NetworkConfig } from '../config';
 import { context$, initializedAccount$ } from '../network';
-import { approveWallet, disapproveWallet } from './approveCalls';
+import { approveProxy, approveWallet, disapproveProxy, disapproveWallet } from './approveCalls';
 import {
   callCurried,
   estimateGasCurried,
@@ -15,7 +15,7 @@ import {
   getBuyAmount,
   getPayAmount,
   offers,
-  proxyAddress$,
+  proxyAddress$, setOwner, setupProxy,
   tradePayWithETHNoProxy, tradePayWithETHWithProxy
 } from './instant';
 import { cancelOffer, offerMake, offerMakeDirect } from './offerMake';
@@ -46,7 +46,11 @@ function calls([context, account]: [NetworkConfig, string]) {
     otcGetPayAmount: call(getPayAmount),
     otcGetBestOffer: call(getBestOffer),
     otcOffers: call(offers),
-    proxyAddress: () => proxyAddress$(context, account)
+    proxyAddress: () => proxyAddress$(context, account),
+    setupProxy: sendTransaction(setupProxy),
+    approveProxy: sendTransaction(approveProxy),
+    disapproveProxy: sendTransaction(disapproveProxy),
+    setOwner: sendTransaction(setOwner),
   };
 }
 

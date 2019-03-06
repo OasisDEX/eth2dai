@@ -2,7 +2,7 @@ import { BigNumber } from 'bignumber.js';
 
 import { isEqual } from 'lodash';
 import { curry } from 'ramda';
-import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import { combineLatest, identity, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
   delay,
@@ -19,9 +19,10 @@ import {
 import { tokens } from 'src/blockchain/config';
 import { Balances, DustLimits } from '../balances/balances';
 
-import { Calls, Calls$ } from '../blockchain/calls/calls';
+import { Calls, calls$, Calls$ } from '../blockchain/calls/calls';
 import { eth2weth, InstantOrderData } from '../blockchain/calls/instant';
-import { getTxHash, isDone, TxState, TxStatus } from '../blockchain/transactions';
+import { allowance$ } from '../blockchain/network';
+import { getTxHash, isDone, isSuccess, TxState, TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
@@ -117,15 +118,15 @@ type Progress = {
   kind: ProgressKind.noProxyNoAllowancePayWithERC20
   proxyTxStatus: TxStatus;
   proxyTxHash?: string
-  allowanceTxStatus: TxStatus;
+  allowanceTxStatus?: TxStatus;
   allowanceTxHash?: string
-  tradeTxStatus: TxStatus;
+  tradeTxStatus?: TxStatus;
   tradeTxHash?: string
 } | {
   kind: ProgressKind.proxyNoAllowancePayWithERC20;
   allowanceTxStatus: TxStatus;
   allowanceTxHash?: string
-  tradeTxStatus: TxStatus;
+  tradeTxStatus?: TxStatus;
   tradeTxHash?: string
 } | {
   kind: ProgressKind.proxyAllowancePayWithERC20;
@@ -505,32 +506,147 @@ function tradePayWithETH(
     calls.tradePayWithETHNoProxy({ ...state } as InstantOrderData);
 
   return tx$.pipe(
-    switchMap((transactionState: TxState) =>
+    switchMap((txState: TxState) =>
       of(progressChange({
         ...initialProgress,
-        tradeTxStatus: transactionState.status,
-        tradeTxHash: getTxHash(transactionState),
-        done: isDone(transactionState.status)
+        tradeTxStatus: txState.status,
+        tradeTxHash: getTxHash(txState),
+        done: isDone(txState)
       }))
     ),
     startWith(progressChange(initialProgress))
   );
 }
 
-function tradePayWithERC20(
+function doTradePayWithERC20(
   _calls: Calls,
   _proxyAddress: string | undefined,
-  _state: InstantFormState
-): Observable<ProgressChange | FormResetChange> {
-  // (proxyAddress ? allowance$(state.sellToken, proxyAddress) : of(false)).pipe(
-  //   flatMap(allowance => {
-  //     const tx$ = proxyAddress ?
-  //       calls.setupProxy();
-  //   })
-  // )
-  //
-  // return allowance$(state.sellToken, proxyAddress);
-  return of();
+  _state: InstantFormState,
+  initialProgress: Progress
+): Observable<Progress> {
+  return of({
+    ...initialProgress,
+    tradeTxStatus: TxStatus.Error,
+    done: true,
+  });
+}
+
+function doApprove(
+  calls: Calls,
+  state: InstantFormState,
+  initialProgress: Progress
+): Observable<Progress> {
+  return calls.proxyAddress().pipe(
+    flatMap(proxyAddress => {
+      if (!proxyAddress) {
+        throw new Error('Proxy not ready!');
+      }
+      return calls.approveProxy({
+        proxyAddress,
+        token: state.sellToken
+      }).pipe(
+        flatMap((txState: TxState) => {
+          if (isSuccess(txState)) {
+            return doTradePayWithERC20(calls, proxyAddress, state, {
+              ...initialProgress,
+              allowanceTxStatus: txState.status,
+              allowanceTxHash: getTxHash(txState),
+            });
+          }
+
+          if (isDone(txState)) {
+            return of({
+              ...initialProgress,
+              allowanceTxStatus: txState.status,
+              allowanceTxHash: getTxHash(txState),
+              done: true,
+            });
+          }
+
+          return of({
+            ...initialProgress,
+            allowanceTxStatus: txState.status,
+            allowanceTxHash: getTxHash(txState),
+          });
+        }),
+        startWith({
+          ...initialProgress,
+          allowanceTxStatus: TxStatus.WaitingForApproval,
+        }),
+      );
+    })
+  );
+}
+
+function doSetupProxy(
+  calls: Calls,
+  state: InstantFormState,
+): Observable<Progress> {
+  return calls.setupProxy({}).pipe(
+    startWith({
+      kind: ProgressKind.noProxyNoAllowancePayWithERC20,
+      proxyTxStatus: TxStatus.WaitingForApproval,
+      done: false,
+    }),
+    flatMap((txState: TxState) => {
+      if (isSuccess(txState)) {
+        return doApprove(calls, state, {
+          kind: ProgressKind.noProxyNoAllowancePayWithERC20,
+          proxyTxStatus: txState.status,
+          proxyTxHash: getTxHash(txState),
+          done: false
+        });
+      }
+
+      if (isDone(txState)) {
+        return of({
+          kind: ProgressKind.noProxyNoAllowancePayWithERC20,
+          proxyTxStatus: txState.status,
+          proxyTxHash: getTxHash(txState),
+          done: true,
+        });
+      }
+
+      return of({
+        kind: ProgressKind.noProxyNoAllowancePayWithERC20,
+        proxyTxStatus: txState.status,
+        proxyTxHash: getTxHash(txState),
+        done: false
+      });
+    })
+  );
+}
+
+function tradePayWithERC20(
+  calls: Calls,
+  proxyAddress: string | undefined,
+  state: InstantFormState
+): Observable<ProgressChange> {
+
+  const sellAllowance$ = proxyAddress ?
+    allowance$(state.sellToken, proxyAddress).pipe(first()) :
+    of(false);
+
+  return sellAllowance$.pipe(
+    flatMap(sellAllowance => {
+      if (!proxyAddress) {
+        return doSetupProxy(calls, state);
+      }
+      if (!sellAllowance) {
+        return doApprove(calls, state, {
+          kind: ProgressKind.proxyNoAllowancePayWithERC20,
+          allowanceTxStatus: TxStatus.WaitingForApproval,
+          done: false,
+        });
+      }
+      return doTradePayWithERC20(calls, proxyAddress, state, {
+        kind: ProgressKind.proxyAllowancePayWithERC20,
+        tradeTxStatus: TxStatus.WaitingForApproval,
+        done: false,
+      });
+    }),
+    map(progressChange)
+  );
 }
 
 function calculatePrice(state: InstantFormState): InstantFormState {
@@ -568,13 +684,13 @@ function calculatePriceImpact(state: InstantFormState): InstantFormState {
 }
 
 function prepareSubmit(
-  calls$: Calls$,
+  theCalls$: Calls$,
 ): [(state: InstantFormState) => void, Observable<ProgressChange | FormResetChange>] {
 
   const stageChange$ = new Subject<ProgressChange | FormResetChange>();
 
   function submit(state: InstantFormState) {
-    calls$.pipe(
+    theCalls$.pipe(
       first(),
       flatMap((calls) =>
         calls.proxyAddress().pipe(
@@ -604,6 +720,41 @@ function isReadyToProceed(state: InstantFormState): InstantFormState {
     readyToProceed: !state.message && state.tradeEvaluationStatus === TradeEvaluationStatus.calculated };
 }
 
+function pluginDevModeHelpers(theCalls$: Calls$) {
+  theCalls$.pipe(
+    map(call => {
+      (window as any).removeProxy = () => {
+        call.proxyAddress().pipe(
+          flatMap(proxyAddress => {
+            if (!proxyAddress) {
+              console.log('Proxy not found!');
+              return of();
+            }
+            console.log('proxyAddress:', proxyAddress);
+            return call.setOwner({
+              proxyAddress,
+              ownerAddress: '0x0000000000000000000000000000000000000000'
+            });
+          })
+        ).subscribe(identity);
+      };
+      (window as any).disapproveProxy = (token: string) => {
+        call.proxyAddress().pipe(
+          flatMap(proxyAddress => {
+            if (!proxyAddress) {
+              console.log('Proxy not found!');
+              return of();
+            }
+            console.log('proxyAddress:', proxyAddress);
+            return call.disapproveProxy({ proxyAddress, token });
+          })
+        ).subscribe(identity);
+      };
+      console.log('Dev mode helpers installed!');
+    })
+  ).subscribe(identity);
+}
+
 export function createFormController$(
   params: {
     gasPrice$: Observable<BigNumber>;
@@ -615,6 +766,9 @@ export function createFormController$(
     etherPriceUsd$: Observable<BigNumber>;
   }
 ): Observable<InstantFormState> {
+
+  pluginDevModeHelpers(calls$);
+
   const manualChange$ = new Subject<ManualChange>();
 
   const environmentChange$ = combineAndMerge(
@@ -631,7 +785,7 @@ export function createFormController$(
     submit,
     change: manualChange$.next.bind(manualChange$),
     buyToken: 'DAI',
-    sellToken: 'ETH',
+    sellToken: 'WETH',
     gasEstimationStatus: GasEstimationStatus.unset,
     tradeEvaluationStatus: TradeEvaluationStatus.unset,
     slippageLimit: new BigNumber('0.05')

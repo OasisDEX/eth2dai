@@ -35,6 +35,10 @@ const defaultCalls = {
   otcGetBestOffer: undefined as any,
   otcOffers: undefined as any,
   proxyAddress: undefined as any,
+  setupProxy: undefined as any,
+  approveProxy: undefined as any,
+  disapproveProxy: undefined as any,
+  setOwner: undefined as any,
 };
 
 const gasPrice$ = of(new BigNumber(0.01));
