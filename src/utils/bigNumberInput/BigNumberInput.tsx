@@ -15,7 +15,9 @@ export class BigNumberInput extends React.Component<any> {
   public render() {
     const currentValue: string | undefined = this.props.value;
     let value: string | undefined;
-    if (
+    if (currentValue === 'NaN') {
+      value = undefined;
+    } else if (
       this.lastValue &&
       currentValue &&
       new BigNumber(this.lastValue.replace(/\,/g, '')).eq(

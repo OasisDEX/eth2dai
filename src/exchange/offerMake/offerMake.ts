@@ -232,8 +232,8 @@ function directMatchState(state: OfferFormState,
   const amount = change.hasOwnProperty('amount') ? (change as any).amount : state.amount;
   const kind = change.hasOwnProperty('kind') ? (change as any).kind : state.kind;
   const orders = kind === 'buy' ? orderbook.sell : orderbook.buy;
-  const total = directMatchTotal(amount, orders);
-  const price = amount && total && (amount.isZero() ? undefined : total.dividedBy(amount));
+  const total = directMatchTotal(amount && NaN2zero(amount), orders);
+  const price = amount && total && (NaN2zero(amount).isZero() ? undefined : total.dividedBy(amount));
   return {
     ...state,
     kind,
@@ -250,6 +250,10 @@ function directMatchState(state: OfferFormState,
 // function assertUnreachable(x: never): never {
 //   throw new Error('Didn\'t expect to get here');
 // }
+
+function NaN2zero(x: BigNumber): BigNumber {
+  return x.isNaN() ? new BigNumber(0) : x;
+}
 
 function applyChange(state: OfferFormState,
                      change: OfferFormChange): OfferFormState {
@@ -332,7 +336,7 @@ function applyChange(state: OfferFormState,
         ...state,
         amount: change.value,
         ...change.value && state.price
-          ? { total: change.value.multipliedBy(state.price) }
+          ? { total: NaN2zero(change.value).multipliedBy(NaN2zero(state.price)) }
           : {},
         gasEstimationStatus: GasEstimationStatus.unset
       };
@@ -341,7 +345,7 @@ function applyChange(state: OfferFormState,
         ...state,
         price: change.value,
         ...change.value && state.amount
-          ? { total: change.value.multipliedBy(state.amount) }
+          ? { total: NaN2zero(change.value).multipliedBy(NaN2zero(state.amount)) }
           : {},
         gasEstimationStatus: GasEstimationStatus.unset
       };
@@ -447,9 +451,10 @@ function addGasEstimation(theCalls$: Calls$,
                           state: OfferFormState): Observable<OfferFormState> {
   return doGasEstimation(theCalls$, state, (calls: Calls) =>
     state.messages.length !== 0 ||
-    !state.amount ||
-    !state.slippageLimit ||
-    !state.price ?
+    !state.price || state.price.isZero() ||
+    !state.amount || state.amount.isZero() ||
+    !state.total || state.total.isZero() ||
+    !state.slippageLimit ?
       undefined :
       state.matchType === OfferMatchType.direct ?
         calls.offerMakeDirectEstimateGas(offerMakeDirectData(state)) :
@@ -515,7 +520,7 @@ function preValidate(state: OfferFormState): OfferFormState {
     }
   }
 
-  if (state.matchType === OfferMatchType.direct && !state.price && state.amount && !state.amount.eq(0)) {
+  if (state.matchType === OfferMatchType.direct && !state.price && state.amount && !state.amount.isZero() && !state.amount.isNaN()) {
     messages.push({
       kind: MessageKind.orderbookTotalExceeded,
       field: 'amount',
