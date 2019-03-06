@@ -419,6 +419,9 @@ function evaluateTrade(
 }
 
 function postValidate(state: InstantFormState): InstantFormState {
+  if (state.tradeEvaluationStatus === TradeEvaluationStatus.calculating) {
+    return state;
+  }
 
   let message: Message | undefined  = state.message;
 
@@ -642,9 +645,9 @@ export function createFormController$(
     scan(applyChange, initialState),
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.calls$)),
-    map(postValidate),
     map(calculatePrice),
     map(calculatePriceImpact),
+    map(postValidate),
     tap(state => console.log(
       'state.message', state.message && state.message.kind,
       'state.gasEstimationStatus', state.gasEstimationStatus,
