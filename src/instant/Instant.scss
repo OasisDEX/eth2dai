@@ -11,6 +11,8 @@
 
   padding: 1.5em;
 
+  letter-spacing: 1.2px;
+
   h1, h2, h3, h4, h5, h6 {
     @include fontMontserratMedium;
     font-size: 1em;
@@ -54,6 +56,23 @@
   &.errors {
     align-items: center;
     justify-content: center;
+  }
+
+  &.finalization {
+    font-size: 0.75rem;
+    min-height: 2rem;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+  }
+
+  &.transaction {
+    padding: 1rem 1.5rem;
+  }
+
+  &.done {
+    padding: 1rem;
   }
 }
 

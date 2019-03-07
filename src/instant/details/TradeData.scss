@@ -7,6 +7,21 @@
   max-width: 12rem;
   justify-content: space-between;
   align-items: center;
+
+  &.reversed {
+    .label {
+      color: rgba(255, 255, 255, 0.90)
+    }
+
+    .value {
+      color: #828287;
+    }
+
+    .infoIcon {
+      color: rgba(255, 255, 255, 0.90);
+      border-color: rgba(255, 255, 255, 0.90);
+    }
+  }
 }
 
 .label {

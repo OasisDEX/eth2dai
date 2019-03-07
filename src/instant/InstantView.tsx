@@ -1,76 +1,25 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
-import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
 import { theAppContext } from '../AppContext';
-import { BigNumberInput } from '../utils/bigNumberInput/BigNumberInput';
-import { formatAmount, formatPrice } from '../utils/formatters/format';
+import { DAIicon, ETHicon } from '../blockchain/coinIcons/coinIcons';
+import { TxStatus } from '../blockchain/transactions';
+import { formatAmount } from '../utils/formatters/format';
 import { FormatPercent, Money } from '../utils/formatters/Formatters';
-import { Button } from '../utils/forms/Buttons';
-import { ProgressIcon, SettingsIcon, SwapArrows } from '../utils/icons/Icons';
-import * as panelStyling from '../utils/panel/Panel.scss';
+import { AccountIcon, ProgressIcon, SettingsIcon, SwapArrows } from '../utils/icons/Icons';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
-import { Asset } from './asset/Asset';
 import { TradeData } from './details/TradeData';
+import { TxStatusRow } from './details/TxStatusRow';
 import * as styles from './Instant.scss';
-import {
-  InstantFormChangeKind,
-  InstantFormState,
-  ManualChange,
-  Message,
-  MessageKind,
-  Position
-} from './instantForm';
-
-interface TradingSideProps {
-  placeholder: string;
-  dataTestId: string;
-  asset: string;
-  amount: BigNumber;
-  balance: BigNumber;
-  onAmountChange: () => void;
-}
+import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind, Position } from './instantForm';
+import { InstantForm } from './InstantForm';
+import { ProgressReport } from './progress/ProgressReport';
+import { Buying, Selling } from './TradingSide';
 
 const Approximate = (props: any) => (
   <>
-    ~&nbsp; {props.children}
+    ~&nbsp;{props.children}
   </>
-);
-
-class TradingSide extends React.Component<TradingSideProps> {
-  public render() {
-    const { amount, asset, balance, placeholder, onAmountChange, ...theRest } = this.props;
-    return (
-      <div className={styles.assetPicker} {...theRest}>
-        <Asset currency={asset} balance={balance}/>
-        {/* TODO: Make it parameterized like the tokens in offerMakeForm.*/}
-        <BigNumberInput
-          data-test-id={'amount'}
-          type="text"
-          className={styles.input}
-          mask={createNumberMask({
-            allowDecimal: true,
-            decimalLimit: 5,
-            prefix: ''
-          })}
-          onChange={onAmountChange}
-          value={
-            (amount || null) &&
-            formatPrice(amount, asset)
-          }
-          guide={true}
-          placeholder={placeholder}
-        />
-      </div>
-    );
-  }
-}
-
-const Selling = (props: any) => (
-  <TradingSide data-test-id="selling-token" placeholder="Deposit Amount" {...props}/>
-);
-const Buying = (props: any) => (
-  <TradingSide data-test-id="buying-token" placeholder="Receive Amount" {...props}/>
 );
 
 function error(msg: Message | undefined) {
@@ -80,19 +29,13 @@ function error(msg: Message | undefined) {
 
   switch (msg.kind) {
     case MessageKind.insufficientAmount:
-      return <>
-        You don't have {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
-        in your wallet
-      </>;
+      return <>You don't have {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} in your wallet</>;
     case MessageKind.dustAmount:
       return <>The Minimum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
     case MessageKind.incredibleAmount:
       return <>The Maximum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
     case MessageKind.orderbookTotalExceeded:
-      return <>
-        No orders available to
-        {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
-      </>;
+      return <>No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} </>;
     default:
       return <>Don't know how to show message: {msg.kind}</>;
   }
@@ -101,48 +44,88 @@ function error(msg: Message | undefined) {
 export class InstantView extends React.Component<InstantFormState> {
 
   public render() {
-    const {
-      sellToken, sellAmount,
-      buyToken, buyAmount,
-      balances,
-      etherBalance,
-      message,
-      price,
+    const { sellToken, sellAmount, buyToken, buyAmount, balances, etherBalance, message, price,
       priceImpact,
-      gasEstimationUsd
+      gasEstimationUsd,
+      progress
     } = this.props;
 
-    if (this.props.progress) {
-      return <section className={classnames(styles.panel, panelStyling.panel)}>
-        <header className={styles.header}>
-          <h1>Transaction in progress</h1>
-        </header>
-        <pre>
-          {JSON.stringify(this.props.progress, null, 2)}
-        </pre>
-        {this.props.progress && this.props.progress.done &&
-          <div>
-              <Button
-                  size="lg"
-                  color="greyWhite"
-                  onClick={this.resetForm}
-              >
-                  Close
-              </Button>
+    // Congratulation
+    if (progress && progress.done && progress.tradeTxStatus === TxStatus.Success) {
+      return (
+        <InstantForm heading="Finalize Trade"
+                     btnAction={this.resetForm}
+                     btnDisabled={!progress.done}
+                     btnLabel="Trade Again">
+
+          <div className={classnames(styles.details, styles.done)}>
+            Congratulation!
           </div>
-        }
-      </section>;
+        </InstantForm>
+      );
+    }
+
+    // Finalization
+    // TODO: Instead of using this approach check how the OfferMakePanel switches between two views.
+    if (progress) {
+      return (
+        <InstantForm heading="Finalize Trade"
+                     btnAction={this.resetForm}
+                     btnDisabled={!progress.done}
+                     btnLabel="Trade Again">
+
+          <div className={classnames(styles.details, styles.finalization)}>
+            <span>Current Estimated Price</span>
+            <span style={{ marginLeft: '12px', color: '#828287' }}>
+             <Approximate>
+               {formatAmount(price || new BigNumber(0), 'USD')} <span
+               style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
+             </Approximate>
+          </span>
+          </div>
+
+          <div className={classnames(styles.details, styles.transaction)}>
+            <TxStatusRow icon={<AccountIcon/>}
+                         label={
+                           <TradeData
+                             theme="reversed"
+                             label="Create Account"
+                             info="Something about Proxy"
+                           />}
+                         status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+            <TxStatusRow icon={<ETHicon theme="circle"/>}
+                         label={
+                           <TradeData
+                             theme="reversed"
+                             label="Sell"
+                             value={
+                               <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                             }
+                           />}/>
+            <TxStatusRow icon={<DAIicon theme="circle"/>}
+                         label={
+                           <TradeData
+                             theme="reversed"
+                             label="Buy"
+                             value={
+                               <Approximate>
+                                 <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                               </Approximate>
+                             }
+                           />}/>
+          </div>
+        </InstantForm>
+      );
     }
 
     return (
-      <section className={classnames(styles.panel, panelStyling.panel)}>
-        <header className={styles.header}>
-          <h1>Enter Order Details</h1>
-          <TopRightCorner>
-            <SettingsIcon/>
-          </TopRightCorner>
-        </header>
-
+      <InstantForm heading="Enter Order Details"
+                   btnLabel="Start Transaction"
+                   btnAction={this.startTx}
+                   btnDisabled={!this.props.readyToProceed}>
+        <TopRightCorner>
+          <SettingsIcon/>
+        </TopRightCorner>
         <div
           className={classnames(
             styles.details,
@@ -189,14 +172,13 @@ export class InstantView extends React.Component<InstantFormState> {
             </>
           }
         </div>
-
         <div className={styles.assets}>
           <Selling asset={sellToken}
                    amount={sellAmount}
                    onAmountChange={this.updateSellingAmount}
                    balance={
                      (sellToken === 'ETH' && etherBalance ||
-                     balances && balances[sellToken]) || undefined
+                       balances && balances[sellToken]) || undefined
                    }/>
           <div data-test-id="swap" className={styles.swapIcon} onClick={this.swap}><SwapArrows/></div>
           <Buying asset={buyToken}
@@ -204,29 +186,16 @@ export class InstantView extends React.Component<InstantFormState> {
                   onAmountChange={this.updateBuyingAmount}
                   balance={
                     (buyToken === 'ETH' && etherBalance ||
-                    balances && balances[buyToken]) || undefined
+                      balances && balances[buyToken]) || undefined
                   }/>
         </div>
-
         <div data-test-id="error"
              className={
                classnames(styles.errors, message && message.placement === Position.BOTTOM ? '' : 'hide-all')
              }>
           {error(message)}
         </div>
-
-        <footer className={styles.footer}>
-          <Button
-            size="lg"
-            color="greyWhite"
-            onClick={this.startTx}
-            style={{ width: '100%' }}
-            disabled={!this.props.readyToProceed}
-          >
-            Start Transaction
-          </Button>
-        </footer>
-      </section>
+      </InstantForm>
     );
   }
 
