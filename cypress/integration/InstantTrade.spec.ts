@@ -25,8 +25,7 @@ describe('Instant trade', () => {
     const trade = new Trade().sell().amount('2');
     expect(trade).to.receive('555.00');
 
-    TradeData.expectPriceOf(/...277\.50.../);
-    TradeData.expectGasCost(/...0\.34../);
+    TradeData.expectPriceOf(/(277\.50)/);
     TradeData.expectSlippageLimit(/2\.5%/);
     TradeData.expectPriceImpact(/0\.89%/);
 
@@ -37,8 +36,7 @@ describe('Instant trade', () => {
     const trade = new Trade().buy().amount('320.00');
     expect(trade).to.pay('1.14545');
 
-    TradeData.expectPriceOf(/...279\.36.../);
-    TradeData.expectGasCost(/...0\.34../);
+    TradeData.expectPriceOf(/(279\.36)/);
     TradeData.expectSlippageLimit(/2\.5%/);
     TradeData.expectPriceImpact(/0\.22%/);
   });
