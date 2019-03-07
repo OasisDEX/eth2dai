@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-export function SvgImage({ image }: { image: string }) {
-  return <div dangerouslySetInnerHTML={{ __html: loadDataUrl(image) }} />;
+export function SvgImage({ image, ...props }: React.HTMLAttributes<HTMLSpanElement> & { image: string }) {
+  return <div dangerouslySetInnerHTML={{ __html: loadDataUrl(image) }} {...props} />;
 }
 
 export function loadDataUrl(dataUrl: string): string {
