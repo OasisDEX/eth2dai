@@ -29,22 +29,49 @@ function error(msg: Message | undefined) {
 
   switch (msg.kind) {
     case MessageKind.insufficientAmount:
-      return <>You don't have {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} in your wallet</>;
+      return (
+        <>
+          You don't have {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} in your wallet
+        </>);
     case MessageKind.dustAmount:
-      return <>The Minimum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
+      return (
+        <>
+          The Minimum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()}
+        </>
+      );
     case MessageKind.incredibleAmount:
-      return <>The Maximum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
+      return (
+        <>
+          The Maximum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()}
+        </>
+      );
     case MessageKind.orderbookTotalExceeded:
-      return <>No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} </>;
+      return (
+        <>
+          No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
+        </>
+      );
     default:
-      return <>Don't know how to show message: {msg.kind}</>;
+      return (
+        <>
+          Don't know how to show message: {msg.kind}
+        </>
+      );
   }
 }
 
 export class InstantView extends React.Component<InstantFormState> {
 
   public render() {
-    const { sellToken, sellAmount, buyToken, buyAmount, balances, etherBalance, message, price,
+    const {
+      sellToken,
+      sellAmount,
+      buyToken,
+      buyAmount,
+      balances,
+      etherBalance,
+      message,
+      price,
       priceImpact,
       gasEstimationUsd,
       progress
