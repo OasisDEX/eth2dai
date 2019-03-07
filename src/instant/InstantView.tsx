@@ -12,8 +12,15 @@ import * as panelStyling from '../utils/panel/Panel.scss';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
 import { Asset } from './asset/Asset';
 import { TradeData } from './details/TradeData';
-import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind, Position } from './instantForm';
 import * as styles from './Instant.scss';
+import {
+  InstantFormChangeKind,
+  InstantFormState,
+  ManualChange,
+  Message,
+  MessageKind,
+  Position
+} from './instantForm';
 
 interface TradingSideProps {
   placeholder: string;
@@ -73,13 +80,19 @@ function error(msg: Message | undefined) {
 
   switch (msg.kind) {
     case MessageKind.insufficientAmount:
-      return <>You don't have {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} in your wallet</>;
+      return <>
+        You don't have {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
+        in your wallet
+      </>;
     case MessageKind.dustAmount:
       return <>The Minimum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
     case MessageKind.incredibleAmount:
       return <>The Maximum trade value is {msg.amount.valueOf()} {msg.token.toUpperCase()} </>;
     case MessageKind.orderbookTotalExceeded:
-      return <>No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()} </>;
+      return <>
+        No orders available to
+        {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
+      </>;
     default:
       return <>Don't know how to show message: {msg.kind}</>;
   }
@@ -88,9 +101,16 @@ function error(msg: Message | undefined) {
 export class InstantView extends React.Component<InstantFormState> {
 
   public render() {
-    const { sellToken, sellAmount, buyToken, buyAmount, balances, etherBalance, message, price,
+    const {
+      sellToken, sellAmount,
+      buyToken, buyAmount,
+      balances,
+      etherBalance,
+      message,
+      price,
       priceImpact,
-      gasEstimationUsd } = this.props;
+      gasEstimationUsd
+    } = this.props;
 
     if (this.props.progress) {
       return <section className={classnames(styles.panel, panelStyling.panel)}>

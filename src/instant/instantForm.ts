@@ -354,7 +354,8 @@ function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observ
 }
 
 function gasEstimation(_calls: Calls, _state: InstantFormState): Observable<number> {
-  return of(100000).pipe(
+  // TODO: real gas estimation
+  return of(6000000).pipe(
     delay(500)
   );
 }
