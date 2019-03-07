@@ -9,10 +9,12 @@
     &:last-child {
       flex-grow: 1;
       white-space: nowrap;
-      padding: 8px 28px;
     }
   }
 
+  .loadMore {
+    padding-left: 24px;
+  }
 }
 
 .loader {
@@ -21,7 +23,7 @@
   min-height: 16px;
   margin-right: 4px;
   background-size: contain;
-  background-image: url('../../utils/loadingIndicator/LoadingIndicatorLight.gif');
+  background-image: url('../../utils/loadingIndicator/LoadingIndicatorDark.gif');
   background-repeat: no-repeat;
   background-position: center;
   opacity: 0.5;

@@ -2,11 +2,11 @@
 
 [![CircleCI](https://circleci.com/gh/OasisDEX/eth2dai.svg?style=svg)](https://circleci.com/gh/OasisDEX/eth2dai)
 
-**Eth2Dai** is a marketplace that allows fully on-chain exchange of **ETH** and **DAI** tokens. It uses the [**matching_market**](https://etherscan.io/address/0xb7ac09c2c0217b07d7c103029b4918a2c401eecb) smart contract on the Ethereum blockchain. 
+**Eth2Dai** is a marketplace that allows fully on-chain exchange of **ETH** and **DAI** tokens. It uses the [**matching_market**](https://etherscan.io/address/0xb7ac09c2c0217b07d7c103029b4918a2c401eecb) smart contract on the Ethereum blockchain.
 
 ## Installation
 
-To run `eth2dai` locally, clone the respository and then run from the command line: 
+To run `eth2dai` locally, clone the respository and then run from the command line:
 ```
 yarn
 yarn start
@@ -59,4 +59,10 @@ By default app will try to load .env.$NODE_ENV file and fallback to .env. You ca
 REACT_APP_INSTANT_ENABLED
 ```
 
-Inside the app always check `process.env.<REACT_APP_SWITCH_NAME> = "1"`. Do not use any helpers to enable dead code elimination done by Webpack.
+Inside the app always check `process.env.REACT_APP_INSTANT_ENABLED = "1"` do not use any helpers to enable simple dead code elimination done by webpack.
+
+```
+REACT_APP_GRAPHQL_DEVMODE
+```
+
+A parameter forwarded to vulcan0x, useful for development purposes.

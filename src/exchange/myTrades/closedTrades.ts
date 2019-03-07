@@ -17,7 +17,7 @@ export function createMyClosedTrades$(
       !(account && context) ? of([]) :
         every10Seconds$.pipe(
           exhaustMap(() =>
-            getTrades(context, base, quote, {
+            getTrades(context, base, quote, 'myTrades', {
               account
             }).pipe(
               map(trades => trades.sort(compareByTimestampOnly)),

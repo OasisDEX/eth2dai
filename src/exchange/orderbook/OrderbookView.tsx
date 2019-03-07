@@ -1,6 +1,5 @@
 // tslint:disable:no-console
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import * as styles from './OrderbookView.scss';
 
@@ -13,6 +12,7 @@ import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndica
 import { PanelHeader } from '../../utils/panel/Panel';
 import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
 import { RowClickable, RowHighlighted, Table } from '../../utils/table/Table';
+import * as tableStyles from '../../utils/table/Table.scss';
 import { Currency, InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
@@ -31,14 +31,12 @@ export class OrderbookView extends React.Component<Props> {
   private centerRow?: HTMLElement;
   private scrollbar?: Scrollbar;
   private autoScroll: boolean = false;
+  private centerRowOffset: number = 0;
 
   public center() {
-    if (this.centerRow && this.centerRow.clientHeight === 0) {
-      this.trackCenter();
-    }
     this.autoScroll = true;
     if (this.scrollbar && this.centerRow) {
-      this.scrollbar.center(this.centerRow.offsetTop, this.centerRow.clientHeight);
+      this.scrollbar.center(this.centerRow.offsetTop - this.centerRowOffset, this.centerRow.clientHeight);
     }
   }
 
@@ -57,21 +55,11 @@ export class OrderbookView extends React.Component<Props> {
   }
 
   public scrolled = () => {
-    if (!this.autoScroll && this.scrollbar) {
-      this.trackCenter();
+    if (!this.autoScroll && this.scrollbar && this.centerRow) {
+      const { scrollTop, clientHeight } = this.scrollbar.scrollState();
+      this.centerRowOffset = this.centerRow.offsetTop - scrollTop - (clientHeight - this.centerRow.clientHeight) / 2;
     }
     this.autoScroll = false;
-  }
-
-  public trackCenter = () => {
-    if (!this.scrollbar) {
-      return;
-    }
-    const element: Element = ReactDOM.findDOMNode(this.scrollbar) as Element;
-    this.centerRow = document.elementFromPoint(
-      element.getBoundingClientRect().left + 5,
-      element.getBoundingClientRect().top + this.scrollbar.scrollState().clientHeight / 2,
-    ) as HTMLDivElement;
   }
 
   public render() {
@@ -198,10 +186,10 @@ export class OrderbookView extends React.Component<Props> {
             <FormatPriceOrder value={offer.price} token={offer.quoteToken} kind={kind}/>
           </SellBuySpan>
         </td>
-        <td data-test-id="amount">
+        <td className={tableStyles.numerical} data-test-id="amount">
           <FormatAmount value={offer.baseAmount} token={offer.baseToken}/>
         </td>
-        <td data-test-id="total">
+        <td className={tableStyles.numerical} data-test-id="total">
           <FormatAmount value={offer.quoteAmount} token={offer.quoteToken}/>
         </td>
       </RowClickable>
