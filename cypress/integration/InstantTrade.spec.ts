@@ -22,8 +22,9 @@ describe('Instant trade', () => {
   });
 
   it('should calculate how much the user will receive', () => {
-    const trade = new Trade().sell().amount('2');
-    expect(trade).to.receive('555.00');
+    const trade = new Trade();
+    trade.sell().amount('2');
+    trade.expectToReceive('555.00');
 
     TradeData.expectPriceOf(/(277\.50)/);
     TradeData.expectSlippageLimit(/2\.5%/);
@@ -33,8 +34,9 @@ describe('Instant trade', () => {
   });
 
   it('should calculate how much the user will pay', () => {
-    const trade = new Trade().buy().amount('320.00');
-    expect(trade).to.pay('1.14545');
+    const trade = new Trade();
+    trade.buy().amount('320.00');
+    trade.expectToPay('1.14545');
 
     TradeData.expectPriceOf(/(279\.36)/);
     TradeData.expectSlippageLimit(/2\.5%/);
@@ -46,11 +48,11 @@ describe('Instant trade', () => {
     const sell = trade.sell();
     sell.amount('0.5');
 
-    expect(trade).to.receive('140.00');
+    trade.expectToReceive('140.00');
 
     sell.clear();
 
-    expect(trade).to.receive('');
+    trade.expectToReceive('');
   });
 
   it('should remove how much the user will pay if the buy value is cleared', () => {
@@ -58,11 +60,11 @@ describe('Instant trade', () => {
     const buy = trade.buy();
     buy.amount('140');
 
-    expect(trade).to.pay('0.50000');
+    trade.expectToPay('0.50000');
 
     buy.clear();
 
-    expect(trade).to.pay('');
+    trade.expectToPay('');
   });
 
   it('should allow swapping the tokens', () => {
