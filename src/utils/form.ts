@@ -307,7 +307,7 @@ export function doGasEstimation<S extends HasGasEstimation>(
       );
     }),
     catchError((error) => {
-      console.error('Error while estimating gas:', error);
+      console.warn('Error while estimating gas:', error);
       return of({
         ...(state as object),
         error,

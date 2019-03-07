@@ -2,7 +2,7 @@ import { BigNumber } from 'bignumber.js';
 
 import { isEqual } from 'lodash';
 import { curry } from 'ramda';
-import { combineLatest, identity, merge, Observable, of, Subject } from 'rxjs';
+import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
   delay,
@@ -16,8 +16,8 @@ import {
   switchMap,
   tap
 } from 'rxjs/operators';
-import { tokens } from 'src/blockchain/config';
 import { Balances, DustLimits } from '../balances/balances';
+import { tokens } from '../blockchain/config';
 
 import { Calls, calls$, Calls$ } from '../blockchain/calls/calls';
 import { eth2weth } from '../blockchain/calls/instant';
@@ -584,7 +584,7 @@ export function createFormController$(
     submit,
     change: manualChange$.next.bind(manualChange$),
     buyToken: 'DAI',
-    sellToken: 'WETH',
+    sellToken: 'ETH',
     gasEstimationStatus: GasEstimationStatus.unset,
     tradeEvaluationStatus: TradeEvaluationStatus.unset,
     slippageLimit: new BigNumber('0.05')

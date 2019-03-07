@@ -33,9 +33,18 @@ export function tradePayWithETH(
     done: false,
   };
 
+  if (!state.gasEstimation || !state.gasPrice) {
+    throw new Error('No gas estimation!');
+  }
+
+  const gasData = {
+    gasEstimation: state.gasEstimation,
+    gasPrice: state.gasPrice
+  };
+
   const tx$ = proxyAddress ?
-    calls.tradePayWithETHWithProxy({ ...state, proxyAddress } as InstantOrderData) :
-    calls.tradePayWithETHNoProxy({ ...state } as InstantOrderData);
+    calls.tradePayWithETHWithProxy({ ...state, ...gasData, proxyAddress } as InstantOrderData) :
+    calls.tradePayWithETHNoProxy({ ...state, ...gasData } as InstantOrderData);
 
   return tx$.pipe(
     switchMap((txState: TxState) =>
@@ -57,7 +66,12 @@ function doTradePayWithERC20(
   initialProgress: Progress
 ): Observable<Progress> {
 
-  const trade$ = calls.tradePayWithERC20({ ...state, proxyAddress } as InstantOrderData);
+  const trade$ = calls.tradePayWithERC20({
+    ...state,
+    proxyAddress,
+    gasEstimation: state.gasEstimation,
+    gasPrice: state.gasPrice
+  } as InstantOrderData);
 
   return trade$.pipe(
     flatMap((txState: TxState) => {
@@ -93,9 +107,14 @@ function doApprove(
       if (!proxyAddress) {
         throw new Error('Proxy not ready!');
       }
+      if (!state.gasEstimation || !state.gasPrice) {
+        throw new Error('No gas estimation!');
+      }
       return calls.approveProxy({
         proxyAddress,
-        token: state.sellToken
+        token: state.sellToken,
+        gasEstimation: state.gasEstimation,
+        gasPrice: state.gasPrice
       }).pipe(
         flatMap((txState: TxState) => {
           if (isSuccess(txState)) {
@@ -134,7 +153,14 @@ function doSetupProxy(
   calls: Calls,
   state: InstantFormState,
 ): Observable<Progress> {
-  return calls.setupProxy({}).pipe(
+  if (!state.gasEstimation || !state.gasPrice) {
+    throw new Error('No gas estimation!');
+  }
+
+  return calls.setupProxy({
+    gasEstimation: state.gasEstimation,
+    gasPrice: state.gasPrice
+  }).pipe(
     startWith({
       kind: ProgressKind.noProxyNoAllowancePayWithERC20,
       proxyTxStatus: TxStatus.WaitingForApproval,

@@ -37,9 +37,7 @@ export const tradePayWithETHWithProxy: TransactionDef<InstantOrderData> = {
     {
       kind,
       buyToken, buyAmount,
-      // sellToken, sellAmount,
       slippageLimit,
-      // gasPrice
     }: InstantOrderData,
     context: NetworkConfig
   ) => {
@@ -74,10 +72,10 @@ export const tradePayWithETHWithProxy: TransactionDef<InstantOrderData> = {
     sellToken, sellAmount,
     slippageLimit,
     gasPrice,
-    // gasEstimation
+    gasEstimation
   }: InstantOrderData) => ({
     gasPrice,
-    gas: 6000000,
+    gas: gasEstimation,
     value: amountToWei(
       kind === OfferType.sell ?
         sellAmount :
@@ -124,10 +122,10 @@ export const tradePayWithETHNoProxy: TransactionDef<InstantOrderData> = {
     sellToken, sellAmount,
     slippageLimit,
     gasPrice,
-    // gasEstimation
+    gasEstimation
   }: InstantOrderData) => ({
     gasPrice,
-    gas: 6000000,
+    gas: gasEstimation,
     value: amountToWei(
       kind === OfferType.sell ? sellAmount : fixSellAmount(sellAmount, slippageLimit),
       sellToken).toFixed(0)
@@ -161,7 +159,6 @@ export const tradePayWithERC20: TransactionDef<InstantOrderData> = {
       buyToken, buyAmount,
       sellToken, sellAmount,
       slippageLimit,
-      // gasPrice
     }: InstantOrderData,
     context: NetworkConfig
   ) => {
@@ -200,10 +197,10 @@ export const tradePayWithERC20: TransactionDef<InstantOrderData> = {
   },
   options: ({
     gasPrice,
-    // gasEstimation
+    gasEstimation
   }: InstantOrderData) => ({
     gasPrice,
-    gas: 6000000,
+    gas: gasEstimation,
   }),
   kind: TxMetaKind.tradePayWithERC20,
   description: ({ kind, buyToken, buyAmount, sellToken, sellAmount }: InstantOrderData) =>
@@ -305,10 +302,14 @@ export function proxyAddress$(
   );
 }
 
+export interface SetupProxyData {
+  gasPrice: BigNumber;
+  gasEstimation: number;
+}
 export const setupProxy = {
-  call: (_data: {}, context: NetworkConfig) => context.instantProxyRegistry.contract.build[''],
+  call: (_: any, context: NetworkConfig) => context.instantProxyRegistry.contract.build[''],
   prepareArgs: () => [],
-  options: () => ({ gas: 1000000 }),
+  options: ({ gasPrice, gasEstimation }: SetupProxyData) => ({ gasPrice, gas: gasEstimation }),
   kind: TxMetaKind.setupProxy,
   description: () => <React.Fragment>Setup proxy</React.Fragment>
 };

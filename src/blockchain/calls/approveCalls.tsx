@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 
 import { Currency } from '../../utils/text/Text';
@@ -56,13 +57,15 @@ export const disapproveWallet: TransactionDef<ApproveWalletData> = {
 export interface ApproveProxyData {
   token: string;
   proxyAddress: string;
+  gasPrice: BigNumber;
+  gasEstimation: number;
 }
 
 export const approveProxy = {
   call: ({ token }: ApproveProxyData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: ({ proxyAddress }: ApproveProxyData, _context: NetworkConfig) => [proxyAddress, -1],
-  options: () => ({ gas: 100000 }),
+  options: ({ gasPrice, gasEstimation }: ApproveProxyData) => ({ gasPrice, gas: gasEstimation }),
   kind: TxMetaKind.approveProxy,
   description: ({ token }: ApproveProxyData) =>
     <React.Fragment>Approve proxy to transfer <Currency value={token}/></React.Fragment>

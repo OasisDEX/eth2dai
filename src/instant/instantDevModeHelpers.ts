@@ -1,6 +1,8 @@
+import { BigNumber } from 'bignumber.js';
 import { identity, of } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { Calls$ } from '../blockchain/calls/calls';
+import { web3 } from '../blockchain/web3';
 
 export function pluginDevModeHelpers(theCalls$: Calls$) {
   theCalls$.pipe(
@@ -28,7 +30,11 @@ export function pluginDevModeHelpers(theCalls$: Calls$) {
               return of();
             }
             console.log('proxyAddress:', proxyAddress);
-            return call.disapproveProxy({ proxyAddress, token });
+            return call.disapproveProxy({
+              proxyAddress, token,
+              gasPrice: new BigNumber(web3.eth.gasPrice.toString()),
+              gasEstimation: 1000000
+            });
           })
         ).subscribe(identity);
       };
