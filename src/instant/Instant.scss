@@ -65,10 +65,19 @@
     justify-content: center;
     letter-spacing: 1px;
     margin-bottom: 1rem;
+    padding: 0;
   }
 
   &.transaction {
+    min-height: 0;
+
     padding: 1rem 1.5rem;
+    margin-top: 0;
+    margin-bottom: .75rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   &.done {
