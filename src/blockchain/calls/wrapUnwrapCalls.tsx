@@ -1,8 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import { Money } from '../../utils/formatters/Formatters';
-import { ETHicon } from '../coinIcons/coinIcons';
-import { NetworkConfig } from '../config';
+import { NetworkConfig, tokens } from '../config';
 import { amountToWei } from '../utils';
 import { TransactionDef } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
@@ -27,7 +26,7 @@ export const wrap: TransactionDef<WrapUnwrapData> = {
     <React.Fragment>
       Wrap <Money value={amount} token={'ETH'}/>
     </React.Fragment>,
-  descriptionIcon: () => <ETHicon theme="circle"/>
+  descriptionIcon: () => tokens.ETH.iconCircle(),
 };
 
 export const unwrap: TransactionDef<WrapUnwrapData> = {
@@ -41,5 +40,5 @@ export const unwrap: TransactionDef<WrapUnwrapData> = {
     <React.Fragment>
       Unwrap <Money value={amount} token={'WETH'}/>
     </React.Fragment>,
-  descriptionIcon: () => <ETHicon theme="circle"/>
+  descriptionIcon: () => tokens.ETH.iconCircle(),
 };

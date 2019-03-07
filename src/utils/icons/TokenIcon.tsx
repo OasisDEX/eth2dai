@@ -1,8 +1,8 @@
 import classnames from 'classnames';
 import * as React from 'react';
-import { tokens } from '../config';
 
-import * as styles from './coinIcons.scss';
+import { tokens } from '../../blockchain/config';
+import * as styles from './TokenIcon.scss';
 
 export const TokenIcon = ({ token }: { token: string }) => {
   const Icon = tokens[token].icon;

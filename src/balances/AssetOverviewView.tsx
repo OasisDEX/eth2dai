@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import classnames from 'classnames';
 import { Observable } from 'rxjs/internal/Observable';
-import { TokenIcon } from '../blockchain/coinIcons/TokenIcon';
 import { tokens } from '../blockchain/config';
 import { TxState } from '../blockchain/transactions';
 import '../utils/Common.scss';
@@ -10,6 +9,7 @@ import { connect } from '../utils/connect';
 import { FormatAmount } from '../utils/formatters/Formatters';
 import { Button } from '../utils/forms/Buttons';
 import { Slider } from '../utils/forms/Slider';
+import { TokenIcon } from '../utils/icons/TokenIcon';
 import { inject } from '../utils/inject';
 import { Loadable, loadablifyLight } from '../utils/loadable';
 import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
