@@ -15,7 +15,7 @@ import {
   getBuyAmount,
   getPayAmount,
   offers,
-  proxyAddress$, setOwner, setupProxy,
+  proxyAddress$, setOwner, setupProxy, tradePayWithERC20,
   tradePayWithETHNoProxy, tradePayWithETHWithProxy
 } from './instant';
 import { cancelOffer, offerMake, offerMakeDirect } from './offerMake';
@@ -42,6 +42,7 @@ function calls([context, account]: [NetworkConfig, string]) {
     unwrapEstimateGas: estimateGas(unwrap),
     tradePayWithETHNoProxy: sendTransaction(tradePayWithETHNoProxy),
     tradePayWithETHWithProxy: sendTransaction(tradePayWithETHWithProxy),
+    tradePayWithERC20: sendTransaction(tradePayWithERC20),
     otcGetBuyAmount: call(getBuyAmount),
     otcGetPayAmount: call(getPayAmount),
     otcGetBestOffer: call(getBestOffer),

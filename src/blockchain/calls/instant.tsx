@@ -105,21 +105,18 @@ export const tradePayWithETHNoProxy: TransactionDef<InstantOrderData> = {
     {
       kind,
       buyToken, buyAmount,
-      // sellToken, sellAmount,
       slippageLimit,
-      // gasPrice
     }: InstantOrderData,
     context: NetworkConfig
   ) => {
-    const fixedBuyAmount = kind === OfferType.sell ?
-      buyAmount.times(one.minus(slippageLimit)) :
-      buyAmount;
-
     return [
       context.instantProxyRegistry.address,
       context.otc.address,
       context.tokens[buyToken].address,
-      amountToWei(fixedBuyAmount, buyToken).toFixed(0)
+      amountToWei(
+        kind === OfferType.sell ? fixBuyAmount(buyAmount, slippageLimit) : buyAmount,
+        buyToken
+      ).toFixed(0)
     ];
   },
   options: ({
@@ -132,12 +129,83 @@ export const tradePayWithETHNoProxy: TransactionDef<InstantOrderData> = {
     gasPrice,
     gas: 6000000,
     value: amountToWei(
-      kind === OfferType.sell ?
-        sellAmount :
-        sellAmount.times(one.plus(one.plus(slippageLimit))),
+      kind === OfferType.sell ? sellAmount : fixSellAmount(sellAmount, slippageLimit),
       sellToken).toFixed(0)
   }),
   kind: TxMetaKind.tradePayWithETHNoProxy,
+  description: ({ kind, buyToken, buyAmount, sellToken, sellAmount }: InstantOrderData) =>
+    kind === 'sell' ?
+      <>
+        Create Sell Order for: <Money value={sellAmount} token={sellToken}/>
+      </> :
+      <>
+        Create Buy Order for: <Money value={buyAmount} token={buyToken}/>
+      </>
+};
+
+function fixBuyAmount(buyAmount: BigNumber, slippageLimit: BigNumber) {
+  return buyAmount.times(one.minus(slippageLimit));
+}
+
+function fixSellAmount(sellAmount: BigNumber, slippageLimit: BigNumber) {
+  return sellAmount.times(one.plus(slippageLimit));
+}
+
+export const tradePayWithERC20: TransactionDef<InstantOrderData> = {
+  call: ({ proxyAddress }: InstantOrderData) => {
+    return web3.eth.contract(dsProxy as any).at(proxyAddress!).execute['address,bytes'];
+  },
+  prepareArgs: (
+    {
+      kind,
+      buyToken, buyAmount,
+      sellToken, sellAmount,
+      slippageLimit,
+      // gasPrice
+    }: InstantOrderData,
+    context: NetworkConfig
+  ) => {
+    if (sellToken === 'ETH') {
+      throw new Error('Pay with ETH not handled here!');
+    }
+
+    const method = kind === OfferType.sell ?
+      buyToken === 'ETH' ?
+        context.instantProxyCreationAndExecute.contract.sellAllAmountBuyEth :
+        context.instantProxyCreationAndExecute.contract.sellAllAmount
+      :
+      buyToken === 'ETH' ?
+        context.instantProxyCreationAndExecute.contract.buyAllAmountBuyEth :
+        context.instantProxyCreationAndExecute.contract.buyAllAmount;
+
+    const params = kind === OfferType.sell ? [
+      context.otc.address,
+      context.tokens[sellToken].address,
+      amountToWei(sellAmount, sellToken).toFixed(0),
+      context.tokens[eth2weth(buyToken)].address,
+      amountToWei(fixBuyAmount(buyAmount, slippageLimit), buyToken).toFixed(0),
+    ] : [
+      context.otc.address,
+      context.tokens[eth2weth(buyToken)].address,
+      amountToWei(buyAmount, buyToken).toFixed(0),
+      context.tokens[sellToken].address,
+      amountToWei(fixSellAmount(sellAmount, slippageLimit), sellToken).toFixed(0),
+    ];
+
+    return [
+      context.instantProxyCreationAndExecute.address,
+      method.getData(...params)
+    ];
+
+  },
+  options: ({
+    gasPrice,
+    // gasEstimation
+  }: InstantOrderData) => ({
+    gasPrice,
+    gas: 6000000,
+  }),
+  kind: TxMetaKind.tradePayWithERC20,
   description: ({ kind, buyToken, buyAmount, sellToken, sellAmount }: InstantOrderData) =>
     kind === 'sell' ?
       <>

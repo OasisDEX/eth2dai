@@ -10,6 +10,7 @@ export enum TxMetaKind {
   unwrap = 'unwrap',
   tradePayWithETHWithProxy = 'tradePayWithETHWithProxy',
   tradePayWithETHNoProxy = 'tradePayWithETHWithProxy',
+  tradePayWithERC20 = 'tradePayWithERC20',
   setupProxy = 'setupProxy',
   approveProxy = 'approveProxy',
   disapproveProxy = 'disapproveProxy'

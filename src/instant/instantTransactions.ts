@@ -51,16 +51,36 @@ export function tradePayWithETH(
 }
 
 function doTradePayWithERC20(
-  _calls: Calls,
-  _proxyAddress: string | undefined,
-  _state: InstantFormState,
+  calls: Calls,
+  proxyAddress: string | undefined,
+  state: InstantFormState,
   initialProgress: Progress
 ): Observable<Progress> {
-  return of({
-    ...initialProgress,
-    tradeTxStatus: TxStatus.Error,
-    done: true,
-  });
+
+  const trade$ = calls.tradePayWithERC20({ ...state, proxyAddress } as InstantOrderData);
+
+  return trade$.pipe(
+    flatMap((txState: TxState) => {
+      const progress = {
+        ...initialProgress,
+        tradeTxStatus: txState.status,
+        tradeTxHash: getTxHash(txState),
+      };
+
+      if (isDone(txState)) {
+        return of({
+          ...progress,
+          done: true,
+        });
+      }
+
+      return of(progress);
+    }),
+    startWith({
+      ...initialProgress,
+      tradeTxStatus: TxStatus.WaitingForApproval,
+    }),
+  );
 }
 
 function doApprove(

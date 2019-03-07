@@ -21,6 +21,7 @@ function snapshotify(object: any): any {
 const defaultCalls = {
   tradePayWithETHNoProxy: null as any,
   tradePayWithETHWithProxy: null as any,
+  tradePayWithERC20: null as any,
   offerMake: null as any,
   offerMakeEstimateGas: () => of(20),
   offerMakeDirect: null as any,
