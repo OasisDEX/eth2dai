@@ -12,7 +12,7 @@ import * as panelStyling from '../utils/panel/Panel.scss';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
 import { Asset } from './asset/Asset';
 import { TradeData } from './details/TradeData';
-import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind, Position } from './instant';
+import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind, Position } from './instantForm';
 import * as styles from './Instant.scss';
 
 interface TradingSideProps {

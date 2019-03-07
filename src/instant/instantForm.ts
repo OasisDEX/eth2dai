@@ -20,9 +20,8 @@ import { tokens } from 'src/blockchain/config';
 import { Balances, DustLimits } from '../balances/balances';
 
 import { Calls, calls$, Calls$ } from '../blockchain/calls/calls';
-import { eth2weth, InstantOrderData } from '../blockchain/calls/instant';
-import { allowance$ } from '../blockchain/network';
-import { getTxHash, isDone, isSuccess, TxState, TxStatus } from '../blockchain/transactions';
+import { eth2weth } from '../blockchain/calls/instant';
+import { TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
@@ -39,6 +38,8 @@ import {
   toEtherPriceUSDChange,
   toGasPriceChange,
 } from '../utils/form';
+import { pluginDevModeHelpers } from './instantDevModeHelpers';
+import { tradePayWithERC20, tradePayWithETH } from './instantTransactions';
 
 export interface FormResetChange {
   kind: InstantFormChangeKind.formResetChange;
@@ -100,7 +101,7 @@ export enum TradeEvaluationStatus {
   error = 'error',
 }
 
-enum ProgressKind {
+export enum ProgressKind {
   proxyPayWithETH = 'proxyPayWithETH',
   noProxyPayWithETH = 'noProxyPayWithETH',
   noProxyNoAllowancePayWithERC20 = 'noProxyNoAllowancePayWithERC20',
@@ -108,7 +109,7 @@ enum ProgressKind {
   proxyAllowancePayWithERC20 = 'proxyAllowancePayWithERC20',
 }
 
-type Progress = {
+export type Progress = {
   done: boolean;
 } & ({
   kind: ProgressKind.proxyPayWithETH | ProgressKind.noProxyPayWithETH
@@ -169,10 +170,6 @@ export enum InstantFormChangeKind {
 export interface ProgressChange {
   kind: InstantFormChangeKind.progressChange;
   progress?: Progress;
-}
-
-function progressChange(progress?: Progress): ProgressChange {
-  return { progress, kind: InstantFormChangeKind.progressChange };
 }
 
 export interface BuyAmountChange {
@@ -485,170 +482,6 @@ function postValidate(state: InstantFormState): InstantFormState {
   };
 }
 
-function tradePayWithETH(
-  calls: Calls,
-  proxyAddress: string | undefined,
-  state: InstantFormState
-): Observable<ProgressChange | FormResetChange> {
-
-  if (!state.buyAmount || !state.sellAmount) {
-    throw new Error('Empty buy of sell amount. Should not get here!');
-  }
-
-  const initialProgress: Progress = {
-    kind: proxyAddress ? ProgressKind.proxyPayWithETH : ProgressKind.noProxyPayWithETH,
-    tradeTxStatus: TxStatus.WaitingForApproval,
-    done: false,
-  };
-
-  const tx$ = proxyAddress ?
-    calls.tradePayWithETHWithProxy({ ...state, proxyAddress } as InstantOrderData) :
-    calls.tradePayWithETHNoProxy({ ...state } as InstantOrderData);
-
-  return tx$.pipe(
-    switchMap((txState: TxState) =>
-      of(progressChange({
-        ...initialProgress,
-        tradeTxStatus: txState.status,
-        tradeTxHash: getTxHash(txState),
-        done: isDone(txState)
-      }))
-    ),
-    startWith(progressChange(initialProgress))
-  );
-}
-
-function doTradePayWithERC20(
-  _calls: Calls,
-  _proxyAddress: string | undefined,
-  _state: InstantFormState,
-  initialProgress: Progress
-): Observable<Progress> {
-  return of({
-    ...initialProgress,
-    tradeTxStatus: TxStatus.Error,
-    done: true,
-  });
-}
-
-function doApprove(
-  calls: Calls,
-  state: InstantFormState,
-  initialProgress: Progress
-): Observable<Progress> {
-  return calls.proxyAddress().pipe(
-    flatMap(proxyAddress => {
-      if (!proxyAddress) {
-        throw new Error('Proxy not ready!');
-      }
-      return calls.approveProxy({
-        proxyAddress,
-        token: state.sellToken
-      }).pipe(
-        flatMap((txState: TxState) => {
-          if (isSuccess(txState)) {
-            return doTradePayWithERC20(calls, proxyAddress, state, {
-              ...initialProgress,
-              allowanceTxStatus: txState.status,
-              allowanceTxHash: getTxHash(txState),
-            });
-          }
-
-          if (isDone(txState)) {
-            return of({
-              ...initialProgress,
-              allowanceTxStatus: txState.status,
-              allowanceTxHash: getTxHash(txState),
-              done: true,
-            });
-          }
-
-          return of({
-            ...initialProgress,
-            allowanceTxStatus: txState.status,
-            allowanceTxHash: getTxHash(txState),
-          });
-        }),
-        startWith({
-          ...initialProgress,
-          allowanceTxStatus: TxStatus.WaitingForApproval,
-        }),
-      );
-    })
-  );
-}
-
-function doSetupProxy(
-  calls: Calls,
-  state: InstantFormState,
-): Observable<Progress> {
-  return calls.setupProxy({}).pipe(
-    startWith({
-      kind: ProgressKind.noProxyNoAllowancePayWithERC20,
-      proxyTxStatus: TxStatus.WaitingForApproval,
-      done: false,
-    }),
-    flatMap((txState: TxState) => {
-      if (isSuccess(txState)) {
-        return doApprove(calls, state, {
-          kind: ProgressKind.noProxyNoAllowancePayWithERC20,
-          proxyTxStatus: txState.status,
-          proxyTxHash: getTxHash(txState),
-          done: false
-        });
-      }
-
-      if (isDone(txState)) {
-        return of({
-          kind: ProgressKind.noProxyNoAllowancePayWithERC20,
-          proxyTxStatus: txState.status,
-          proxyTxHash: getTxHash(txState),
-          done: true,
-        });
-      }
-
-      return of({
-        kind: ProgressKind.noProxyNoAllowancePayWithERC20,
-        proxyTxStatus: txState.status,
-        proxyTxHash: getTxHash(txState),
-        done: false
-      });
-    })
-  );
-}
-
-function tradePayWithERC20(
-  calls: Calls,
-  proxyAddress: string | undefined,
-  state: InstantFormState
-): Observable<ProgressChange> {
-
-  const sellAllowance$ = proxyAddress ?
-    allowance$(state.sellToken, proxyAddress).pipe(first()) :
-    of(false);
-
-  return sellAllowance$.pipe(
-    flatMap(sellAllowance => {
-      if (!proxyAddress) {
-        return doSetupProxy(calls, state);
-      }
-      if (!sellAllowance) {
-        return doApprove(calls, state, {
-          kind: ProgressKind.proxyNoAllowancePayWithERC20,
-          allowanceTxStatus: TxStatus.WaitingForApproval,
-          done: false,
-        });
-      }
-      return doTradePayWithERC20(calls, proxyAddress, state, {
-        kind: ProgressKind.proxyAllowancePayWithERC20,
-        tradeTxStatus: TxStatus.WaitingForApproval,
-        done: false,
-      });
-    }),
-    map(progressChange)
-  );
-}
-
 function calculatePrice(state: InstantFormState): InstantFormState {
   const { buyAmount, sellAmount } = state;
 
@@ -718,41 +551,6 @@ function isReadyToProceed(state: InstantFormState): InstantFormState {
   return {
     ...state,
     readyToProceed: !state.message && state.tradeEvaluationStatus === TradeEvaluationStatus.calculated };
-}
-
-function pluginDevModeHelpers(theCalls$: Calls$) {
-  theCalls$.pipe(
-    map(call => {
-      (window as any).removeProxy = () => {
-        call.proxyAddress().pipe(
-          flatMap(proxyAddress => {
-            if (!proxyAddress) {
-              console.log('Proxy not found!');
-              return of();
-            }
-            console.log('proxyAddress:', proxyAddress);
-            return call.setOwner({
-              proxyAddress,
-              ownerAddress: '0x0000000000000000000000000000000000000000'
-            });
-          })
-        ).subscribe(identity);
-      };
-      (window as any).disapproveProxy = (token: string) => {
-        call.proxyAddress().pipe(
-          flatMap(proxyAddress => {
-            if (!proxyAddress) {
-              console.log('Proxy not found!');
-              return of();
-            }
-            console.log('proxyAddress:', proxyAddress);
-            return call.disapproveProxy({ proxyAddress, token });
-          })
-        ).subscribe(identity);
-      };
-      console.log('Dev mode helpers installed!');
-    })
-  ).subscribe(identity);
 }
 
 export function createFormController$(

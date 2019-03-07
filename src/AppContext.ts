@@ -56,7 +56,7 @@ import { createPriceChartLoadable$, PriceChartWithLoading } from './exchange/pri
 import { TradingPairView } from './exchange/tradingPair/TradingPairView';
 import { createFooter$, TheFooter } from './footer/Footer';
 import { Network } from './header/Network';
-import { createFormController$ as createInstantFormController$ } from './instant/instant';
+import { createFormController$ as createInstantFormController$ } from './instant/instantForm';
 import { InstantViewPanel } from './instant/InstantViewPanel';
 import { createTransactionNotifier$ } from './transactionNotifier/transactionNotifier';
 import { TransactionNotifierView } from './transactionNotifier/TransactionNotifierView';

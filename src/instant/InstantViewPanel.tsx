@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Loadable } from '../utils/loadable';
 import { LoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
 import * as panelStyling from '../utils/panel/Panel.scss';
-import { InstantFormState } from './instant';
+import { InstantFormState } from './instantForm';
 import * as styles from './Instant.scss';
 import { InstantView } from './InstantView';
 

@@ -10,7 +10,7 @@ import { TxState, TxStatus } from '../blockchain/transactions';
 import { createFakeOrderbook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
 import { zero } from '../utils/zero';
-import { createFormController$, InstantFormChangeKind } from './instant';
+import { createFormController$, InstantFormChangeKind } from './instantForm';
 
 setupFakeWeb3ForTesting();
 
