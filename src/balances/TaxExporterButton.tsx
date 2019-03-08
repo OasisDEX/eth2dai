@@ -22,14 +22,13 @@ export class TaxExporterButton extends React.Component<TaxExporterButtonProps> {
     this.props.export()
     .subscribe(trades => {
       const url = 'data:text/csv;charset=utf-8,' + encodeURIComponent(toCSV(trades));
-      console.log(url);
-      window.open('aaaaaa', '_blank');
+      window.open(url, '_blank');
     });
   }
 }
 
 function toCSVRow(trade: any): string {
-  return `"${Object.keys(trade).map(key => trade[key]).join('";"')}"`
+  return `"${Object.keys(trade).map(key => trade[key]).join('";"')}"`;
 }
 
 function toCSV(trades: any[]) {

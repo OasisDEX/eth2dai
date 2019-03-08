@@ -11,7 +11,7 @@ interface InstantFormProps {
   btnDisabled?: boolean;
 }
 
-export class InstantForm extends React.Component<InstantFormProps> {
+export class InstantFormView extends React.Component<InstantFormProps> {
   public render() {
     const { heading, btnLabel, btnAction, btnDisabled, children } = this.props;
 

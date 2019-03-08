@@ -12,7 +12,7 @@ import { TradeData } from './details/TradeData';
 import { TxStatusRow } from './details/TxStatusRow';
 import * as styles from './Instant.scss';
 import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind, Position } from './instantForm';
-import { InstantForm } from './InstantForm';
+import { InstantFormView } from './InstantFormView';
 import { ProgressReport } from './progress/ProgressReport';
 import { Buying, Selling } from './TradingSide';
 
@@ -80,7 +80,7 @@ export class InstantView extends React.Component<InstantFormState> {
     // Congratulation
     if (progress && progress.done && progress.tradeTxStatus === TxStatus.Success) {
       return (
-        <InstantForm heading="Finalize Trade"
+        <InstantFormView heading="Finalize Trade"
                      btnAction={this.resetForm}
                      btnDisabled={!progress.done}
                      btnLabel="Trade Again">
@@ -88,7 +88,7 @@ export class InstantView extends React.Component<InstantFormState> {
           <div className={classnames(styles.details, styles.done)}>
             Congratulation!
           </div>
-        </InstantForm>
+        </InstantFormView>
       );
     }
 
@@ -96,7 +96,7 @@ export class InstantView extends React.Component<InstantFormState> {
     // TODO: Instead of using this approach check how the OfferMakePanel switches between two views.
     if (progress) {
       return (
-        <InstantForm heading="Finalize Trade"
+        <InstantFormView heading="Finalize Trade"
                      btnAction={this.resetForm}
                      btnDisabled={!progress.done}
                      btnLabel="Trade Again">
@@ -141,12 +141,12 @@ export class InstantView extends React.Component<InstantFormState> {
                              }
                            />}/>
           </div>
-        </InstantForm>
+        </InstantFormView>
       );
     }
 
     return (
-      <InstantForm heading="Enter Order Details"
+      <InstantFormView heading="Enter Order Details"
                    btnLabel="Start Transaction"
                    btnAction={this.startTx}
                    btnDisabled={!this.props.readyToProceed}>
@@ -222,7 +222,7 @@ export class InstantView extends React.Component<InstantFormState> {
              }>
           {error(message)}
         </div>
-      </InstantForm>
+      </InstantFormView>
     );
   }
 
