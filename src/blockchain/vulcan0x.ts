@@ -1,7 +1,7 @@
 import { flattenDepth, fromPairs, isEmpty, toPairs, uniqBy } from 'lodash';
-import { Observable } from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { map } from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 
 function filterize(filter: any): string {
   switch (typeof(filter)) {
@@ -44,7 +44,7 @@ export class Placeholder {
   }
 }
 
-export function vulcan0x(
+export function vulcan0x<R>(
   url: string, id: string, resource: string, fields: string[],
   { params, filter, order, limit, offset } : {
     params?: Placeholder[],
@@ -53,7 +53,7 @@ export function vulcan0x(
     limit?: number,
     offset?: number,
   },
-): Observable<any[]> {
+): Observable<R[]> {
   const options = toPairs({
     ...params ? fromPairs(params.map(({ name }) => [name, `$${name}`]) as any) : {},
     ...filter ? { filter: filterize(filter) } : {},
@@ -69,6 +69,8 @@ export function vulcan0x(
   ];
   const queryParams = isEmpty(variables) ? '' :
     `(${variables.map(({ name, type }) => `$${name}: ${type}`).join(', ')})`;
+
+  console.log('process.env.REACT_APP_GRAPHQL_DEVMODE', process.env.REACT_APP_GRAPHQL_DEVMODE);
 
   return ajax({
     url,
@@ -92,10 +94,14 @@ export function vulcan0x(
   }).pipe(
     map(({ response }) => {
       if (response.errors && response.errors[0]) {
-        console.log('vulcan0x error', response.errors[0]);
+        console.log('Vulcan0x error', response.errors);
         throw new Error(response.errors[0].message);
       }
-      return (Object.values(response.data)[0] as {nodes: any[]}).nodes;
+      return (Object.values(response.data)[0] as {nodes: R[]}).nodes;
+    }),
+    catchError(error => {
+      console.error('Vulcan0x error...', error);
+      return throwError(error);
     })
   );
 }

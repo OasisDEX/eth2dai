@@ -10,10 +10,14 @@ export class BalancesView extends React.Component<{}> {
         <theAppContext.Consumer>
           { ({
                AssetOverviewViewRxTx,
+               TaxExporterButtonTxRx
           }) =>
             <div>
               <FlexLayoutRow>
                 <AssetOverviewViewRxTx />
+              </FlexLayoutRow>
+              <FlexLayoutRow>
+                <TaxExporterButtonTxRx />
               </FlexLayoutRow>
             </div>
           }

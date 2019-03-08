@@ -14,6 +14,8 @@ import {
   createWalletDisapprove,
   createWethBalances$,
 } from './balances/balances';
+import {createTaxExport$} from './balances/taxExporter';
+import {TaxExporterButton} from './balances/TaxExporterButton';
 import { calls$ } from './blockchain/calls/calls';
 import {
   account$,
@@ -212,6 +214,10 @@ export function setupAppContext() {
 
   const InstantTxRx = connect(InstantViewPanel, loadablifyLight(instant$));
 
+  const TaxExporterButtonTxRx = inject(TaxExporterButton, {
+    export: () => createTaxExport$(context$, initializedAccount$)
+  });
+
   return {
     AllTradesTxRx,
     AssetOverviewViewRxTx,
@@ -224,6 +230,7 @@ export function setupAppContext() {
     TransactionNotifierTxRx,
     NetworkTxRx,
     TheFooterTxRx,
+    TaxExporterButtonTxRx
   };
 }
 
