@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="100%" height="100%" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-  <g id="Symbols" fill="none" fillRule="evenodd">
-    <g transform="translate(-15 -19)" fillRule="nonzero">
+  <g id="Symbols" fill="none" fill-rule="evenodd">
+    <g transform="translate(-15 -19)" fill-rule="nonzero">
       <g id="Ethereum/Circle" transform="translate(16 20)">
         <path d="M16,0 C7.16336363,0 0,7.16358278 0,16 C0,24.8366996 7.16336363,32 16,32 C24.8364952,32 32,24.8366996 32,16 C32,7.16358278 24.8364952,0 16,0 Z"
               id="Shape" stroke="#FFF" />
