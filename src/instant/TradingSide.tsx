@@ -13,14 +13,15 @@ interface TradingSideProps {
   amount: BigNumber;
   balance: BigNumber;
   onAmountChange: () => void;
+  onClick?: () => void;
 }
 
 class TradingSide extends React.Component<TradingSideProps> {
   public render() {
-    const { amount, asset, balance, placeholder, onAmountChange, ...theRest } = this.props;
+    const { amount, asset, balance, placeholder, onAmountChange, onClick, ...theRest } = this.props;
     return (
       <div className={styles.assetPicker} {...theRest}>
-        <Asset currency={asset} balance={balance}/>
+        <Asset currency={asset} balance={balance} onClick={onClick}/>
         {/* TODO: Make it parameterized like the tokens in offerMakeForm.*/}
         <BigNumberInput
           data-test-id={'amount'}

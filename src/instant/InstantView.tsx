@@ -4,10 +4,13 @@ import * as React from 'react';
 import { theAppContext } from '../AppContext';
 import { DAIicon, ETHicon } from '../blockchain/coinIcons/coinIcons';
 import { TxStatus } from '../blockchain/transactions';
+import { OfferType } from '../exchange/orderbook/orderbook';
 import { formatAmount } from '../utils/formatters/format';
 import { FormatPercent, Money } from '../utils/formatters/Formatters';
 import { AccountIcon, Done, ProgressIcon, SettingsIcon, SwapArrows } from '../utils/icons/Icons';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
+import { AssetProps } from './asset/Asset';
+import { Assets } from './asset/Assets';
 import { TradeData } from './details/TradeData';
 import { TxStatusRow } from './details/TxStatusRow';
 import * as styles from './Instant.scss';
@@ -70,8 +73,11 @@ function error(msg: Message | undefined) {
 
 export class InstantView extends React.Component<InstantFormState> {
 
+  public state = { areAssetsOpen: false };
+
   public render() {
     const {
+      kind,
       sellToken,
       sellAmount,
       buyToken,
@@ -84,6 +90,19 @@ export class InstantView extends React.Component<InstantFormState> {
       gasEstimationUsd,
       progress
     } = this.props;
+
+    if (this.state.areAssetsOpen) {
+      const assets: AssetProps[] = [
+        { currency: 'ETH', balance: new BigNumber('12.345') },
+        { currency: 'WETH', balance: new BigNumber('13.345') },
+        { currency: 'DAI', balance: new BigNumber('16.345') },
+      ];
+
+      return <Assets assets={assets}
+                     side={kind || OfferType.sell}
+                     onClick={this.selectAsset}
+                     onClose={this.hideAssets}/>;
+    }
 
     // Congratulation
     if (progress && progress.done && progress.tradeTxStatus === TxStatus.Success) {
@@ -393,6 +412,7 @@ export class InstantView extends React.Component<InstantFormState> {
           <Selling asset={sellToken}
                    amount={sellAmount}
                    onAmountChange={this.updateSellingAmount}
+                   onClick={this.showAssets}
                    balance={
                      (sellToken === 'ETH' && etherBalance ||
                        balances && balances[sellToken]) || undefined
@@ -401,6 +421,7 @@ export class InstantView extends React.Component<InstantFormState> {
           <Buying asset={buyToken}
                   amount={buyAmount}
                   onAmountChange={this.updateBuyingAmount}
+                  onClick={this.showAssets}
                   balance={
                     (buyToken === 'ETH' && etherBalance ||
                       balances && balances[buyToken]) || undefined
@@ -450,6 +471,40 @@ export class InstantView extends React.Component<InstantFormState> {
     });
   }
 
+  private showAssets = () => {
+    this.setState({ areAssetsOpen: true });
+  }
+
+  private hideAssets = () => {
+    this.setState({ areAssetsOpen: false });
+  }
+
+  private selectAsset = (asset: string, side: OfferType) => {
+    let buyToken = this.props.buyToken;
+    let sellToken = this.props.sellToken;
+    if (side === OfferType.sell) {
+      sellToken = asset;
+    }
+
+    if (side === OfferType.buy) {
+      buyToken = asset;
+    }
+
+    if (side === OfferType.buy && asset === sellToken ||
+      side === OfferType.sell && asset === buyToken) {
+
+      buyToken = this.props.sellToken;
+      sellToken = this.props.buyToken;
+    }
+
+    this.props.change({
+      buyToken,
+      sellToken,
+      kind: InstantFormChangeKind.pairChange,
+    });
+
+    this.hideAssets();
+  }
 }
 
 export class InstantExchange extends React.Component<any> {

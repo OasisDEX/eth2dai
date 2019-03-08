@@ -60,6 +60,37 @@ export class ETHicon extends React.Component<IconProps> {
   }
 }
 
+export class WETHicon extends React.Component<IconProps> {
+  public render() {
+    switch (this.props.theme) {
+      case 'circle':
+        return (
+          <svg width="100%" height="100%" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
+            <g id="Symbols" fill="none" fillRule="evenodd">
+              <g transform="translate(-15 -19)" fillRule="nonzero">
+                <g id="Ethereum/Circle" transform="translate(16 20)">
+                  <path
+                    d="M16,0 C7.16336363,0 0,7.16358278 0,16 C0,24.8366996 7.16336363,32 16,32 C24.8364952,32 32,24.8366996 32,16 C32,7.16358278 24.8364952,0 16,0 Z"
+                    id="Shape" stroke="#FFF" fill="#FFF"/>
+                  <path
+                    d="M15.9748633,24.7272727 L10.9,17.4545455 L15.9748633,20.5023243 L21.0524758,17.4545455 L15.9748633,24.7272727 Z M15.9762379,18.9090909 L10.9,15.8529347 L15.9762379,7.27272727 L21.0524758,15.8529347 L15.9762379,18.9090909 Z"
+                    id="Combined-Shape" fill="#2F2F38"/>
+                </g>
+              </g>
+            </g>
+          </svg>
+        );
+      default:
+        return (
+          <svg xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 0 28 28" className={styles.white}>
+            <path
+              d="M13.9584514,21.6363636 L18.4013623,15.2727273 L13.9584514,17.9395337 L9.51794603,15.2727273 L13.9584514,21.6363636 Z M13.9596542,16.5454545 L18.4013623,13.8713179 L13.9596542,6.36363636 L9.51794603,13.8713179 L13.9596542,16.5454545 Z"/>
+          </svg>
+        );
+    }
+  }
+}
+
 export class DAIicon extends React.Component<IconProps> {
   public render() {
     switch (this.props.theme) {

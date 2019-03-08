@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { DAIicon, ETHicon } from '../../blockchain/coinIcons/coinIcons';
+import { DAIicon, ETHicon, WETHicon } from '../../blockchain/coinIcons/coinIcons';
 import { FormatAmount } from '../../utils/formatters/Formatters';
 import { ProgressIcon } from '../../utils/icons/Icons';
 import { Currency } from '../../utils/text/Text';
 import * as styles from './Asset.scss';
 
-interface AssetProps {
+export interface AssetProps {
   currency: string;
   balance?: any;
+  onClick?: () => void;
 }
 
 const iconOf = (asset: string) => {
@@ -15,7 +16,7 @@ const iconOf = (asset: string) => {
     case 'eth':
       return <ETHicon theme="circle"/>;
     case 'weth':
-      return <ETHicon theme="circle"/>;
+      return <WETHicon theme="circle"/>;
     case 'dai':
       return <DAIicon theme="circle"/>;
     default:
@@ -25,9 +26,9 @@ const iconOf = (asset: string) => {
 
 export class Asset extends React.Component<AssetProps> {
   public render() {
-    const { balance, currency } = this.props;
+    const { balance, currency, onClick } = this.props;
     return (
-      <div className={styles.asset}>
+      <div className={styles.asset} onClick={onClick}>
         <span className={styles.icon}>
           {iconOf(currency)}
         </span>

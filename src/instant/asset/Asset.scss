@@ -16,6 +16,8 @@
   width: 100%;
   height: 100px;
 
+  cursor: pointer;
+
   @include fontMontserratSemibold;
   font-size: 0.625rem;
   letter-spacing: 1px;
