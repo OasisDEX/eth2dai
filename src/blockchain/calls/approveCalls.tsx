@@ -10,7 +10,7 @@ export interface ApproveWalletData {
 }
 
 export const approveWallet: TransactionDef<ApproveWalletData> = {
-  descriptionIcon: ({ token }: ApproveWalletData) => tokens[token].iconCircle(),
+  descriptionIcon: ({ token }: ApproveWalletData) => tokens[token].iconCircle,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: (_: ApproveWalletData, context: NetworkConfig) => [context.otc.address, -1],
@@ -26,7 +26,7 @@ export const approveWallet: TransactionDef<ApproveWalletData> = {
 };
 
 export const disapproveWallet: TransactionDef<ApproveWalletData> = {
-  descriptionIcon: ({ token }: ApproveWalletData) => tokens[token].iconCircle(),
+  descriptionIcon: ({ token }: ApproveWalletData) => tokens[token].iconCircle,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: (_: ApproveWalletData, context: NetworkConfig) => [context.otc.address, 0],

@@ -9,7 +9,6 @@ import { connect } from '../utils/connect';
 import { FormatAmount } from '../utils/formatters/Formatters';
 import { Button } from '../utils/forms/Buttons';
 import { Slider } from '../utils/forms/Slider';
-import { TokenIcon } from '../utils/icons/TokenIcon';
 import { inject } from '../utils/inject';
 import { Loadable, loadablifyLight } from '../utils/loadable';
 import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
@@ -76,8 +75,8 @@ export class AssetsOverviewViewInternal
           <td className="hide-md">ETH</td>
           <td>
             <div className={styles.centeredAsset}>
-              <TokenIcon token="ETH" /> <Currency
-                value={tokens.ETH.name} />
+              { tokens.ETH.icon }
+              <Currency value={tokens.ETH.name} />
             </div>
           </td>
           <td className={styles.center} >-</td>
@@ -107,8 +106,8 @@ export class AssetsOverviewViewInternal
             <td className="hide-md">{combinedBalance.name}</td>
             <td>
               <div className={styles.centeredAsset}>
-                <TokenIcon token={combinedBalance.name} /> <Currency
-                value={tokens[combinedBalance.name].name} />
+                { tokens[combinedBalance.name].icon }
+                <Currency value={tokens[combinedBalance.name].name} />
               </div>
             </td>
             <td className={styles.center}>

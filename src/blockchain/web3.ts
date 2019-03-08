@@ -61,7 +61,7 @@ export const getCurrentProviderName = (provider = (window as Web3Window).web3.cu
     return {
       alias: 'metamask',
       fullName: 'Metamask',
-      icon: SvgImageSimple(metamaskSvg)(),
+      icon: SvgImageSimple(metamaskSvg),
     };
   }
 
@@ -69,7 +69,7 @@ export const getCurrentProviderName = (provider = (window as Web3Window).web3.cu
     return {
       alias: 'trust',
       fullName: 'Trust Wallet',
-      icon: SvgImageSimple(trustSvg)(),
+      icon: SvgImageSimple(trustSvg),
     };
   }
 
@@ -77,7 +77,7 @@ export const getCurrentProviderName = (provider = (window as Web3Window).web3.cu
     return {
       alias: 'status',
       fullName: 'Status',
-      icon: SvgImageSimple(statusSvg)(),
+      icon: SvgImageSimple(statusSvg),
     };
   }
 
@@ -85,7 +85,7 @@ export const getCurrentProviderName = (provider = (window as Web3Window).web3.cu
     return {
       alias: 'coinbase',
       fullName: 'Coinbase Wallet',
-      icon: SvgImageSimple(coinbaseSvg)(),
+      icon: SvgImageSimple(coinbaseSvg),
     };
   }
 
@@ -93,7 +93,7 @@ export const getCurrentProviderName = (provider = (window as Web3Window).web3.cu
     return {
       alias: 'parity',
       fullName: 'Parity',
-      icon: SvgImageSimple(paritySvg)(),
+      icon: SvgImageSimple(paritySvg),
     };
   }
 
@@ -101,7 +101,7 @@ export const getCurrentProviderName = (provider = (window as Web3Window).web3.cu
     return {
       alias: 'imToken',
       fullName: 'imToken',
-      icon: SvgImageSimple(imTokenSvg)(),
+      icon: SvgImageSimple(imTokenSvg),
     };
   }
 
@@ -109,7 +109,7 @@ export const getCurrentProviderName = (provider = (window as Web3Window).web3.cu
     return {
       alias: 'infura',
       fullName: 'Infura',
-      icon: SvgImageSimple(ethereumSvg)(),
+      icon: SvgImageSimple(ethereumSvg),
     };
   }
 
@@ -117,13 +117,13 @@ export const getCurrentProviderName = (provider = (window as Web3Window).web3.cu
     return {
       alias: 'self',
       fullName: 'Private Wallet',
-      icon: SvgImageSimple(ethereumSvg)()
+      icon: SvgImageSimple(ethereumSvg)
     };
   }
 
   return {
     alias: 'other',
     fullName: 'Other',
-    icon: SvgImageSimple(ethereumSvg)()
+    icon: SvgImageSimple(ethereumSvg)
   };
 };

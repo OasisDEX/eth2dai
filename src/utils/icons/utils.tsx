@@ -5,7 +5,7 @@ export function SvgImage({ image, ...props }: React.HTMLAttributes<HTMLSpanEleme
 }
 
 export function SvgImageSimple(image: string) {
-  return () => <SvgImage image={image} />;
+  return <SvgImage image={image} />;
 }
 
 export function loadDataUrl(dataUrl: string): string {
