@@ -5,14 +5,19 @@ import { ScaleLinear, ScaleLogarithmic } from 'd3-scale';
 import { BaseType, Selection } from 'd3-selection';
 import * as React from 'react';
 import { createElement } from 'react-faux-dom';
+
 import { OfferMatchType } from '../../utils/form';
 import { Button } from '../../utils/forms/Buttons';
+import { SvgImage } from '../../utils/icons/utils';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { Muted } from '../../utils/text/Text';
 import { OfferType, Orderbook } from '../orderbook/orderbook';
 import { OrderbookViewKind } from '../OrderbookPanel';
 import { DepthChartData, getDepthChartData, Summary, ZoomChange } from './depthchart';
 import * as styles from './DepthChartView.scss';
+import minusSvg from './minus.svg';
+import orderbookSvg from './orderbook.svg';
+import plusSvg from './plus.svg';
 
 interface PriceVolume {
   price: number;
@@ -271,21 +276,21 @@ export class DepthChartView extends React.Component<DepthChartInternalProps> {
                   onClick={this.zoomOut}
                   disabled={!data.zoomOutEnabled}
                 >
-                  <MinusBtn />
+                  <SvgImage image={minusSvg} />
                 </Button>
                 <Button
                   style={btnStyles}
                   onClick={this.zoomIn}
                   disabled={!data.zoomInEnabled}
                 >
-                  <PlusBtn />
+                  <SvgImage image={plusSvg} />
                 </Button>
                 <Button
-                    style={{ ...btnStyles, marginRight:'0' }}
-                    onClick={this.changeChartListView}
-                    data-test-id="orderbook-type-depthChart"
+                  style={{ ...btnStyles, marginRight:'0' }}
+                  onClick={this.changeChartListView}
+                  data-test-id="orderbook-type-depthChart"
                 >
-                    <ToListSwitchBtn/>
+                  <SvgImage image={orderbookSvg} />
                 </Button>
             </div>
         </PanelHeader>
@@ -314,39 +319,6 @@ export class DepthChartView extends React.Component<DepthChartInternalProps> {
     this.props.kindChange(OrderbookViewKind.list);
   }
 
-}
-
-class MinusBtn extends React.PureComponent {
-  public render() {
-    return (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-        <path d="M19 13H5v-2h14v2z"/>
-        <path d="M0 0h24v24H0z" fill="none"/>
-      </svg>
-    );
-  }
-}
-
-class PlusBtn extends React.PureComponent {
-  public render() {
-    return (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-        <path d="M0 0h24v24H0z" fill="none"/>
-      </svg>
-    );
-  }
-}
-
-class ToListSwitchBtn extends React.PureComponent {
-  public render() {
-    return (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
-        <path d="M0 0h24v24H0z" fill="none"/>
-      </svg>
-    );
-  }
 }
 
 function drawSummaryInfoBox(summary?: Summary) {

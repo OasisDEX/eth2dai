@@ -1,7 +1,7 @@
-import * as React from 'react';
-
 import classnames from 'classnames';
+import * as React from 'react';
 import { Observable } from 'rxjs/internal/Observable';
+
 import { tokens } from '../blockchain/config';
 import { TxState } from '../blockchain/transactions';
 import '../utils/Common.scss';
