@@ -27,6 +27,7 @@ export enum TxStatus {
 export type TxState = {
   account: string;
   txNo: number;
+  networkId: string;
   meta: any;
   start: Date;
   end?: Date;
@@ -69,12 +70,14 @@ let txCounter: number = 1;
 
 export function send(
   account: string,
+  networkId: string,
   meta: any,
   method: (...args: any[]) => string, // Any contract method
   ...args: any[]
 ): Observable<TxState> {
   const common = {
     account,
+    networkId,
     meta,
     txNo: txCounter += 1,
     start: new Date(),
@@ -217,8 +220,11 @@ export const transactions$: Observable<TxState[]> = combineLatest(
     },   []),
   ),
   account$,
+  context$,
 ).pipe(
-  map(([transactions, account]) => transactions.filter((t: TxState) => t.account === account)),
+  map(([transactions, account, context]) =>
+    transactions.filter((t: TxState) => t.account === account && t.networkId === context.id)
+  ),
   startWith([]),
   shareReplay(1),
 );

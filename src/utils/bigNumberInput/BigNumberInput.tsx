@@ -9,7 +9,9 @@ export class BigNumberInput extends React.Component<any> {
 
   public changed = (e: React.ChangeEvent<HTMLInputElement>): void => {
     this.lastValue = e.target.value;
-    this.props.onChange(e);
+    if (e.target.value !== '0._') {
+      this.props.onChange(e);
+    }
   }
 
   public render() {

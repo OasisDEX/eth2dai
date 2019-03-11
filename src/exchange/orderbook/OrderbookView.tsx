@@ -181,7 +181,7 @@ export class OrderbookView extends React.Component<Props> {
     return (
       <RowClickable
         data-test-id={kind}
-        clickable={parent.canTakeOffer(offer)}
+        clickable={true}
         onClick={parent.takeOffer(offer)}>
         <td data-test-id="price">
           <SellBuySpan type={kind}>
@@ -196,10 +196,6 @@ export class OrderbookView extends React.Component<Props> {
         </td>
       </RowClickable>
     );
-  }
-
-  public canTakeOffer(offer: Offer): boolean {
-    return offer.ownerId !== this.props.account;
   }
 
   public takeOffer = (offer: Offer) => {
