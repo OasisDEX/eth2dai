@@ -10,4 +10,5 @@ export const done: string;
 export const assets: string;
 export const assetPicker: string;
 export const swapIcon: string;
+export const settingsIcon: string;
 export const input: string;
