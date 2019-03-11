@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 import { Currency } from '../../utils/text/Text';
-import { DAIicon, ETHicon } from '../coinIcons/coinIcons';
-import { NetworkConfig } from '../config';
+import { NetworkConfig, tokens } from '../config';
 import { TransactionDef } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
@@ -10,19 +9,8 @@ export interface ApproveWalletData {
   token: string;
 }
 
-const descriptionIcon = ({ token }: ApproveWalletData) => {
-  switch (token) {
-    case 'WETH':
-      return <ETHicon theme="circle"/>;
-    case 'DAI':
-      return <DAIicon theme="circle"/>;
-    default:
-      throw new Error(`unknown token ${token}`);
-  }
-};
-
 export const approveWallet: TransactionDef<ApproveWalletData> = {
-  descriptionIcon,
+  descriptionIcon: ({ token }: ApproveWalletData) => tokens[token].iconCircle,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: (_: ApproveWalletData, context: NetworkConfig) => [context.otc.address, -1],
@@ -38,7 +26,7 @@ export const approveWallet: TransactionDef<ApproveWalletData> = {
 };
 
 export const disapproveWallet: TransactionDef<ApproveWalletData> = {
-  descriptionIcon,
+  descriptionIcon: ({ token }: ApproveWalletData) => tokens[token].iconCircle,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: (_: ApproveWalletData, context: NetworkConfig) => [context.otc.address, 0],

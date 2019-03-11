@@ -1,10 +1,11 @@
 import classnames from 'classnames';
 import * as React from 'react';
 import { getCurrentProviderName } from '../blockchain/web3';
-import { Logo } from '../logo/Logo';
+import LogoSvg from '../header/Logo.svg';
+import networkSvg from '../icons/network.svg';
 import { Button } from '../utils/forms/Buttons';
 import { Checkbox } from '../utils/forms/Checkbox';
-import {  NetworkIcon } from '../utils/icons/Icons';
+import { SvgImage } from '../utils/icons/utils';
 import { Client } from './client/Client';
 import * as styles from './LandingPage.scss';
 
@@ -29,7 +30,7 @@ class AcceptTos extends React.Component<any, any> {
     const { fullName, icon } = getCurrentProviderName();
     return (
       <section className={styles.section}>
-        <Logo className={styles.logo}/>
+        <SvgImage image={LogoSvg} className={styles.logo} />
         <div className={styles.container}>
           <div style={{ justifyContent: 'space-between' }} className={styles.containerTopHalf}>
             <div className={styles.placeholder}>
@@ -100,7 +101,7 @@ export class LoadingState {
   public static get MISSING_PROVIDER() {
     return (
       <section className={styles.section}>
-        <Logo className={styles.logo}/>
+        <SvgImage image={LogoSvg} className={styles.logo} />
         <div className={styles.container}>
           <div style={{ justifyContent: 'center' }} className={styles.containerTopHalf}>
             <h4>You have currently no Client in use</h4>
@@ -128,7 +129,7 @@ export class LoadingState {
             <h4 style={{ color: '#8D8D96' }}>Please connect to the Ethereum Main Network</h4>
           </div>
           <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <NetworkIcon/>
+            <SvgImage image={networkSvg} />
           </div>
         </div>
       </section>

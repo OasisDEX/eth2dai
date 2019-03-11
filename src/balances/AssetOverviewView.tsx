@@ -1,8 +1,7 @@
-import * as React from 'react';
-
 import classnames from 'classnames';
+import * as React from 'react';
 import { Observable } from 'rxjs/internal/Observable';
-import { TokenIcon } from '../blockchain/coinIcons/TokenIcon';
+
 import { tokens } from '../blockchain/config';
 import { TxState } from '../blockchain/transactions';
 import '../utils/Common.scss';
@@ -76,8 +75,8 @@ export class AssetsOverviewViewInternal
           <td className="hide-md">ETH</td>
           <td>
             <div className={styles.centeredAsset}>
-              <TokenIcon token="ETH" /> <Currency
-                value={tokens.ETH.name} />
+              { tokens.ETH.icon }
+              <Currency value={tokens.ETH.name} />
             </div>
           </td>
           <td className={styles.center} >-</td>
@@ -107,8 +106,8 @@ export class AssetsOverviewViewInternal
             <td className="hide-md">{combinedBalance.name}</td>
             <td>
               <div className={styles.centeredAsset}>
-                <TokenIcon token={combinedBalance.name} /> <Currency
-                value={tokens[combinedBalance.name].name} />
+                { tokens[combinedBalance.name].icon }
+                <Currency value={tokens[combinedBalance.name].name} />
               </div>
             </td>
             <td className={styles.center}>

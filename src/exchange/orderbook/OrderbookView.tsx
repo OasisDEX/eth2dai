@@ -1,12 +1,12 @@
 // tslint:disable:no-console
 import * as React from 'react';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import * as styles from './OrderbookView.scss';
-
 import { default as MediaQuery } from 'react-responsive';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
+import { SvgImage } from '../../utils/icons/utils';
 import { LoadableStatus, LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { PanelHeader } from '../../utils/panel/Panel';
@@ -16,7 +16,9 @@ import * as tableStyles from '../../utils/table/Table.scss';
 import { Currency, InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
+import depthChartSvg from './depth-chart.svg';
 import { Offer, Orderbook } from './orderbook';
+import * as styles from './OrderbookView.scss';
 
 export interface Props extends LoadableWithTradingPair<Orderbook> {
   account: string | undefined;
@@ -97,7 +99,7 @@ export class OrderbookView extends React.Component<Props> {
                 onClick={this.changeChartListView}
                 data-test-id="orderbook-type-list"
               >
-                <ToChartSwitchBtn/>
+                <SvgImage image={depthChartSvg} />
               </Button>;
             }}
           </MediaQuery>
@@ -209,19 +211,4 @@ export class OrderbookView extends React.Component<Props> {
     this.props.kindChange(OrderbookViewKind.depthChart);
   }
 
-}
-
-class ToChartSwitchBtn extends React.PureComponent {
-  public render() {
-    return (
-      <svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1">
-        <g transform="translate(-6.000000, -6.000000)" fill="white" fillRule="nonzero">
-          <g transform="translate(3.000000, 3.000000)">
-            <path
-              d="M19,3 L5,3 C3.9,3 3,3.9 3,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,5 C21,3.9 20.1,3 19,3 Z M10,19 L5,19 L5,12 L12,12 L12,17 C12,18.1045695 11.1045695,19 10,19 Z M19,12 L12,12 L12,7 C12,5.8954305 12.8954305,5 14,5 L19,5 L19,12 Z"/>
-          </g>
-        </g>
-      </svg>
-    );
-  }
 }
