@@ -2,6 +2,23 @@
 // const TSDocgenPlugin = require("react-docgen-typescript-webpack-plugin");
 
 module.exports = (baseConfig, env, config) => {
+  config.module.rules.forEach(rule => {
+    const test = rule.test.toString();
+    if (test.match(/\|svg/))
+      rule.test = new RegExp(test.substr(1, test.length - 2).replace(/\|svg/, ''));
+  });
+  config.module.rules.push({
+    test: /\.svg$/,
+    use: [
+      {
+        loader: require.resolve("url-loader"),
+        options: {
+          limit: 20000,
+        }
+      },
+    ],
+  });
+
   config.module.rules.push({
     test: /\.(ts|tsx)$/,
     loader: require.resolve("ts-loader"),

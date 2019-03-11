@@ -2,7 +2,8 @@ import * as React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { transactionObserver, TxState, TxStatus } from '../blockchain/transactions';
-import { Cross } from '../utils/icons/Icons';
+import crossSvg from '../icons/cross.svg';
+import { SvgImage } from '../utils/icons/utils';
 import { Timer } from '../utils/Timer';
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import * as styles from './TransactionNotifier.scss';
@@ -58,7 +59,9 @@ export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...trans
       )}
       <div className={styles.title}>{description}</div>
       <div className={styles.description}>{describeTxStatus(transaction)}</div>
-      <a tabIndex={0} onClick={onDismiss} className={styles.cross} data-test-id="notification-cross"><Cross/></a>
+      <a tabIndex={0} onClick={onDismiss} className={styles.cross} data-test-id="notification-cross">
+        <SvgImage image={crossSvg} />
+      </a>
     </div>
   );
 };
