@@ -1,13 +1,13 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
-import daiCircleSvg from '../icons/coins/dai-circle.svg';
-import ethCircleSvg from '../icons/coins/eth-circle.svg';
 import { theAppContext } from '../AppContext';
 import { TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import accountSvg from '../icons/account.svg';
 import cogWheelSvg from '../icons/cog-wheel.svg';
+import daiCircleSvg from '../icons/coins/dai-circle.svg';
+import ethCircleSvg from '../icons/coins/eth-circle.svg';
 import doneSvg from '../icons/done.svg';
 import swapArrowsSvg from '../icons/swap-arrows.svg';
 import { formatAmount } from '../utils/formatters/format';
