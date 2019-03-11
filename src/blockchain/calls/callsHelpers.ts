@@ -69,6 +69,7 @@ export function sendTransactionCurried(context: NetworkConfig, account: string) 
     return (args: D) => {
       return send(
         account,
+        context.id,
         {
           kind,
           description,
@@ -93,6 +94,7 @@ export function sendTransactionWithGasConstraintsCurried(context: NetworkConfig,
         switchMap(([gas, gasPrice]) => {
           return send(
             account,
+            context.id,
             {
               kind,
               description,
