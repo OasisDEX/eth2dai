@@ -1,7 +1,15 @@
 import { from, fromEvent, Observable } from 'rxjs';
 import { catchError, filter, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import * as Web3 from 'web3';
-import { ProviderIcons } from '../utils/icons/ProviderIcons';
+
+import coinbaseSvg from '../icons/providers/coinbase.svg';
+import ethereumSvg from '../icons/providers/ethereum.svg';
+import imTokenSvg from '../icons/providers/im-token.svg';
+import metamaskSvg from '../icons/providers/metamask.svg';
+import paritySvg from '../icons/providers/parity.svg';
+import statusSvg from '../icons/providers/status.svg';
+import trustSvg from '../icons/providers/trust.svg';
+import { SvgImageSimple } from '../utils/icons/utils';
 
 export let web3 : Web3;
 
@@ -51,71 +59,71 @@ export function setupFakeWeb3ForTesting() {
 export const getCurrentProviderName = (provider = (window as Web3Window).web3.currentProvider): ProviderMetaData => {
   if (provider.isMetaMask) {
     return {
-      alias:'metamask',
-      fullName:'Metamask',
-      icon:ProviderIcons.METAMASK
+      alias: 'metamask',
+      fullName: 'Metamask',
+      icon: SvgImageSimple(metamaskSvg),
     };
   }
 
   if (provider.isTrust) {
     return {
-      alias:'trust',
-      fullName:'Trust Wallet',
-      icon: ProviderIcons.TRUST
+      alias: 'trust',
+      fullName: 'Trust Wallet',
+      icon: SvgImageSimple(trustSvg),
     };
   }
 
   if (provider.isStatus) {
     return {
-      alias:'status',
-      fullName:'Status',
-      icon: ProviderIcons.STATUS
+      alias: 'status',
+      fullName: 'Status',
+      icon: SvgImageSimple(statusSvg),
     };
   }
 
   if (typeof (window as any).SOFA !== 'undefined') {
     return {
-      alias:'coinbase',
-      fullName:'Coinbase Wallet',
-      icon: ProviderIcons.COINBASE
+      alias: 'coinbase',
+      fullName: 'Coinbase Wallet',
+      icon: SvgImageSimple(coinbaseSvg),
     };
   }
 
   if (provider.constructor && provider.constructor.name === 'Web3FrameProvider') {
     return {
-      alias:'parity',
-      fullName:'Parity',
-      icon: ProviderIcons.PARITY
+      alias: 'parity',
+      fullName: 'Parity',
+      icon: SvgImageSimple(paritySvg),
     };
   }
 
   if (provider.isImToken) {
     return {
-      alias:'imToken',
-      fullName:'imToken',
-      icon: ProviderIcons.IM_TOKEN
+      alias: 'imToken',
+      fullName: 'imToken',
+      icon: SvgImageSimple(imTokenSvg),
     };
   }
 
   if (provider.host && provider.host.indexOf('infura') !== -1) {
     return {
-      alias:'infura',
-      fullName:'Infura',
-      icon: ProviderIcons.ETHEREUM
+      alias: 'infura',
+      fullName: 'Infura',
+      icon: SvgImageSimple(ethereumSvg),
     };
   }
 
   if (provider.host && provider.host.indexOf('localhost') !== -1) {
     return {
-      alias:'self',
-      fullName:'Private Wallet',
-      icon: ProviderIcons.ETHEREUM
+      alias: 'self',
+      fullName: 'Private Wallet',
+      icon: SvgImageSimple(ethereumSvg)
     };
   }
 
   return {
-    alias:'other',
-    fullName:'Other',
-    icon: ProviderIcons.ETHEREUM
+    alias: 'other',
+    fullName: 'Other',
+    icon: SvgImageSimple(ethereumSvg)
   };
 };

@@ -24,8 +24,8 @@
     "cypress:dev": "rm -rf cypress/screenshots && NODE_ENV='development' cypress open",
     "tsc": "tsc -p ./tsconfig.prod.json --noEmit && tsc -p ./cypress/tsconfig.json --noEmit && tsc -p ./tsconfig.test.json --noEmit && tsc -p ./tsconfig.json --noEmit",
     "storybook:screenshots": "storybook-chrome-screenshot -p 9001 --inject-files ./.storybook/disable-animations.js",
-    "super-ci": "super-ci",
-    "super-ci-e2e": "super-ci --order 1 ./superfile-e2e.ts"
+    "codechecks": "codechecks",
+    "codechecks-e2e": "codechecks ./codechecks-e2e.ts"
   },
   "dependencies": {
     "@types/ramda": "^0.25.38",
@@ -97,7 +97,8 @@
     "babel-loader": "^7.1.2",
     "babel-preset-react-app": "^3.1.1",
     "babel-runtime": "^6.26.0",
-    "build-size-super-plugin": "^0.0.8",
+    "codecheck-build-size": "^0.0.9",
+    "codechecks": "^0.0.33",
     "css-loader": "0.28.7",
     "cypress": "^3.1.5",
     "dotenv": "4.0.0",
@@ -121,7 +122,6 @@
     "source-map-loader": "^0.2.1",
     "storybook-chrome-screenshot": "1.3.1",
     "style-loader": "0.19.0",
-    "super-ci": "^0.0.31",
     "surge": "^0.20.1",
     "sw-precache-webpack-plugin": "0.11.4",
     "truffle-privatekey-provider": "^1.0.0",

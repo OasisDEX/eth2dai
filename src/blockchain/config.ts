@@ -1,6 +1,13 @@
 import { fromPairs, memoize, zip } from 'lodash';
 
 import { TradingPair } from '../exchange/tradingPair/tradingPair';
+import daiCircleSvg from '../icons/coins/dai-circle.svg';
+import daiInverseSvg from '../icons/coins/dai-inverse.svg';
+import daiSvg from '../icons/coins/dai.svg';
+import ethCircleSvg from '../icons/coins/eth-circle.svg';
+import ethInverseSvg from '../icons/coins/eth-inverse.svg';
+import ethSvg from '../icons/coins/eth.svg';
+import { SvgImageSimple } from '../utils/icons/utils';
 import * as eth from './abi/ds-eth-token.abi.json';
 import * as dsProxyFactory from './abi/ds-proxy-factory.abi.json';
 import * as erc20 from './abi/erc20.abi.json';
@@ -9,7 +16,6 @@ import * as otcSupport from './abi/otc-support-methods.abi.json';
 import * as proxyCreationAndExecute from './abi/proxy-creation-and-execute.abi.json';
 import * as proxyRegistry from './abi/proxy-registry.abi.json';
 import * as saiTub from './abi/sai-tub.abi.json';
-import { DAIcoin, DAIicon, ETHcoin, ETHicon, } from './coinIcons/coinIcons';
 import { web3 } from './web3';
 
 export const tradingPairs: TradingPair[] = [
@@ -27,8 +33,9 @@ export const tokens = asMap('symbol', [
     digits: 5,
     maxSell: '10000000',
     name: 'Ether',
-    icon: ETHicon,
-    iconInverse: ETHcoin,
+    icon: SvgImageSimple(ethSvg),
+    iconInverse: SvgImageSimple(ethInverseSvg),
+    iconCircle: SvgImageSimple(ethCircleSvg),
   },
   {
     symbol: 'WETH',
@@ -36,8 +43,9 @@ export const tokens = asMap('symbol', [
     digits: 5,
     maxSell: '10000000',
     name: 'Wrapped Ether',
-    icon: ETHicon,
-    iconInverse: ETHcoin,
+    icon: SvgImageSimple(ethSvg),
+    iconInverse: SvgImageSimple(ethInverseSvg),
+    iconCircle: SvgImageSimple(ethCircleSvg),
   },
   {
     symbol: 'DAI',
@@ -45,8 +53,9 @@ export const tokens = asMap('symbol', [
     digits: 2,
     maxSell: '10000000',
     name: 'Dai',
-    icon: DAIicon,
-    iconInverse: DAIcoin,
+    icon: SvgImageSimple(daiSvg),
+    iconInverse: SvgImageSimple(daiInverseSvg),
+    iconCircle: SvgImageSimple(daiCircleSvg),
   },
 ]);
 

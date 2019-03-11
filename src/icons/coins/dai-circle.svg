@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+  <g id="Symbols" fill="none" fill-rule="evenodd">
+    <g transform="translate(-16 -20)">
+      <g id="Group" transform="translate(16 20)">
+        <circle id="Oval" stroke="#FFF" cx="16" cy="16" r="15.5" />
+        <path d="M15.7977513,7.23076923 L24.4615385,15.8945563 L15.8945564,24.4615385 L7.23076923,15.7977513 L15.7977513,7.23076923 Z M18.3076927,15.8599834 L22.0000004,15.8807273 L15.811581,9.69230798 L9.69230806,15.8115809 L13.3846157,15.8323248 L15.8323249,13.3846157 L18.3076927,15.8599834 Z"
+              id="Combined-Shape" fill="#FFF" fill-rule="nonzero" />
+      </g>
+    </g>
+  </g>
+</svg>

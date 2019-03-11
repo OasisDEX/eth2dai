@@ -39,10 +39,9 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
   }
 
   public static PairView({ base, quote }: any) {
-    const Icon = tokens[base].iconInverse;
     return (
       <div className={styles.pairView}>
-        <div className={styles.pairViewIcon}><Icon/></div>
+        <div className={styles.pairViewIcon}>{tokens[base].iconInverse}</div>
         <div className={styles.pairViewCurrency}>{base}</div>
         <div className={styles.pairViewCurrency}>{quote}</div>
       </div>
