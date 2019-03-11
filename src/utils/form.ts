@@ -38,7 +38,8 @@ export enum FormChangeKind {
   dustLimitChange = 'dustLimitChange',
   matchTypeChange = 'matchType',
   pickOfferChange = 'pickOffer',
-  progress = 'progress'
+  progress = 'progress',
+  etherBalanceChange = 'etherBalanceChange',
 }
 
 export enum OfferMatchType {
@@ -129,8 +130,22 @@ export interface ProgressChange {
   progress?: ProgressStage;
 }
 
+export interface EtherBalanceChange {
+  kind: FormChangeKind.etherBalanceChange;
+  etherBalance: BigNumber;
+}
+
 export function progressChange(progress?: ProgressStage): ProgressChange {
   return { progress, kind: FormChangeKind.progress };
+}
+
+export function toEtherBalanceChange(etherBalance$: Observable<BigNumber>) {
+  return etherBalance$.pipe(
+    map(etherBalance => ({
+      etherBalance,
+      kind: FormChangeKind.etherBalanceChange,
+    }))
+  );
 }
 
 export function toGasPriceChange(gasPrice$: Observable<BigNumber>): Observable<GasPriceChange> {
@@ -292,7 +307,7 @@ export function doGasEstimation<S extends HasGasEstimation>(
       );
     }),
     catchError((error) => {
-      console.error('Error while estimating gas:', error);
+      console.warn('Error while estimating gas:', error);
       return of({
         ...(state as object),
         error,
@@ -303,4 +318,46 @@ export function doGasEstimation<S extends HasGasEstimation>(
       ...(state as object),
       gasEstimationStatus: GasEstimationStatus.calculating } as S)
   );
+}
+
+export function calculateTotal(amount: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
+  if (!amount) return undefined;
+  let base = amount;
+  let quote = new BigNumber(0);
+  for (const offer of orders) {
+    if (base.lte(new BigNumber(0))) {
+      break;
+    }
+    if (base.gte(offer.baseAmount)) {
+      quote = quote.plus(offer.quoteAmount);
+      base = base.minus(offer.baseAmount);
+    } else {
+      quote = quote.plus(
+        offer.quoteAmount.times(base).dividedBy(offer.baseAmount)
+      );
+      base = new BigNumber(0);
+    }
+  }
+  return !base.isZero() ? undefined : quote;
+}
+
+export function calculateAmount(total: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
+  if (!total) return undefined;
+  let base = new BigNumber(0);
+  let quote = total;
+  for (const offer of orders) {
+    if (quote.lte(new BigNumber(0))) {
+      break;
+    }
+    if (quote.gte(offer.quoteAmount)) {
+      quote = quote.minus(offer.quoteAmount);
+      base = base.plus(offer.baseAmount);
+    } else {
+      base = base.plus(
+        offer.baseAmount.times(quote).dividedBy(offer.quoteAmount)
+      );
+      quote = new BigNumber(0);
+    }
+  }
+  return !quote.isZero() ? undefined : base;
 }

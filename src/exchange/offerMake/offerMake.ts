@@ -13,6 +13,7 @@ import {
   AllowanceChange,
   AmountFieldChange,
   BalancesChange,
+  calculateTotal,
   doGasEstimation,
   DustLimitChange,
   EtherPriceUSDChange,
@@ -151,7 +152,7 @@ export type EnvironmentChange =
   DustLimitChange;
 
 // export interface FormStageChange {
-//   kind: FormChangeKind.formStageChange;
+//   kind: InstantFormChangeKind.formStageChange;
 //   stage: FormStage;
 // }
 
@@ -205,34 +206,13 @@ function offerMakeDirectData(state: OfferFormState): OfferMakeDirectData {
   };
 }
 
-function directMatchTotal(amount: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
-  if (!amount) return undefined;
-  let baseAmount = amount;
-  let quoteAmount = new BigNumber(0);
-  for (const offer of orders) {
-    if (baseAmount.lte(new BigNumber(0))) {
-      break;
-    }
-    if (baseAmount.gte(offer.baseAmount)) {
-      quoteAmount = quoteAmount.plus(offer.quoteAmount);
-      baseAmount = baseAmount.minus(offer.baseAmount);
-    } else {
-      quoteAmount = quoteAmount.plus(
-        offer.quoteAmount.times(baseAmount).dividedBy(offer.baseAmount)
-      );
-      baseAmount = new BigNumber(0);
-    }
-  }
-  return !baseAmount.isZero() ? undefined : quoteAmount;
-}
-
 function directMatchState(state: OfferFormState,
                           change: { amount: BigNumber } | { kind: OfferType } | {},
                           orderbook: Orderbook) {
   const amount = change.hasOwnProperty('amount') ? (change as any).amount : state.amount;
   const kind = change.hasOwnProperty('kind') ? (change as any).kind : state.kind;
   const orders = kind === 'buy' ? orderbook.sell : orderbook.buy;
-  const total = directMatchTotal(amount, orders);
+  const total = calculateTotal(amount, orders);
   const price = amount && total && (amount.isZero() ? undefined : total.dividedBy(amount));
   return {
     ...state,

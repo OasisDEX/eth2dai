@@ -1,0 +1,158 @@
+@import "../utils/Variables";
+@import "../utils/Mixins";
+
+.panel {
+  position: relative;
+
+  max-width: 490px;
+  min-height: 430px;
+
+  margin: auto;
+
+  padding: 1.5em;
+
+  letter-spacing: 1.2px;
+
+  h1, h2, h3, h4, h5, h6 {
+    @include fontMontserratMedium;
+    font-size: 1em;
+    margin: 0 0;
+  }
+}
+
+.header {
+  line-height: 1.25em;
+
+  width: 100%;
+
+  h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+  }
+}
+
+.footer {
+  margin-top: auto;
+}
+
+// Particular view ( Step 1 )
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 64px;
+  border: 1px solid $button-border-disabled;
+  border-radius: .25rem;
+
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+
+  padding: .75rem 1rem;
+
+  &.hidden {
+    visibility: hidden;
+  }
+
+  &.errors {
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.finalization {
+    font-size: 0.75rem;
+    min-height: 2rem;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    padding: 0;
+  }
+
+  &.transaction {
+    min-height: 0;
+
+    padding: 1rem 1.5rem;
+    margin-top: 0;
+    margin-bottom: .75rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &.done {
+    padding: 1rem;
+  }
+}
+
+.assets {
+  display: flex;
+  justify-content: space-between;
+}
+
+.errors {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: map-get($inputHeight, lg);
+  border: 1px solid $button-border-disabled;
+  border-radius: .25rem;
+  margin-top: 1rem;
+
+  @include fontMontserratMedium;
+  font-size: 12px;
+  color: $errors;
+  letter-spacing: 1.10px;
+}
+
+// Asset Picker
+
+
+.assetPicker {
+  display: inline-flex;
+  flex-direction: column;
+  max-width: 175px;
+}
+
+
+.swapIcon {
+  position: relative;
+  bottom: 1.5rem;
+  margin: auto .5rem;
+
+  cursor: pointer;
+}
+
+.settingsIcon {
+  height: 28px;
+  width: 28px;
+  border: 1px solid #3F3F47;
+  border-radius: 100%;
+  padding: .25rem;
+}
+
+.input {
+  height: 2rem;
+
+  @include fontMontserratMedium;
+  font-size: .75rem;
+
+  @include media-breakpoint-down(md) {
+    font-size: .625rem;
+  }
+
+  border: 1px solid rgba(255, 255, 255, 0.25);;
+  border-radius: .125rem;
+
+  padding: .5rem;
+
+  text-align: center;
+  letter-spacing: 1.1px;
+
+  &::placeholder {
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.90);
+  }
+
+}

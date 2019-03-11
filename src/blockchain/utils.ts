@@ -7,5 +7,6 @@ export function amountFromWei(amount: BigNumber, token: string): BigNumber {
 }
 
 export function amountToWei(amount: BigNumber, token: string): BigNumber {
-  return amount.times(new BigNumber(10).pow(tokens[token].precision));
+  const precision = tokens[token].precision;
+  return amount.times(new BigNumber(10).pow(precision));
 }

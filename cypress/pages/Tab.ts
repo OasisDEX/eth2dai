@@ -1,15 +1,21 @@
 import { tid } from '../utils/index';
 
+const defaultTimeout = { timeout: 10000 };
+
 export class Tab {
   public static exchange = () => {
-    cy.get(tid('Exchange')).click();
+    cy.get(tid('Exchange'), { ...defaultTimeout }).click();
   }
 
   public static margin = () => {
-    cy.get(tid('Margin')).click();
+    cy.get(tid('Margin'), { ...defaultTimeout }).click();
   }
 
   public static balances = () => {
-    cy.get(tid('Balances')).click();
+    cy.get(tid('Balances'), { ...defaultTimeout }).click();
+  }
+
+  public static instant = () => {
+    cy.get(tid('Instant'), { ...defaultTimeout }).click();
   }
 }

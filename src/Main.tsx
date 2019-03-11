@@ -8,6 +8,7 @@ import { BalancesView } from './balances/BalancesView';
 import { ExchangeViewTxRx } from './exchange/ExchangeView';
 import { Header } from './header/Header';
 import * as styles from './index.scss';
+import { InstantExchange } from './instant/InstantView';
 
 const browserHistoryInstance = createBrowserHistory();
 
@@ -38,6 +39,8 @@ export class MainContent extends React.Component<RouterProps> {
           <Header />
           <Switch>
             <Route exact={false} path={'/exchange'} component={ExchangeViewTxRx}/>
+            {process.env.REACT_APP_INSTANT_ENABLED === '1' &&
+            <Route exact={false} path={'/instant'} component={InstantExchange}/>}
             <Route path={'/balances'} component={BalancesView} />
             <Redirect from={'/'} to={'/exchange'}/>
           </Switch>

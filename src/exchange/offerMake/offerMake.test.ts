@@ -21,12 +21,15 @@ function snapshotify(object: any): any {
 const tradingPair = { base: 'WETH', quote: 'DAI' };
 
 const defaultCalls = {
-  offerMakeEstimateGas: () => of(20),
+  tradePayWithETHNoProxy: null as any,
+  tradePayWithETHWithProxy: null as any,
+  tradePayWithERC20: null as any,
   offerMake: null as any,
-  cancelOffer: null as any,
-  cancelOfferEstimateGas: null as any,
+  offerMakeEstimateGas: () => of(20),
   offerMakeDirect: null as any,
   offerMakeDirectEstimateGas: () => of(30),
+  cancelOffer: null as any,
+  cancelOfferEstimateGas: null as any,
   setupMTProxy: null as any,
   setupMTProxyEstimateGas: null as any,
   approve: null as any,
@@ -37,6 +40,15 @@ const defaultCalls = {
   wrapEstimateGas: null as any,
   unwrap: null as any,
   unwrapEstimateGas: null as any,
+  otcGetBuyAmount: undefined as any,
+  otcGetPayAmount: undefined as any,
+  otcGetBestOffer: undefined as any,
+  otcOffers: undefined as any,
+  proxyAddress: undefined as any,
+  setupProxy: undefined as any,
+  approveProxy: undefined as any,
+  disapproveProxy: undefined as any,
+  setOwner: undefined as any,
 };
 
 const defParams = {

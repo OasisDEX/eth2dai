@@ -1,0 +1,27 @@
+.txStatusRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 0.75rem;
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .icon {
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-right: 1rem;
+  }
+
+  .label {
+    min-width: 9rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.7px;
+  }
+
+  .status {
+    margin-left: auto;
+  }
+}

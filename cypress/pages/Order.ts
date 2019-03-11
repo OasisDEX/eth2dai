@@ -42,7 +42,6 @@ export class Order {
   }
 
   public total = (total: string) => {
-    console.log(total);
     cy.get(tid('type-total')).contains('span', total, { timeout: 5000 });
     return this;
   }
