@@ -36,6 +36,7 @@ export class BigNumberInput extends React.Component<any> {
         className={classnames(styles.inputBase, this.props.className)}
         onChange={this.changed}
         value={value}
+        guide={false}
       />
     );
   }
