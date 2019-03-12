@@ -5,7 +5,6 @@ import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
-  delay,
   distinctUntilChanged,
   first,
   flatMap,
@@ -39,7 +38,12 @@ import {
   toGasPriceChange,
 } from '../utils/form';
 import { pluginDevModeHelpers } from './instantDevModeHelpers';
-import { tradePayWithERC20, tradePayWithETH } from './instantTransactions';
+import {
+  estimateTradePayWithERC20,
+  estimateTradePayWithETH,
+  tradePayWithERC20,
+  tradePayWithETH,
+ } from './instantTransactions';
 
 export interface FormResetChange {
   kind: InstantFormChangeKind.formResetChange;
@@ -353,10 +357,12 @@ function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observ
   );
 }
 
-function gasEstimation(_calls: Calls, _state: InstantFormState): Observable<number> {
-  // TODO: real gas estimation
-  return of(6000000).pipe(
-    delay(500)
+function gasEstimation(calls: Calls, state: InstantFormState): Observable<number> {
+  return calls.proxyAddress().pipe(
+    switchMap(proxyAddress => {
+      const sell = state.sellToken === 'ETH' ? estimateTradePayWithETH : estimateTradePayWithERC20;
+      return sell(calls, proxyAddress, state);
+    })
   );
 }
 
@@ -388,7 +394,7 @@ function evaluateTrade(
           ),
           map(stateWithGasEstimation => ({
             ...stateWithGasEstimation,
-            tradeEvaluationStatus: TradeEvaluationStatus.calculated,
+            tradeEvaluationStatus: stateWithGasEstimation.gasEstimationStatus,
           }))
         )
       ),
