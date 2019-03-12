@@ -21,41 +21,9 @@ function snapshotify(object: any): any {
 const tradingPair = { base: 'WETH', quote: 'DAI' };
 
 const defaultCalls = {
-  tradePayWithETHNoProxy: null as any,
-  tradePayWithETHWithProxy: null as any,
-  tradePayWithERC20: null as any,
-  tradePayWithETHNoProxyEstimateGas: null as any,
-  tradePayWithETHWithProxyEstimateGas: null as any,
-  tradePayWithERC20EstimateGas: null as any,
-  offerMake: null as any,
   offerMakeEstimateGas: () => of(20),
-  offerMakeDirect: null as any,
   offerMakeDirectEstimateGas: () => of(30),
-  cancelOffer: null as any,
-  cancelOfferEstimateGas: null as any,
-  setupMTProxy: null as any,
-  setupMTProxyEstimateGas: null as any,
-  approve: null as any,
-  disapprove: null as any,
-  approveWallet: null as any,
-  disapproveWallet: null as any,
-  wrap: null as any,
-  wrapEstimateGas: null as any,
-  unwrap: null as any,
-  unwrapEstimateGas: null as any,
-  otcGetBuyAmount: undefined as any,
-  otcGetPayAmount: undefined as any,
-  otcGetOffersAmount: undefined as any,
-  otcGetBestOffer: undefined as any,
-  otcOffers: undefined as any,
-  proxyAddress: undefined as any,
-  setupProxy: undefined as any,
-  setupProxyEstimateGas: undefined as any,
-  approveProxy: undefined as any,
-  approveProxyEstimateGas: undefined as any,
-  disapproveProxy: undefined as any,
-  setOwner: undefined as any,
-};
+} as any;
 
 const defParams = {
   gasPrice$: of(new BigNumber(0.01)),
