@@ -18,6 +18,16 @@ const input = (side: 'sellInput' | 'buyInput') => ({
 
 export class Trade {
 
+  public expectToReceive = (amount: string | RegExp) => {
+    cy.get(tid('buying-token', tid('amount')), timeout(2000))
+      .should('have.value', `${amount}`);
+  }
+
+  public expectToPay = (amount: string | RegExp) => {
+    cy.get(tid('selling-token', tid('amount')), timeout(2000))
+      .should('have.value', `${amount}`);
+  }
+
   public sell = (token: string = '') => {
     if (token) {
       cy.get(tid('pick-an-asset-to-sell'))
@@ -55,13 +65,3 @@ export class Trade {
     cy.get(tid('error')).contains(error);
   }
 }
-
-chai.Assertion.addChainableMethod('receive', (amount: string | RegExp) => {
-  cy.get(tid('buying-token', tid('amount')), timeout(2000))
-    .should('have.value', `${amount}`);
-});
-
-chai.Assertion.addChainableMethod('pay', (amount: string | RegExp) => {
-  cy.get(tid('selling-token', tid('amount')), timeout(2000))
-    .should('have.value', `${amount}`);
-});

@@ -226,3 +226,15 @@ export const AccountIcon = () => (
     </g>
   </svg>
 );
+
+export const Done = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <g id="old" fill="none" fillRule="evenodd">
+      <g id="Artboard-3" fill="#FFF" fillRule="nonzero" className="done">
+        <path
+          d="M12,0 C18.624,0 24,5.376 24,12 C24,18.624 18.624,24 12,24 C5.376,24 0,18.624 0,12 C0,5.376 5.376,0 12,0 Z M9.85714286,15 L6.85714286,12 L5.85714286,13 L9.85714286,17 L18.4285714,8.42857143 L17.4285714,7.42857143 L9.85714286,15 Z"
+          id="Combined-Shape"/>
+      </g>
+    </g>
+  </svg>
+);

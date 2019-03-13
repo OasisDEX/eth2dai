@@ -4,15 +4,26 @@ import * as React from 'react';
 import { theAppContext } from '../AppContext';
 import { DAIicon, ETHicon } from '../blockchain/coinIcons/coinIcons';
 import { TxStatus } from '../blockchain/transactions';
+import { OfferType } from '../exchange/orderbook/orderbook';
 import { formatAmount } from '../utils/formatters/format';
 import { FormatPercent, Money } from '../utils/formatters/Formatters';
-import { AccountIcon, ProgressIcon, SettingsIcon, SwapArrows } from '../utils/icons/Icons';
+import { AccountIcon, Done, ProgressIcon, SettingsIcon, SwapArrows } from '../utils/icons/Icons';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
+import { AssetProps } from './asset/Asset';
+import { Assets } from './asset/Assets';
 import { TradeData } from './details/TradeData';
 import { TxStatusRow } from './details/TxStatusRow';
 import * as styles from './Instant.scss';
-import { InstantFormChangeKind, InstantFormState, ManualChange, Message, MessageKind, Position } from './instantForm';
-import { InstantFormView } from './InstantFormView';
+import {
+  InstantFormChangeKind,
+  InstantFormState,
+  ManualChange,
+  Message,
+  MessageKind,
+  Position,
+  ProgressKind
+} from './instantForm';
+import { InstantFormWrapper } from './InstantFormWrapper';
 import { ProgressReport } from './progress/ProgressReport';
 import { Buying, Selling } from './TradingSide';
 
@@ -62,8 +73,11 @@ function error(msg: Message | undefined) {
 
 export class InstantView extends React.Component<InstantFormState> {
 
+  public state = { areAssetsOpen: false };
+
   public render() {
     const {
+      kind,
       sellToken,
       sellAmount,
       buyToken,
@@ -77,18 +91,31 @@ export class InstantView extends React.Component<InstantFormState> {
       progress
     } = this.props;
 
+    if (this.state.areAssetsOpen) {
+      const assets: AssetProps[] = [
+        { currency: 'ETH', balance: new BigNumber('12.345') },
+        { currency: 'WETH', balance: new BigNumber('13.345') },
+        { currency: 'DAI', balance: new BigNumber('16.345') },
+      ];
+
+      return <Assets assets={assets}
+                     side={kind || OfferType.sell}
+                     onClick={this.selectAsset}
+                     onClose={this.hideAssets}/>;
+    }
+
     // Congratulation
     if (progress && progress.done && progress.tradeTxStatus === TxStatus.Success) {
       return (
-        <InstantFormView heading="Finalize Trade"
-                     btnAction={this.resetForm}
-                     btnDisabled={!progress.done}
-                     btnLabel="Trade Again">
+        <InstantFormWrapper heading="Finalize Trade"
+                            btnAction={this.resetForm}
+                            btnDisabled={!progress.done}
+                            btnLabel="Trade Again">
 
           <div className={classnames(styles.details, styles.done)}>
             Congratulation!
           </div>
-        </InstantFormView>
+        </InstantFormWrapper>
       );
     }
 
@@ -96,60 +123,242 @@ export class InstantView extends React.Component<InstantFormState> {
     // TODO: Instead of using this approach check how the OfferMakePanel switches between two views.
     if (progress) {
       return (
-        <InstantFormView heading="Finalize Trade"
-                     btnAction={this.resetForm}
-                     btnDisabled={!progress.done}
-                     btnLabel="Trade Again">
+        <InstantFormWrapper heading="Finalize Trade"
+                            btnAction={this.resetForm}
+                            btnDisabled={!progress.done}
+                            btnLabel="Trade Again">
+          {
+            progress.kind === ProgressKind.noProxyNoAllowancePayWithERC20 &&
+            <>
+              <div className={classnames(styles.details, styles.finalization)}>
+                <span>Current Estimated Price</span>
+                <span style={{ marginLeft: '12px', color: '#828287' }}>
+                  <Approximate>
+                    {formatAmount(price || new BigNumber(0), 'USD')}
+                    <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
+                  </Approximate>
+                </span>
+              </div>
+              <div className={classnames(styles.details, styles.transaction)}>
+                <TxStatusRow icon={<AccountIcon/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Create Account"
+                                 info="Something about Proxy"
+                               />}
+                             status={<ProgressReport status={progress.proxyTxStatus || '' as TxStatus}/>}/>
+              </div>
+              <div className={classnames(styles.details, styles.transaction)}>
+                <TxStatusRow icon={<Done/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label={`Unlock ${sellToken.toUpperCase()}`}
+                                 info="Something about allowances"
+                               />}
+                             status={<ProgressReport status={progress.allowanceTxStatus || '' as TxStatus}/>}/>
+              </div>
+              <div className={classnames(styles.details, styles.transaction)}>
+                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Sell"
+                                 value={
+                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                 }
+                               />}
+                             status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Buy"
+                                 value={
+                                   <Approximate>
+                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                   </Approximate>
+                                 }
+                               />}/>
+              </div>
+            </>
+          }
+          {
+            progress.kind === ProgressKind.proxyNoAllowancePayWithERC20 &&
+            <>
+              <div className={classnames(styles.details, styles.finalization)}>
+                <span>Current Estimated Price</span>
+                <span style={{ marginLeft: '12px', color: '#828287' }}>
+                  <Approximate>
+                    {formatAmount(price || new BigNumber(0), 'USD')}
+                    <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
+                  </Approximate>
+                </span>
+              </div>
+              <div className={classnames(styles.details, styles.transaction)}>
+                <TxStatusRow icon={<Done/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label={`Unlock ${sellToken.toUpperCase()}`}
+                                 info="Something about allowances"
+                               />}
+                             status={<ProgressReport status={progress.allowanceTxStatus || '' as TxStatus}/>}/>
+              </div>
+              <div className={classnames(styles.details, styles.transaction)}>
+                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Sell"
+                                 value={
+                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                 }
+                               />}
+                             status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Buy"
+                                 value={
+                                   <Approximate>
+                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                   </Approximate>
+                                 }
+                               />}/>
+              </div>
+            </>
+          }
+          {
+            progress.kind === ProgressKind.proxyAllowancePayWithERC20 &&
+            <>
+              <div className={classnames(styles.details, styles.finalization)}>
+                <span>Current Estimated Price</span>
+                <span style={{ marginLeft: '12px', color: '#828287' }}>
+                  <Approximate>
+                    {formatAmount(price || new BigNumber(0), 'USD')}
+                    <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
+                  </Approximate>
+                </span>
+              </div>
+              <div className={classnames(styles.details, styles.transaction)}>
+                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Sell"
+                                 value={
+                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                 }
+                               />}
+                             status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Buy"
+                                 value={
+                                   <Approximate>
+                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                   </Approximate>
+                                 }
+                               />}/>
+              </div>
+            </>
+          }
+          {
+            progress.kind === ProgressKind.noProxyPayWithETH &&
+            <>
+              <div className={classnames(styles.details, styles.finalization)}>
+                <span>Current Estimated Price</span>
+                <span style={{ marginLeft: '12px', color: '#828287' }}>
+                  <Approximate>
+                    {formatAmount(price || new BigNumber(0), 'USD')}
+                    <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
+                  </Approximate>
+                </span>
+              </div>
+              <div className={classnames(styles.details, styles.transaction)}>
+                <TxStatusRow icon={<AccountIcon/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Create Account"
+                                 info="Something about Proxy"
+                               />}
+                             status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Sell"
+                                 value={
+                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                 }
+                               />}/>
+                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Buy"
+                                 value={
+                                   <Approximate>
+                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                   </Approximate>
+                                 }
+                               />}/>
+              </div>
+            </>
+          }
+          {
+            progress.kind === ProgressKind.proxyPayWithETH &&
+            <>
+              <div className={classnames(styles.details, styles.finalization)}>
+                <span>Current Estimated Price</span>
+                <span style={{ marginLeft: '12px', color: '#828287' }}>
+                  <Approximate>
+                    {formatAmount(price || new BigNumber(0), 'USD')}
+                    <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
+                  </Approximate>
+                </span>
+              </div>
+              <div className={classnames(styles.details, styles.transaction)}>
+                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Sell"
+                                 value={
+                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                 }
+                               />}
+                             status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                             label={
+                               <TradeData
+                                 theme="reversed"
+                                 label="Buy"
+                                 value={
+                                   <Approximate>
+                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                   </Approximate>
+                                 }
+                               />}/>
+              </div>
+            </>
+          }
 
-          <div className={classnames(styles.details, styles.finalization)}>
-            <span>Current Estimated Price</span>
-            <span style={{ marginLeft: '12px', color: '#828287' }}>
-             <Approximate>
-               {formatAmount(price || new BigNumber(0), 'USD')} <span
-               style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
-             </Approximate>
-          </span>
-          </div>
-
-          <div className={classnames(styles.details, styles.transaction)}>
-            <TxStatusRow icon={<AccountIcon/>}
-                         label={
-                           <TradeData
-                             theme="reversed"
-                             label="Create Account"
-                             info="Something about Proxy"
-                           />}
-                         status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
-            <TxStatusRow icon={<ETHicon theme="circle"/>}
-                         label={
-                           <TradeData
-                             theme="reversed"
-                             label="Sell"
-                             value={
-                               <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
-                             }
-                           />}/>
-            <TxStatusRow icon={<DAIicon theme="circle"/>}
-                         label={
-                           <TradeData
-                             theme="reversed"
-                             label="Buy"
-                             value={
-                               <Approximate>
-                                 <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
-                               </Approximate>
-                             }
-                           />}/>
-          </div>
-        </InstantFormView>
+        </InstantFormWrapper>
       );
     }
 
     return (
-      <InstantFormView heading="Enter Order Details"
-                   btnLabel="Start Transaction"
-                   btnAction={this.startTx}
-                   btnDisabled={!this.props.readyToProceed}>
+      <InstantFormWrapper heading="Enter Order Details"
+                          btnLabel="Start Transaction"
+                          btnAction={this.startTx}
+                          btnDisabled={!this.props.readyToProceed}>
         <TopRightCorner>
           <SettingsIcon/>
         </TopRightCorner>
@@ -203,6 +412,7 @@ export class InstantView extends React.Component<InstantFormState> {
           <Selling asset={sellToken}
                    amount={sellAmount}
                    onAmountChange={this.updateSellingAmount}
+                   onClick={this.showAssets}
                    balance={
                      (sellToken === 'ETH' && etherBalance ||
                        balances && balances[sellToken]) || undefined
@@ -211,6 +421,7 @@ export class InstantView extends React.Component<InstantFormState> {
           <Buying asset={buyToken}
                   amount={buyAmount}
                   onAmountChange={this.updateBuyingAmount}
+                  onClick={this.showAssets}
                   balance={
                     (buyToken === 'ETH' && etherBalance ||
                       balances && balances[buyToken]) || undefined
@@ -222,7 +433,7 @@ export class InstantView extends React.Component<InstantFormState> {
              }>
           {error(message)}
         </div>
-      </InstantFormView>
+      </InstantFormWrapper>
     );
   }
 
@@ -260,6 +471,40 @@ export class InstantView extends React.Component<InstantFormState> {
     });
   }
 
+  private showAssets = () => {
+    this.setState({ areAssetsOpen: true });
+  }
+
+  private hideAssets = () => {
+    this.setState({ areAssetsOpen: false });
+  }
+
+  private selectAsset = (asset: string, side: OfferType) => {
+    let buyToken = this.props.buyToken;
+    let sellToken = this.props.sellToken;
+    if (side === OfferType.sell) {
+      sellToken = asset;
+    }
+
+    if (side === OfferType.buy) {
+      buyToken = asset;
+    }
+
+    if (side === OfferType.buy && asset === sellToken ||
+      side === OfferType.sell && asset === buyToken) {
+
+      buyToken = this.props.sellToken;
+      sellToken = this.props.buyToken;
+    }
+
+    this.props.change({
+      buyToken,
+      sellToken,
+      kind: InstantFormChangeKind.pairChange,
+    });
+
+    this.hideAssets();
+  }
 }
 
 export class InstantExchange extends React.Component<any> {
