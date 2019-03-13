@@ -58,8 +58,8 @@ export function createTaxExport$(
     switchMap(([context, address]) => {
       return combineLatest(...context.taxProxyRegistries.map(curry(proxyAddress$)(context, address))).pipe(
         flatMap(proxyAddresses => {
-          const addresses: string[] = [address, ...proxyAddresses].map((web3 as any).toChecksumAddress);
-          return queryTrades(context, addresses);
+          const addresses_all: string[] = [address, ...proxyAddresses].map((web3 as any).toChecksumAddress);
+          return queryTrades(context, addresses_all);
         })
       );
     })
