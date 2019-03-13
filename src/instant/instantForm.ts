@@ -404,7 +404,7 @@ function evaluateTrade(
   );
 }
 
-function postValidate(state: InstantFormState): InstantFormState {
+function validate(state: InstantFormState): InstantFormState {
   if (state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated) {
     return state;
   }
@@ -482,38 +482,23 @@ function postValidate(state: InstantFormState): InstantFormState {
   };
 }
 
-function calculatePrice(state: InstantFormState): InstantFormState {
-  const { buyAmount, sellAmount } = state;
-
-  if (buyAmount && sellAmount) {
-    const price = buyAmount.div(sellAmount);
-
-    return {
-      ...state,
-      price
-    };
-  }
-
-  return state;
-}
-
-function calculatePriceImpact(state: InstantFormState): InstantFormState {
-  const { price, bestPrice } = state;
-
-  if (price && bestPrice) {
-    const priceImpact = bestPrice
+function calculatePriceAndImpact(state: InstantFormState): InstantFormState {
+  const { buyAmount, sellAmount, bestPrice } = state;
+  const price = buyAmount && sellAmount ?
+    buyAmount.div(sellAmount) :
+    undefined;
+  const priceImpact = price && bestPrice ?
+    bestPrice
       .minus(price)
       .abs()
       .div(bestPrice)
-      .times(100);
-
-    return {
-      ...state,
-      priceImpact
-    };
-  }
-
-  return state;
+      .times(100) :
+    undefined;
+  return {
+    ...state,
+    price,
+    priceImpact,
+  };
 }
 
 function prepareSubmit(
@@ -597,10 +582,9 @@ export function createFormController$(
     scan(applyChange, initialState),
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.calls$)),
+    map(validate),
     switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
-    map(calculatePrice),
-    map(calculatePriceImpact),
-    map(postValidate),
+    map(calculatePriceAndImpact),
     tap(state => console.log(
       'state.message', state.message && state.message.kind,
       'state.gasEstimationStatus', state.gasEstimationStatus,
