@@ -1,7 +1,7 @@
 import { flattenDepth, fromPairs, isEmpty, toPairs, uniqBy } from 'lodash';
-import {Observable, throwError} from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import {catchError, map} from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 function filterize(filter: any): string {
   switch (typeof(filter)) {

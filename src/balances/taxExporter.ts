@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { curry } from 'lodash';
-import { combineLatest, Observable, of } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { flatMap, switchMap } from 'rxjs/operators';
 import { proxyAddress$ } from '../blockchain/calls/instant';
 import { NetworkConfig } from '../blockchain/config';

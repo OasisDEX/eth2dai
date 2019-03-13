@@ -14,8 +14,8 @@ import {
   createWalletDisapprove,
   createWethBalances$,
 } from './balances/balances';
-import {createTaxExport$} from './balances/taxExporter';
-import {TaxExporterButton} from './balances/TaxExporterButton';
+import { createTaxExport$ } from './balances/taxExporter';
+import { TaxExporterButton } from './balances/TaxExporterButton';
 import { calls$ } from './blockchain/calls/calls';
 import {
   account$,
