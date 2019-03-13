@@ -1,7 +1,9 @@
 import * as React from 'react';
 
 import { theAppContext } from '../AppContext';
+import * as styles from '../exchange/offerMake/OfferMakeForm.scss';
 import { FlexLayoutRow } from '../utils/layout/FlexLayoutRow';
+import { Muted } from '../utils/text/Text';
 
 export class BalancesView extends React.Component<{}> {
   public render() {
@@ -17,6 +19,9 @@ export class BalancesView extends React.Component<{}> {
                 <AssetOverviewViewRxTx />
               </FlexLayoutRow>
               <FlexLayoutRow>
+                  <Muted className={styles.pickerDescription}>
+                      Export your trade history to CSV file.
+                  </Muted>
                 <TaxExporterButtonTxRx />
               </FlexLayoutRow>
             </div>
