@@ -41,7 +41,7 @@ export class Asset extends React.Component<AssetProps> {
         {
           balance &&
           <div data-test-id="balance">
-            <FormatAmount value={balance} token={currency} fallback=""/>
+            <FormatAmount value={balance} token={currency} fallback="" data-vis-reg-hide={true}/>
             &nbsp;
             <Currency value={currency} theme="semi-bold"/>
           </div>
