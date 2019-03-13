@@ -22,7 +22,8 @@ export class TaxExporterButton extends React.Component<TaxExporterButtonProps> {
     this.props.export()
     .subscribe(trades => {
       const url = 'data:text/csv;charset=utf-8,' + encodeURIComponent(toCSV(trades));
-      window.open(url);
+
+      downloadCSV(url);
     });
   }
 }
@@ -33,7 +34,8 @@ function toCSVRow(trade: any): string {
 
 function toCSV(trades: any[]) {
   trades = [...trades].sort((a, b) => a.timestamp > b.timestamp ? 1 : -1);
-  trades = trades.map(trade => {
+
+  const rows = trades.map(trade => {
     const { time, tx, act, bidAmt, bidTkn, lotAmt, lotTkn } = trade;
     const buyAmount = act === 'buy' ? bidAmt : lotAmt;
     const sellAmount = act === 'buy' ? lotAmt : bidAmt;
@@ -52,6 +54,20 @@ function toCSV(trades: any[]) {
   });
 
   const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Tx"';
-  return `${header}\r\n${trades.map(trade => `${toCSVRow(trade)}\r\n`).join('')}`;
+  return `${header}\r\n${rows.map(trade => `${toCSVRow(trade)}\r\n`).join('')}`;
+}
 
+function downloadCSV(url: string) {
+  const currentDate = new Date();
+  const fileName = `trades-report-${currentDate.getFullYear()}-${ (currentDate.getMonth() + 1) <= 9 ? `0 ${(currentDate.getMonth() + 1)}` : (currentDate.getMonth() + 1) }-${currentDate.getDate()}`;
+
+  const link = document.createElement('a');
+  link.href = url;
+
+  link.download = fileName + '.csv';
+
+  // this part will append the anchor tag and remove it after automatic click
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }

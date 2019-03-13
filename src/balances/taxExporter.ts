@@ -56,7 +56,6 @@ export function createTaxExport$(
 ) { // : Observable<TaxExport>
   return combineLatest(context$, address$).pipe(
     switchMap(([context, address]) => {
-      console.log(context, address);
       return combineLatest(...context.taxProxyRegistries.map(curry(proxyAddress$)(context, address))).pipe(
         flatMap(proxyAddresses => {
           const addresses: string[] = [address, ...proxyAddresses].map((web3 as any).toChecksumAddress);
