@@ -1,9 +1,11 @@
+import { BigNumber } from 'bignumber.js';
 import { Observable, of } from 'rxjs';
 import { first, flatMap, map, startWith, switchMap } from 'rxjs/operators';
 import { Calls } from '../blockchain/calls/calls';
 import { InstantOrderData } from '../blockchain/calls/instant';
 import { allowance$ } from '../blockchain/network';
 import { getTxHash, isDone, isSuccess, TxState, TxStatus } from '../blockchain/transactions';
+import { amountFromWei } from '../blockchain/utils';
 import {
   FormResetChange,
   InstantFormChangeKind,
@@ -47,14 +49,29 @@ export function tradePayWithETH(
     calls.tradePayWithETHNoProxy({ ...state, ...gasData } as InstantOrderData);
 
   return tx$.pipe(
-    switchMap((txState: TxState) =>
-      of(progressChange({
+    switchMap((txState: TxState) => {
+
+      if (txState.status === TxStatus.Success) {
+        return of(progressChange({
+          ...initialProgress,
+          tradeTxStatus: txState.status,
+          tradeTxHash: getTxHash(txState),
+          summary: {
+            soldToken: txState.meta.args.sellToken,
+            boughtToken: txState.meta.args.buyToken,
+            ...extractTradeSummary(txState.receipt.logs),
+            gasUsed: txState.receipt.gasUsed
+          },
+          done: isDone(txState)
+        }));
+      }
+      return of(progressChange({
         ...initialProgress,
         tradeTxStatus: txState.status,
         tradeTxHash: getTxHash(txState),
         done: isDone(txState)
-      }))
-    ),
+      }));
+    }),
     startWith(progressChange(initialProgress))
   );
 }
@@ -80,6 +97,19 @@ function doTradePayWithERC20(
         tradeTxStatus: txState.status,
         tradeTxHash: getTxHash(txState),
       };
+
+      if (txState.status === TxStatus.Success) {
+        return of({
+          ...progress,
+          summary: {
+            soldToken: txState.meta.args.sellToken,
+            boughtToken: txState.meta.args.buyToken,
+            ...extractTradeSummary(txState.receipt.logs),
+            gasUsed: txState.receipt.gasUsed
+          },
+          done: true
+        });
+      }
 
       if (isDone(txState)) {
         return of({
@@ -226,3 +256,19 @@ export function tradePayWithERC20(
     map(progressChange)
   );
 }
+
+const extractTradeSummary = (logs: any): { sold: BigNumber, bought: BigNumber } => {
+  let sold = new BigNumber(0);
+  let bought = new BigNumber(0);
+  logs.map((log: any) => {
+    // This is the topic for LogTrade log emitted from Simple Market
+    if (log.topics[0] === '0x819e390338feffe95e2de57172d6faf337853dfd15c7a09a32d76f7fd2443875') {
+      const tradeData = log.data.replace('0x', '');
+
+      sold = sold.plus(new BigNumber(tradeData.substr(64, 128), 16));
+      bought = bought.plus(new BigNumber(tradeData.substr(0, 64), 16));
+    }
+  });
+
+  return { sold: amountFromWei(sold, 'DAI'), bought: amountFromWei(bought, 'DAI') };
+};

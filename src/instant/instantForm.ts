@@ -13,8 +13,7 @@ import {
   scan,
   shareReplay,
   startWith,
-  switchMap,
-  tap
+  switchMap
 } from 'rxjs/operators';
 import { Balances, DustLimits } from '../balances/balances';
 import { tokens } from '../blockchain/config';
@@ -109,7 +108,16 @@ export enum ProgressKind {
   proxyAllowancePayWithERC20 = 'proxyAllowancePayWithERC20',
 }
 
+export interface TradeTxSummary {
+  gasUsed: BigNumber;
+  sold: BigNumber;
+  soldToken: string;
+  bought: BigNumber;
+  boughtToken: string;
+}
+
 export type Progress = {
+  summary?: TradeTxSummary
   done: boolean;
 } & ({
   kind: ProgressKind.proxyPayWithETH | ProgressKind.noProxyPayWithETH
@@ -601,12 +609,6 @@ export function createFormController$(
     map(calculatePrice),
     map(calculatePriceImpact),
     map(postValidate),
-    tap(state => console.log(
-      'state.message', state.message && state.message.kind,
-      'state.gasEstimationStatus', state.gasEstimationStatus,
-      'tradeEvaluationStatus:', state.tradeEvaluationStatus,
-      'bestPrice:', state.bestPrice && state.bestPrice.toString()
-    )),
     map(isReadyToProceed),
     shareReplay(1),
   );

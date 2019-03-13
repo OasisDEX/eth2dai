@@ -1,3 +1,5 @@
+@import "../../utils/Variables";
+
 .txStatusRow {
   display: flex;
   align-items: center;
@@ -23,5 +25,24 @@
 
   .status {
     margin-left: auto;
+    letter-spacing: .5px;
+  }
+
+  &.generic {
+    & .status {
+      color: white;
+    }
+  }
+
+  &.success {
+    & .status {
+      color: $very-light-blue;
+    }
+  }
+
+  &.failure {
+    & .status {
+      color: $errors;
+    }
   }
 }

@@ -1,15 +1,6 @@
 import { bindNodeCallback, combineLatest, Observable, of, Subject } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
-import {
-  catchError,
-  filter,
-  map,
-  mergeMap,
-  scan,
-  shareReplay,
-  startWith,
-  take,
-} from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, scan, shareReplay, startWith, take, } from 'rxjs/operators';
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import { account$, context$, onEveryBlock$ } from './network';
 import { web3 } from './web3';
@@ -144,8 +135,6 @@ export function send(
       ),
     );
   }
-
-  console.log('sending: ', method, args);
 
   const result: Observable<TxState> = bindNodeCallback(method)(...args).pipe(
     mergeMap((txHash: string) => {
