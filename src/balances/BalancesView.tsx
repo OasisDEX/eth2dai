@@ -18,12 +18,13 @@ export class BalancesView extends React.Component<{}> {
               <FlexLayoutRow>
                 <AssetOverviewViewRxTx />
               </FlexLayoutRow>
-              <FlexLayoutRow>
-                  <Muted className={styles.pickerDescription}>
-                      Export your trade history to CSV file.
-                  </Muted>
-                <TaxExporterButtonTxRx />
-              </FlexLayoutRow>
+                {process.env.REACT_APP_TAX_EXPORTER_ENABLED === '1' &&
+                <FlexLayoutRow>
+                    <Muted className={styles.pickerDescription}>
+                        Export your trade history into CSV format.
+                    </Muted>
+                    <TaxExporterButtonTxRx/>
+                </FlexLayoutRow>}
             </div>
           }
         </theAppContext.Consumer>
