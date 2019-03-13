@@ -268,22 +268,14 @@ function applyChange(state: OfferFormState,
       if (state.matchType === OfferMatchType.direct && state.orderbook) {
         return directMatchState(
           state, {
-            kind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy,
             amount: change.offer.baseAmount
           },
           state.orderbook
         );
       }
 
-      let newState = applyChange(
+      const newState = applyChange(
         state,
-        {
-          kind: FormChangeKind.kindChange,
-          newKind: change.offer.type === OfferType.buy ? OfferType.sell : OfferType.buy
-        }
-      );
-      newState = applyChange(
-        newState,
         {
           kind: FormChangeKind.amountFieldChange,
           value: new BigNumber(change.offer.baseAmount.toFixed(tokens[state.baseToken].digits))
@@ -427,9 +419,10 @@ function addGasEstimation(theCalls$: Calls$,
                           state: OfferFormState): Observable<OfferFormState> {
   return doGasEstimation(theCalls$, state, (calls: Calls) =>
     state.messages.length !== 0 ||
-    !state.amount ||
-    !state.slippageLimit ||
-    !state.price ?
+    !state.price || state.price.isZero() ||
+    !state.amount || state.amount.isZero() ||
+    !state.total || state.total.isZero() ||
+    !state.slippageLimit ?
       undefined :
       state.matchType === OfferMatchType.direct ?
         calls.offerMakeDirectEstimateGas(offerMakeDirectData(state)) :
@@ -495,7 +488,7 @@ function preValidate(state: OfferFormState): OfferFormState {
     }
   }
 
-  if (state.matchType === OfferMatchType.direct && !state.price && state.amount && !state.amount.eq(0)) {
+  if (state.matchType === OfferMatchType.direct && !state.price && state.amount && !state.amount.isZero()) {
     messages.push({
       kind: MessageKind.orderbookTotalExceeded,
       field: 'amount',

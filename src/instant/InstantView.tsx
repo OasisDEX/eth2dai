@@ -2,12 +2,18 @@ import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
 import { theAppContext } from '../AppContext';
-import { DAIicon, ETHicon } from '../blockchain/coinIcons/coinIcons';
 import { TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
+import accountSvg from '../icons/account.svg';
+import cogWheelSvg from '../icons/cog-wheel.svg';
+import daiCircleSvg from '../icons/coins/dai-circle.svg';
+import ethCircleSvg from '../icons/coins/eth-circle.svg';
+import doneSvg from '../icons/done.svg';
+import swapArrowsSvg from '../icons/swap-arrows.svg';
 import { formatAmount } from '../utils/formatters/format';
 import { FormatPercent, Money } from '../utils/formatters/Formatters';
-import { AccountIcon, Done, ProgressIcon, SettingsIcon, SwapArrows } from '../utils/icons/Icons';
+import { ProgressIcon, } from '../utils/icons/Icons';
+import { SvgImage } from '../utils/icons/utils';
 import { TopRightCorner } from '../utils/panel/TopRightCorner';
 import { AssetProps } from './asset/Asset';
 import { Assets } from './asset/Assets';
@@ -140,7 +146,7 @@ export class InstantView extends React.Component<InstantFormState> {
                 </span>
               </div>
               <div className={classnames(styles.details, styles.transaction)}>
-                <TxStatusRow icon={<AccountIcon/>}
+                <TxStatusRow icon={<SvgImage image={accountSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -150,7 +156,7 @@ export class InstantView extends React.Component<InstantFormState> {
                              status={<ProgressReport status={progress.proxyTxStatus || '' as TxStatus}/>}/>
               </div>
               <div className={classnames(styles.details, styles.transaction)}>
-                <TxStatusRow icon={<Done/>}
+                <TxStatusRow icon={<SvgImage image={doneSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -160,7 +166,7 @@ export class InstantView extends React.Component<InstantFormState> {
                              status={<ProgressReport status={progress.allowanceTxStatus || '' as TxStatus}/>}/>
               </div>
               <div className={classnames(styles.details, styles.transaction)}>
-                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -170,7 +176,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  }
                                />}
                              status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
-                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -197,7 +203,7 @@ export class InstantView extends React.Component<InstantFormState> {
                 </span>
               </div>
               <div className={classnames(styles.details, styles.transaction)}>
-                <TxStatusRow icon={<Done/>}
+                <TxStatusRow icon={<SvgImage image={doneSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -207,7 +213,7 @@ export class InstantView extends React.Component<InstantFormState> {
                              status={<ProgressReport status={progress.allowanceTxStatus || '' as TxStatus}/>}/>
               </div>
               <div className={classnames(styles.details, styles.transaction)}>
-                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -217,7 +223,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  }
                                />}
                              status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
-                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -244,7 +250,7 @@ export class InstantView extends React.Component<InstantFormState> {
                 </span>
               </div>
               <div className={classnames(styles.details, styles.transaction)}>
-                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -254,7 +260,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  }
                                />}
                              status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
-                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -281,7 +287,7 @@ export class InstantView extends React.Component<InstantFormState> {
                 </span>
               </div>
               <div className={classnames(styles.details, styles.transaction)}>
-                <TxStatusRow icon={<AccountIcon/>}
+                <TxStatusRow icon={<SvgImage image={accountSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -289,7 +295,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  info="Something about Proxy"
                                />}
                              status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
-                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -298,7 +304,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                    <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
                                  }
                                />}/>
-                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -325,7 +331,7 @@ export class InstantView extends React.Component<InstantFormState> {
                 </span>
               </div>
               <div className={classnames(styles.details, styles.transaction)}>
-                <TxStatusRow icon={<ETHicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -335,7 +341,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  }
                                />}
                              status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
-                <TxStatusRow icon={<DAIicon theme="circle"/>}
+                <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
                                  theme="reversed"
@@ -360,7 +366,7 @@ export class InstantView extends React.Component<InstantFormState> {
                           btnAction={this.startTx}
                           btnDisabled={!this.props.readyToProceed}>
         <TopRightCorner>
-          <SettingsIcon/>
+          <SvgImage className={styles.settingsIcon} image={cogWheelSvg}/>
         </TopRightCorner>
         <div
           className={classnames(
@@ -417,7 +423,9 @@ export class InstantView extends React.Component<InstantFormState> {
                      (sellToken === 'ETH' && etherBalance ||
                        balances && balances[sellToken]) || undefined
                    }/>
-          <div data-test-id="swap" className={styles.swapIcon} onClick={this.swap}><SwapArrows/></div>
+          <div data-test-id="swap" className={styles.swapIcon} onClick={this.swap}>
+            <SvgImage image={swapArrowsSvg}/>
+          </div>
           <Buying asset={buyToken}
                   amount={buyAmount}
                   onAmountChange={this.updateBuyingAmount}

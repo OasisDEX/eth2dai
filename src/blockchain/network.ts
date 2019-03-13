@@ -50,7 +50,13 @@ export const initializedAccount$ = account$.pipe(
   filter((account: string | undefined) => account !== undefined)
 ) as Observable<string>;
 
-export const onEveryBlock$ = every5Seconds$.pipe(
+export const context$: Observable<NetworkConfig> = networkId$.pipe(
+  filter((id: string) => networks[id] !== undefined),
+  map((id: string) => networks[id]),
+  shareReplay(1)
+);
+
+export const onEveryBlock$ = combineLatest(every5Seconds$, context$).pipe(
   switchMap(() => bindNodeCallback(web3.eth.getBlockNumber)()),
   catchError((error, source) => {
     console.log(error);
@@ -60,12 +66,6 @@ export const onEveryBlock$ = every5Seconds$.pipe(
     );
   }),
   distinctUntilChanged(),
-  shareReplay(1)
-);
-
-export const context$: Observable<NetworkConfig> = networkId$.pipe(
-  filter((id: string) => networks[id] !== undefined),
-  map((id: string) => networks[id]),
   shareReplay(1)
 );
 
