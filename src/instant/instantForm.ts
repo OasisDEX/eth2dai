@@ -538,6 +538,16 @@ function isReadyToProceed(state: InstantFormState): InstantFormState {
     readyToProceed: !state.message && state.gasEstimationStatus === GasEstimationStatus.calculated };
 }
 
+function freezeIfInProgress(previous: InstantFormState, state: InstantFormState): InstantFormState {
+  if (state.progress) {
+    return {
+      ...previous,
+      progress: state.progress
+    };
+  }
+  return state;
+}
+
 export function createFormController$(
   params: {
     gasPrice$: Observable<BigNumber>;
@@ -586,6 +596,7 @@ export function createFormController$(
     switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
     map(calculatePriceAndImpact),
     map(isReadyToProceed),
+    scan(freezeIfInProgress),
     shareReplay(1),
   );
 }
