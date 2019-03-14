@@ -283,7 +283,7 @@ export const offers: CallDef<OffersData, any> = {
   prepareArgs: (offerId: OffersData) => [offerId],
 };
 
-const nullAddress = '0x0000000000000000000000000000000000000000';
+const nullAddress = '0x';
 export function proxyAddress$(
   context: NetworkConfig,
   account: string,
