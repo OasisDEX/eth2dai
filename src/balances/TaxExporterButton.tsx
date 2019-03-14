@@ -17,8 +17,6 @@ export class TaxExporterButton extends React.Component<TaxExporterButtonProps> {
   }
 
   private exportTrades = () => {
-    // const currentDate = new Date();
-    // const fileName = `trades-report-${currentDate.getFullYear()}-${ (currentDate.getMonth() + 1) <= 9 ? '0'+(currentDate.getMonth() + 1) : (currentDate.getMonth() + 1) }-${currentDate.getDate()}`;
     this.props.export()
     .subscribe(trades => {
       const url = 'data:text/csv;charset=utf-8,' + encodeURIComponent(toCSV(trades));

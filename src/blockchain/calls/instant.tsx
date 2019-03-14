@@ -289,14 +289,15 @@ export function proxyAddress$(
   account: string,
   proxyRegistryAddress?: string
 ): Observable<string | undefined> {
+
   return bindNodeCallback(
-    (proxyRegistryAddress ?
-    web3.eth.contract(proxyRegistry as any).at(proxyRegistryAddress) :
-    context.instantProxyRegistry.contract
+    (
+    proxyRegistryAddress
+      ? web3.eth.contract(proxyRegistry as any).at(proxyRegistryAddress)
+      : context.instantProxyRegistry.contract
     ).proxies
   )(account).pipe(
     mergeMap((proxyAddress: string) => {
-      console.log('proxyAddress', proxyAddress);
       if (proxyAddress === nullAddress) {
         return of(undefined);
       }

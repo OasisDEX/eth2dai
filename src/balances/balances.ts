@@ -19,7 +19,6 @@ import { TxMetaKind } from '../blockchain/calls/txMeta';
 import { NetworkConfig, tokens } from '../blockchain/config';
 import { TxState, TxStatus } from '../blockchain/transactions';
 import { amountFromWei } from '../blockchain/utils';
-import { createTaxExport$ } from './taxExporter';
 
 export interface Balances {
   [token: string]: BigNumber;
@@ -200,11 +199,6 @@ export function createCombinedBalances$(
   etherPriceUsd$: Observable<BigNumber>,
   transactions$: Observable<TxState[]>
 ): Observable<CombinedBalances> {
-
-  createTaxExport$(context$, initializedAccount$)
-  .subscribe(
-    x => console.log('tax Export:', x),
-    e => console.error('error:', e));
 
   return combineLatest(
     etherBalance$,

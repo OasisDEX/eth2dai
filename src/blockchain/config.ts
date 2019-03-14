@@ -146,7 +146,6 @@ const kovan: NetworkConfig = {
   etherscan: {
     url: 'https://kovan.etherscan.io',
   },
-  // taxProxyRegistries: ['0x383a7fc29edde64aec7f776e2517ec8819e147f1']
   taxProxyRegistries: ['0x64a436ae831c1672ae81f674cab8b6775df3475c']
 };
 
