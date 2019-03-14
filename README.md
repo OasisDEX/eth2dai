@@ -66,3 +66,9 @@ REACT_APP_GRAPHQL_DEVMODE
 ```
 
 A parameter forwarded to vulcan0x, useful for development purposes.
+
+```
+REACT_APP_TAX_EXPORTER_ENABLED
+```
+
+Enables Tax Exporter button on Balances page. Feature allows user to export trade history into CSV format.
