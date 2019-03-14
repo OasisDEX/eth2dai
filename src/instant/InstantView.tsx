@@ -108,10 +108,11 @@ export class InstantView extends React.Component<InstantFormState> {
 
     // TradeSummary
     if (progress && progress.done && progress.tradeTxStatus === TxStatus.Success) {
+      const { sold, bought, gasUsed } = progress;
       return (
         <InstantFormWrapper heading="Finalize Trade"
-                     btnAction={this.resetForm}
-                     btnLabel="Trade Again">
+                            btnAction={this.resetForm}
+                            btnLabel="Trade Again">
           <div className={classnames(styles.details, styles.finalization)}>
             <span>Current Estimated Price</span>
             <span style={{ marginLeft: '12px', color: '#828287' }}>
@@ -121,16 +122,19 @@ export class InstantView extends React.Component<InstantFormState> {
               </Approximate>
             </span>
           </div>
-          {
-            progress.summary && <TradeSummary {...progress.summary}
-                                              type={kind}
-                                              hadCreatedProxy={
-                                                [
-                                                  ProgressKind.noProxyPayWithETH,
-                                                  ProgressKind.noProxyNoAllowancePayWithERC20
-                                                ].includes(progress.kind)
-                                              }/>
-          }
+          <TradeSummary sold={sold || new BigNumber(0)}
+                        bought={bought || new BigNumber(0)}
+                        gasUsed={gasUsed || new BigNumber(0)}
+                        soldToken={sellToken}
+                        boughtToken={buyToken}
+                        type={kind || '' as OfferType}
+                        hadCreatedProxy={
+                          [
+                            ProgressKind.noProxyPayWithETH,
+                            ProgressKind.noProxyNoAllowancePayWithERC20
+                          ].includes(progress.kind)
+                        }/>
+
         </InstantFormWrapper>
       );
     }

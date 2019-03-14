@@ -5,14 +5,20 @@ import { OfferType } from '../../exchange/orderbook/orderbook';
 import { formatAmount } from '../../utils/formatters/format';
 import { Money } from '../../utils/formatters/Formatters';
 import * as genericStyles from '../Instant.scss';
-import { TradeTxSummary } from '../instantForm';
 import * as styles from './TradeSummary.scss';
 import { TxStatusRow } from './TxStatusRow';
 
-export class TradeSummary extends React.Component<TradeTxSummary & {
-  type: OfferType | undefined;
+interface TradeSummaryProps {
+  gasUsed: BigNumber;
+  sold: BigNumber;
+  soldToken: string;
+  bought: BigNumber;
+  boughtToken: string;
+  type: OfferType;
   hadCreatedProxy: boolean;
-}> {
+}
+
+export class TradeSummary extends React.Component<TradeSummaryProps> {
   public render() {
     const { type, soldToken, boughtToken, sold, bought, gasUsed, hadCreatedProxy } = this.props;
     return <div className={classnames(genericStyles.details, styles.details)}>

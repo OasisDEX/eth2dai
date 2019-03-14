@@ -42,7 +42,7 @@ import {
   estimateTradePayWithETH,
   tradePayWithERC20,
   tradePayWithETH,
- } from './instantTransactions';
+} from './instantTransactions';
 
 export interface FormResetChange {
   kind: InstantFormChangeKind.formResetChange;
@@ -112,19 +112,15 @@ export enum ProgressKind {
   proxyAllowancePayWithERC20 = 'proxyAllowancePayWithERC20',
 }
 
-export interface TradeTxSummary {
-  gasUsed: BigNumber;
-  sold: BigNumber;
-  soldToken: string;
-  bought: BigNumber;
-  boughtToken: string;
-}
-
 export type Progress = {
-  summary?: TradeTxSummary
+  gasUsed?: BigNumber,
+  bought?: BigNumber,
+  sold?: BigNumber
   done: boolean;
 } & ({
-  kind: ProgressKind.proxyPayWithETH | ProgressKind.noProxyPayWithETH
+  kind: ProgressKind.proxyPayWithETH
+    | ProgressKind.noProxyPayWithETH
+    | ProgressKind.proxyAllowancePayWithERC20
   tradeTxStatus: TxStatus;
   tradeTxHash?: string;
 } | {
@@ -140,10 +136,6 @@ export type Progress = {
   allowanceTxStatus: TxStatus;
   allowanceTxHash?: string
   tradeTxStatus?: TxStatus;
-  tradeTxHash?: string
-} | {
-  kind: ProgressKind.proxyAllowancePayWithERC20;
-  tradeTxStatus: TxStatus;
   tradeTxHash?: string
 });
 

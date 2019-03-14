@@ -56,12 +56,8 @@ export function tradePayWithETH(
           ...initialProgress,
           tradeTxStatus: txState.status,
           tradeTxHash: getTxHash(txState),
-          summary: {
-            soldToken: txState.meta.args.sellToken,
-            boughtToken: txState.meta.args.buyToken,
-            ...extractTradeSummary(txState.receipt.logs),
-            gasUsed: txState.receipt.gasUsed
-          },
+          ...extractTradeSummary(txState.receipt.logs),
+          gasUsed: txState.receipt.gasUsed,
           done: isDone(txState)
         }));
       }
@@ -101,12 +97,8 @@ function doTradePayWithERC20(
       if (txState.status === TxStatus.Success) {
         return of({
           ...progress,
-          summary: {
-            soldToken: txState.meta.args.sellToken,
-            boughtToken: txState.meta.args.buyToken,
-            ...extractTradeSummary(txState.receipt.logs),
-            gasUsed: txState.receipt.gasUsed
-          },
+          ...extractTradeSummary(txState.receipt.logs),
+          gasUsed: txState.receipt.gasUsed,
           done: true
         });
       }
