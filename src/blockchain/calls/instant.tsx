@@ -258,6 +258,29 @@ export const getPayAmount: CallDef<GetPayAmountData, BigNumber> = {
     amountFromWei(result, eth2weth(buyToken)),
 };
 
+export interface GetOffersAmountData {
+  kind: OfferType;
+  buyAmount: BigNumber;
+  sellAmount: BigNumber;
+  buyToken: string;
+  sellToken: string;
+}
+
+export type GetOffersAmountResult = [BigNumber, boolean];
+
+export const getOffersAmount: CallDef<GetOffersAmountData, GetOffersAmountResult> = {
+  call: ({ kind }: GetOffersAmountData, context: NetworkConfig) => kind === OfferType.sell ?
+    context.otcSupportMethods.contract.getOffersAmountToSellAll :
+    context.otcSupportMethods.contract.getOffersAmountToBuyAll,
+  prepareArgs: ({ kind, buyAmount, sellAmount, buyToken, sellToken }: GetOffersAmountData, context: NetworkConfig) => {
+    const sellTokenAddress = context.tokens[eth2weth(sellToken)].address;
+    const buyTokenAddress = context.tokens[eth2weth(buyToken)].address;
+    return kind === OfferType.sell ?
+      [context.otc.address, sellTokenAddress, amountToWei(sellAmount, sellToken).toFixed(0), buyTokenAddress] :
+      [context.otc.address, buyTokenAddress, amountToWei(buyAmount, buyToken).toFixed(0), sellTokenAddress];
+  },
+};
+
 export interface GetBestOfferData {
   sellToken: string;
   buyToken: string;
@@ -303,13 +326,13 @@ export function proxyAddress$(
 }
 
 export interface SetupProxyData {
-  gasPrice: BigNumber;
-  gasEstimation: number;
+  gasPrice?: BigNumber;
+  gasEstimation?: number;
 }
 export const setupProxy = {
   call: (_: any, context: NetworkConfig) => context.instantProxyRegistry.contract.build[''],
   prepareArgs: () => [],
-  options: ({ gasPrice, gasEstimation }: SetupProxyData) => ({ gasPrice, gas: gasEstimation }),
+  options: ({ gasPrice, gasEstimation }: SetupProxyData) => ({ ...gasPrice ? gasPrice : {}, ...gasEstimation ? { gas: gasEstimation } : {} }),
   kind: TxMetaKind.setupProxy,
   description: () => <React.Fragment>Setup proxy</React.Fragment>
 };
