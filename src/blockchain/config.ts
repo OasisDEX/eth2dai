@@ -106,6 +106,7 @@ const protoMain = {
   etherscan: {
     url: 'https://etherscan.io',
   },
+  taxProxyRegistries: ['0xaa63c8683647ef91b3fdab4b4989ee9588da297b']
 };
 
 export type NetworkConfig = typeof protoMain;
@@ -145,6 +146,7 @@ const kovan: NetworkConfig = {
   etherscan: {
     url: 'https://kovan.etherscan.io',
   },
+  taxProxyRegistries: ['0x64a436ae831c1672ae81f674cab8b6775df3475c']
 };
 
 const localnet: NetworkConfig =   {
@@ -180,6 +182,7 @@ const localnet: NetworkConfig =   {
   etherscan: {
     url: 'https://kovan.etherscan.io',
   },
+  taxProxyRegistries: []
 };
 
 export const networks = asMap('id', [main, kovan, localnet]);

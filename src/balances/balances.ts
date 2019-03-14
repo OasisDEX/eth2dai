@@ -199,6 +199,7 @@ export function createCombinedBalances$(
   etherPriceUsd$: Observable<BigNumber>,
   transactions$: Observable<TxState[]>
 ): Observable<CombinedBalances> {
+
   return combineLatest(
     etherBalance$,
     balances$,

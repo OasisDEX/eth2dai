@@ -12,35 +12,9 @@ import {
 } from './wrapUnwrapForm';
 
 const defaultCalls = {
-  tradePayWithETHNoProxy: null as any,
-  tradePayWithETHWithProxy: null as any,
-  tradePayWithERC20: null as any,
-  offerMake: null as any,
-  offerMakeEstimateGas: () => of(20),
-  offerMakeDirect: null as any,
-  offerMakeDirectEstimateGas: null as any,
-  cancelOffer: null as any,
-  cancelOfferEstimateGas: null as any,
-  setupMTProxy: null as any,
-  setupMTProxyEstimateGas: null as any,
-  approve: null as any,
-  disapprove: null as any,
-  approveWallet: null as any,
-  disapproveWallet: null as any,
-  wrap: null as any,
   wrapEstimateGas: () => of(100),
-  unwrap: null as any,
   unwrapEstimateGas: () => of(100),
-  otcGetBuyAmount: undefined as any,
-  otcGetPayAmount: undefined as any,
-  otcGetBestOffer: undefined as any,
-  otcOffers: undefined as any,
-  proxyAddress: undefined as any,
-  setupProxy: undefined as any,
-  approveProxy: undefined as any,
-  disapproveProxy: undefined as any,
-  setOwner: undefined as any,
-};
+} as any;
 
 const gasPrice$ = of(new BigNumber(0.01));
 const etherPriceUSD$ = of(new BigNumber(1));
