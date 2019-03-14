@@ -429,7 +429,7 @@ function addGasEstimation(theCalls$: Calls$,
         calls.offerMakeEstimateGas(offerMakeData(state)));
 }
 
-function preValidate(state: OfferFormState): OfferFormState {
+function validate(state: OfferFormState): OfferFormState {
 
   if (state.stage !== FormStage.editing) {
     return state;
@@ -549,7 +549,7 @@ function addPositionGuess({ position, ...state }: OfferFormState): OfferFormStat
     state;
 }
 
-function postValidate(state: OfferFormState): OfferFormState {
+function isReadyToProceed(state: OfferFormState): OfferFormState {
   if (state.stage !== FormStage.editing) {
     return state;
   }
@@ -663,10 +663,10 @@ export function createFormController$(
     fetchBestSellOrder$(params.orderbook$)
   ).pipe(
     scan(applyChange, initialState),
-    map(preValidate),
+    map(validate),
     map(addPositionGuess),
     switchMap(curry(addGasEstimation)(params.calls$)),
-    map(postValidate),
+    map(isReadyToProceed),
     firstOfOrTrue(s => s.gasEstimationStatus === GasEstimationStatus.calculating),
     shareReplay(1),
   );

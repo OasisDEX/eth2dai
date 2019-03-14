@@ -5,7 +5,6 @@ import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
-  delay,
   distinctUntilChanged,
   first,
   flatMap,
@@ -39,7 +38,12 @@ import {
   toGasPriceChange,
 } from '../utils/form';
 import { pluginDevModeHelpers } from './instantDevModeHelpers';
-import { tradePayWithERC20, tradePayWithETH } from './instantTransactions';
+import {
+  estimateTradePayWithERC20,
+  estimateTradePayWithETH,
+  tradePayWithERC20,
+  tradePayWithETH,
+ } from './instantTransactions';
 
 export interface FormResetChange {
   kind: InstantFormChangeKind.formResetChange;
@@ -353,11 +357,15 @@ function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observ
   );
 }
 
-function gasEstimation(_calls: Calls, _state: InstantFormState): Observable<number> {
-  // TODO: real gas estimation
-  return of(6000000).pipe(
-    delay(500)
-  );
+function gasEstimation(calls: Calls, state: InstantFormState): Observable<number> | undefined {
+  return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated ?
+    undefined :
+    calls.proxyAddress().pipe(
+      switchMap(proxyAddress => {
+        const sell = state.sellToken === 'ETH' ? estimateTradePayWithETH : estimateTradePayWithERC20;
+        return sell(calls, proxyAddress, state);
+      })
+    );
 }
 
 function evaluateTrade(
@@ -369,44 +377,35 @@ function evaluateTrade(
   }
 
   return theCalls$.pipe(
-      first(),
-      flatMap(calls =>
-        combineLatest(
-          state.kind === OfferType.buy ? evaluateBuy(calls, state) : evaluateSell(calls, state),
-          // This is some suspicious case. This way it works like we had on OD but needs in-depth investigation.
-          getBestPrice(calls, state.buyToken, state.sellToken)
-        ).pipe(
-          map(([evaluation, bestPrice]) => ({
-            ...state,
-            ...evaluation,
-            bestPrice,
-          })),
-          flatMap(stateWithoutGasEstimation =>
-            stateWithoutGasEstimation.message ?
-              of(stateWithoutGasEstimation) :
-              doGasEstimation(theCalls$, stateWithoutGasEstimation, gasEstimation)
-          ),
-          map(stateWithGasEstimation => ({
-            ...stateWithGasEstimation,
-            tradeEvaluationStatus: TradeEvaluationStatus.calculated,
-          }))
-        )
-      ),
-      catchError(err => {
-        return of({
-          ...state,
-          ...(state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }),
-          bestPrice: undefined,
-          tradeEvaluationStatus: TradeEvaluationStatus.error,
-          tradeEvaluationError: err,
-        });
-      }),
-      startWith({ ...state, tradeEvaluationStatus: TradeEvaluationStatus.calculating }),
+    first(),
+    switchMap(calls =>
+      combineLatest(
+        state.kind === OfferType.buy ? evaluateBuy(calls, state) : evaluateSell(calls, state),
+        // This is some suspicious case. This way it works like we had on OD but needs in-depth investigation.
+        getBestPrice(calls, state.buyToken, state.sellToken)
+      )
+    ),
+    map(([evaluation, bestPrice]) => ({
+      ...state,
+      ...evaluation,
+      bestPrice,
+      tradeEvaluationStatus: TradeEvaluationStatus.calculated,
+    })),
+    startWith({ ...state, tradeEvaluationStatus: TradeEvaluationStatus.calculating }),
+    catchError(err => {
+      return of({
+        ...state,
+        ...(state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }),
+        bestPrice: undefined,
+        tradeEvaluationStatus: TradeEvaluationStatus.error,
+        tradeEvaluationError: err,
+      });
+    }),
   );
 }
 
-function postValidate(state: InstantFormState): InstantFormState {
-  if (state.tradeEvaluationStatus === TradeEvaluationStatus.calculating) {
+function validate(state: InstantFormState): InstantFormState {
+  if (state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated) {
     return state;
   }
 
@@ -483,38 +482,23 @@ function postValidate(state: InstantFormState): InstantFormState {
   };
 }
 
-function calculatePrice(state: InstantFormState): InstantFormState {
-  const { buyAmount, sellAmount } = state;
-
-  if (buyAmount && sellAmount) {
-    const price = buyAmount.div(sellAmount);
-
-    return {
-      ...state,
-      price
-    };
-  }
-
-  return state;
-}
-
-function calculatePriceImpact(state: InstantFormState): InstantFormState {
-  const { price, bestPrice } = state;
-
-  if (price && bestPrice) {
-    const priceImpact = bestPrice
+function calculatePriceAndImpact(state: InstantFormState): InstantFormState {
+  const { buyAmount, sellAmount, bestPrice } = state;
+  const price = buyAmount && sellAmount ?
+    buyAmount.div(sellAmount) :
+    undefined;
+  const priceImpact = price && bestPrice ?
+    bestPrice
       .minus(price)
       .abs()
       .div(bestPrice)
-      .times(100);
-
-    return {
-      ...state,
-      priceImpact
-    };
-  }
-
-  return state;
+      .times(100) :
+    undefined;
+  return {
+    ...state,
+    price,
+    priceImpact,
+  };
 }
 
 function prepareSubmit(
@@ -551,7 +535,7 @@ function toDustLimitsChange(dustLimits$: Observable<DustLimits>): Observable<Dus
 function isReadyToProceed(state: InstantFormState): InstantFormState {
   return {
     ...state,
-    readyToProceed: !state.message && state.tradeEvaluationStatus === TradeEvaluationStatus.calculated };
+    readyToProceed: !state.message && state.gasEstimationStatus === GasEstimationStatus.calculated };
 }
 
 export function createFormController$(
@@ -598,9 +582,9 @@ export function createFormController$(
     scan(applyChange, initialState),
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.calls$)),
-    map(calculatePrice),
-    map(calculatePriceImpact),
-    map(postValidate),
+    map(validate),
+    switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
+    map(calculatePriceAndImpact),
     tap(state => console.log(
       'state.message', state.message && state.message.kind,
       'state.gasEstimationStatus', state.gasEstimationStatus,
