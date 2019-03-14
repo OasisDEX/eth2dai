@@ -19,13 +19,14 @@ export function makeScreenshots(name: string, viewports: string[] = ['macbook-15
   } else {
     // see: https://docs.cypress.io/api/commands/viewport.html#Argumentsvalues
 
+    cy.get('body').then(e => e.append('<textarea style="position: absolute; top: 0; opacity: 0" />'));
     for (const viewport of viewports) {
       cy.viewport(viewport as any);
-      cy.get('body').then(e => e.append('<textarea style="position: absolute; top: 0; opacity: 0" />'));
       cy.get('textarea').last().focus().blur();
       cy.wait(100); // this is needed to give some type to browser to redraw after viewport changing :shrug:
       cy.screenshot(`${name}-${normalizeViewportName(viewport)}`, commonScreenshotOptions as any);
     }
+    cy.get('textarea').last().then(e => e.remove());
   }
 
   cy.get('#cypress-blackout').then(e => e.remove());
