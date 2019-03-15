@@ -119,7 +119,7 @@
 .account {
   width: 196px;
   border-radius: $border-radius;
-  margin-right: 12px;
+  margin-right: 7px;
 
   @include media-breakpoint-down(md) {
     width: 32px;
@@ -131,6 +131,10 @@
       display: none
     }
   }
+}
+.accountLoader {
+  display: flex;
+  margin-right: 5px;
 }
 
 .networkIndicator {

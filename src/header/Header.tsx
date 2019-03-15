@@ -3,15 +3,19 @@ import * as React from 'react';
 // @ts-ignore
 // tslint:disable:import-name
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { NavLink } from 'react-router-dom';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
+import { NavLink } from 'react-router-dom';
 import { theAppContext } from '../AppContext';
 import { account$ } from '../blockchain/network';
+import { connectToWallet$, walletStatus$ } from '../blockchain/web3';
 import { routerContext } from '../Main';
 import { connect } from '../utils/connect';
+import { Button } from '../utils/forms/Buttons';
 import { SvgImage } from '../utils/icons/utils';
-import { Loadable, loadablifyLight } from '../utils/loadable';
-import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
+import { Loadable } from '../utils/loadable';
+import { WithLoadingIndicatorInline } from '../utils/loadingIndicator/LoadingIndicator';
 import * as styles from './Header.scss';
 import Logo from './Logo.svg';
 
@@ -70,26 +74,41 @@ interface StatusProps extends Loadable<string> {
 }
 
 class Status extends React.Component<StatusProps> {
+  public logIn = () => {
+    connectToWallet$.next();
+  }
+
   public render() {
     return (
-      <WithLoadingIndicator loadable={this.props} light={true} className={styles.account}>
-      { (account: string) => {
+      <span className={styles.accountLoader}>
+      <WithLoadingIndicatorInline loadable={this.props} light={true} className={styles.account}>
+      { (account: string | undefined) => {
         const label = account ? account.slice(0, 6) + '...' + account.slice(-4) : 'Logged out';
-        return (
+        return account ?
           <div title={account} className={classnames(navElement, styles.account)}>
-            {account && <Jazzicon
-              diameter={25}
-              seed={jsNumberForAddress(account)} />}
+            <Jazzicon diameter={25} seed={jsNumberForAddress(account)} />
             <span style={{ marginLeft: '1em' }}>{label}</span>
-          </div>
-        );
+          </div> :
+          <div title={account} className={classnames(navElement, styles.account)}>
+            <Button color="grey" size="sm" onClick={this.logIn}>Log in</Button>
+          </div>;
       } }
-      </WithLoadingIndicator>
+      </WithLoadingIndicatorInline>
+      </span>
     );
   }
 }
 
-export const StatusTxRx = connect(Status, loadablifyLight(account$));
+const loadableAccount$: Observable<Loadable<string|undefined>> = combineLatest(walletStatus$, account$).pipe(
+  map(([walletStatus, account]) => {
+    if (walletStatus === 'connecting' || (walletStatus === 'connected' && !account)) {
+      return { status: 'loading' } as Loadable<string|undefined>;
+    }
+    return { status: 'loaded', value: account } as Loadable<string|undefined>;
+  }),
+);
+
+export const StatusTxRx = connect(Status, loadableAccount$);
 
 export const HeaderNavLink = ({ to, name }: {to: string, name: string}) => (
   <li className={item}>

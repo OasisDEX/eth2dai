@@ -26,10 +26,6 @@ class App extends React.Component<Props> {
     switch (this.props.status) {
       case 'initializing':
         return LoadingState.INITIALIZATION;
-      case 'waiting':
-        return LoadingState.WAITING_FOR_APPROVAL;
-      case 'denied':
-        return LoadingState.ACCESS_DENIED;
       case 'missing':
         return LoadingState.MISSING_PROVIDER;
       case 'ready':
