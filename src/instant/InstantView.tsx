@@ -10,6 +10,7 @@ import daiCircleSvg from '../icons/coins/dai-circle.svg';
 import ethCircleSvg from '../icons/coins/eth-circle.svg';
 import doneSvg from '../icons/done.svg';
 import swapArrowsSvg from '../icons/swap-arrows.svg';
+import { Approximate } from '../utils/Approximate';
 import { formatAmount } from '../utils/formatters/format';
 import { FormatPercent, Money } from '../utils/formatters/Formatters';
 import { ProgressIcon, } from '../utils/icons/Icons';
@@ -18,6 +19,7 @@ import { TopRightCorner } from '../utils/panel/TopRightCorner';
 import { AssetProps } from './asset/Asset';
 import { Assets } from './asset/Assets';
 import { TradeData } from './details/TradeData';
+import { TradeSummary } from './details/TradeSummary';
 import { TxStatusRow } from './details/TxStatusRow';
 import * as styles from './Instant.scss';
 import {
@@ -32,12 +34,6 @@ import {
 import { InstantFormWrapper } from './InstantFormWrapper';
 import { ProgressReport } from './progress/ProgressReport';
 import { Buying, Selling } from './TradingSide';
-
-const Approximate = (props: any) => (
-  <>
-    ~&nbsp;{props.children}
-  </>
-);
 
 function error(msg: Message | undefined) {
   if (!msg) {
@@ -110,17 +106,35 @@ export class InstantView extends React.Component<InstantFormState> {
                      onClose={this.hideAssets}/>;
     }
 
-    // Congratulation
+    // TradeSummary
     if (progress && progress.done && progress.tradeTxStatus === TxStatus.Success) {
+      const { sold, bought, gasUsed } = progress;
       return (
         <InstantFormWrapper heading="Finalize Trade"
                             btnAction={this.resetForm}
-                            btnDisabled={!progress.done}
                             btnLabel="Trade Again">
-
-          <div className={classnames(styles.details, styles.done)}>
-            Congratulation!
+          <div className={classnames(styles.details, styles.finalization)}>
+            <span>Current Estimated Price</span>
+            <span style={{ marginLeft: '12px', color: '#828287' }}>
+              <Approximate>
+                {formatAmount(price || new BigNumber(0), 'USD')}
+                <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
+              </Approximate>
+            </span>
           </div>
+          <TradeSummary sold={sold || new BigNumber(0)}
+                        bought={bought || new BigNumber(0)}
+                        gasUsed={gasUsed || new BigNumber(0)}
+                        soldToken={sellToken}
+                        boughtToken={buyToken}
+                        type={kind || '' as OfferType}
+                        hadCreatedProxy={
+                          [
+                            ProgressKind.noProxyPayWithETH,
+                            ProgressKind.noProxyNoAllowancePayWithERC20
+                          ].includes(progress.kind)
+                        }/>
+
         </InstantFormWrapper>
       );
     }

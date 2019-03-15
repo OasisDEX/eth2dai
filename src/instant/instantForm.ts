@@ -12,8 +12,7 @@ import {
   scan,
   shareReplay,
   startWith,
-  switchMap,
-  tap
+  switchMap
 } from 'rxjs/operators';
 import { Balances, DustLimits } from '../balances/balances';
 import { tokens } from '../blockchain/config';
@@ -43,7 +42,7 @@ import {
   estimateTradePayWithETH,
   tradePayWithERC20,
   tradePayWithETH,
- } from './instantTransactions';
+} from './instantTransactions';
 
 export interface FormResetChange {
   kind: InstantFormChangeKind.formResetChange;
@@ -114,9 +113,14 @@ export enum ProgressKind {
 }
 
 export type Progress = {
+  gasUsed?: BigNumber,
+  bought?: BigNumber,
+  sold?: BigNumber
   done: boolean;
 } & ({
-  kind: ProgressKind.proxyPayWithETH | ProgressKind.noProxyPayWithETH
+  kind: ProgressKind.proxyPayWithETH
+    | ProgressKind.noProxyPayWithETH
+    | ProgressKind.proxyAllowancePayWithERC20
   tradeTxStatus: TxStatus;
   tradeTxHash?: string;
 } | {
@@ -132,10 +136,6 @@ export type Progress = {
   allowanceTxStatus: TxStatus;
   allowanceTxHash?: string
   tradeTxStatus?: TxStatus;
-  tradeTxHash?: string
-} | {
-  kind: ProgressKind.proxyAllowancePayWithERC20;
-  tradeTxStatus: TxStatus;
   tradeTxHash?: string
 });
 
@@ -538,6 +538,16 @@ function isReadyToProceed(state: InstantFormState): InstantFormState {
     readyToProceed: !state.message && state.gasEstimationStatus === GasEstimationStatus.calculated };
 }
 
+function freezeIfInProgress(previous: InstantFormState, state: InstantFormState): InstantFormState {
+  if (state.progress) {
+    return {
+      ...previous,
+      progress: state.progress
+    };
+  }
+  return state;
+}
+
 export function createFormController$(
   params: {
     gasPrice$: Observable<BigNumber>;
@@ -585,13 +595,8 @@ export function createFormController$(
     map(validate),
     switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
     map(calculatePriceAndImpact),
-    tap(state => console.log(
-      'state.message', state.message && state.message.kind,
-      'state.gasEstimationStatus', state.gasEstimationStatus,
-      'tradeEvaluationStatus:', state.tradeEvaluationStatus,
-      'bestPrice:', state.bestPrice && state.bestPrice.toString()
-    )),
     map(isReadyToProceed),
+    scan(freezeIfInProgress),
     shareReplay(1),
   );
 }

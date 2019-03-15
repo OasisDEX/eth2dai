@@ -10,3 +10,6 @@ export function amountToWei(amount: BigNumber, token: string): BigNumber {
   const precision = tokens[token].precision;
   return amount.times(new BigNumber(10).pow(precision));
 }
+
+export const padLeft = (string: string, chars: number, sign?: string) =>
+  Array(chars - string.length + 1).join(sign ? sign : '0') + string;
