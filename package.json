@@ -20,7 +20,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "cypress:run": "rm -rf cypress/screenshots/* && cypress run",
-    "cypress:run:ci": "rm -rf cypress/screenshots/* && cypress run --record --parallel --browser chrome",
+    "cypress:run:ci": "rm -rf cypress/screenshots/* && cypress run --record --parallel --browser chromium",
     "cypress:dev": "rm -rf cypress/screenshots && NODE_ENV='development' cypress open",
     "tsc": "tsc -p ./tsconfig.prod.json --noEmit && tsc -p ./cypress/tsconfig.json --noEmit && tsc -p ./tsconfig.test.json --noEmit && tsc -p ./tsconfig.json --noEmit",
     "storybook:screenshots": "storybook-chrome-screenshot -p 9001 --inject-files ./.storybook/disable-animations.js",
