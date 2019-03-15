@@ -38,7 +38,7 @@ describe('Instant trade', () => {
     trade.buy().amount('320.00');
     trade.expectToPay('1.14545');
 
-    TradeData.expectPriceOf(/(279\.36)/);
+    TradeData.expectPriceOf(/(279\.37)/);
     TradeData.expectSlippageLimit(/2\.5%/);
     TradeData.expectPriceImpact(/0\.22%/);
   });
