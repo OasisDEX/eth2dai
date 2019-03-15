@@ -9,11 +9,12 @@ interface InstantFormProps {
   btnLabel: string;
   btnAction: () => void;
   btnDisabled?: boolean;
+  btnDataTestId?: string;
 }
 
 export class InstantFormWrapper extends React.Component<InstantFormProps> {
   public render() {
-    const { heading, btnLabel, btnAction, btnDisabled, children } = this.props;
+    const { heading, btnLabel, btnAction, btnDisabled, btnDataTestId, children } = this.props;
 
     return (
       <section className={classnames(styles.panel, panelStyling.panel)}>
@@ -25,6 +26,7 @@ export class InstantFormWrapper extends React.Component<InstantFormProps> {
         }
         <footer className={styles.footer}>
           <Button
+            data-test-id={btnDataTestId}
             size="lg"
             color="greyWhite"
             onClick={btnAction}

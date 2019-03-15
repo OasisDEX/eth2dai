@@ -2,6 +2,7 @@
   "baseUrl": "http://localhost:3000",
   "projectId": "noiqfs",
   "videoUploadOnPasses": false,
+  "defaultCommandTimeout": 20000,
   "viewportWidth": 1024,
   "viewportHeight": 960,
   "env": {

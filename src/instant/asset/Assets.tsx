@@ -27,7 +27,7 @@ export class Assets extends React.Component<AssetsProps> {
           {
             assets.map((asset: AssetProps, index) => {
               return (
-                <li className={styles.listItem} key={index}>
+                <li data-test-id={asset.currency.toLowerCase()} className={styles.listItem} key={index}>
                   <Asset currency={asset.currency} balance={asset.balance}
                          onClick={() => onClick(asset.currency, side)}/>
                 </li>

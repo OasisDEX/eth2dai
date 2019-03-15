@@ -11,7 +11,7 @@ import ethCircleSvg from '../icons/coins/eth-circle.svg';
 import doneSvg from '../icons/done.svg';
 import swapArrowsSvg from '../icons/swap-arrows.svg';
 import { Approximate } from '../utils/Approximate';
-import { formatAmount } from '../utils/formatters/format';
+import { formatAmount, formatPrice } from '../utils/formatters/format';
 import { FormatPercent, Money } from '../utils/formatters/Formatters';
 import { ProgressIcon, } from '../utils/icons/Icons';
 import { SvgImage } from '../utils/icons/utils';
@@ -73,9 +73,29 @@ function error(msg: Message | undefined) {
   }
 }
 
+class CurrentPrice extends React.Component<{
+  price?: BigNumber,
+  quotation?: string
+}> {
+  public render() {
+    const { price, quotation } = this.props;
+    return (
+      <div className={classnames(styles.details, styles.finalization)}>
+        <span>Current Estimated Price</span>
+        <span style={{ marginLeft: '12px', color: '#828287' }}>
+          <Approximate>
+            {price ? formatAmount(price, 'USD') : ''}
+            <span style={{ fontWeight: 'bold' }}>{quotation ? quotation : ''}</span>
+          </Approximate>
+        </span>
+      </div>
+    );
+  }
+}
+
 export class InstantView extends React.Component<InstantFormState> {
 
-  public state = { areAssetsOpen: false };
+  public state = { areAssetsOpen: false, kind: OfferType.sell };
 
   public render() {
     const {
@@ -90,6 +110,7 @@ export class InstantView extends React.Component<InstantFormState> {
       price,
       priceImpact,
       gasEstimationUsd,
+      quotation,
       progress
     } = this.props;
 
@@ -100,6 +121,7 @@ export class InstantView extends React.Component<InstantFormState> {
         { currency: 'DAI', balance: new BigNumber('16.345') },
       ];
 
+      console.log(kind);
       return <Assets assets={assets}
                      side={kind || OfferType.sell}
                      onClick={this.selectAsset}
@@ -112,16 +134,10 @@ export class InstantView extends React.Component<InstantFormState> {
       return (
         <InstantFormWrapper heading="Finalize Trade"
                             btnAction={this.resetForm}
-                            btnLabel="Trade Again">
-          <div className={classnames(styles.details, styles.finalization)}>
-            <span>Current Estimated Price</span>
-            <span style={{ marginLeft: '12px', color: '#828287' }}>
-              <Approximate>
-                {formatAmount(price || new BigNumber(0), 'USD')}
-                <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
-              </Approximate>
-            </span>
-          </div>
+                            btnLabel="Trade Again"
+                            btnDataTestId="new-trade"
+        >
+          <CurrentPrice price={price} quotation={quotation}/>
           <TradeSummary sold={sold || new BigNumber(0)}
                         bought={bought || new BigNumber(0)}
                         gasUsed={gasUsed || new BigNumber(0)}
@@ -140,7 +156,6 @@ export class InstantView extends React.Component<InstantFormState> {
     }
 
     // Finalization
-    // TODO: Instead of using this approach check how the OfferMakePanel switches between two views.
     if (progress) {
       return (
         <InstantFormWrapper heading="Finalize Trade"
@@ -150,19 +165,12 @@ export class InstantView extends React.Component<InstantFormState> {
           {
             progress.kind === ProgressKind.noProxyNoAllowancePayWithERC20 &&
             <>
-              <div className={classnames(styles.details, styles.finalization)}>
-                <span>Current Estimated Price</span>
-                <span style={{ marginLeft: '12px', color: '#828287' }}>
-                  <Approximate>
-                    {formatAmount(price || new BigNumber(0), 'USD')}
-                    <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
-                  </Approximate>
-                </span>
-              </div>
+              <CurrentPrice price={price} quotation={quotation}/>
               <div className={classnames(styles.details, styles.transaction)}>
                 <TxStatusRow icon={<SvgImage image={accountSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="create-proxy"
                                  theme="reversed"
                                  label="Create Account"
                                  info="Something about Proxy"
@@ -173,6 +181,7 @@ export class InstantView extends React.Component<InstantFormState> {
                 <TxStatusRow icon={<SvgImage image={doneSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="set-token-allowance"
                                  theme="reversed"
                                  label={`Unlock ${sellToken.toUpperCase()}`}
                                  info="Something about allowances"
@@ -183,21 +192,24 @@ export class InstantView extends React.Component<InstantFormState> {
                 <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="pay-token"
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                          token={sellToken}/>
                                  }
-                               />}
-                             status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                               />}/>
                 <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="buy-token"
                                  theme="reversed"
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                            token={buyToken}/>
                                    </Approximate>
                                  }
                                />}/>
@@ -207,19 +219,12 @@ export class InstantView extends React.Component<InstantFormState> {
           {
             progress.kind === ProgressKind.proxyNoAllowancePayWithERC20 &&
             <>
-              <div className={classnames(styles.details, styles.finalization)}>
-                <span>Current Estimated Price</span>
-                <span style={{ marginLeft: '12px', color: '#828287' }}>
-                  <Approximate>
-                    {formatAmount(price || new BigNumber(0), 'USD')}
-                    <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
-                  </Approximate>
-                </span>
-              </div>
+              <CurrentPrice price={price} quotation={quotation}/>
               <div className={classnames(styles.details, styles.transaction)}>
                 <TxStatusRow icon={<SvgImage image={doneSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="set-token-allowance"
                                  theme="reversed"
                                  label={`Unlock ${sellToken.toUpperCase()}`}
                                  info="Something about allowances"
@@ -230,21 +235,25 @@ export class InstantView extends React.Component<InstantFormState> {
                 <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="pay-token"
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                          token={sellToken}/>
                                  }
                                />}
                              status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
                 <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="buy-token"
                                  theme="reversed"
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                            token={buyToken}/>
                                    </Approximate>
                                  }
                                />}/>
@@ -267,43 +276,41 @@ export class InstantView extends React.Component<InstantFormState> {
                 <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="pay-token"
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                          token={sellToken}/>
                                  }
                                />}
                              status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
                 <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="buy-token"
                                  theme="reversed"
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                            token={buyToken}/>
                                    </Approximate>
                                  }
                                />}/>
               </div>
+              InstantTrade.spec
             </>
           }
           {
             progress.kind === ProgressKind.noProxyPayWithETH &&
             <>
-              <div className={classnames(styles.details, styles.finalization)}>
-                <span>Current Estimated Price</span>
-                <span style={{ marginLeft: '12px', color: '#828287' }}>
-                  <Approximate>
-                    {formatAmount(price || new BigNumber(0), 'USD')}
-                    <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
-                  </Approximate>
-                </span>
-              </div>
+              <CurrentPrice price={price} quotation={quotation}/>
               <div className={classnames(styles.details, styles.transaction)}>
                 <TxStatusRow icon={<SvgImage image={accountSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="create-proxy"
                                  theme="reversed"
                                  label="Create Account"
                                  info="Something about Proxy"
@@ -312,57 +319,59 @@ export class InstantView extends React.Component<InstantFormState> {
                 <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="pay-token"
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                          token={sellToken}/>
                                  }
-                               />}/>
+                               />}
+                />
                 <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="buy-token"
                                  theme="reversed"
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                            token={buyToken}/>
                                    </Approximate>
                                  }
-                               />}/>
+                               />}
+                />
               </div>
             </>
           }
           {
             progress.kind === ProgressKind.proxyPayWithETH &&
             <>
-              <div className={classnames(styles.details, styles.finalization)}>
-                <span>Current Estimated Price</span>
-                <span style={{ marginLeft: '12px', color: '#828287' }}>
-                  <Approximate>
-                    {formatAmount(price || new BigNumber(0), 'USD')}
-                    <span style={{ fontWeight: 'bold' }}>{sellToken}/{buyToken}</span>
-                  </Approximate>
-                </span>
-              </div>
+              <CurrentPrice price={price} quotation={quotation}/>
               <div className={classnames(styles.details, styles.transaction)}>
                 <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="pay-token"
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money value={sellAmount || new BigNumber(0)} token={sellToken}/>
+                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                          token={sellToken}/>
                                  }
                                />}
                              status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
                 <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                              label={
                                <TradeData
+                                 data-test-id="buy-token"
                                  theme="reversed"
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money value={buyAmount || new BigNumber(0)} token={buyToken}/>
+                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                            token={buyToken}/>
                                    </Approximate>
                                  }
                                />}/>
@@ -378,7 +387,9 @@ export class InstantView extends React.Component<InstantFormState> {
       <InstantFormWrapper heading="Enter Order Details"
                           btnLabel="Start Transaction"
                           btnAction={this.startTx}
-                          btnDisabled={!this.props.readyToProceed}>
+                          btnDisabled={!this.props.readyToProceed}
+                          btnDataTestId="initiate-trade"
+      >
         <TopRightCorner>
           <SvgImage className={styles.settingsIcon} image={cogWheelSvg}/>
         </TopRightCorner>
@@ -396,7 +407,7 @@ export class InstantView extends React.Component<InstantFormState> {
                          info="Additional Info"
                          value={
                            <Approximate>
-                             {formatAmount(price || new BigNumber(0), 'USD')} {sellToken}/{buyToken}
+                             {formatAmount(price, 'USD')} {quotation || ''}
                            </Approximate>
                          }/>
               <TradeData label="Slippage Limit"
@@ -432,7 +443,7 @@ export class InstantView extends React.Component<InstantFormState> {
           <Selling asset={sellToken}
                    amount={sellAmount}
                    onAmountChange={this.updateSellingAmount}
-                   onClick={this.showAssets}
+                   onClick={this.changeSellingToken}
                    balance={
                      (sellToken === 'ETH' && etherBalance ||
                        balances && balances[sellToken]) || undefined
@@ -443,7 +454,7 @@ export class InstantView extends React.Component<InstantFormState> {
           <Buying asset={buyToken}
                   amount={buyAmount}
                   onAmountChange={this.updateBuyingAmount}
-                  onClick={this.showAssets}
+                  onClick={this.changeBuyingToken}
                   balance={
                     (buyToken === 'ETH' && etherBalance ||
                       balances && balances[buyToken]) || undefined
@@ -481,6 +492,22 @@ export class InstantView extends React.Component<InstantFormState> {
       kind: InstantFormChangeKind.buyAmountFieldChange,
       value: value === '' ? undefined : new BigNumber(value)
     } as ManualChange);
+  }
+
+  private changeSellingToken = () => {
+    this.props.change({
+      kind: InstantFormChangeKind.tokenChange,
+      side: OfferType.sell
+    });
+    this.showAssets();
+  }
+
+  private changeBuyingToken = () => {
+    this.props.change({
+      kind: InstantFormChangeKind.tokenChange,
+      side: OfferType.buy
+    });
+    this.showAssets();
   }
 
   private startTx = () => {
