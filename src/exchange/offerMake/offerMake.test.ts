@@ -2,7 +2,9 @@ import { BigNumber } from 'bignumber.js';
 import { omit } from 'lodash';
 import { of } from 'rxjs';
 import { throwError } from 'rxjs/internal/observable/throwError';
+
 import { setupFakeWeb3ForTesting } from '../../blockchain/web3';
+setupFakeWeb3ForTesting();
 
 import { Calls$ } from '../../blockchain/calls/calls';
 import { TxState, TxStatus } from '../../blockchain/transactions';
@@ -11,8 +13,6 @@ import { unpack } from '../../utils/testHelpers';
 import { createFakeOrderbook, emptyOrderBook } from '../depthChart/fakeOrderBook';
 import { Offer, OfferType } from '../orderbook/orderbook';
 import { createFormController$, FormStage, MessageKind, OfferMakeChangeKind } from './offerMake';
-
-setupFakeWeb3ForTesting();
 
 function snapshotify(object: any): any {
   return omit(object, 'change');

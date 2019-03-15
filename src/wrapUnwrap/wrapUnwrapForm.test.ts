@@ -1,6 +1,10 @@
 import { BigNumber }from 'bignumber.js';
 import { Observable, of, throwError } from 'rxjs/index';
 import { shareReplay } from 'rxjs/internal/operators';
+
+import { setupFakeWeb3ForTesting } from '../blockchain/web3';
+setupFakeWeb3ForTesting();
+
 import { Calls$ } from '../blockchain/calls/calls';
 import { FormChangeKind } from '../utils/form';
 import { unpack } from '../utils/testHelpers';

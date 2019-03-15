@@ -27,7 +27,7 @@ export const every5Seconds$ = interval(5000).pipe(startWith(0));
 export const every10Seconds$ = interval(10000).pipe(startWith(0));
 export const every30Seconds$ = interval(30000).pipe(startWith(0));
 
-export const version$ = bindNodeCallback(web3.version.getNode)();
+export const version$ = web3 && bindNodeCallback(web3.version.getNode)();
 
 export const networkId$ = interval(250).pipe(
   startWith(0),

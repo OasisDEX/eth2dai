@@ -3,7 +3,9 @@ import jestEach from 'jest-each';
 import { omit } from 'lodash';
 import { of } from 'rxjs';
 import { first } from 'rxjs/operators';
+
 import { setupFakeWeb3ForTesting } from '../blockchain/web3';
+setupFakeWeb3ForTesting();
 
 import { Calls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
@@ -11,8 +13,6 @@ import { createFakeOrderbook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
 import { zero } from '../utils/zero';
 import { createFormController$, InstantFormChangeKind } from './instantForm';
-
-setupFakeWeb3ForTesting();
 
 function snapshotify(object: any): any {
   return omit(object, 'change', 'submit');
