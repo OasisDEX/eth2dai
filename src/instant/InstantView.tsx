@@ -419,11 +419,11 @@ export class InstantView extends React.Component<InstantFormState> {
                          value={
                            gasEstimationUsd
                              ? (
-                               <Approximate>
-                                 <Money value={gasEstimationUsd} token="USD" data-vis-reg-hide={true}/>
+                               <Approximate data-vis-reg-hide={true}>
+                                 <Money value={gasEstimationUsd} token="USD"/>
                                </Approximate>
                              )
-                             : <ProgressIcon small={true}/>
+                             : <ProgressIcon data-vis-reg-hide={true} small={true}/>
                          }/>
               <TradeData label="Price Impact"
                          data-test-id="trade-price-impact"
