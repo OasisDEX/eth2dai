@@ -16,4 +16,4 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/source
         -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 
 sudo apt-get install -y yarn
-sudo apt-get install chromium-browser
+sudo apt-get install -y chromium-browser
