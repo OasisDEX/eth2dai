@@ -7,7 +7,7 @@ const exec = require('await-exec') as (cmd: string, opt: any) => Promise<void>;
 export async function main() {
   await buildSize({
     files: [
-      { path: './build/static/js/*.js' },
+      { path: './build/static/js/*.js', maxSize: 1024 },
       { path: './build/static/css/*.css' },
     ]
   });
