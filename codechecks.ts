@@ -17,12 +17,16 @@ export async function main() {
 
   await visReg();
 
-  const res = await lint(join(__dirname, "tsconfig.prod.json"), false, false);
-
+  const res = await lint(join(__dirname, "tsconfig.prod.json"), true, false);
   console.log(JSON.stringify(res));
   await codeChecks.success({
     name: "Type Coverage",
-    shortDescription: `Current: ${(res.correctCount / res.totalCount).toFixed(2)}%`,
+    shortDescription: `Change: 0.01% Total: ${(res.correctCount / res.totalCount * 100).toFixed(2)}%`,
+    longDescription: 
+      `
+New untyped symbols: 3
+./index.ts:45:32
+      `
   });
 }
 
