@@ -3459,20 +3459,21 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codecheck-build-size@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/codecheck-build-size/-/codecheck-build-size-0.0.9.tgz#f856b69ba9c430c2e571d2e47fb2d3ae6103b5b1"
-  integrity sha512-Vb8jtJ2FG8JK1eTZAexN1uPsKyqBuurFlY18fDBjxByHmrTj3W5QKas9yR3O3ctHopoItIEjpDckCht1K+6QRQ==
+codecheck-build-size@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/codecheck-build-size/-/codecheck-build-size-0.0.10.tgz#dada0252bb4e129e1b5343a5e32ffb41238305d9"
+  integrity sha512-+iVg+aAt/2k6Jjqb72KkhZPqNwLIQTo5AwC7fue5xJHESMtDTSDp3AKL0OUM4gM4tRTyqQHgSGaH+D8xhyVnxw==
   dependencies:
     bytes "^3.0.0"
     get-folder-size "^2.0.0"
     glob "^7.1.3"
+    gzip-size "^5.0.0"
     lodash "^4.17.11"
 
-codechecks@^0.0.34:
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/codechecks/-/codechecks-0.0.34.tgz#d690f0b83e22e5e615e850129a2b56cd5b84436b"
-  integrity sha512-N/wkFG1xaAFU5niaUCReLMzkO3y6GKOjGTKoBzr/RIHLcJ+3x+uR8WVwL7hkyBByNk8PKlmISAV1bV4k0o35Eg==
+codechecks@^0.0.37:
+  version "0.0.37"
+  resolved "https://registry.yarnpkg.com/codechecks/-/codechecks-0.0.37.tgz#d6c6c0799bf1e74e14825b1cb27437f608cfea81"
+  integrity sha512-4NZ10ECPO+kRL5Hw9iGVpOzoiObFlfTKywtclyvIhtigdrokshpZsEt/6XvhXjhrpr8y3g2bETVh4rHmfkujJg==
   dependencies:
     commander "^2.19.0"
     glob "^7.1.3"
@@ -6727,6 +6728,14 @@ gzip-size@3.0.0:
   integrity sha1-VGGI6b3DN/Zzdy+BZgRks4nc5SA=
   dependencies:
     duplexer "^0.1.1"
+
+gzip-size@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/gzip-size/-/gzip-size-5.0.0.tgz#a55ecd99222f4c48fd8c01c625ce3b349d0a0e80"
+  integrity sha512-5iI7omclyqrnWw4XbXAmGhPsABkSIDQonv2K0h61lybgofWa6iZyvrI3r2zsJH4P8Nb64fFVzlvfhs0g7BBxAA==
+  dependencies:
+    duplexer "^0.1.1"
+    pify "^3.0.0"
 
 handle-thing@^1.2.5:
   version "1.2.5"
