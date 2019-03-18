@@ -613,7 +613,6 @@ export function createFormController$(
     switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
     map(calculatePriceAndImpact),
     map(isReadyToProceed),
-    scan(freezeIfInProgress),
     shareReplay(1),
   );
 }
