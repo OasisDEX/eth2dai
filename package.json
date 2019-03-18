@@ -23,7 +23,7 @@
     "cypress:run:ci": "rm -rf cypress/screenshots/* && cypress run --record --parallel",
     "cypress:dev": "rm -rf cypress/screenshots && NODE_ENV='development' cypress open",
     "tsc": "tsc -p ./tsconfig.prod.json --noEmit && tsc -p ./cypress/tsconfig.json --noEmit && tsc -p ./tsconfig.test.json --noEmit && tsc -p ./tsconfig.json --noEmit",
-    "storybook:screenshots": "storybook-chrome-screenshot -p 9001 --debug --inject-files ./.storybook/disable-animations.js",
+    "storybook:screenshots": "storybook-chrome-screenshot -p 9001 --inject-files ./.storybook/disable-animations.js",
     "codechecks": "codechecks",
     "codechecks-e2e": "codechecks ./codechecks-e2e.ts"
   },
