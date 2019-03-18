@@ -98,7 +98,7 @@
     "babel-preset-react-app": "^3.1.1",
     "babel-runtime": "^6.26.0",
     "codecheck-build-size": "^0.0.10",
-    "codechecks": "^0.0.37",
+    "codechecks": "^0.0.38",
     "css-loader": "0.28.7",
     "cypress": "^3.1.5",
     "dotenv": "4.0.0",
