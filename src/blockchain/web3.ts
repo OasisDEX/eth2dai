@@ -1,5 +1,5 @@
-import { bindNodeCallback, concat, from, Observable, Subject } from 'rxjs';
-import { catchError, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import { from, Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 import * as Web3 from 'web3';
 
 import coinbaseSvg from '../icons/providers/coinbase.svg';
@@ -14,8 +14,6 @@ import { SvgImageSimple } from '../utils/icons/utils';
 export let web3 : Web3;
 
 export type Web3Status = 'ready' | 'missing' | 'initializing';
-
-export type WalletStatus = 'disconnected' | 'connecting' | 'connected' | 'denied' | 'missing';
 
 export interface Web3Window {
   web3?: any;
@@ -40,31 +38,6 @@ export const web3Status$: Observable<Web3Status> = from(['initializing']).pipe(
   shareReplay(1),
 );
 web3Status$.subscribe();
-
-export const connectToWallet$: Subject<void> = new Subject();
-export const walletStatus$: Observable<WalletStatus> = concat(
-  from([null]).pipe(
-    switchMap(() => bindNodeCallback(web3.eth.getAccounts)()),
-    map((x: string[]): WalletStatus => x[0] ? 'connected' : 'disconnected'),
-  ),
-  connectToWallet$.pipe(
-    switchMap(() => {
-      const win = window as Web3Window;
-      if (win.ethereum) {
-        web3 = new Web3(win.ethereum);
-        return from(win.ethereum.enable()).pipe(
-          map(() => 'connected'),
-          startWith('connecting' as WalletStatus),
-          catchError(() => from(['denied'])),
-        );
-      }
-      return from(['missing' as WalletStatus]);
-    }),
-  ),
-).pipe(
-  shareReplay(1),
-);
-walletStatus$.subscribe();
 
 export function setupFakeWeb3ForTesting() {
   web3 = new Web3();

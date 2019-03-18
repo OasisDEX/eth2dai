@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 import { NavLink } from 'react-router-dom';
 import { theAppContext } from '../AppContext';
 import { account$ } from '../blockchain/network';
-import { connectToWallet$, walletStatus$ } from '../blockchain/web3';
+import { connectToWallet$, walletStatus$ } from '../blockchain/wallet';
 import { routerContext } from '../Main';
 import { connect } from '../utils/connect';
 import { Button } from '../utils/forms/Buttons';
@@ -108,7 +108,7 @@ class Status extends React.Component<StatusProps> {
 
 const loadableAccount$: Observable<Loadable<string|undefined>> = combineLatest(walletStatus$, account$).pipe(
   map(([walletStatus, account]) => {
-    if (walletStatus === 'connecting' || (walletStatus === 'connected' && !account)) {
+    if (walletStatus === 'connecting') {
       return { status: 'loading' } as Loadable<string|undefined>;
     }
     return { status: 'loaded', value: account } as Loadable<string|undefined>;

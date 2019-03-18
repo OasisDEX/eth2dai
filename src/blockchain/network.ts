@@ -1,6 +1,6 @@
 // tslint:disable:no-console
 import { BigNumber } from 'bignumber.js';
-import { bindNodeCallback, combineLatest, concat, interval, Observable } from 'rxjs';
+import { bindNodeCallback, combineLatest, concat, interval, merge, Observable, Subject } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import {
   catchError,
@@ -14,7 +14,7 @@ import {
   skip,
   startWith,
   switchMap,
-  // tap,
+  tap,
 } from 'rxjs/operators';
 
 import * as dsValue from './abi/ds-value.abi.json';
@@ -36,10 +36,16 @@ export const networkId$ = interval(250).pipe(
   shareReplay(1)
 );
 
-export const account$: Observable<string | undefined> = every3Seconds$.pipe(
+export const refreshAccount$: Subject<void> = new Subject();
+export const accountRefreshed$: Subject<void> = new Subject();
+
+export const account$: Observable<string | undefined> = merge(
+  every3Seconds$, refreshAccount$
+).pipe(
   switchMap(() =>
     bindNodeCallback(web3.eth.getAccounts)().pipe(map((x: string[]) => x[0]))
   ),
+  tap(() => accountRefreshed$.next()),
   distinctUntilChanged(),
   shareReplay(1)
 );
