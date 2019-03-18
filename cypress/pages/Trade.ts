@@ -1,17 +1,18 @@
-import { tid, timeout } from '../utils';
+import { tid } from '../utils';
+import { Finalization } from './Finalization';
 
 const input = (side: 'sellInput' | 'buyInput') => ({
 
   amount: (amount: string) => {
-    cy.get(`@${side}`, timeout(2000)).type(amount);
+    cy.get(`@${side}`).type(amount);
   },
 
   clear: () => {
-    cy.get(`@${side}`, timeout(2000)).type('{selectall}{backspace}');
+    cy.get(`@${side}`).type('{selectall}{backspace}');
   },
 
   type: (value: string) => {
-    cy.get(`@${side}`, timeout(2000)).type(value);
+    cy.get(`@${side}`).type(value);
   }
 
 });
@@ -19,18 +20,18 @@ const input = (side: 'sellInput' | 'buyInput') => ({
 export class Trade {
 
   public expectToReceive = (amount: string | RegExp) => {
-    cy.get(tid('buying-token', tid('amount')), timeout(2000))
+    cy.get(tid('buying-token', tid('amount')))
       .should('have.value', `${amount}`);
   }
 
   public expectToPay = (amount: string | RegExp) => {
-    cy.get(tid('selling-token', tid('amount')), timeout(2000))
+    cy.get(tid('selling-token', tid('amount')))
       .should('have.value', `${amount}`);
   }
 
   public sell = (token: string = '') => {
     if (token) {
-      cy.get(tid('pick-an-asset-to-sell'))
+      cy.get(tid('selling-token'))
         .click();
 
       cy.get(tid(token.toLowerCase()))
@@ -43,9 +44,8 @@ export class Trade {
   }
 
   public buy = (token: string = '') => {
-    // Since we don't have a token list for now, this logic is not called
     if (token) {
-      cy.get(tid('pick-an-asset-to-buy'))
+      cy.get(tid('buying-token'))
         .click();
 
       cy.get(tid(token.toLowerCase()))
@@ -59,6 +59,7 @@ export class Trade {
 
   public execute = () => {
     cy.get(tid('initiate-trade')).click();
+    return new Finalization();
   }
 
   public resultsInError = (error: string | RegExp) => {

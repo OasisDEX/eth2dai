@@ -40,9 +40,13 @@ export const FormatAmount = (props: FormatAmountProps) => {
     return <span {...spanProps} >{fallback}</span>;
   }
   if (greyed) {
-    return <FormatNumber formatter={formatAmount} value={value as BigNumber} {...props} />;
+    return <FormatNumber formatter={formatter || formatAmount} value={value as BigNumber} {...props} />;
   }
-  return <span title={value && value.toString()} {...spanProps}>{formatAmount(value as BigNumber, token)}</span>;
+  return <span title={value && value.toString()} {...spanProps}>{
+    formatter
+      ? formatter(value as BigNumber, token)
+      : formatAmount(value as BigNumber, token)
+  }</span>;
 };
 
 export const FormatPrice: React.SFC<any> = ({ ...props } : any) =>
@@ -83,7 +87,7 @@ export const FormatPercent = (props: FormatPercentProps) => {
 export const Money = (props: FormatAmountProps) => {
   const { className, style, ...otherProps } = props;
   return (<span className={className} style={style}>
-    <FormatAmount {...otherProps} />
+    <FormatAmount data-test-id="amount" {...otherProps} />
     &nbsp;
     <Currency value={otherProps.token}/>
   </span>);
