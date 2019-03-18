@@ -33,7 +33,11 @@ const {
   activeNavLink,
 } = styles;
 
-export class Header extends React.Component {
+interface HeaderProps {
+  account: string | undefined;
+}
+
+class Header extends React.Component<HeaderProps> {
   public render() {
     return (
       <routerContext.Consumer>
@@ -50,7 +54,8 @@ export class Header extends React.Component {
                 <HeaderNavLink to={`${rootUrl}exchange`} name="Exchange"/>
                 {process.env.REACT_APP_INSTANT_ENABLED === '1' &&
                 <HeaderNavLink to={`${rootUrl}instant`} name="Instant"/>}
-                <HeaderNavLink to={`${rootUrl}balances`} name="Balances"/>
+                {this.props.account &&
+                <HeaderNavLink to={`${rootUrl}balances`} name="Balances"/>}
               </ul>
             </nav>
           </section >
@@ -69,6 +74,8 @@ export class Header extends React.Component {
     );
   }
 }
+
+export const HeaderTxRx = connect(Header, account$.pipe(map(account => ({ account }))));
 
 interface StatusProps extends Loadable<string> {
 }
@@ -90,7 +97,7 @@ class Status extends React.Component<StatusProps> {
             <span style={{ marginLeft: '1em' }}>{label}</span>
           </div> :
           <div title={account} className={classnames(navElement, styles.account)}>
-            <Button color="grey" size="sm" onClick={this.logIn}>Log in</Button>
+            <Button color="greyWhite" size="sm" onClick={this.logIn} className={styles.login}>Log in</Button>
           </div>;
       } }
       </WithLoadingIndicatorInline>

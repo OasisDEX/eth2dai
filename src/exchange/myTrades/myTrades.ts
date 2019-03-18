@@ -5,6 +5,7 @@ import { Calls$ } from '../../blockchain/calls/calls';
 import { CancelData } from '../../blockchain/calls/offerMake';
 import { NetworkConfig } from '../../blockchain/config';
 import { EtherscanConfig } from '../../blockchain/etherscan';
+import { account$ } from '../../blockchain/network';
 import { LoadableWithTradingPair } from '../../utils/loadable';
 import { Trade } from '../trades';
 import { TradeWithStatus } from './openTrades';
@@ -21,6 +22,7 @@ export interface MyTradesPropsLoadable extends LoadableWithTradingPair<TradeWith
   changeKind: (kind: MyTradesKindKeys) => void;
   cancelOffer: (args: CancelData) => any;
   etherscan: EtherscanConfig;
+  account: string | undefined;
 }
 
 export function createMyTradesKind$(): BehaviorSubject<MyTradesKind> {
@@ -44,10 +46,11 @@ export function createMyTrades$(
   context$: Observable<NetworkConfig>,
   gasPrice$: Observable<BigNumber>,
 ): Observable<MyTradesPropsLoadable> {
-  return combineLatest(myTradesKind$, myCurrentTrades$, context$, calls$).pipe(
-    map(([kind, loadableTrades, context, calls]) => ({
+  return combineLatest(myTradesKind$, myCurrentTrades$, context$, calls$, account$).pipe(
+    map(([kind, loadableTrades, context, calls, account]) => ({
       kind,
       ...loadableTrades,
+      account,
       cancelOffer: (cancelData: CancelData) =>
         calls.cancelOffer(gasPrice$, cancelData).subscribe(noop),
       etherscan: context.etherscan,

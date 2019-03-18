@@ -18,6 +18,7 @@ const defaultProps = {
   changeKind: () => null,
   cancelOffer: () => null,
   etherscan: {} as EtherscanConfig,
+  account: '0x1234',
   status: 'loaded' as LoadableStatus,
   tradingPair: {
     base: 'ETH',
