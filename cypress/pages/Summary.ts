@@ -3,11 +3,11 @@ import { tid } from '../utils';
 export class Summary {
 
   public expectProxyBeingCreated = () => {
-    cy.get(tid('has-proxy')).contains('You have successfully created a Proxy!');
+    cy.get(tid('summary', tid('has-proxy'))).contains('You have successfully created a Proxy!');
   }
 
   public expectProxyNotBeingCreated = () => {
-    cy.get(tid('has-proxy'))
+    cy.get(tid('summary', tid('has-proxy')))
       .should('not.exist');
   }
 

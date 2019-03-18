@@ -1,4 +1,4 @@
-import { tid, timeout } from '../utils';
+import { tid } from '../utils';
 import { Summary } from './Summary';
 
 export class Finalization {
