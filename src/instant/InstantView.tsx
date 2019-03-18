@@ -299,7 +299,6 @@ export class InstantView extends React.Component<InstantFormState> {
                                  }
                                />}/>
               </div>
-              InstantTrade.spec
             </>
           }
           {
