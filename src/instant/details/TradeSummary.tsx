@@ -5,13 +5,14 @@ import { TxStatus } from '../../blockchain/transactions';
 import { OfferType } from '../../exchange/orderbook/orderbook';
 import { formatPrice } from '../../utils/formatters/format';
 import { Money } from '../../utils/formatters/Formatters';
-import { calculateTradePrice } from '../../utils/price';
 import * as genericStyles from '../Instant.scss';
 import { ProgressReport } from '../progress/ProgressReport';
 import * as styles from './TradeSummary.scss';
 import { TxStatusRow } from './TxStatusRow';
 
 interface TradeSummaryProps {
+  price: BigNumber;
+  quotation: string;
   gasUsed: BigNumber;
   sold: BigNumber;
   soldToken: string;
@@ -23,8 +24,8 @@ interface TradeSummaryProps {
 
 export class TradeSummary extends React.Component<TradeSummaryProps> {
   public render() {
-    const { type, soldToken, boughtToken, sold, bought, gasUsed, hadCreatedProxy } = this.props;
-    const { price, quotation } = calculateTradePrice(soldToken, sold, boughtToken, bought);
+    const { type, soldToken, boughtToken, sold, bought, gasUsed, hadCreatedProxy, price, quotation } = this.props;
+
     return <div className={classnames(genericStyles.details, styles.details)}>
 
       <TxStatusRow label={'Congratulations!'} status={<ProgressReport status={TxStatus.Success}/>}/>
@@ -50,7 +51,7 @@ export class TradeSummary extends React.Component<TradeSummaryProps> {
           </span>
           &nbsp;by paying&nbsp;
           <span className={styles.highlight}>
-            {gasUsed}
+            {gasUsed ? gasUsed : 'N/A'}
           </span>
           &nbsp;gas
         </span>

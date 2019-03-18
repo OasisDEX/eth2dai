@@ -8,7 +8,7 @@ import { BalancesView } from './balances/BalancesView';
 import { ExchangeViewTxRx } from './exchange/ExchangeView';
 import { Header } from './header/Header';
 import * as styles from './index.scss';
-import { InstantExchange } from './instant/InstantView';
+import { InstantExchange } from './instant/InstantViewPanel';
 
 const browserHistoryInstance = createBrowserHistory();
 

@@ -4,8 +4,19 @@ import { Loadable } from '../utils/loadable';
 import { LoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
 import * as panelStyling from '../utils/panel/Panel.scss';
 import * as styles from './Instant.scss';
-import { InstantFormState } from './instantForm';
-import { InstantView } from './InstantView';
+import { InstantFormState, ViewKind } from './instantForm';
+import { AssetSelectorView } from './views/AssetSelectorView';
+import { FinalizationView } from './views/FinalizationView';
+import { NewTradeView } from './views/NewTradeView';
+import { TradeSummaryView } from './views/TradeSummaryView';
+import { theAppContext } from "../AppContext";
+
+const views = new Map<ViewKind, any>([
+  [ViewKind.new, NewTradeView],
+  [ViewKind.assetSelector, AssetSelectorView],
+  [ViewKind.finalization, FinalizationView],
+  [ViewKind.summary, TradeSummaryView],
+]);
 
 export class InstantViewPanel extends React.Component<Loadable<InstantFormState>> {
 
@@ -14,13 +25,26 @@ export class InstantViewPanel extends React.Component<Loadable<InstantFormState>
 
     if (status === 'loaded') {
       const formState = value as InstantFormState;
-      return (<InstantView {...formState} />);
+      const View = views.get(formState.view);
+      return (<View {...formState} />);
     }
 
     return (
       <section className={classnames(styles.panel, panelStyling.panel)}>
         <LoadingIndicator/>
       </section>
+    );
+  }
+}
+
+export class InstantExchange extends React.Component<any> {
+  public render() {
+    return (
+      <theAppContext.Consumer>
+        {({ InstantTxRx }) =>
+          <InstantTxRx/>
+        }
+      </theAppContext.Consumer>
     );
   }
 }

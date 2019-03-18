@@ -113,6 +113,16 @@ export enum ProgressKind {
   proxyAllowancePayWithERC20 = 'proxyAllowancePayWithERC20',
 }
 
+export enum ViewKind {
+  new = 'new',
+  allowances = 'allowances',
+  settings = 'settings',
+  assetSelector = 'assetSelector',
+  proxy = 'proxy',
+  finalization = 'finalization',
+  summary = 'summary'
+}
+
 export type Progress = {
   gasUsed?: BigNumber,
   bought?: BigNumber,
@@ -141,6 +151,7 @@ export type Progress = {
 });
 
 export interface InstantFormState extends HasGasEstimation {
+  view: any;
   readyToProceed?: boolean;
   progress?: Progress;
   buyToken: string;
@@ -164,6 +175,7 @@ export interface InstantFormState extends HasGasEstimation {
 }
 
 export enum InstantFormChangeKind {
+  viewChange = 'viewChange',
   tokenChange = 'tokenChange',
   buyAmountFieldChange = 'buyAmountFieldChange',
   sellAmountFieldChange = 'sellAmountFieldChange',
@@ -177,6 +189,11 @@ export enum InstantFormChangeKind {
 export interface ProgressChange {
   kind: InstantFormChangeKind.progressChange;
   progress?: Progress;
+}
+
+export interface ViewChange {
+  kind: InstantFormChangeKind.viewChange;
+  view: ViewKind;
 }
 
 export interface TokenChange {
@@ -210,7 +227,8 @@ export type ManualChange =
   BuyAmountChange |
   SellAmountChange |
   PairChange |
-  FormResetChange;
+  FormResetChange |
+  ViewChange;
 
 export type EnvironmentChange =
   GasPriceChange |
@@ -269,10 +287,19 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         dustLimits: change.dustLimits
       };
     case InstantFormChangeKind.progressChange:
-      return {
+      const progressChange = {
         ...state,
-        progress: change.progress
+        progress: change.progress,
       };
+
+      if (change.progress && change.progress.tradeTxStatus === TxStatus.Success) {
+        return applyChange(progressChange, {
+          kind: InstantFormChangeKind.viewChange,
+          view: ViewKind.summary
+        });
+      }
+
+      return progressChange;
     case InstantFormChangeKind.formResetChange:
       return {
         ...state,
@@ -290,6 +317,11 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         kind: change.side
+      };
+    case InstantFormChangeKind.viewChange:
+      return {
+        ...state,
+        view: change.view
       };
   }
 
@@ -599,6 +631,7 @@ export function createFormController$(
     gasEstimationStatus: GasEstimationStatus.unset,
     tradeEvaluationStatus: TradeEvaluationStatus.unset,
     slippageLimit: new BigNumber('0.05'),
+    view: 'new',
   };
 
   return merge(
