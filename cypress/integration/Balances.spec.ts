@@ -5,7 +5,7 @@ import { Balance } from '../pages/Balance';
 import { Tab } from '../pages/Tab';
 import { makeScreenshots } from '../utils/makeScreenshots';
 
-describe('Balances', () => {
+describe.skip('Balances', () => {
 
   beforeEach(() => cypressVisitWithWeb3());
 

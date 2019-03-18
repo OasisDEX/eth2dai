@@ -8,7 +8,7 @@ import { Tab } from '../pages/Tab';
 import { Trades } from '../pages/Trades';
 import { makeScreenshots } from '../utils/makeScreenshots';
 
-describe('Sell Order', () => {
+describe.skip('Sell Order', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
     ApplicationState.acceptToS();
