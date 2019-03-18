@@ -12,13 +12,13 @@ export class Summary {
   }
 
   public expectSold = (amount: string, token: string) => {
-    cy.get(tid('sold-token', tid('amount'))).contains(`${amount}`);
-    cy.get(tid('sold-token', tid('currency'))).contains(`${token}`);
+    cy.get(tid('summary', tid('sold-token', tid('amount')))).contains(`${(amount)}`);
+    cy.get(tid('summary', tid('sold-token', tid('currency')))).contains(`${(token)}`);
   }
 
   public expectBought = (amount: string, token: string) => {
-    cy.get(tid('bought-token', tid('amount'))).contains(`${amount}`);
-    cy.get(tid('bought-token', tid('currency'))).contains(`${token}`);
+    cy.get(tid('summary', tid('bought-token', tid('amount')))).contains(`${(amount)}`);
+    cy.get(tid('summary', tid('bought-token', tid('currency')))).contains(`${(token)}`);
   }
 
   public expectPriceOf = (price: string | RegExp) => {

@@ -1,4 +1,4 @@
-import { tid } from '../utils';
+import { tid, timeout } from '../utils';
 import { Summary } from './Summary';
 
 export class Finalization {
@@ -44,16 +44,6 @@ export class Finalization {
     cy.get(tid('pay-token', tid('currency'))).contains(`${from}`);
     cy.get(tid('buy-token', tid('amount'))).contains(`${receive}`);
     cy.get(tid('buy-token', tid('currency'))).contains(`${to}`);
-
-    cy.get(tid('buy-token'))
-      .find(tid('amount'))
-      .contains(`${receive}`);
-
-    cy.get(tid('buy-token'))
-      .find(tid('currency'))
-      .contains(`${to}`);
-
-    cy.get(tid('summary'));
 
     return new Summary();
   }
