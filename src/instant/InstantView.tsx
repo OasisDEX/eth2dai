@@ -196,7 +196,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                   <Money formatter={formatPrice} value={sellAmount}
                                           token={sellToken}/>
                                  }
                                />}/>
@@ -208,7 +208,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                     <Money formatter={formatPrice} value={buyAmount}
                                             token={buyToken}/>
                                    </Approximate>
                                  }
@@ -239,7 +239,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                   <Money formatter={formatPrice} value={sellAmount}
                                           token={sellToken}/>
                                  }
                                />}
@@ -252,7 +252,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                     <Money formatter={formatPrice} value={buyAmount}
                                             token={buyToken}/>
                                    </Approximate>
                                  }
@@ -280,7 +280,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                   <Money formatter={formatPrice} value={sellAmount}
                                           token={sellToken}/>
                                  }
                                />}
@@ -293,7 +293,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                     <Money formatter={formatPrice} value={buyAmount}
                                             token={buyToken}/>
                                    </Approximate>
                                  }
@@ -322,7 +322,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                   <Money formatter={formatPrice} value={sellAmount}
                                           token={sellToken}/>
                                  }
                                />}
@@ -335,7 +335,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                     <Money formatter={formatPrice} value={buyAmount}
                                             token={buyToken}/>
                                    </Approximate>
                                  }
@@ -356,7 +356,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  theme="reversed"
                                  label="Sell"
                                  value={
-                                   <Money formatter={formatPrice} value={sellAmount || new BigNumber(0)}
+                                   <Money formatter={formatPrice} value={sellAmount}
                                           token={sellToken}/>
                                  }
                                />}
@@ -369,7 +369,7 @@ export class InstantView extends React.Component<InstantFormState> {
                                  label="Buy"
                                  value={
                                    <Approximate>
-                                     <Money formatter={formatPrice} value={buyAmount || new BigNumber(0)}
+                                     <Money formatter={formatPrice} value={buyAmount}
                                             token={buyToken}/>
                                    </Approximate>
                                  }
