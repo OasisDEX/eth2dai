@@ -1,4 +1,4 @@
-import { tid, timeout } from '../utils';
+import { tid } from '../utils';
 
 export class Summary {
 
@@ -12,17 +12,17 @@ export class Summary {
   }
 
   public expectSold = (amount: string, token: string) => {
-    cy.get(tid('sold-token', tid('amount')), timeout(60000)).contains(`${amount}`);
-    cy.get(tid('sold-token', tid('currency')), timeout(60000)).contains(`${token}`);
+    cy.get(tid('sold-token', tid('amount'))).contains(`${amount}`);
+    cy.get(tid('sold-token', tid('currency'))).contains(`${token}`);
   }
 
   public expectBought = (amount: string, token: string) => {
-    cy.get(tid('bought-token', tid('amount')), timeout(60000)).contains(`${amount}`);
-    cy.get(tid('bought-token', tid('currency')), timeout(60000)).contains(`${token}`);
+    cy.get(tid('bought-token', tid('amount'))).contains(`${amount}`);
+    cy.get(tid('bought-token', tid('currency'))).contains(`${token}`);
   }
 
   public expectPriceOf = (price: string | RegExp) => {
-    cy.get(tid('final-price'), timeout(60000)).contains(price);
+    cy.get(tid('final-price')).contains(price);
   }
 
 }

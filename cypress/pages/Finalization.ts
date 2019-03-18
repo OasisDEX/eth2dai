@@ -40,13 +40,10 @@ export class Finalization {
 
   public shouldCommitATrade = (pay: string, from: string, receive: string, to: string) => {
 
-    cy.get(tid('pay-token'))
-      .find(tid('amount'))
-      .contains(`${pay}`);
-
-    cy.get(tid('pay-token'))
-      .find(tid('currency'))
-      .contains(`${from}`);
+    cy.get(tid('pay-token', tid('amount'))).contains(`${pay}`);
+    cy.get(tid('pay-token', tid('currency'))).contains(`${from}`);
+    cy.get(tid('buy-token', tid('amount'))).contains(`${receive}`);
+    cy.get(tid('buy-token', tid('currency'))).contains(`${to}`);
 
     cy.get(tid('buy-token'))
       .find(tid('amount'))
