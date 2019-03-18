@@ -29,7 +29,7 @@ async function deploy(path: string) {
 }
 
 async function visReg() {
-  const execOptions = { timeout: 100000, cwd: process.cwd(), log: true };
+  const execOptions = { timeout: 300000, cwd: process.cwd(), log: true };
   await exec('yarn storybook:screenshots', execOptions);
   await codeChecks.saveCollection('storybook-vis-reg', join(__dirname, '__screenshots__'));
 
