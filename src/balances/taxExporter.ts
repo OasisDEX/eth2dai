@@ -9,8 +9,8 @@ import { web3 } from '../blockchain/web3';
 function queryTrades(context: NetworkConfig, addresses: string[]) {
   return vulcan0x<any>(
     context.oasisDataService.url,
-    'taxExporter',
-    'allOasisTrades',
+    'allTradesWithProxy',
+    'allOasisTradesWithProxies',
     [
       'offerId',
       'act',
@@ -18,19 +18,20 @@ function queryTrades(context: NetworkConfig, addresses: string[]) {
       'taker',
       'bidAmt',
       'bidTkn',
-      'bidGem',
       'lotAmt',
       'lotTkn',
-      'lotGem',
-      'price',
       'time',
-      'tx'
+      'tx',
+      'proxyAddress',
+      'proxyName'
     ],
     {
       filter: {
         or: [
           { maker: { in: addresses } },
           { taker: { in: addresses } },
+          { cetFromAddress: { in: addresses } },
+          { proxyFromAddress: { in: addresses } },
         ]
       }
     }

@@ -1,28 +1,42 @@
 import * as React from 'react';
 import { Observable } from 'rxjs';
 import { Button } from '../utils/forms/Buttons';
+import { Panel, PanelBody, PanelHeader } from '../utils/panel/Panel';
+import { Muted } from '../utils/text/Text';
+import * as styles from './TaxExporter.scss';
 
-interface TaxExporterButtonProps {
+interface TaxExporterViewProps {
   export: () => Observable<any[]>;
 }
 
-export class TaxExporterButton extends React.Component<TaxExporterButtonProps> {
+export class TaxExporterView extends React.Component<TaxExporterViewProps> {
   public render(): React.ReactNode {
     return (
-      <Button
-        onClick={this.exportTrades}
-      >
-        Export trades
-      </Button>);
+      <Panel footerBordered={true} style={{ width: '100%' }}>
+        <PanelHeader>Trade history</PanelHeader>
+        <PanelBody paddingVertical={true} className={styles.taxExporterPanelBody}>
+        <Muted className={styles.taxExporterDescription}>
+          <span>Export your trades from Oasis Contracts (2018-2019)</span>
+          From eth2dai.com, oasis.direct, oasisdex.com and cdp.makerdao.com
+        </Muted>
+        <Button
+          size="sm"
+          onClick={this.exportTrades}
+          className={styles.taxExporterButton}
+        >
+          Export
+        </Button>
+        </PanelBody>
+      </Panel>);
   }
 
   private exportTrades = () => {
     this.props.export()
-    .subscribe(trades => {
-      const url = 'data:text/csv;charset=utf-8,' + encodeURIComponent(toCSV(trades));
+      .subscribe(trades => {
+        const url = 'data:text/csv;charset=utf-8,' + encodeURIComponent(toCSV(trades));
 
-      downloadCSV(url);
-    });
+        downloadCSV(url);
+      });
   }
 }
 
