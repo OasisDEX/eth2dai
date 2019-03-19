@@ -36,6 +36,7 @@ import {
   toEtherPriceUSDChange,
   toGasPriceChange,
 } from '../utils/form';
+import { calculateTradePrice } from '../utils/price';
 import { pluginDevModeHelpers } from './instantDevModeHelpers';
 import {
   estimateTradePayWithERC20,
@@ -156,12 +157,14 @@ export interface InstantFormState extends HasGasEstimation {
   tradeEvaluationStatus: TradeEvaluationStatus;
   tradeEvaluationError?: any;
   price?: BigNumber;
+  quotation?: string;
   priceImpact?: BigNumber;
   bestPrice?: BigNumber;
   slippageLimit: BigNumber;
 }
 
 export enum InstantFormChangeKind {
+  tokenChange = 'tokenChange',
   buyAmountFieldChange = 'buyAmountFieldChange',
   sellAmountFieldChange = 'sellAmountFieldChange',
   pairChange = 'pairChange',
@@ -174,6 +177,11 @@ export enum InstantFormChangeKind {
 export interface ProgressChange {
   kind: InstantFormChangeKind.progressChange;
   progress?: Progress;
+}
+
+export interface TokenChange {
+  kind: InstantFormChangeKind.tokenChange;
+  side: OfferType;
 }
 
 export interface BuyAmountChange {
@@ -198,6 +206,7 @@ export interface DustLimitsChange {
 }
 
 export type ManualChange =
+  TokenChange |
   BuyAmountChange |
   SellAmountChange |
   PairChange |
@@ -276,6 +285,11 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         etherBalance: change.etherBalance
+      };
+    case InstantFormChangeKind.tokenChange:
+      return {
+        ...state,
+        kind: change.side
       };
   }
 
@@ -483,10 +497,12 @@ function validate(state: InstantFormState): InstantFormState {
 }
 
 function calculatePriceAndImpact(state: InstantFormState): InstantFormState {
-  const { buyAmount, sellAmount, bestPrice } = state;
-  const price = buyAmount && sellAmount ?
-    buyAmount.div(sellAmount) :
-    undefined;
+  const { buyAmount, buyToken, sellAmount, sellToken, bestPrice } = state;
+  const calculated = buyAmount && sellAmount
+    ? calculateTradePrice(sellToken, sellAmount, buyToken, buyAmount)
+    : null;
+  const price = calculated ? calculated.price : undefined;
+  const quotation = calculated ? calculated.quotation : undefined;
   const priceImpact = price && bestPrice ?
     bestPrice
       .minus(price)
@@ -497,6 +513,7 @@ function calculatePriceAndImpact(state: InstantFormState): InstantFormState {
   return {
     ...state,
     price,
+    quotation,
     priceImpact,
   };
 }
@@ -581,7 +598,7 @@ export function createFormController$(
     sellToken: 'ETH',
     gasEstimationStatus: GasEstimationStatus.unset,
     tradeEvaluationStatus: TradeEvaluationStatus.unset,
-    slippageLimit: new BigNumber('0.05')
+    slippageLimit: new BigNumber('0.05'),
   };
 
   return merge(

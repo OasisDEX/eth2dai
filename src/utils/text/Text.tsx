@@ -64,5 +64,5 @@ export const BoundarySpan = ({ children, value, middleValue = zero, middleAs = '
 };
 
 export const Currency = ({ value, theme = 'none' }: { value: string, theme?: 'bold' | 'semi-bold' | 'medium' | 'none' }) => (
-  <span className={classnames(styles.currency, theme)}>{value}</span>
+  <span data-test-id="currency" className={classnames(styles.currency, theme)}>{value}</span>
 );

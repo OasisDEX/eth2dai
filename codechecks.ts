@@ -1,5 +1,6 @@
 import { codeChecks } from 'codechecks';
 import { buildSize }  from 'codecheck-build-size';
+import { typeCoverage} from 'codecheck-type-coverage';
 import { join } from 'path';
 // tslint:disable-next-line
 const exec = require('await-exec') as (cmd: string, opt: any) => Promise<void>;
@@ -11,6 +12,8 @@ export async function main() {
       { path: './build/static/css/*.css' },
     ]
   });
+
+  await typeCoverage({ tsconfigPath: 'tsconfig.prod.json' });
 
   await deploy(join(__dirname, 'build'));
 
@@ -29,7 +32,7 @@ async function deploy(path: string) {
 }
 
 async function visReg() {
-  const execOptions = { timeout: 100000, cwd: process.cwd(), log: true };
+  const execOptions = { timeout: 300000, cwd: process.cwd(), log: true };
   await exec('yarn storybook:screenshots', execOptions);
   await codeChecks.saveCollection('storybook-vis-reg', join(__dirname, '__screenshots__'));
 

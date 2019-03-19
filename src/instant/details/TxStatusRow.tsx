@@ -6,28 +6,16 @@ interface TxStatusRowProps {
   icon?: React.ReactNode | HTMLElement;
   label: string | React.ReactNode;
   status?: string | React.ReactNode;
-  theme?: 'success' | 'failure' | 'generic';
 }
-
-const skin = (theme: string) => {
-  switch (theme) {
-    case 'success':
-      return styles.success;
-    case'failure':
-      return styles.failure;
-    default:
-      return styles.generic;
-  }
-};
 
 export class TxStatusRow extends React.Component<TxStatusRowProps> {
   public render() {
-    const { icon, label, status, theme } = this.props;
+    const { icon, label, status, ...rest } = this.props;
     return (
-      <div className={classnames(styles.txStatusRow, skin(theme ? theme : 'generic'))}>
+      <div {...rest} className={classnames(styles.txStatusRow)}>
         {icon && <span className={styles.icon}>{icon}</span>}
-        <span className={styles.label}>{label}</span>
-        {status && <span className={styles.status}>{status}</span>}
+        <span data-test-id="label" className={styles.label}>{label}</span>
+        {status && <span data-test-id="status" className={styles.status}>{status}</span>}
       </div>
     );
   }

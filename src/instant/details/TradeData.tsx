@@ -21,10 +21,10 @@ const skin = (theme: string) => {
 
 export class TradeData extends React.Component<EntryProps> {
   public render() {
-    const { label, value, info, theme } = this.props;
+    const { label, value, info, theme, ...rest } = this.props;
     return (
-      <div className={classnames(styles.entry, theme ? skin(theme) : '')} {...this.props}>
-        <span className={styles.label}>
+      <div className={classnames(styles.entry, theme ? skin(theme) : '')} {...rest}>
+        <span data-test-id="label" className={styles.label}>
           {label}
         </span>&nbsp;
         {
