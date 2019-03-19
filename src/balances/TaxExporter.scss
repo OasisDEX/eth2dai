@@ -1,6 +1,28 @@
 .taxExporterDescription {
-  font-size: 14px;
+  flex-grow: 1;
+  font-size: 12px;
   display: block;
   margin-top: 8px;
   margin-bottom: 8px;
+
+  span {
+    color: #fff;
+    display: block;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  a {
+    color: #6fc2e9;
+  }
+}
+
+.taxExporterPanelBody {
+  display: flex;
+  width: 100%;
+  border-top: 1px solid #393942;
+}
+
+.taxExporterButton {
+  align-self: center;
 }
