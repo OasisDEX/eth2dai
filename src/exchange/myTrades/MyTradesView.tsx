@@ -40,7 +40,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
             >Close</Button>
           </ButtonGroup>
         </PanelHeader>
-        <Authorization authorizable={this.props}>
+        <Authorization authorizable={this.props} view="My Orders">
           {loadable => <WithLoadingIndicator
             loadable={loadable}
             error={this.props.kind === MyTradesKind.closed ? <ServerUnreachable/> : undefined }

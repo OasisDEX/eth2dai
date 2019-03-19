@@ -1,13 +1,14 @@
 import classnames from 'classnames';
 import * as React from 'react';
 
-import errorSvg from '../../icons/error.svg';
+import radioSvg from '../../icons/radio.svg';
 import { SvgImage } from '../icons/utils';
 import { Muted } from '../text/Text';
 import * as styles from './LoggedOut.scss';
 
-export const LoggedOut = ({ className, ...props }: {
-  className?: string
+export const LoggedOut = ({ view = 'the data', className, ...props }: {
+  view?: string,
+  className?: string,
 }) => {
   return (
     <div
@@ -15,11 +16,10 @@ export const LoggedOut = ({ className, ...props }: {
        { ...props }
     >
       <div className={styles.mainInfo}>
-        <SvgImage image={errorSvg} className={styles.icon}/>
-        Logged out
+        <SvgImage image={radioSvg} className={styles.icon}/>
       </div>
       <Muted className={styles.annotate}>
-        Please log in to see the data.
+        Connect to view {view}
       </Muted>
     </div>
   );

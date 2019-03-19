@@ -40,7 +40,7 @@ export class AssetOverviewView
     return (
       <Panel footerBordered={true} style={{ width: '100%' }}>
         <PanelHeader>Asset overview</PanelHeader>
-        <Authorization authorizable={this.props}>
+        <Authorization authorizable={this.props} view="Balances">
           {loadable => <WithLoadingIndicator loadable={loadable}>
             {(combinedBalances) => (
               <AssetsOverviewViewInternal

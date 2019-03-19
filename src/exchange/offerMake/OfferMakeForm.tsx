@@ -566,6 +566,10 @@ function messageContent(msg: Message) {
       return <>
         {`Your order exceeds the order book total`}
       </>;
+    case MessageKind.notConnected:
+      return <>
+        {`Connect to create Orders`}
+      </>;
     case MessageKind.slippageLimitToLow:
       return <>
         Slippage limit too low

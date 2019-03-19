@@ -65,6 +65,7 @@ export enum MessageKind {
   incredibleAmount = 'incredibleAmount',
   dustAmount = 'dustAmount',
   orderbookTotalExceeded = 'orderbookTotalExceeded',
+  notConnected = 'notConnected',
   slippageLimitNotSet = 'slippageNotSet',
   slippageLimitToLow = 'slippageLimitToLow',
   slippageLimitToHigh = 'slippageLimitToHigh',
@@ -85,7 +86,9 @@ export type Message = {
 } | {
   kind: MessageKind.slippageLimitToHigh |
     MessageKind.slippageLimitToLow |
-    MessageKind.slippageLimitNotSet | MessageKind.orderbookTotalExceeded
+    MessageKind.slippageLimitNotSet |
+    MessageKind.orderbookTotalExceeded |
+    MessageKind.notConnected
   field: string;
   priority: number;
 };
@@ -458,6 +461,13 @@ function validate(state: OfferFormState): OfferFormState {
         state.total, state.quoteToken, 'total'] :
       [state.total, state.quoteToken, 'total', state.dustLimitQuote,
         state.amount, state.baseToken, 'amount'];
+    if (!state.user || !state.user.account) {
+      messages.push({
+        kind: MessageKind.notConnected,
+        field: 'total',
+        priority: 1000,
+      });
+    }
     if (allowance === false) {
       messages.push({
         kind: MessageKind.noAllowance,
