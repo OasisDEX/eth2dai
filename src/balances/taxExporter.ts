@@ -3,7 +3,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { flatMap, switchMap } from 'rxjs/operators';
 import { proxyAddress$ } from '../blockchain/calls/instant';
 import { NetworkConfig } from '../blockchain/config';
-import { vulcan0x } from '../blockchain/vulcan0x';
+import { Placeholder, vulcan0x } from '../blockchain/vulcan0x';
 import { web3 } from '../blockchain/web3';
 
 function queryTrades(context: NetworkConfig, addresses: string[]) {
@@ -28,10 +28,10 @@ function queryTrades(context: NetworkConfig, addresses: string[]) {
     {
       filter: {
         or: [
-          { maker: { in: addresses } },
-          { taker: { in: addresses } },
-          { cetFromAddress: { in: addresses } },
-          { proxyFromAddress: { in: addresses } },
+          { maker: { in: new Placeholder('addresses', '[String!]', addresses) } },
+          { taker: { in: new Placeholder('addresses', '[String!]', addresses) } },
+          { cetFromAddress: { in: new Placeholder('addresses', '[String!]', addresses) } },
+          { proxyFromAddress: { in: new Placeholder('addresses', '[String!]', addresses) } },
         ]
       }
     }
