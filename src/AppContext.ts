@@ -63,6 +63,7 @@ import { createFormController$ as createInstantFormController$ } from './instant
 import { InstantViewPanel } from './instant/InstantViewPanel';
 import { createTransactionNotifier$ } from './transactionNotifier/transactionNotifier';
 import { TransactionNotifierView } from './transactionNotifier/TransactionNotifierView';
+import { Authorizable, authorizablify } from './utils/authorizable';
 import { connect } from './utils/connect';
 import { inject } from './utils/inject';
 import { Loadable, LoadableWithTradingPair, loadablifyLight, } from './utils/loadable';
@@ -100,9 +101,9 @@ export function setupAppContext() {
   const AssetOverviewViewRxTx =
     inject(
       withModal<AssetsOverviewActionProps, AssetsOverviewExtraProps>(
-        connect<Loadable<CombinedBalances>, AssetsOverviewExtraProps>(
+        connect<Authorizable<Loadable<CombinedBalances>>, AssetsOverviewExtraProps>(
           AssetOverviewView,
-          loadablifyLight(combinedBalances$)
+          authorizablify(() => loadablifyLight(combinedBalances$))
         )
       ),
       { approve, disapprove, wrapUnwrapForm$ }

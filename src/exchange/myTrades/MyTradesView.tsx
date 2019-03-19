@@ -7,9 +7,8 @@ import { formatDateTime } from '../../utils/formatters/format';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button, ButtonGroup, CloseButton } from '../../utils/forms/Buttons';
 import { ProgressIcon } from '../../utils/icons/Icons';
-import { Gate } from '../../utils/loadingIndicator/Gate';
+import { Authorization } from '../../utils/loadingIndicator/Authorization';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
-import { LoggedOut } from '../../utils/loadingIndicator/LoggedOut';
 import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
@@ -24,7 +23,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
   public render() {
     return (
       <>
-        <PanelHeader bordered={this.props.status === 'error'}>
+        <PanelHeader bordered={this.props.value && this.props.value.status === 'error'}>
           <span>My Orders</span>
           <ButtonGroup style={{ marginLeft: 'auto' }}>
             <Button
@@ -41,12 +40,9 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
             >Close</Button>
           </ButtonGroup>
         </PanelHeader>
-        <Gate
-          isOpen={!!this.props.account}
-          closed={<LoggedOut/>}
-        >
-          <WithLoadingIndicator
-            loadable={this.props}
+        <Authorization authorizable={this.props}>
+          {loadable => <WithLoadingIndicator
+            loadable={loadable}
             error={this.props.kind === MyTradesKind.closed ? <ServerUnreachable/> : undefined }
           >
             { (trades: TradeWithStatus[]) => (
@@ -60,13 +56,13 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                 <tr>
                   <th>Type</th>
                   <th className={styles.right}>
-                    <InfoLabel>Price</InfoLabel> {this.props.tradingPair.quote}
+                    <InfoLabel>Price</InfoLabel> {loadable.tradingPair.quote}
                   </th>
                   <th className={styles.right}>
-                    <InfoLabel>Amount</InfoLabel> {this.props.tradingPair.base}
+                    <InfoLabel>Amount</InfoLabel> {loadable.tradingPair.base}
                   </th>
                   <th className={styles.right}>
-                    <InfoLabel>Total</InfoLabel> {this.props.tradingPair.quote}
+                    <InfoLabel>Total</InfoLabel> {loadable.tradingPair.quote}
                   </th>
                   <th className={classnames(this.props.kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>Time</th>
                   { this.props.kind === MyTradesKind.open &&
@@ -130,8 +126,8 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
               </Scrollbar>
               </>
           )}
-          </WithLoadingIndicator>
-        </Gate>
+          </WithLoadingIndicator>}
+        </Authorization>
       </>
     );
   }
