@@ -13,7 +13,7 @@ export class TaxExporterView extends React.Component<TaxExporterViewProps> {
   public render(): React.ReactNode {
     return (
       <Panel footerBordered={true} style={{ width: '100%' }}>
-        <PanelHeader>Trade history</PanelHeader>
+        <PanelHeader>History export</PanelHeader>
         <PanelBody paddingVertical={true} className={styles.taxExporterPanelBody}>
         <Muted className={styles.taxExporterDescription}>
           <span>Export your trades from Oasis Contracts (2018-2019)</span>
