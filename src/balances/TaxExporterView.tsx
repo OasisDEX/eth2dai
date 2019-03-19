@@ -48,6 +48,7 @@ function toCSV(trades: any[]) {
   trades = [...trades].sort((a, b) => a.timestamp > b.timestamp ? 1 : -1);
 
   const rows = trades.map(trade => {
+    console.log('trade', trade);
     const { time, tx, act, bidAmt, bidTkn, lotAmt, lotTkn } = trade;
     const buyAmount = act === 'buy' ? bidAmt : lotAmt;
     const sellAmount = act === 'buy' ? lotAmt : bidAmt;
@@ -61,11 +62,12 @@ function toCSV(trades: any[]) {
       buyAmount,
       sellToken,
       date,
-      tx
+      tx,
+      tag: trade.tag
     };
   });
 
-  const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Tx"';
+  const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Tx";"Proxy"';
   return `${header}\r\n${rows.map(trade => `${toCSVRow(trade)}\r\n`).join('')}`;
 }
 

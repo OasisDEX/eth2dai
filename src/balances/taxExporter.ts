@@ -1,7 +1,5 @@
-import { curry } from 'lodash';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { flatMap, switchMap } from 'rxjs/operators';
-import { proxyAddress$ } from '../blockchain/calls/instant';
 import { NetworkConfig } from '../blockchain/config';
 import { Placeholder, vulcan0x } from '../blockchain/vulcan0x';
 import { web3 } from '../blockchain/web3';
@@ -23,7 +21,8 @@ function queryTrades(context: NetworkConfig, addresses: string[]) {
       'time',
       'tx',
       'proxyAddress',
-      'proxyName'
+      'proxyName',
+      'tag'
     ],
     {
       filter: {
@@ -44,10 +43,10 @@ export function createTaxExport$(
 ) {
   return combineLatest(context$, address$).pipe(
     switchMap(([context, address]) => {
-      return combineLatest(...context.taxProxyRegistries.map(curry(proxyAddress$)(context, address))).pipe(
-        flatMap(proxyAddresses => {
-          const addresses_all: string[] = [address, ...proxyAddresses].map((web3 as any).toChecksumAddress);
-          return queryTrades(context, addresses_all);
+      return of(address).pipe(
+        flatMap(owner_address => {
+          owner_address = (web3 as any).toChecksumAddress(owner_address);
+          return queryTrades(context, [owner_address]);
         })
       );
     })
