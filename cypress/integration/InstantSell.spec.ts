@@ -7,7 +7,7 @@ const nextTrade = () => {
   cy.get(tid('new-trade')).click();
 };
 
-describe('Selling', () => {
+describe.skip('Selling', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
     ApplicationState.acceptToS();
