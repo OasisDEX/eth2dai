@@ -27,6 +27,7 @@ import {
   initializedAccount$,
   onEveryBlock$
 } from './blockchain/network';
+import { user$ } from './blockchain/user';
 import { createPickableOrderBookFromOfferMake$, loadOrderbook$, Orderbook } from './exchange/orderbook/orderbook';
 import {
   createTradingPair$,
@@ -248,6 +249,7 @@ function offerMake(
         etherPriceUsd$,
         orderbook$,
         balances$,
+        user$,
         dustLimits$: createDustLimits$(context$),
       },
       tp)

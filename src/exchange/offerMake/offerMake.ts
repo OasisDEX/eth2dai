@@ -8,6 +8,7 @@ import { Calls, Calls$ } from '../../blockchain/calls/calls';
 import { OfferMakeData, OfferMakeDirectData } from '../../blockchain/calls/offerMake';
 import { tokens } from '../../blockchain/config';
 import { TxState, TxStatus } from '../../blockchain/transactions';
+import { User } from '../../blockchain/user';
 import { combineAndMerge } from '../../utils/combineAndMerge';
 import {
   AllowanceChange,
@@ -34,7 +35,9 @@ import {
   toDustLimitChange$,
   toEtherPriceUSDChange,
   toGasPriceChange,
-  toOrderbookChange$
+  toOrderbookChange$,
+  toUserChange,
+  UserChange,
 } from '../../utils/form';
 import { firstOfOrTrue } from '../../utils/operators';
 import { zero } from '../../utils/zero';
@@ -117,6 +120,7 @@ export interface OfferFormState extends HasGasEstimation {
   dustLimitQuote?: BigNumber;
   dustLimitBase?: BigNumber;
   balances?: Balances;
+  user?: User;
 }
 
 export enum OfferMakeChangeKind {
@@ -149,7 +153,8 @@ export type EnvironmentChange =
   AllowanceChange |
   OrderbookChange |
   BalancesChange |
-  DustLimitChange;
+  DustLimitChange |
+  UserChange;
 
 // export interface FormStageChange {
 //   kind: InstantFormChangeKind.formStageChange;
@@ -405,6 +410,11 @@ function applyChange(state: OfferFormState,
         balances: change.balances,
         gasEstimationStatus: GasEstimationStatus.unset
       };
+    case FormChangeKind.userChange:
+      return {
+        ...state,
+        user: change.user
+      };
     case OfferMakeChangeKind.slippageLimitChange:
       return {
         ...state,
@@ -417,6 +427,9 @@ function applyChange(state: OfferFormState,
 
 function addGasEstimation(theCalls$: Calls$,
                           state: OfferFormState): Observable<OfferFormState> {
+  if (!state.user || !state.user.account) {
+    return of(state);
+  }
   return doGasEstimation(theCalls$, state, (calls: Calls) =>
     state.messages.length !== 0 ||
     !state.price || state.price.isZero() ||
@@ -616,7 +629,8 @@ export function createFormController$(
     dustLimits$: Observable<DustLimits>;
     orderbook$: Observable<Orderbook>,
     calls$: Calls$;
-    etherPriceUsd$: Observable<BigNumber>
+    etherPriceUsd$: Observable<BigNumber>,
+    user$: Observable<User>,
   },
   tradingPair: TradingPair
 ): Observable<OfferFormState> {
@@ -631,6 +645,7 @@ export function createFormController$(
     toAllowanceChange$(FormChangeKind.buyAllowanceChange, tradingPair.base, params.allowance$),
     toAllowanceChange$(FormChangeKind.sellAllowanceChange, tradingPair.quote, params.allowance$),
     toBalancesChange(params.balances$),
+    toUserChange(params.user$),
   );
 
   const [submit, submitChange$] = prepareSubmit(params.calls$);

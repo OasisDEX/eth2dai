@@ -5,6 +5,7 @@ import { catchError, first, flatMap, map, startWith, switchMap } from 'rxjs/oper
 import { Balances, DustLimits } from '../balances/balances';
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
+import { User } from '../blockchain/user';
 import { amountFromWei } from '../blockchain/utils';
 import { Offer, OfferType, Orderbook } from '../exchange/orderbook/orderbook';
 
@@ -36,6 +37,7 @@ export enum FormChangeKind {
   balancesChange = 'balancesChange',
   tokenChange = 'tokenChange',
   dustLimitChange = 'dustLimitChange',
+  userChange = 'userChange',
   matchTypeChange = 'matchType',
   pickOfferChange = 'pickOffer',
   progress = 'progress',
@@ -125,6 +127,11 @@ export interface DustLimitChange {
   dustLimitQuote: BigNumber;
 }
 
+export interface UserChange {
+  kind: FormChangeKind.userChange;
+  user: User;
+}
+
 export interface ProgressChange {
   kind: FormChangeKind.progress;
   progress?: ProgressStage;
@@ -206,6 +213,15 @@ export function toBalancesChange(balances$: Observable<Balances>) {
       balances,
       kind: FormChangeKind.balancesChange
     } as BalancesChange))
+  );
+}
+
+export function toUserChange(user$: Observable<User>) {
+  return user$.pipe(
+    map(user => ({
+      user,
+      kind: FormChangeKind.userChange
+    } as UserChange))
   );
 }
 

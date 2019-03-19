@@ -25,6 +25,10 @@ const defaultCalls = {
   offerMakeDirectEstimateGas: () => of(30),
 } as any;
 
+const defaultUser = {
+  account: '0x1234',
+};
+
 const defParams = {
   gasPrice$: of(new BigNumber(0.01)),
   etherPriceUsd$: of(new BigNumber(1)),
@@ -33,6 +37,7 @@ const defParams = {
   dustLimits$: of({ DAI: new BigNumber(0.1), WETH: new BigNumber(0.1) }),
   orderbook$: of(emptyOrderBook),
   calls$: of(defaultCalls) as Calls$,
+  user$: of(defaultUser),
 };
 
 const controllerWithFakeOrderBook = (buys: any = [], sells: any = []) => {
