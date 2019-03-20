@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/internal/operators';
 import { Button } from '../utils/forms/Buttons';
 import { Panel, PanelBody, PanelHeader } from '../utils/panel/Panel';
 import { Muted } from '../utils/text/Text';
@@ -31,10 +32,9 @@ export class TaxExporterView extends React.Component<TaxExporterViewProps> {
   }
 
   private exportTrades = () => {
-    this.props.export()
+    this.props.export().pipe(take(1))
       .subscribe(trades => {
         const url = 'data:text/csv;charset=utf-8,' + encodeURIComponent(toCSV(trades));
-
         downloadCSV(url);
       });
   }
@@ -45,30 +45,8 @@ function toCSVRow(trade: any): string {
 }
 
 function toCSV(trades: any[]) {
-  trades = [...trades].sort((a, b) => a.timestamp > b.timestamp ? 1 : -1);
-
-  const rows = trades.map(trade => {
-    console.log('trade', trade);
-    const { time, tx, act, bidAmt, bidTkn, lotAmt, lotTkn } = trade;
-    const buyAmount = act === 'buy' ? bidAmt : lotAmt;
-    const sellAmount = act === 'buy' ? lotAmt : bidAmt;
-    const buyToken = act === 'buy' ? lotTkn : bidTkn;
-    const sellToken = act === 'buy' ? bidTkn : lotTkn;
-    const date = new Date(time).toLocaleString().replace(',', '');
-
-    return {
-      sellAmount,
-      buyToken,
-      buyAmount,
-      sellToken,
-      date,
-      tx,
-      tag: trade.tag
-    };
-  });
-
-  const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Tx";"Proxy"';
-  return `${header}\r\n${rows.map(trade => `${toCSVRow(trade)}\r\n`).join('')}`;
+  const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Address";"Tx";"Proxy"';
+  return `${header}\r\n${trades.map(trade => `${toCSVRow(trade)}\r\n`).join('')}`;
 }
 
 function downloadCSV(url: string) {
