@@ -5,34 +5,27 @@ import { Placeholder, vulcan0x } from '../blockchain/vulcan0x';
 import { web3 } from '../blockchain/web3';
 
 function queryTrades(context: NetworkConfig, addresses: string[]) {
-  return vulcan0x<any>(
-    context.oasisDataService.url,
-    'allTradesWithProxy',
-    'allOasisTradesWithProxies',
-    [
-      'offerId',
-      'act',
-      'maker',
-      'taker',
-      'bidAmt',
-      'bidTkn',
-      'lotAmt',
-      'lotTkn',
-      'time',
-      'tx',
-      'proxyAddress',
-      'proxyName',
-      'tag'
-    ],
-    {
-      filter: {
-        or: [
+
+  const filter = {
+    or: [
           { maker: { in: new Placeholder('addresses', '[String!]', addresses) } },
           { taker: { in: new Placeholder('addresses', '[String!]', addresses) } },
           { cetFromAddress: { in: new Placeholder('addresses', '[String!]', addresses) } },
           { proxyFromAddress: { in: new Placeholder('addresses', '[String!]', addresses) } },
-        ]
-      }
+    ]
+  };
+  const order = '[TIME_ASC]';
+  const fields = ['offerId', 'act', 'maker', 'taker', 'bidAmt', 'bidTkn', 'lotAmt', 'lotTkn', 'time', 'tx',
+    'proxyAddress', 'proxyName', 'tag'];
+
+  return vulcan0x<any>(
+    context.oasisDataService.url,
+    'allTradesWithProxy',
+    'allOasisTradesWithProxies',
+    fields,
+    {
+      filter,
+      order
     }
   );
 }
