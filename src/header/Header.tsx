@@ -77,7 +77,7 @@ class Header extends React.Component<HeaderProps> {
 
 export const HeaderTxRx = connect(Header, account$.pipe(map(account => ({ account }))));
 
-interface StatusProps extends Loadable<string> {
+interface StatusProps extends Loadable<Account> {
 }
 
 class Status extends React.Component<StatusProps> {
@@ -89,7 +89,7 @@ class Status extends React.Component<StatusProps> {
     return (
       <span className={styles.accountLoader}>
       <WithLoadingIndicatorInline loadable={this.props} light={true} className={styles.account}>
-      { (account: string | undefined) => {
+      { ({ account, available }: Account) => {
         const label = account ? account.slice(0, 6) + '...' + account.slice(-4) : 'Logged out';
         return account ?
           <div title={account} className={classnames(navElement, styles.account)}>
@@ -97,7 +97,7 @@ class Status extends React.Component<StatusProps> {
             <span style={{ marginLeft: '1em' }}>{label}</span>
           </div> :
           <div title={account} className={classnames(navElement, styles.account)}>
-            <Button color="greyWhite" size="sm" onClick={this.logIn} className={styles.login}>Log in</Button>
+            <Button disabled={!available} color="greyWhite" size="sm" onClick={this.logIn} className={styles.login}>Log in</Button>
           </div>;
       } }
       </WithLoadingIndicatorInline>
@@ -106,12 +106,17 @@ class Status extends React.Component<StatusProps> {
   }
 }
 
-const loadableAccount$: Observable<Loadable<string|undefined>> = combineLatest(walletStatus$, account$).pipe(
+interface Account {
+  account: string | undefined;
+  available?: boolean;
+}
+
+const loadableAccount$: Observable<Loadable<Account>> = combineLatest(walletStatus$, account$).pipe(
   map(([walletStatus, account]) => {
     if (walletStatus === 'connecting') {
-      return { status: 'loading' } as Loadable<string|undefined>;
+      return { status: 'loading' } as Loadable<Account>;
     }
-    return { status: 'loaded', value: account } as Loadable<string|undefined>;
+    return { status: 'loaded', value: { account, available: walletStatus !== 'missing' } } as Loadable<Account>;
   }),
 );
 

@@ -13,6 +13,8 @@ export const GasCost = (props: HasGasEstimation) => {
       return (<span>...</span>);
     case GasEstimationStatus.error:
       return (<span>error</span>);
+    case GasEstimationStatus.unknown:
+      return (<span>???</span>);
     case GasEstimationStatus.unset:
     case undefined:
     case GasEstimationStatus.calculated:

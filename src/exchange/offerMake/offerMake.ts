@@ -431,7 +431,7 @@ function applyChange(state: OfferFormState,
 function addGasEstimation(theCalls$: Calls$,
                           state: OfferFormState): Observable<OfferFormState> {
   if (!state.user || !state.user.account) {
-    return of(state);
+    return of({ ...state, gasEstimationStatus: GasEstimationStatus.unknown });
   }
   return doGasEstimation(theCalls$, state, (calls: Calls) =>
     state.messages.length !== 0 ||

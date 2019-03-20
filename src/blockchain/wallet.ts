@@ -11,7 +11,7 @@ export const connectToWallet$: Subject<number> = new Subject();
 export const walletStatus$: Observable<WalletStatus> = concat(
   account$.pipe(
     first(),
-    map(account => account ? 'connected' : 'disconnected'),
+    map(account => account ? 'connected' : (window as Web3Window).ethereum ? 'disconnected' : 'missing'),
   ),
   connectToWallet$.pipe(
     switchMap(() => {

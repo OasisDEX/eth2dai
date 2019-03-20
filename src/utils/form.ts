@@ -263,6 +263,7 @@ export enum GasEstimationStatus {
   calculating = 'calculating',
   calculated = 'calculated',
   error = 'error',
+  unknown = 'unknown',
 }
 
 export interface HasGasEstimationEthUsd {
