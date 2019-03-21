@@ -210,6 +210,7 @@ export function setupAppContext() {
       balances$,
       etherBalance$,
       // proxyAddress$,
+      user$,
       dustLimits$: createDustLimits$(context$),
     }
   );

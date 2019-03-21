@@ -12,14 +12,14 @@ import {
   scan,
   shareReplay,
   startWith,
-  switchMap
+  switchMap,
 } from 'rxjs/operators';
 import { Balances, DustLimits } from '../balances/balances';
-import { tokens } from '../blockchain/config';
-
 import { Calls, calls$, Calls$ } from '../blockchain/calls/calls';
 import { eth2weth } from '../blockchain/calls/instant';
+import { tokens } from '../blockchain/config';
 import { TxStatus } from '../blockchain/transactions';
+import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
@@ -35,6 +35,8 @@ import {
   toEtherBalanceChange,
   toEtherPriceUSDChange,
   toGasPriceChange,
+  toUserChange,
+  UserChange,
 } from '../utils/form';
 import { calculateTradePrice } from '../utils/price';
 import { pluginDevModeHelpers } from './instantDevModeHelpers';
@@ -62,18 +64,12 @@ export enum MessageKind {
   incredibleAmount = 'incredibleAmount',
   dustAmount = 'dustAmount',
   orderbookTotalExceeded = 'orderbookTotalExceeded',
+  notConnected = 'notConnected',
   custom = 'custom'
 }
 
 export type Message = {
-  kind: MessageKind.noAllowance;
-  field: string;
-  priority: number;
-  token: string;
-  placement: Placement;
-} | {
   kind: MessageKind.dustAmount
-    | MessageKind.noAllowance
     | MessageKind.insufficientAmount
     | MessageKind.incredibleAmount;
   field: string;
@@ -91,11 +87,16 @@ export type Message = {
   placement: Placement;
   error: any
 } | {
-  kind: MessageKind.custom
+  kind: MessageKind.notConnected;
   field: string;
   priority: number;
   placement: Placement;
-  error: any
+// } | {
+//   kind: MessageKind.custom
+//   field: string;
+//   priority: number;
+//   placement: Placement;
+//   error: any
 };
 
 export enum TradeEvaluationStatus {
@@ -161,6 +162,7 @@ export interface InstantFormState extends HasGasEstimation {
   priceImpact?: BigNumber;
   bestPrice?: BigNumber;
   slippageLimit: BigNumber;
+  user?: User;
 }
 
 export enum InstantFormChangeKind {
@@ -217,7 +219,8 @@ export type EnvironmentChange =
   EtherPriceUSDChange |
   BalancesChange |
   DustLimitsChange |
-  EtherBalanceChange;
+  EtherBalanceChange |
+  UserChange;
 
 export type InstantFormChange =
   ManualChange |
@@ -290,6 +293,11 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         kind: change.side
+      };
+    case FormChangeKind.userChange:
+      return {
+        ...state,
+        user: change.user
       };
   }
 
@@ -419,6 +427,18 @@ function evaluateTrade(
 }
 
 function validate(state: InstantFormState): InstantFormState {
+  if (!state.user || !state.user.account) {
+    return {
+      ...state,
+      message: {
+        kind: MessageKind.notConnected,
+        field: 'none',
+        priority: 1000,
+        placement: Position.BOTTOM,
+      },
+    };
+  }
+
   if (state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated) {
     return state;
   }
@@ -574,6 +594,7 @@ export function createFormController$(
     dustLimits$: Observable<DustLimits>;
     calls$: Calls$;
     etherPriceUsd$: Observable<BigNumber>;
+    user$: Observable<User>;
   }
 ): Observable<InstantFormState> {
 
@@ -587,6 +608,7 @@ export function createFormController$(
     toBalancesChange(params.balances$),
     toEtherBalanceChange(params.etherBalance$),
     toDustLimitsChange(params.dustLimits$),
+    toUserChange(params.user$),
   );
 
   const [submit, submitChange$] = prepareSubmit(params.calls$);
@@ -607,6 +629,7 @@ export function createFormController$(
     environmentChange$,
   ).pipe(
     scan(applyChange, initialState),
+    startWith(initialState),
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.calls$)),
     map(validate),

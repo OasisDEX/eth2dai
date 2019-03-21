@@ -64,10 +64,10 @@ function error(msg: Message | undefined) {
           No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
         </>
       );
-    default:
+    case MessageKind.notConnected:
       return (
         <>
-          Don't know how to show message: {msg.kind}
+          Connect wallet to proceed with order
         </>
       );
   }
@@ -461,7 +461,10 @@ export class InstantView extends React.Component<InstantFormState> {
         </div>
         <div data-test-id="error"
              className={
-               classnames(styles.errors, message && message.placement === Position.BOTTOM ? '' : 'hide-all')
+               classnames(
+                 message && message.kind === MessageKind.notConnected ? styles.warnings : styles.errors,
+                 message && message.placement === Position.BOTTOM ? '' : 'hide-all',
+               )
              }>
           {error(message)}
         </div>

@@ -86,7 +86,7 @@
   justify-content: space-between;
 }
 
-.errors {
+%errors-base {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -98,8 +98,17 @@
 
   @include fontMontserratMedium;
   font-size: 12px;
-  color: $errors;
   letter-spacing: 1.10px;
+}
+
+.errors {
+  @extend %errors-base;
+  color: $errors;
+}
+
+.warnings {
+  @extend %errors-base;
+  color: #828287;
 }
 
 // Asset Picker

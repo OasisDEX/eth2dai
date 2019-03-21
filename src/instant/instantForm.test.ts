@@ -21,6 +21,10 @@ function snapshotify(object: any): any {
 const defaultCalls = {
 } as any;
 
+const defaultUser = {
+  account: '0x1234',
+};
+
 const defParams = {
   gasPrice$: of(new BigNumber(0.01)),
   etherPriceUsd$: of(new BigNumber(1)),
@@ -29,6 +33,7 @@ const defParams = {
   etherBalance$: of(zero),
   dustLimits$: of({ DAI: new BigNumber(0.1), WETH: new BigNumber(0.1) }),
   calls$: of(defaultCalls) as Calls$,
+  user$: of(defaultUser),
 };
 
 const controllerWithFakeOrderBook = (buys: any = [], sells: any = [], overrides: {} = {}) => {

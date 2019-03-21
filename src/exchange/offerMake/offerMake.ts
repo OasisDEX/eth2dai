@@ -688,6 +688,7 @@ export function createFormController$(
     fetchBestSellOrder$(params.orderbook$)
   ).pipe(
     scan(applyChange, initialState),
+    startWith(initialState),
     map(validate),
     map(addPositionGuess),
     switchMap(curry(addGasEstimation)(params.calls$)),

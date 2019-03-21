@@ -7,6 +7,7 @@ export const errors: string;
 export const finalization: string;
 export const transaction: string;
 export const assets: string;
+export const warnings: string;
 export const assetPicker: string;
 export const swapIcon: string;
 export const settingsIcon: string;
