@@ -433,7 +433,7 @@ function addGasEstimation(theCalls$: Calls$,
   if (!state.user || !state.user.account) {
     return of({ ...state, gasEstimationStatus: GasEstimationStatus.unknown });
   }
-  return doGasEstimation(theCalls$, state, (calls: Calls) =>
+  return doGasEstimation(theCalls$, undefined, state, (calls: Calls) =>
     state.messages.length !== 0 ||
     !state.price || state.price.isZero() ||
     !state.amount || state.amount.isZero() ||

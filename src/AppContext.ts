@@ -16,7 +16,7 @@ import {
 } from './balances/balances';
 import { createTaxExport$ } from './balances/taxExporter';
 import { TaxExporterButton } from './balances/TaxExporterButton';
-import { calls$ } from './blockchain/calls/calls';
+import { calls$, readCalls$ } from './blockchain/calls/calls';
 import {
   account$,
   allowance$,
@@ -206,6 +206,7 @@ export function setupAppContext() {
       gasPrice$,
       allowance$,
       calls$,
+      readCalls$,
       etherPriceUsd$,
       balances$,
       etherBalance$,

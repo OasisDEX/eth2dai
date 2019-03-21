@@ -7,7 +7,7 @@ import { first } from 'rxjs/operators';
 import { setupFakeWeb3ForTesting } from '../blockchain/web3';
 setupFakeWeb3ForTesting();
 
-import { Calls$ } from '../blockchain/calls/calls';
+import { Calls$, ReadCalls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
 import { createFakeOrderbook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
@@ -19,6 +19,9 @@ function snapshotify(object: any): any {
 }
 
 const defaultCalls = {
+} as any;
+
+const defaultReadCalls = {
 } as any;
 
 const defaultUser = {
@@ -33,6 +36,7 @@ const defParams = {
   etherBalance$: of(zero),
   dustLimits$: of({ DAI: new BigNumber(0.1), WETH: new BigNumber(0.1) }),
   calls$: of(defaultCalls) as Calls$,
+  readCalls$: of(defaultReadCalls) as ReadCalls$,
   user$: of(defaultUser),
 };
 

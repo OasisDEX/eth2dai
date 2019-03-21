@@ -15,7 +15,7 @@ import {
   switchMap,
 } from 'rxjs/operators';
 import { Balances, DustLimits } from '../balances/balances';
-import { Calls, calls$, Calls$ } from '../blockchain/calls/calls';
+import { Calls, calls$, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/calls/calls';
 import { eth2weth } from '../blockchain/calls/instant';
 import { tokens } from '../blockchain/config';
 import { TxStatus } from '../blockchain/transactions';
@@ -304,7 +304,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
   return state;
 }
 
-function evaluateBuy(calls: Calls, state: InstantFormState) {
+function evaluateBuy(calls: ReadCalls, state: InstantFormState) {
 
   const { buyToken, sellToken, buyAmount } = state;
 
@@ -335,7 +335,7 @@ function evaluateBuy(calls: Calls, state: InstantFormState) {
   );
 }
 
-function evaluateSell(calls: Calls, state: InstantFormState) {
+function evaluateSell(calls: ReadCalls, state: InstantFormState) {
 
   const { buyToken, sellToken, sellAmount } = state;
 
@@ -365,7 +365,7 @@ function evaluateSell(calls: Calls, state: InstantFormState) {
   );
 }
 
-function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observable<BigNumber> {
+function getBestPrice(calls: ReadCalls, sellToken: string, buyToken: string): Observable<BigNumber> {
   return calls.otcGetBestOffer({ sellToken, buyToken }).pipe(
     flatMap(offerId =>
       calls.otcOffers(offerId).pipe(
@@ -379,19 +379,19 @@ function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observ
   );
 }
 
-function gasEstimation(calls: Calls, state: InstantFormState): Observable<number> | undefined {
+function gasEstimation(calls: Calls, readCalls: ReadCalls | undefined, state: InstantFormState): Observable<number> | undefined {
   return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated ?
     undefined :
     calls.proxyAddress().pipe(
       switchMap(proxyAddress => {
         const sell = state.sellToken === 'ETH' ? estimateTradePayWithETH : estimateTradePayWithERC20;
-        return sell(calls, proxyAddress, state);
+        return sell(calls, readCalls as ReadCalls, proxyAddress, state);
       })
     );
 }
 
 function evaluateTrade(
-    theCalls$: Calls$, state: InstantFormState
+    theCalls$: ReadCalls$, state: InstantFormState
 ): Observable<InstantFormState> {
 
   if (!state.buyAmount && !state.sellAmount) {
@@ -593,6 +593,7 @@ export function createFormController$(
     etherBalance$: Observable<BigNumber>
     dustLimits$: Observable<DustLimits>;
     calls$: Calls$;
+    readCalls$: ReadCalls$;
     etherPriceUsd$: Observable<BigNumber>;
     user$: Observable<User>;
   }
@@ -631,9 +632,9 @@ export function createFormController$(
     scan(applyChange, initialState),
     startWith(initialState),
     distinctUntilChanged(isEqual),
-    switchMap(curry(evaluateTrade)(params.calls$)),
+    switchMap(curry(evaluateTrade)(params.readCalls$)),
     map(validate),
-    switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
+    switchMap(state => doGasEstimation(params.calls$, params.readCalls$, state, gasEstimation)),
     map(calculatePriceAndImpact),
     map(isReadyToProceed),
     scan(freezeIfInProgress),

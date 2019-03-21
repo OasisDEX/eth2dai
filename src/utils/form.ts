@@ -1,9 +1,9 @@
 import { BigNumber } from 'bignumber.js';
-import { Observable, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
 import { catchError, first, flatMap, map, startWith, switchMap } from 'rxjs/operators';
 import { Balances, DustLimits } from '../balances/balances';
-import { Calls, Calls$ } from '../blockchain/calls/calls';
+import { Calls, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
 import { amountFromWei } from '../blockchain/utils';
@@ -281,12 +281,13 @@ export interface HasGasEstimation extends HasGasEstimationEthUsd {
 
 export function doGasEstimation<S extends HasGasEstimation>(
   calls$: Calls$,
+  readCalls$: ReadCalls$ | undefined,
   state: S,
-  call: (calls: Calls, state: S) => Observable<number> | undefined,
+  call: (calls: Calls, readCalls: ReadCalls | undefined, state: S) => Observable<number> | undefined,
 ): Observable<S> {
-  return calls$.pipe(
+  return combineLatest(calls$, readCalls$ || of(undefined)).pipe(
     first(),
-    switchMap((calls) => {
+    switchMap(([calls, readCalls]) => {
       if (state.gasEstimationStatus !== GasEstimationStatus.unset) {
         return of(state);
       }
@@ -299,7 +300,7 @@ export function doGasEstimation<S extends HasGasEstimation>(
         ...stateWithoutGasEstimation
       } = state as object;
 
-      const gasCall = call(calls, state);
+      const gasCall = call(calls, readCalls, state);
       const gasPrice = state.gasPrice;
       const etherPriceUsd = state.etherPriceUsd;
 
