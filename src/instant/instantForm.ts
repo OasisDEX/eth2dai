@@ -43,6 +43,7 @@ import { pluginDevModeHelpers } from './instantDevModeHelpers';
 import {
   estimateTradePayWithERC20,
   estimateTradePayWithETH,
+  estimateTradeReadonly,
   tradePayWithERC20,
   tradePayWithETH,
 } from './instantTransactions';
@@ -379,13 +380,23 @@ function getBestPrice(calls: ReadCalls, sellToken: string, buyToken: string): Ob
   );
 }
 
-function gasEstimation(calls: Calls, readCalls: ReadCalls | undefined, state: InstantFormState): Observable<number> | undefined {
-  return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated ?
+function estimateGas(calls$_: Calls$, readCalls$: ReadCalls$ | undefined, state: InstantFormState) {
+  return state.user && state.user.account ?
+    doGasEstimation(calls$_, readCalls$, state, gasEstimation) :
+    doGasEstimation(undefined, readCalls$, state, (_calls, readCalls, state_) =>
+      state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
+        undefined :
+        estimateTradeReadonly(readCalls as ReadCalls, state_)
+    );
+}
+
+function gasEstimation(calls: Calls | undefined, readCalls: ReadCalls | undefined, state: InstantFormState): Observable<number> | undefined {
+  return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
     undefined :
-    calls.proxyAddress().pipe(
+    (calls as Calls).proxyAddress().pipe(
       switchMap(proxyAddress => {
         const sell = state.sellToken === 'ETH' ? estimateTradePayWithETH : estimateTradePayWithERC20;
-        return sell(calls, readCalls as ReadCalls, proxyAddress, state);
+        return sell(calls as Calls, readCalls as ReadCalls, proxyAddress, state);
       })
     );
 }
@@ -427,18 +438,6 @@ function evaluateTrade(
 }
 
 function validate(state: InstantFormState): InstantFormState {
-  if (!state.user || !state.user.account) {
-    return {
-      ...state,
-      message: {
-        kind: MessageKind.notConnected,
-        field: 'none',
-        priority: 1000,
-        placement: Position.BOTTOM,
-      },
-    };
-  }
-
   if (state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated) {
     return state;
   }
@@ -449,6 +448,15 @@ function validate(state: InstantFormState): InstantFormState {
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
   const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
   const dustLimits = state.dustLimits;
+
+  if (!state.user || !state.user.account) {
+    message = prioritize(message, {
+      kind: MessageKind.notConnected,
+      field: spendField,
+      priority: 1000,
+      placement: Position.BOTTOM,
+    });
+  }
 
   if (spendAmount && (
       spendToken === 'ETH' && state.etherBalance && state.etherBalance.lt(spendAmount) ||
@@ -634,7 +642,7 @@ export function createFormController$(
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.readCalls$)),
     map(validate),
-    switchMap(state => doGasEstimation(params.calls$, params.readCalls$, state, gasEstimation)),
+    switchMap(curry(estimateGas)(params.calls$, params.readCalls$)),
     map(calculatePriceAndImpact),
     map(isReadyToProceed),
     scan(freezeIfInProgress),

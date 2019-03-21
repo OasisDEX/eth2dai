@@ -280,12 +280,12 @@ export interface HasGasEstimation extends HasGasEstimationEthUsd {
 }
 
 export function doGasEstimation<S extends HasGasEstimation>(
-  calls$: Calls$,
+  calls$: Calls$ | undefined,
   readCalls$: ReadCalls$ | undefined,
   state: S,
-  call: (calls: Calls, readCalls: ReadCalls | undefined, state: S) => Observable<number> | undefined,
+  call: (calls: Calls | undefined, readCalls: ReadCalls | undefined, state: S) => Observable<number> | undefined,
 ): Observable<S> {
-  return combineLatest(calls$, readCalls$ || of(undefined)).pipe(
+  return combineLatest(calls$ || of(undefined), readCalls$ || of(undefined)).pipe(
     first(),
     switchMap(([calls, readCalls]) => {
       if (state.gasEstimationStatus !== GasEstimationStatus.unset) {

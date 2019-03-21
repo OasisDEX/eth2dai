@@ -347,6 +347,13 @@ export function estimateTradePayWithERC20(
 
 }
 
+export function estimateTradeReadonly(
+  readCalls: ReadCalls,
+  state: InstantFormState,
+): Observable<number> {
+  return simulateEstimateDoTradePayWithERC20(readCalls, state);
+}
+
 const extractTradeSummary = (logs: any): { sold: BigNumber, bought: BigNumber } => {
   let sold = new BigNumber(0);
   let bought = new BigNumber(0);

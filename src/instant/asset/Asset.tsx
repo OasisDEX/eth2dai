@@ -1,4 +1,7 @@
+import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
+
+import { User } from '../../blockchain/user';
 import daiCircleSvg from '../../icons/coins/dai-circle.svg';
 import ethCircleSvg from '../../icons/coins/eth-circle.svg';
 import ethInverseSvg from '../../icons/coins/eth-inverse.svg';
@@ -12,6 +15,7 @@ export interface AssetProps {
   currency: string;
   balance?: any;
   onClick?: () => void;
+  user?: User;
 }
 
 const iconOf = (asset: string) => {
@@ -29,7 +33,8 @@ const iconOf = (asset: string) => {
 
 export class Asset extends React.Component<AssetProps> {
   public render() {
-    const { balance, currency, onClick } = this.props;
+    const { user, currency, onClick } = this.props;
+    const balance = user && user.account ? this.props.balance : new BigNumber(0);
     return (
       <div className={styles.asset} onClick={onClick}>
         <span className={styles.icon}>

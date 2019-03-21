@@ -111,7 +111,8 @@ export class InstantView extends React.Component<InstantFormState> {
       priceImpact,
       gasEstimationUsd,
       quotation,
-      progress
+      progress,
+      user,
     } = this.props;
 
     if (this.state.areAssetsOpen) {
@@ -446,7 +447,8 @@ export class InstantView extends React.Component<InstantFormState> {
                    balance={
                      (sellToken === 'ETH' && etherBalance ||
                        balances && balances[sellToken]) || undefined
-                   }/>
+                   }
+                   user={user}/>
           <div data-test-id="swap" className={styles.swapIcon} onClick={this.swap}>
             <SvgImage image={swapArrowsSvg}/>
           </div>
@@ -457,7 +459,8 @@ export class InstantView extends React.Component<InstantFormState> {
                   balance={
                     (buyToken === 'ETH' && etherBalance ||
                       balances && balances[buyToken]) || undefined
-                  }/>
+                  }
+                  user={user}/>
         </div>
         <div data-test-id="error"
              className={

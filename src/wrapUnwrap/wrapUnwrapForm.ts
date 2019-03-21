@@ -116,13 +116,13 @@ function validate(state: WrapUnwrapFormState) {
 function estimateGasPrice(
   calls$: Calls$, state: WrapUnwrapFormState
 ): Observable<WrapUnwrapFormState> {
-  return doGasEstimation(calls$, undefined, state, (calls: Calls) => {
+  return doGasEstimation(calls$, undefined, state, (calls: Calls | undefined) => {
     if (!state.amount || !state.gasPrice) {
       return undefined;
     }
     const call = state.kind === WrapUnwrapFormKind.wrap ?
-      calls.wrapEstimateGas :
-      calls.unwrapEstimateGas;
+      (calls as Calls).wrapEstimateGas :
+      (calls as Calls).unwrapEstimateGas;
     return call({ amount: state.amount, gasPrice: state.gasPrice });
   });
 }
