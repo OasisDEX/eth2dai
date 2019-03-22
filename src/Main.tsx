@@ -10,7 +10,7 @@ import { Header } from './header/Header';
 import * as styles from './index.scss';
 import { InstantExchange } from './instant/InstantView';
 
-const browserHistoryInstance = createBrowserHistory();
+const browserHistoryInstance = createBrowserHistory({ basename: "/test" });
 
 export class Main extends React.Component {
   public render() {
