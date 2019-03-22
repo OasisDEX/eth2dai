@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import * as React from 'react';
+import { theAppContext } from '../AppContext';
 import { Loadable } from '../utils/loadable';
 import { LoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
 import * as panelStyling from '../utils/panel/Panel.scss';
@@ -9,7 +10,6 @@ import { AssetSelectorView } from './views/AssetSelectorView';
 import { FinalizationView } from './views/FinalizationView';
 import { NewTradeView } from './views/NewTradeView';
 import { TradeSummaryView } from './views/TradeSummaryView';
-import { theAppContext } from "../AppContext";
 
 const views = new Map<ViewKind, any>([
   [ViewKind.new, NewTradeView],

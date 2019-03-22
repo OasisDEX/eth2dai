@@ -12,7 +12,8 @@ import {
   scan,
   shareReplay,
   startWith,
-  switchMap
+  switchMap,
+  tap
 } from 'rxjs/operators';
 import { Balances, DustLimits } from '../balances/balances';
 import { tokens } from '../blockchain/config';
@@ -243,6 +244,9 @@ export type InstantFormChange =
   ProgressChange;
 
 function applyChange(state: InstantFormState, change: InstantFormChange): InstantFormState {
+
+  console.log(change.kind);
+
   switch (change.kind) {
     case InstantFormChangeKind.pairChange:
       return {
@@ -287,6 +291,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         dustLimits: change.dustLimits
       };
     case InstantFormChangeKind.progressChange:
+
+      console.log('progressChange', !!change.progress);
+
       const progressChange = {
         ...state,
         progress: change.progress,
@@ -415,7 +422,7 @@ function gasEstimation(calls: Calls, state: InstantFormState): Observable<number
 }
 
 function evaluateTrade(
-    theCalls$: Calls$, state: InstantFormState
+  theCalls$: Calls$, state: InstantFormState
 ): Observable<InstantFormState> {
 
   if (!state.buyAmount && !state.sellAmount) {
@@ -455,7 +462,7 @@ function validate(state: InstantFormState): InstantFormState {
     return state;
   }
 
-  let message: Message | undefined  = state.message;
+  let message: Message | undefined = state.message;
 
   const [spendField, receiveField] = ['sellToken', 'buyToken'];
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
@@ -463,8 +470,8 @@ function validate(state: InstantFormState): InstantFormState {
   const dustLimits = state.dustLimits;
 
   if (spendAmount && (
-      spendToken === 'ETH' && state.etherBalance && state.etherBalance.lt(spendAmount) ||
-      state.balances && state.balances[spendToken] && state.balances[spendToken].lt(spendAmount)
+    spendToken === 'ETH' && state.etherBalance && state.etherBalance.lt(spendAmount) ||
+    state.balances && state.balances[spendToken] && state.balances[spendToken].lt(spendAmount)
   )) {
     message = prioritize(message, {
       kind: MessageKind.insufficientAmount,
@@ -565,8 +572,8 @@ function prepareSubmit(
             const sell = state.sellToken === 'ETH' ? tradePayWithETH : tradePayWithERC20;
             return sell(calls, proxyAddress, state);
           })
-      )
-    )).subscribe(change => stageChange$.next(change));
+        )
+      )).subscribe(change => stageChange$.next(change));
   }
 
   return [submit, stageChange$];
@@ -584,10 +591,18 @@ function toDustLimitsChange(dustLimits$: Observable<DustLimits>): Observable<Dus
 function isReadyToProceed(state: InstantFormState): InstantFormState {
   return {
     ...state,
-    readyToProceed: !state.message && state.gasEstimationStatus === GasEstimationStatus.calculated };
+    readyToProceed: !state.message && state.gasEstimationStatus === GasEstimationStatus.calculated
+  };
 }
 
 function freezeIfInProgress(previous: InstantFormState, state: InstantFormState): InstantFormState {
+
+  console.log(
+    'freeze',
+    !!state.progress,
+    state.buyAmount && state.buyAmount.toString(),
+    previous.buyAmount && previous.buyAmount.toString());
+
   if (state.progress) {
     return {
       ...previous,
@@ -642,11 +657,18 @@ export function createFormController$(
     scan(applyChange, initialState),
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.calls$)),
+    scan(mergeValues),
     map(validate),
     switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
+    tap((value: InstantFormState) => {
+      console.log('buy amount1:', value.buyAmount && value.buyAmount.toString());
+    }),
+    scan(mergeValues),
     map(calculatePriceAndImpact),
     map(isReadyToProceed),
-    scan(freezeIfInProgress),
+    tap((value: InstantFormState) => {
+      console.log('buy amount2:', value.buyAmount && value.buyAmount.toString());
+    }),
     shareReplay(1),
   );
 }
@@ -663,4 +685,8 @@ const prioritize = (current: Message = { priority: 0 } as Message, candidate: Me
   }
 
   return current;
+};
+
+const mergeValues = (currentValue: InstantFormState, newValue: any) => {
+  return ({ ...currentValue, ...newValue });
 };
