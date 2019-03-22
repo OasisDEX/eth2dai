@@ -21,7 +21,6 @@ import { tokens } from '../blockchain/config';
 import { TxStatus } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
-import { combineAndMerge } from '../utils/combineAndMerge';
 import {
   BalancesChange,
   doGasEstimation,
@@ -611,7 +610,7 @@ export function createFormController$(
 
   const manualChange$ = new Subject<ManualChange>();
 
-  const environmentChange$ = combineAndMerge(
+  const environmentChange$ = merge(
     toGasPriceChange(params.gasPrice$),
     toEtherPriceUSDChange(params.etherPriceUsd$),
     toBalancesChange(params.balances$),

@@ -10,6 +10,7 @@ import { NavLink } from 'react-router-dom';
 import { theAppContext } from '../AppContext';
 import { account$ } from '../blockchain/network';
 import { connectToWallet$, walletStatus$ } from '../blockchain/wallet';
+import { Web3Status, web3Status$ } from '../blockchain/web3';
 import { routerContext } from '../Main';
 import { connect } from '../utils/connect';
 import { Button } from '../utils/forms/Buttons';
@@ -35,6 +36,7 @@ const {
 
 interface HeaderProps {
   account: string | undefined;
+  web3status: Web3Status;
 }
 
 class Header extends React.Component<HeaderProps> {
@@ -60,6 +62,7 @@ class Header extends React.Component<HeaderProps> {
             </nav>
           </section >
           <section className={classnames(section, sectionStatus)}>
+            { this.props.web3status !== 'readonly' ? <>
             <StatusTxRx/>
             <theAppContext.Consumer>
               {({ NetworkTxRx }) =>
@@ -67,6 +70,9 @@ class Header extends React.Component<HeaderProps> {
                 <NetworkTxRx/>
               }
             </theAppContext.Consumer>
+            </> :
+            <span>Preview mode!</span>
+            }
           </section>
         </header>
       }
@@ -75,7 +81,9 @@ class Header extends React.Component<HeaderProps> {
   }
 }
 
-export const HeaderTxRx = connect(Header, account$.pipe(map(account => ({ account }))));
+export const HeaderTxRx = connect(Header, combineLatest(account$, web3Status$).pipe(
+  map(([account, web3status]) => ({ account, web3status })))
+);
 
 interface StatusProps extends Loadable<Account> {
 }
