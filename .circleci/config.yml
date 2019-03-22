@@ -96,7 +96,7 @@ jobs:
       - restore_cache:
             keys:
             - v3-dependencies-{{ checksum "package.json" }}
-      - run: PUBLIC_URL=. ENV=dev yarn build
+      - run: PUBLIC_URL=https://s3-eu-west-1.amazonaws.com/codechecks-public-artifacts/166230898/$CIRCLE_SHA1/build/index.html ENV=dev yarn build
       - run: yarn codechecks
 
   codechecks-e2e:
