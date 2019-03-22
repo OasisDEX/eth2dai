@@ -322,6 +322,13 @@ function estimateDoSetupProxy(
   );
 }
 
+function simulateEstimateDoSetupProxy(
+  _state: InstantFormState,
+) {
+  // based on calls.setupProxyEstimateGas on main
+  return of(800000);
+}
+
 export function estimateTradePayWithERC20(
   calls: Calls,
   readCalls: ReadCalls,
@@ -351,7 +358,9 @@ export function estimateTradeReadonly(
   readCalls: ReadCalls,
   state: InstantFormState,
 ): Observable<number> {
-  return simulateEstimateDoTradePayWithERC20(readCalls, state);
+  return combineLatest(simulateEstimateDoSetupProxy(state), simulateEstimateDoApprove(state), simulateEstimateDoTradePayWithERC20(readCalls, state)).pipe(
+    map(([createProxy, approve, trade]) => createProxy + approve + trade),
+  );
 }
 
 const extractTradeSummary = (logs: any): { sold: BigNumber, bought: BigNumber } => {
