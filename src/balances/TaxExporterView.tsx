@@ -45,7 +45,7 @@ function toCSVRow(trade: any): string {
 }
 
 function toCSV(trades: any[]) {
-  const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Address";"Tx";"Proxy"';
+  const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Address";"Tx"';
   return `${header}\r\n${trades.map(trade => `${toCSVRow(trade)}\r\n`).join('')}`;
 }
 

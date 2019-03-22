@@ -43,7 +43,7 @@ function queryTrades(context: NetworkConfig, addresses: string[]) {
   );
 }
 
-function parseTrade({ time, maker, lotAmt, lotTkn, bidAmt, bidTkn, tx, tag }: TradeWithProxy, address: string) {
+function parseTrade({ time, maker, lotAmt, lotTkn, bidAmt, bidTkn, tx }: TradeWithProxy, address: string) {
   const date: string = new Date(time).toLocaleString().replace(',', '');
   const buyAmount = address === maker ? lotAmt : bidAmt;
   const sellAmount = address === maker ? bidAmt : lotAmt;
@@ -57,8 +57,7 @@ function parseTrade({ time, maker, lotAmt, lotTkn, bidAmt, bidTkn, tx, tag }: Tr
     sellToken,
     date,
     address,
-    tx,
-    tag
+    tx
   };
 }
 
