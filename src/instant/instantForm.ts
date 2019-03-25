@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 
-import { isEqual } from 'lodash';
-import { curry } from 'ramda';
+import { curry, isEqual } from 'lodash';
+// import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
@@ -38,6 +38,7 @@ import {
   toGasPriceChange,
 } from '../utils/form';
 import { calculateTradePrice } from '../utils/price';
+import { switchSpread } from '../utils/switchSpread';
 import { pluginDevModeHelpers } from './instantDevModeHelpers';
 import {
   estimateTradePayWithERC20,
@@ -151,14 +152,22 @@ export type Progress = {
   tradeTxHash?: string
 });
 
-export interface InstantFormState extends HasGasEstimation {
+interface TradeEvaluationState {
+  buyAmount?: BigNumber;
+  sellAmount?: BigNumber;
+  tradeEvaluationStatus: TradeEvaluationStatus;
+  tradeEvaluationError?: any;
+  bestPrice?: BigNumber;
+}
+
+export interface InstantFormState extends HasGasEstimation, TradeEvaluationState {
   view: any;
   readyToProceed?: boolean;
   progress?: Progress;
   buyToken: string;
   sellToken: string;
-  buyAmount?: BigNumber;
-  sellAmount?: BigNumber;
+  // buyAmount?: BigNumber;
+  // sellAmount?: BigNumber;
   kind?: OfferType;
   message?: Message;
   submit: (state: InstantFormState) => void;
@@ -166,12 +175,12 @@ export interface InstantFormState extends HasGasEstimation {
   dustLimits?: DustLimits;
   balances?: Balances;
   etherBalance?: BigNumber;
-  tradeEvaluationStatus: TradeEvaluationStatus;
-  tradeEvaluationError?: any;
+  // tradeEvaluationStatus: TradeEvaluationStatus;
+  // tradeEvaluationError?: any;
   price?: BigNumber;
   quotation?: string;
   priceImpact?: BigNumber;
-  bestPrice?: BigNumber;
+  // bestPrice?: BigNumber;
   slippageLimit: BigNumber;
 }
 
@@ -244,9 +253,6 @@ export type InstantFormChange =
   ProgressChange;
 
 function applyChange(state: InstantFormState, change: InstantFormChange): InstantFormState {
-
-  console.log(change.kind);
-
   switch (change.kind) {
     case InstantFormChangeKind.pairChange:
       return {
@@ -291,9 +297,6 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         dustLimits: change.dustLimits
       };
     case InstantFormChangeKind.progressChange:
-
-      console.log('progressChange', !!change.progress);
-
       const progressChange = {
         ...state,
         progress: change.progress,
@@ -303,6 +306,13 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         return applyChange(progressChange, {
           kind: InstantFormChangeKind.viewChange,
           view: ViewKind.summary
+        });
+      }
+
+      if (change.progress) {
+        return applyChange(progressChange, {
+          kind: InstantFormChangeKind.viewChange,
+          view: ViewKind.finalization
         });
       }
 
@@ -343,8 +353,6 @@ function evaluateBuy(calls: Calls, state: InstantFormState) {
     return of(state);
   }
 
-  // console.log('calling otcGetPayAmount', buyToken, sellToken, buyAmount.toString());
-
   return calls.otcGetPayAmount({
     sellToken,
     buyToken,
@@ -374,7 +382,6 @@ function evaluateSell(calls: Calls, state: InstantFormState) {
     return of(state);
   }
 
-  // console.log('calling otcGetBuyAmount', buyToken, sellToken, sellAmount.toString());
   return calls.otcGetBuyAmount({
     sellToken,
     buyToken,
@@ -401,7 +408,6 @@ function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observ
     flatMap(offerId =>
       calls.otcOffers(offerId).pipe(
         map(([a, _, b]: BigNumber[]) => {
-          // console.log(sellToken, buyToken, a.toString(), b.toString());
           return (sellToken === 'DAI' || (sellToken === 'WETH' && buyToken !== 'DAI')) ?
             a.div(b) : b.div(a);
         })
@@ -411,6 +417,7 @@ function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observ
 }
 
 function gasEstimation(calls: Calls, state: InstantFormState): Observable<number> | undefined {
+
   return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated ?
     undefined :
     calls.proxyAddress().pipe(
@@ -422,11 +429,29 @@ function gasEstimation(calls: Calls, state: InstantFormState): Observable<number
 }
 
 function evaluateTrade(
-  theCalls$: Calls$, state: InstantFormState
-): Observable<InstantFormState> {
+  theCalls$: Calls$, previousState: InstantFormState, state: InstantFormState
+): Observable<TradeEvaluationState> | undefined {
 
-  if (!state.buyAmount && !state.sellAmount) {
-    return of(state);
+  if (
+    !state.kind ||
+    state.kind === OfferType.buy &&
+    state.kind === previousState.kind &&
+    state.buyAmount && previousState.buyAmount &&
+    state.buyAmount.eq(previousState.buyAmount)
+    ||
+    state.kind === OfferType.sell &&
+    state.kind === previousState.kind &&
+    state.sellAmount && previousState.sellAmount &&
+    state.sellAmount.eq(previousState.sellAmount)
+  ) {
+    return undefined;
+  }
+
+  if (
+    state.kind === OfferType.buy && !state.buyAmount ||
+    state.kind === OfferType.sell && !state.sellAmount
+  ) {
+    return of({ tradeEvaluationStatus: TradeEvaluationStatus.unset });
   }
 
   return theCalls$.pipe(
@@ -439,7 +464,6 @@ function evaluateTrade(
       )
     ),
     map(([evaluation, bestPrice]) => ({
-      ...state,
       ...evaluation,
       bestPrice,
       tradeEvaluationStatus: TradeEvaluationStatus.calculated,
@@ -447,7 +471,6 @@ function evaluateTrade(
     startWith({ ...state, tradeEvaluationStatus: TradeEvaluationStatus.calculating }),
     catchError(err => {
       return of({
-        ...state,
         ...(state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }),
         bestPrice: undefined,
         tradeEvaluationStatus: TradeEvaluationStatus.error,
@@ -455,6 +478,16 @@ function evaluateTrade(
       });
     }),
   );
+}
+
+function mergeTradeEvaluation(state:InstantFormState, trade: TradeEvaluationState | undefined) {
+  if (!trade) {
+    return state;
+  }
+  return {
+    ...state,
+    ...trade
+  };
 }
 
 function validate(state: InstantFormState): InstantFormState {
@@ -596,13 +629,6 @@ function isReadyToProceed(state: InstantFormState): InstantFormState {
 }
 
 function freezeIfInProgress(previous: InstantFormState, state: InstantFormState): InstantFormState {
-
-  console.log(
-    'freeze',
-    !!state.progress,
-    state.buyAmount && state.buyAmount.toString(),
-    previous.buyAmount && previous.buyAmount.toString());
-
   if (state.progress) {
     return {
       ...previous,
@@ -649,6 +675,11 @@ export function createFormController$(
     view: 'new',
   };
 
+  function evaluateTradeWithCalls(theCalls$: Calls$) {
+    return (previousState: InstantFormState, state: InstantFormState) =>
+      evaluateTrade(theCalls$, previousState, state);
+  }
+
   return merge(
     manualChange$,
     submitChange$,
@@ -656,19 +687,16 @@ export function createFormController$(
   ).pipe(
     scan(applyChange, initialState),
     distinctUntilChanged(isEqual),
-    switchMap(curry(evaluateTrade)(params.calls$)),
-    scan(mergeValues),
+    switchSpread(
+      evaluateTradeWithCalls(params.calls$),
+      mergeTradeEvaluation
+    ),
+    // scan(mergeValues),
     map(validate),
     switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
-    tap((value: InstantFormState) => {
-      console.log('buy amount1:', value.buyAmount && value.buyAmount.toString());
-    }),
-    scan(mergeValues),
     map(calculatePriceAndImpact),
     map(isReadyToProceed),
-    tap((value: InstantFormState) => {
-      console.log('buy amount2:', value.buyAmount && value.buyAmount.toString());
-    }),
+    scan(freezeIfInProgress),
     shareReplay(1),
   );
 }
