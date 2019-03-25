@@ -21,6 +21,7 @@ import { tokens } from '../blockchain/config';
 import { TxStatus } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
+import { combineAndMerge } from '../utils/combineAndMerge';
 import {
   BalancesChange,
   doGasEstimation,
@@ -379,23 +380,23 @@ function getBestPrice(calls: ReadCalls, sellToken: string, buyToken: string): Ob
   );
 }
 
-function estimateGas(calls$_: Calls$, readCalls$: ReadCalls$ | undefined, state: InstantFormState) {
+function estimateGas(calls$_: Calls$, readCalls$: ReadCalls$, state: InstantFormState) {
   return state.user && state.user.account ?
     doGasEstimation(calls$_, readCalls$, state, gasEstimation) :
     doGasEstimation(undefined, readCalls$, state, (_calls, readCalls, state_) =>
       state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
         undefined :
-        estimateTradeReadonly(readCalls as ReadCalls, state_)
+        estimateTradeReadonly(readCalls, state_)
     );
 }
 
-function gasEstimation(calls: Calls | undefined, readCalls: ReadCalls | undefined, state: InstantFormState): Observable<number> | undefined {
+function gasEstimation(calls: Calls, readCalls: ReadCalls, state: InstantFormState): Observable<number> | undefined {
   return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
     undefined :
-    (calls as Calls).proxyAddress().pipe(
+    calls.proxyAddress().pipe(
       switchMap(proxyAddress => {
         const sell = state.sellToken === 'ETH' ? estimateTradePayWithETH : estimateTradePayWithERC20;
-        return sell(calls as Calls, readCalls as ReadCalls, proxyAddress, state);
+        return sell(calls, readCalls, proxyAddress, state);
       })
     );
 }
@@ -611,12 +612,14 @@ export function createFormController$(
   const manualChange$ = new Subject<ManualChange>();
 
   const environmentChange$ = merge(
-    toGasPriceChange(params.gasPrice$),
-    toEtherPriceUSDChange(params.etherPriceUsd$),
+    combineAndMerge(
+      toGasPriceChange(params.gasPrice$),
+      toEtherPriceUSDChange(params.etherPriceUsd$),
+      toDustLimitsChange(params.dustLimits$),
+      toUserChange(params.user$),
+    ),
     toBalancesChange(params.balances$),
     toEtherBalanceChange(params.etherBalance$),
-    toDustLimitsChange(params.dustLimits$),
-    toUserChange(params.user$),
   );
 
   const [submit, submitChange$] = prepareSubmit(params.calls$);
@@ -637,7 +640,6 @@ export function createFormController$(
     environmentChange$,
   ).pipe(
     scan(applyChange, initialState),
-    startWith(initialState),
     distinctUntilChanged(isEqual),
     switchMap(curry(evaluateTrade)(params.readCalls$)),
     map(validate),

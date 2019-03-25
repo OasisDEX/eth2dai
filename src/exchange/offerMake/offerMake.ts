@@ -9,6 +9,7 @@ import { OfferMakeData, OfferMakeDirectData } from '../../blockchain/calls/offer
 import { tokens } from '../../blockchain/config';
 import { TxState, TxStatus } from '../../blockchain/transactions';
 import { User } from '../../blockchain/user';
+import { combineAndMerge } from '../../utils/combineAndMerge';
 import {
   AllowanceChange,
   AmountFieldChange,
@@ -432,7 +433,7 @@ function addGasEstimation(theCalls$: Calls$,
   if (!state.user || !state.user.account) {
     return of({ ...state, gasEstimationStatus: GasEstimationStatus.unknown });
   }
-  return doGasEstimation(theCalls$, undefined, state, (calls: Calls | undefined) =>
+  return doGasEstimation(theCalls$, undefined, state, (calls: Calls) =>
     state.messages.length !== 0 ||
     !state.price || state.price.isZero() ||
     !state.amount || state.amount.isZero() ||
@@ -440,8 +441,8 @@ function addGasEstimation(theCalls$: Calls$,
     !state.slippageLimit ?
       undefined :
       state.matchType === OfferMatchType.direct ?
-        (calls as Calls).offerMakeDirectEstimateGas(offerMakeDirectData(state)) :
-        (calls as Calls).offerMakeEstimateGas(offerMakeData(state)));
+        calls.offerMakeDirectEstimateGas(offerMakeDirectData(state)) :
+        calls.offerMakeEstimateGas(offerMakeData(state)));
 }
 
 function validate(state: OfferFormState): OfferFormState {
@@ -647,14 +648,16 @@ export function createFormController$(
   const manualChange$ = new Subject<ManualChange>();
 
   const environmentChange$ = merge(
-    toGasPriceChange(params.gasPrice$),
-    toEtherPriceUSDChange(params.etherPriceUsd$),
-    toOrderbookChange$(params.orderbook$),
-    toDustLimitChange$(params.dustLimits$, tradingPair.base, tradingPair.quote),
+    combineAndMerge(
+      toGasPriceChange(params.gasPrice$),
+      toEtherPriceUSDChange(params.etherPriceUsd$),
+      toOrderbookChange$(params.orderbook$),
+      toDustLimitChange$(params.dustLimits$, tradingPair.base, tradingPair.quote),
+      toUserChange(params.user$),
+    ),
     toAllowanceChange$(FormChangeKind.buyAllowanceChange, tradingPair.base, params.allowance$),
     toAllowanceChange$(FormChangeKind.sellAllowanceChange, tradingPair.quote, params.allowance$),
     toBalancesChange(params.balances$),
-    toUserChange(params.user$),
   );
 
   const [submit, submitChange$] = prepareSubmit(params.calls$);
@@ -687,7 +690,6 @@ export function createFormController$(
     fetchBestSellOrder$(params.orderbook$)
   ).pipe(
     scan(applyChange, initialState),
-    startWith(initialState),
     map(validate),
     map(addPositionGuess),
     switchMap(curry(addGasEstimation)(params.calls$)),

@@ -13,5 +13,5 @@ export function loadDataUrl(dataUrl: string): string {
   if (!a) {
     throw new Error(`malformed data url: ${dataUrl.substr(0, 30)} ...`);
   }
-  return atob(a[1]);
+  return atob(a[1]).replace(/^\<\?xml.*?\?>\n?/, '');
 }
