@@ -26,7 +26,7 @@ async function deploy(path: string) {
     await codeChecks.success({
       name: 'Commit deployment',
       shortDescription: 'Deployment for commit ready.',
-      detailsUrl: codeChecks.getArtifactLink('/build/index.html'),
+      detailsUrl: codeChecks.getPageLink('build'),
     });
   }
 }

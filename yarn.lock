@@ -2699,7 +2699,7 @@ bluebird@^3.4.7, bluebird@^3.5.1:
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
   integrity sha512-MKiLiV+I1AA596t9w1sQJ8jkiSr5+ZKi0WKrYGUn6d1Fx+Ij4tIj+m2WMQSGczs5jZVxV339chE8iwk6F64wjA==
 
-bluebird@^3.5.0:
+bluebird@^3.5.0, bluebird@^3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.3.tgz#7d01c6f9616c9a51ab0f8c549a79dfe6ec33efa7"
   integrity sha512-/qKPUQlaW1OyR51WeCPBvRnAlnZFUJkCSG5HzGnuIqhgyJtF+T94lFnn33eiazjRm2LAHVy2guNnaq48X9SJuw==
@@ -3470,21 +3470,23 @@ codecheck-build-size@^0.0.10:
     gzip-size "^5.0.0"
     lodash "^4.17.11"
 
-codecheck-type-coverage@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/codecheck-type-coverage/-/codecheck-type-coverage-0.0.3.tgz#8be648b4a3d1144311ce4775f5da1e6b0574c482"
-  integrity sha512-8pxCyZPn7S2q1abCtM5GpNM2QIrmgdBPmeJLDGEuhFrmYzA1nNKnXUvRTmV+ie2PpsMCGYQ/MF0uNFi43xP3FA==
+codecheck-type-coverage@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/codecheck-type-coverage/-/codecheck-type-coverage-0.0.4.tgz#1f000ebea1bcb899d209eeafd8d0c193ea8b63da"
+  integrity sha512-Ht+kPU1v+LxhDR31AtiekeE9ppWIPiERk8m9gQkX6NmXcbcZiHzRcuw82FxAOxbbTUvzPAS/BGbV695HxHv+5w==
   dependencies:
     lodash "^4.17.11"
     type-coverage "^1.10.0"
 
-codechecks@^0.0.38:
-  version "0.0.38"
-  resolved "https://registry.yarnpkg.com/codechecks/-/codechecks-0.0.38.tgz#40e1b5d98f2ec342db2ae848ffe287fcc8fa9cd6"
-  integrity sha512-K+nXhsEoBtWfpl2H/3p5G79H9VcYrnNwQllPNSr2uoMWmkwrMaICy1w1aOzo2fd3nWk5BMxVLPUbeio6KeAsFA==
+codechecks@^0.0.47:
+  version "0.0.47"
+  resolved "https://registry.yarnpkg.com/codechecks/-/codechecks-0.0.47.tgz#27f50c427b5fa0e8316ad2743b0d4475632fb9e5"
+  integrity sha512-61C6XfLZFKVeztZdW6Fj7hgj+fchb+bqso6yPkcGSiWS9nJOpq1dCFdYTrflkcaTz/TJA3uI8s1BSqkiHq/+YA==
   dependencies:
+    bluebird "^3.5.3"
     commander "^2.19.0"
     glob "^7.1.3"
+    graceful-fs "^4.1.15"
     mkdirp "^0.5.1"
     ms "^2.1.1"
     promise "^8.0.2"
@@ -6710,7 +6712,7 @@ graceful-fs@4.1.4:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.4.tgz#ef089d2880f033b011823ce5c8fae798da775dbd"
   integrity sha1-7widKIDwM7ARgjzlyPrnmNp3Xb0=
 
-graceful-fs@^4.1.10:
+graceful-fs@^4.1.10, graceful-fs@^4.1.15:
   version "4.1.15"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
   integrity sha512-6uHUhOPEBgQ24HM+r6b/QwWfZq+yiFcipKFrOFiBEnWdy5sdzYoi+pJeQaPI5qOLRFqWmAXUPQNsielzdLoecA==
