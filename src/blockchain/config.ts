@@ -44,8 +44,8 @@ export const tokens = asMap('symbol', [
     maxSell: '10000000',
     name: 'Wrapped Ether',
     icon: SvgImageSimple(ethSvg),
-    iconInverse: SvgImageSimple(ethInverseSvg),
-    iconCircle: SvgImageSimple(ethCircleSvg),
+    iconInverse: SvgImageSimple(ethCircleSvg),
+    iconCircle: SvgImageSimple(ethInverseSvg),
   },
   {
     symbol: 'DAI',

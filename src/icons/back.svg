@@ -1,0 +1,12 @@
+<svg width="12px" height="12px" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+    <g id="Symbols" fill="none" fill-rule="evenodd">
+        <g id="Icons/Navigation/Back" transform="translate(-8 -8)">
+            <g id="Group" transform="translate(4 4)">
+                <polygon id="Shape" points="0 0 20 0 20 20 0 20"/>
+                <polygon id="Shape" fill="#fff" class="back-icon" fill-rule="nonzero"
+                         points="15.3333333 9.33333333 7.22 9.33333333 10.9466667 5.60666667 10 4.66666667 4.66666667 10 10 15.3333333 10.94 14.3933333 7.22 10.6666667 15.3333333 10.6666667"
+                />
+            </g>
+        </g>
+    </g>
+</svg>

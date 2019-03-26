@@ -7,6 +7,7 @@ import { AssetOverviewView, AssetsOverviewActionProps, AssetsOverviewExtraProps 
 import {
   Balances,
   CombinedBalances,
+  createAllowances$,
   createBalances$,
   createCombinedBalances$,
   createDustLimits$,
@@ -86,7 +87,6 @@ export function setupAppContext() {
   const balancesWithEth$ = combineLatest(balances$, etherBalance$).pipe(
     map(([balances, etherBalance]) => ({ ...balances, ETH: etherBalance })),
   );
-  balancesWithEth$.subscribe(console.log);
 
   const wethBalance$ = createWethBalances$(context$, initializedAccount$, onEveryBlock$);
 
@@ -202,13 +202,13 @@ export function setupAppContext() {
   const instant$ = createInstantFormController$(
     {
       gasPrice$,
-      allowance$,
       calls$,
       etherPriceUsd$,
-      balances$,
       etherBalance$,
       // proxyAddress$,
+      balances$: balancesWithEth$,
       dustLimits$: createDustLimits$(context$),
+      allowances$: createAllowances$(context$, initializedAccount$, onEveryBlock$),
     }
   );
 

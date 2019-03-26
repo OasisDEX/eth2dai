@@ -1,0 +1,113 @@
+@import "../../utils/Variables";
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  word-break: break-word;
+  padding: 1rem 0;
+  border-bottom: 1px solid $button-border-disabled;
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+.proxy {
+  &Missing {
+    .text {
+      color: white;
+    }
+
+    .accountIcon {
+      :global(.account-icon) {
+        fill: white;
+      }
+    }
+
+    .warningIcon {
+      :global(.warning-icon) {
+        fill: white;
+      }
+    }
+  }
+
+  &Available {
+    .text {
+      color: $soft-cyan;
+    }
+
+    .accountIcon {
+      :global(.account-icon) {
+        fill: $soft-cyan;
+      }
+    }
+
+    .warningIcon {
+      :global(.warning-icon) {
+        fill: $soft-cyan;
+      }
+    }
+  }
+}
+
+.warning {
+  .text {
+    color: $grey-lighter;
+    font-size: .8125rem;
+    letter-spacing: .1px;
+    line-height: 18px;
+  }
+
+  .warningIcon {
+    height: 1.375rem;
+    width: 1.375rem;
+    flex-shrink: 0;
+    margin-right: .8125rem;
+    margin-left: 0;
+
+    :global(.warning-icon) {
+      fill: $grey-lighter;
+    }
+  }
+}
+
+.allowances {
+  .text {
+    font-size: 0.875rem;
+    color: $grey-lighter;
+    letter-spacing: 0.4px;
+  }
+}
+
+.text {
+  font-size: .875rem;
+  letter-spacing: .82px;
+}
+
+.accountIcon {
+  width: 24px;
+  height: 24px;
+  margin-right: 1rem;
+}
+
+.warningIcon {
+  height: 18px;
+  width: 18px;
+  margin-left: 6px;
+}
+
+.button {
+  height: auto;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  padding: 6px 15px;
+}

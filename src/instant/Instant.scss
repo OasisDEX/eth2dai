@@ -120,12 +120,15 @@
   cursor: pointer;
 }
 
-.settingsIcon {
+.cornerIcon {
   height: 28px;
   width: 28px;
-  border: 1px solid #3F3F47;
+  border: 1px solid $button-border-disabled;
   border-radius: 100%;
-  padding: .25rem;
+
+  &.settingsIcon {
+    padding: .25rem;
+  }
 }
 
 .input {

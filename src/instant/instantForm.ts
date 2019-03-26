@@ -1,7 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 
 import { curry, isEqual } from 'lodash';
-// import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
@@ -15,7 +14,7 @@ import {
   switchMap,
   tap
 } from 'rxjs/operators';
-import { Balances, DustLimits } from '../balances/balances';
+import { Allowances, Balances, DustLimits } from '../balances/balances';
 import { tokens } from '../blockchain/config';
 
 import { Calls, calls$, Calls$ } from '../blockchain/calls/calls';
@@ -120,7 +119,7 @@ export enum ViewKind {
   allowances = 'allowances',
   settings = 'settings',
   assetSelector = 'assetSelector',
-  proxy = 'proxy',
+  account = 'account',
   finalization = 'finalization',
   summary = 'summary'
 }
@@ -174,6 +173,7 @@ export interface InstantFormState extends HasGasEstimation, TradeEvaluationState
   change: (change: ManualChange) => void;
   dustLimits?: DustLimits;
   balances?: Balances;
+  allowances?: Allowances;
   etherBalance?: BigNumber;
   // tradeEvaluationStatus: TradeEvaluationStatus;
   // tradeEvaluationError?: any;
@@ -193,7 +193,8 @@ export enum InstantFormChangeKind {
   formResetChange = 'reset',
   progressChange = 'progressChange',
   proxyChange = 'proxyChange',
-  dustLimitsChange = 'dustLimitsChange'
+  dustLimitsChange = 'dustLimitsChange',
+  allowancesChange = 'allowancesChange'
 }
 
 export interface ProgressChange {
@@ -232,6 +233,11 @@ export interface DustLimitsChange {
   dustLimits: DustLimits;
 }
 
+export interface AllowancesChange {
+  kind: InstantFormChangeKind.allowancesChange;
+  allowances: Allowances;
+}
+
 export type ManualChange =
   TokenChange |
   BuyAmountChange |
@@ -245,6 +251,7 @@ export type EnvironmentChange =
   EtherPriceUSDChange |
   BalancesChange |
   DustLimitsChange |
+  AllowancesChange |
   EtherBalanceChange;
 
 export type InstantFormChange =
@@ -296,7 +303,13 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         dustLimits: change.dustLimits
       };
+    case InstantFormChangeKind.allowancesChange:
+      return {
+        ...state,
+        allowances: change.allowances
+      };
     case InstantFormChangeKind.progressChange:
+
       const progressChange = {
         ...state,
         progress: change.progress,
@@ -621,6 +634,15 @@ function toDustLimitsChange(dustLimits$: Observable<DustLimits>): Observable<Dus
   );
 }
 
+function toAllowancesChange(allowances$: Observable<Allowances>): Observable<AllowancesChange> {
+  return allowances$.pipe(
+    map(allowances => ({
+      allowances,
+      kind: InstantFormChangeKind.allowancesChange,
+    } as AllowancesChange))
+  );
+}
+
 function isReadyToProceed(state: InstantFormState): InstantFormState {
   return {
     ...state,
@@ -641,7 +663,7 @@ function freezeIfInProgress(previous: InstantFormState, state: InstantFormState)
 export function createFormController$(
   params: {
     gasPrice$: Observable<BigNumber>;
-    allowance$: (token: string) => Observable<boolean>;
+    allowances$: Observable<Allowances>;
     balances$: Observable<Balances>;
     etherBalance$: Observable<BigNumber>
     dustLimits$: Observable<DustLimits>;
@@ -660,6 +682,7 @@ export function createFormController$(
     toBalancesChange(params.balances$),
     toEtherBalanceChange(params.etherBalance$),
     toDustLimitsChange(params.dustLimits$),
+    toAllowancesChange(params.allowances$)
   );
 
   const [submit, submitChange$] = prepareSubmit(params.calls$);

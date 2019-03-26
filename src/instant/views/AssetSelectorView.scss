@@ -1,7 +1,10 @@
+@import "../../utils/Variables";
+@import "../../utils/Mixins";
+
 .list {
   display: flex;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
   list-style-type: none;
   padding: 0;
   margin: auto 0;
