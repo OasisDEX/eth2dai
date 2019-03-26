@@ -25,6 +25,7 @@ const defParams = {
   etherPriceUsd$: of(new BigNumber(1)),
   balances$: of({ DAI: new BigNumber(1000), WETH: new BigNumber(10), ETH: new BigNumber(5) }),
   etherBalance$: of(zero),
+  proxyAddress$: of('0x0'),
   dustLimits$: of({ DAI: new BigNumber(0.1), WETH: new BigNumber(0.1) }),
   allowances$: of({ DAI: true, WETH: false }),
   calls$: of(defaultCalls) as Calls$,

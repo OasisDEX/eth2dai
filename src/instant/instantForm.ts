@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 
-import { curry, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
@@ -11,15 +11,14 @@ import {
   scan,
   shareReplay,
   startWith,
-  switchMap,
-  tap
+  switchMap
 } from 'rxjs/operators';
 import { Allowances, Balances, DustLimits } from '../balances/balances';
 import { tokens } from '../blockchain/config';
 
 import { Calls, calls$, Calls$ } from '../blockchain/calls/calls';
 import { eth2weth } from '../blockchain/calls/instant';
-import { TxStatus } from '../blockchain/transactions';
+import { isDone, TxStatus } from '../blockchain/transactions';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
@@ -107,6 +106,7 @@ export enum TradeEvaluationStatus {
 }
 
 export enum ProgressKind {
+  onlyProxy = 'onlyProxy',
   proxyPayWithETH = 'proxyPayWithETH',
   noProxyPayWithETH = 'noProxyPayWithETH',
   noProxyNoAllowancePayWithERC20 = 'noProxyNoAllowancePayWithERC20',
@@ -149,6 +149,10 @@ export type Progress = {
   allowanceTxHash?: string
   tradeTxStatus?: TxStatus;
   tradeTxHash?: string
+} | {
+  kind: ProgressKind.onlyProxy
+  proxyTxStatus: TxStatus;
+  tradeTxStatus?: TxStatus;
 });
 
 interface TradeEvaluationState {
@@ -165,23 +169,20 @@ export interface InstantFormState extends HasGasEstimation, TradeEvaluationState
   progress?: Progress;
   buyToken: string;
   sellToken: string;
-  // buyAmount?: BigNumber;
-  // sellAmount?: BigNumber;
   kind?: OfferType;
   message?: Message;
   submit: (state: InstantFormState) => void;
+  createProxy: () => void;
   change: (change: ManualChange) => void;
   dustLimits?: DustLimits;
   balances?: Balances;
   allowances?: Allowances;
   etherBalance?: BigNumber;
-  // tradeEvaluationStatus: TradeEvaluationStatus;
-  // tradeEvaluationError?: any;
   price?: BigNumber;
   quotation?: string;
   priceImpact?: BigNumber;
-  // bestPrice?: BigNumber;
   slippageLimit: BigNumber;
+  proxyAddress?: string;
 }
 
 export enum InstantFormChangeKind {
@@ -238,6 +239,11 @@ export interface AllowancesChange {
   allowances: Allowances;
 }
 
+export interface ProxyChange {
+  kind: InstantFormChangeKind.proxyChange;
+  value?: string;
+}
+
 export type ManualChange =
   TokenChange |
   BuyAmountChange |
@@ -252,6 +258,7 @@ export type EnvironmentChange =
   BalancesChange |
   DustLimitsChange |
   AllowancesChange |
+  ProxyChange |
   EtherBalanceChange;
 
 export type InstantFormChange =
@@ -352,6 +359,11 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         view: change.view
+      };
+    case InstantFormChangeKind.proxyChange:
+      return {
+        ...state,
+        proxyAddress: change.value
       };
   }
 
@@ -493,7 +505,7 @@ function evaluateTrade(
   );
 }
 
-function mergeTradeEvaluation(state:InstantFormState, trade: TradeEvaluationState | undefined) {
+function mergeTradeEvaluation(state: InstantFormState, trade: TradeEvaluationState | undefined) {
   if (!trade) {
     return state;
   }
@@ -625,6 +637,32 @@ function prepareSubmit(
   return [submit, stageChange$];
 }
 
+function manualProxyCreation(
+  theCalls$: Calls$,
+): [() => void, Observable<ProgressChange>] {
+
+  const proxyCreationChange$ = new Subject<ProgressChange>();
+
+  function createProxy() {
+    theCalls$.pipe(
+      flatMap((calls) =>
+        calls.setupProxy({})
+      )
+    ).subscribe(progress => {
+      proxyCreationChange$.next({
+        kind: InstantFormChangeKind.progressChange,
+        progress: {
+          kind: ProgressKind.onlyProxy,
+          proxyTxStatus: progress.status,
+          done: isDone(progress)
+        }
+      });
+    });
+  }
+
+  return [createProxy, proxyCreationChange$];
+}
+
 function toDustLimitsChange(dustLimits$: Observable<DustLimits>): Observable<DustLimitsChange> {
   return dustLimits$.pipe(
     map(dustLimits => ({
@@ -640,6 +678,15 @@ function toAllowancesChange(allowances$: Observable<Allowances>): Observable<All
       allowances,
       kind: InstantFormChangeKind.allowancesChange,
     } as AllowancesChange))
+  );
+}
+
+function toProxyChange(proxyAddress$: Observable<string>): Observable<ProxyChange> {
+  return proxyAddress$.pipe(
+    map(proxy => ({
+      value: proxy,
+      kind: InstantFormChangeKind.proxyChange,
+    } as ProxyChange))
   );
 }
 
@@ -667,6 +714,7 @@ export function createFormController$(
     balances$: Observable<Balances>;
     etherBalance$: Observable<BigNumber>
     dustLimits$: Observable<DustLimits>;
+    proxyAddress$: Observable<string>;
     calls$: Calls$;
     etherPriceUsd$: Observable<BigNumber>;
   }
@@ -682,13 +730,16 @@ export function createFormController$(
     toBalancesChange(params.balances$),
     toEtherBalanceChange(params.etherBalance$),
     toDustLimitsChange(params.dustLimits$),
-    toAllowancesChange(params.allowances$)
+    toAllowancesChange(params.allowances$),
+    toProxyChange(params.proxyAddress$),
   );
 
   const [submit, submitChange$] = prepareSubmit(params.calls$);
+  const [createProxy, proxyCreationChange$] = manualProxyCreation(params.calls$);
 
   const initialState: InstantFormState = {
     submit,
+    createProxy,
     change: manualChange$.next.bind(manualChange$),
     buyToken: 'DAI',
     sellToken: 'ETH',
@@ -706,6 +757,7 @@ export function createFormController$(
   return merge(
     manualChange$,
     submitChange$,
+    proxyCreationChange$,
     environmentChange$,
   ).pipe(
     scan(applyChange, initialState),
@@ -714,7 +766,6 @@ export function createFormController$(
       evaluateTradeWithCalls(params.calls$),
       mergeTradeEvaluation
     ),
-    // scan(mergeValues),
     map(validate),
     switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
     map(calculatePriceAndImpact),

@@ -5,18 +5,20 @@ import accountSvg from '../../icons/account.svg';
 import backSvg from '../../icons/back.svg';
 import warningSvg from '../../icons/warning.svg';
 import { Button } from '../../utils/forms/Buttons';
-import { ButtonIcon } from '../../utils/icons/Icons';
+import { ButtonIcon, ProgressIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
 import { TopLeftCorner } from '../../utils/panel/TopRightCorner';
 import * as instantStyles from '../Instant.scss';
-import { InstantFormChangeKind, ManualChange, ViewKind } from '../instantForm';
+import { InstantFormChangeKind, ManualChange, Progress, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './AccountView.scss';
 
 export interface ViewProps {
   proxyAddress: string;
   allowances: Allowances;
+  createProxy: () => void;
   change: (change: ManualChange) => void;
+  progress: Progress;
 }
 
 const box = {
@@ -26,7 +28,7 @@ const box = {
 
 export class AccountView extends React.Component<ViewProps> {
   public render() {
-    const proxyAddress = '0x';
+    const { proxyAddress } = this.props;
 
     return (
       <InstantFormWrapper heading={'Account Overview'}>
@@ -71,7 +73,10 @@ export class AccountView extends React.Component<ViewProps> {
     </>
   )
 
-  private onMissingProxy = () => (
+  private onMissingProxy = () => {
+    const progress = this.props.progress;
+    const isInProgress = progress && !progress.done;
+    return (
     <>
       <div className={classnames(styles.row, styles.proxyMissing)}>
         <div style={box}>
@@ -79,14 +84,22 @@ export class AccountView extends React.Component<ViewProps> {
           <span className={styles.text}>Proxy not created</span>
           <SvgImage className={styles.warningIcon} image={warningSvg}/>
         </div>
-        <Button
-          size="sm"
-          color="greyWhite"
-          className={styles.button}
-          onClick={() => false}
-        >
-          Create
-        </Button>
+        <div className={styles.placeholder}>
+          {
+            isInProgress
+              ? <ProgressIcon/>
+              : (
+                <Button
+                  size="sm"
+                  color="greyWhite"
+                  className={styles.button}
+                  onClick={this.props.createProxy}
+                >
+                  Create
+                </Button>
+              )
+          }
+        </div>
       </div>
       <div className={classnames(styles.row, styles.warning)}>
         <>
@@ -97,7 +110,8 @@ export class AccountView extends React.Component<ViewProps> {
         </>
       </div>
     </>
-  )
+    );
+  }
 
   private switchToAllowances = () => this.props.change({
     kind: InstantFormChangeKind.viewChange,

@@ -7,3 +7,4 @@ export const proxyAvailable: string;
 export const warning: string;
 export const allowances: string;
 export const button: string;
+export const placeholder: string;
