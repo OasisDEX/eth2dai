@@ -70,8 +70,15 @@ class Header extends React.Component<HeaderProps> {
                 <NetworkTxRx/>
               }
             </theAppContext.Consumer>
-            </> :
-            <span>Preview mode!</span>
+            </> : <>
+              <NoClient />
+              <theAppContext.Consumer>
+                {({ NetworkTxRx }) =>
+                  // @ts-ignore
+                  <NetworkTxRx/>
+                }
+              </theAppContext.Consumer>
+            </>
             }
           </section>
         </header>
@@ -84,6 +91,22 @@ class Header extends React.Component<HeaderProps> {
 export const HeaderTxRx = connect(Header, combineLatest(account$, web3Status$).pipe(
   map(([account, web3status]) => ({ account, web3status })))
 );
+
+class NoClient extends React.Component<{}> {
+  public connect = () => {
+    console.log('connect?');
+  }
+
+  public render(): JSX.Element {
+    return (
+      <div className={classnames(navElement, styles.account)} style={{ marginRight: '12px' }}>
+        <Button color="white" size="sm" onClick={this.connect} className={classnames(styles.login, styles.connectButton)}>
+          Connect?
+        </Button>
+      </div>
+    );
+  }
+}
 
 interface StatusProps extends Loadable<Account> {
 }
@@ -99,14 +122,17 @@ class Status extends React.Component<StatusProps> {
       <WithLoadingIndicatorInline loadable={this.props} light={true} className={styles.account}>
       { ({ account, available }: Account) => {
         const label = account ? account.slice(0, 6) + '...' + account.slice(-4) : 'Logged out';
-        return account ?
+        return (
           <div title={account} className={classnames(navElement, styles.account)}>
-            <Jazzicon diameter={25} seed={jsNumberForAddress(account)} />
-            <span style={{ marginLeft: '1em' }}>{label}</span>
-          </div> :
-          <div title={account} className={classnames(navElement, styles.account)}>
-            <Button disabled={!available} color="greyWhite" size="sm" onClick={this.logIn} className={styles.login}>Log in</Button>
-          </div>;
+            {account ? <>
+              <Jazzicon diameter={25} seed={jsNumberForAddress(account)} />
+              <span style={{ marginLeft: '1em' }}>{label}</span>
+            </> :
+            <Button disabled={!available} color="white" size="sm" onClick={this.logIn} className={classnames(styles.login, styles.connectButton)}>
+              Connect Wallet
+            </Button>}
+          </div>
+        );
       } }
       </WithLoadingIndicatorInline>
       </span>

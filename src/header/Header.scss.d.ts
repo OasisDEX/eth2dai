@@ -12,6 +12,7 @@ export const activeNavLink: string;
 export const account: string;
 export const accountLoader: string;
 export const login: string;
+export const connectButton: string;
 export const networkIndicator: string;
 export const kovan: string;
 export const main: string;

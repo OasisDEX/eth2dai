@@ -119,7 +119,7 @@
 .account {
   width: 196px;
   border-radius: $border-radius;
-  margin-right: 7px;
+  margin-right: 0px;
 
   @include media-breakpoint-down(md) {
     width: 32px;
@@ -134,11 +134,16 @@
 }
 .accountLoader {
   display: flex;
-  margin-right: 5px;
+  margin-right: 12px;
 }
 .login {
   width: 100%;
   height: 100%;
+}
+
+.connectButton {
+  text-transform: none;
+  font-size: 16px;
 }
 
 .networkIndicator {
@@ -167,7 +172,8 @@
 
 .networkIndicator.kovan {
   color: $moderate-violet;
-  border: 1px solid $moderate-violet;
+  border: 2px solid $moderate-violet;
+  background-color: #2F2F38;
 }
 
 .networkIndicator.main{
