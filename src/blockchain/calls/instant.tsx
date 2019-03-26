@@ -307,6 +307,7 @@ export const offers: CallDef<OffersData, any> = {
 };
 
 const nullAddress = '0x0000000000000000000000000000000000000000';
+const nullAddress0x = '0x';
 
 export function proxyAddress$(
   context: NetworkConfig,
@@ -322,7 +323,7 @@ export function proxyAddress$(
     ).proxies
   )(account).pipe(
     mergeMap((proxyAddress: string) => {
-      if (proxyAddress === nullAddress) {
+      if (proxyAddress === nullAddress || proxyAddress === nullAddress0x) {
         return of(undefined);
       }
       const proxy = web3.eth.contract(dsProxy as any).at(proxyAddress);

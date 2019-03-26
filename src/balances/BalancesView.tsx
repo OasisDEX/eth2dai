@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import { theAppContext } from '../AppContext';
 import { FlexLayoutRow } from '../utils/layout/FlexLayoutRow';
-import { Muted } from '../utils/text/Text';
-import * as styles from './TaxExporter.scss';
 
 export class BalancesView extends React.Component<{}> {
   public render() {
@@ -12,7 +10,7 @@ export class BalancesView extends React.Component<{}> {
         <theAppContext.Consumer>
           { ({
                AssetOverviewViewRxTx,
-               TaxExporterButtonTxRx
+               TaxExporterTxRx
           }) =>
             <div>
               <FlexLayoutRow>
@@ -20,10 +18,7 @@ export class BalancesView extends React.Component<{}> {
               </FlexLayoutRow>
                 {process.env.REACT_APP_TAX_EXPORTER_ENABLED === '1' &&
                 <FlexLayoutRow>
-                    <Muted className={styles.taxExporterDescription}>
-                        Export your trade history into CSV format.
-                    </Muted>
-                    <TaxExporterButtonTxRx/>
+                    <TaxExporterTxRx/>
                 </FlexLayoutRow>}
             </div>
           }

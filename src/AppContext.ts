@@ -16,7 +16,7 @@ import {
   createWethBalances$,
 } from './balances/balances';
 import { createTaxExport$ } from './balances/taxExporter';
-import { TaxExporterButton } from './balances/TaxExporterButton';
+import { TaxExporterView } from './balances/TaxExporterView';
 import { calls$ } from './blockchain/calls/calls';
 import {
   account$,
@@ -214,7 +214,7 @@ export function setupAppContext() {
 
   const InstantTxRx = connect(InstantViewPanel, loadablifyLight(instant$));
 
-  const TaxExporterButtonTxRx = inject(TaxExporterButton, {
+  const TaxExporterTxRx = inject(TaxExporterView, {
     export: () => createTaxExport$(context$, initializedAccount$)
   });
 
@@ -230,7 +230,7 @@ export function setupAppContext() {
     TransactionNotifierTxRx,
     NetworkTxRx,
     TheFooterTxRx,
-    TaxExporterButtonTxRx
+    TaxExporterTxRx
   };
 }
 

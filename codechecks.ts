@@ -1,5 +1,6 @@
 import { codeChecks } from 'codechecks';
 import { buildSize }  from 'codecheck-build-size';
+import { typeCoverage} from 'codecheck-type-coverage';
 import { join } from 'path';
 // tslint:disable-next-line
 const exec = require('await-exec') as (cmd: string, opt: any) => Promise<void>;
@@ -12,6 +13,8 @@ export async function main() {
     ]
   });
 
+  await typeCoverage({ tsconfigPath: 'tsconfig.prod.json' });
+
   await deploy(join(__dirname, 'build'));
 
   await visReg();
@@ -23,7 +26,7 @@ async function deploy(path: string) {
     await codeChecks.success({
       name: 'Commit deployment',
       shortDescription: 'Deployment for commit ready.',
-      detailsUrl: codeChecks.getArtifactLink('/build/index.html'),
+      detailsUrl: codeChecks.getPageLink('build'),
     });
   }
 }
