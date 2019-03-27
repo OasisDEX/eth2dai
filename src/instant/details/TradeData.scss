@@ -22,6 +22,10 @@
       border-color: rgba(255, 255, 255, 0.90);
     }
   }
+
+  @include media-breakpoint-down(md) {
+    max-width: none;
+  }
 }
 
 .label {

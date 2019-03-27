@@ -174,7 +174,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
         </div>
         <div data-test-id="error"
              className={
-               classnames(styles.errors, message && message.placement === Position.BOTTOM ? '' : 'hide-all')
+               classnames(styles.errors, message && message.placement === Position.BOTTOM ? '' : styles.hidden)
              }>
           {error(message)}
         </div>
