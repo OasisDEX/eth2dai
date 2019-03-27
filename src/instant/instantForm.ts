@@ -317,26 +317,16 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       };
     case InstantFormChangeKind.progressChange:
 
-      const progressChange = {
-        ...state,
-        progress: change.progress,
-      };
-
-      if (change.progress && change.progress.tradeTxStatus === TxStatus.Success) {
-        return applyChange(progressChange, {
-          kind: InstantFormChangeKind.viewChange,
-          view: ViewKind.summary
-        });
-      }
-
       if (change.progress) {
-        return applyChange(progressChange, {
-          kind: InstantFormChangeKind.viewChange,
-          view: ViewKind.finalization
-        });
+        return {
+          ...state,
+          progress: change.progress,
+          view: change.progress.tradeTxStatus === TxStatus.Success ? ViewKind.summary : ViewKind.finalization
+        };
       }
 
-      return progressChange;
+      return state;
+
     case InstantFormChangeKind.formResetChange:
       return {
         ...state,
@@ -701,7 +691,8 @@ function freezeIfInProgress(previous: InstantFormState, state: InstantFormState)
   if (state.progress) {
     return {
       ...previous,
-      progress: state.progress
+      progress: state.progress,
+      view: state.view
     };
   }
   return state;
@@ -787,8 +778,4 @@ const prioritize = (current: Message = { priority: 0 } as Message, candidate: Me
   }
 
   return current;
-};
-
-const mergeValues = (currentValue: InstantFormState, newValue: any) => {
-  return ({ ...currentValue, ...newValue });
 };

@@ -1,4 +1,4 @@
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 export function switchSpread<C, S extends C>(
   switchFn: (previousState: S, state: S) => Observable<C> | undefined,

@@ -31,7 +31,7 @@ export class AssetSelectorView extends React.Component<ViewProps> {
           {
             Object.values(tokens).map((token, index) => {
               return (
-                <li data-test-id={token.symbol} className={styles.listItem} key={index}>
+                <li data-test-id={token.symbol.toLowerCase()} className={styles.listItem} key={index}>
                   <Asset currency={token.symbol} balance={balances[token.symbol]}
                          onClick={() => this.selectAsset(token.symbol, kind)}/>
                 </li>

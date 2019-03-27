@@ -128,6 +128,6 @@ export class AccountView extends React.Component<ViewProps> {
       .values(this.props.allowances)
       .reduce((allowedTokensCount: number, isAllowed: boolean) => {
         return isAllowed ? allowedTokensCount + 1 : allowedTokensCount;
-      }, 0);
+      },      0);
   }
 }

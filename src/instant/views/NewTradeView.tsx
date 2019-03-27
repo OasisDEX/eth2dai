@@ -187,22 +187,18 @@ export class NewTradeView extends React.Component<InstantFormState> {
 
   private updateSellingAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/,/g, '');
-    if (value) {
-      this.props.change({
-        kind: InstantFormChangeKind.sellAmountFieldChange,
-        value: new BigNumber(value)
-      } as ManualChange);
-    }
+    this.props.change({
+      kind: InstantFormChangeKind.sellAmountFieldChange,
+      value: value === '' ? undefined : new BigNumber(value)
+    } as ManualChange);
   }
 
   private updateBuyingAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/,/g, '');
-    if (value) {
-      this.props.change({
-        kind: InstantFormChangeKind.buyAmountFieldChange,
-        value: new BigNumber(value)
-      } as ManualChange);
-    }
+    this.props.change({
+      kind: InstantFormChangeKind.buyAmountFieldChange,
+      value: value === '' ? undefined : new BigNumber(value)
+    } as ManualChange);
   }
 
   private changeSellingToken = () => {
