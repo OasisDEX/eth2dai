@@ -145,6 +145,18 @@
   text-transform: none;
   font-size: 16px;
 }
+:global(.Popover.noWallet) {
+  & :global(.Popover-tip) {
+    fill: $white;
+  }
+  & :global(.Popover-body) {
+    background-color: $white;
+    border-color: $white;
+    border-radius: 2px;
+    color: black;
+    padding: 1em;
+  }
+}
 
 .networkIndicator {
   display: inline-flex;

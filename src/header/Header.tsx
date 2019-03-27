@@ -3,6 +3,8 @@ import * as React from 'react';
 // @ts-ignore
 // tslint:disable:import-name
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+// @ts-ignore
+import * as ReactPopover from 'react-popover';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -11,6 +13,8 @@ import { theAppContext } from '../AppContext';
 import { account$ } from '../blockchain/network';
 import { connectToWallet$, walletStatus$ } from '../blockchain/wallet';
 import { Web3Status, web3Status$ } from '../blockchain/web3';
+import chevronDownSvg from '../icons/chevron-down.svg';
+import { Client } from '../landingPage/client/Client';
 import { routerContext } from '../Main';
 import { connect } from '../utils/connect';
 import { Button } from '../utils/forms/Buttons';
@@ -92,19 +96,37 @@ export const HeaderTxRx = connect(Header, combineLatest(account$, web3Status$).p
   map(([account, web3status]) => ({ account, web3status })))
 );
 
-class NoClient extends React.Component<{}> {
-  public connect = () => {
-    console.log('connect?');
+class NoClient extends React.Component<{}, { open: boolean }> {
+  public constructor(props: {}) {
+    super(props);
+    this.state = { open: false };
   }
 
   public render(): JSX.Element {
     return (
       <div className={classnames(navElement, styles.account)} style={{ marginRight: '12px' }}>
-        <Button color="white" size="sm" onClick={this.connect} className={classnames(styles.login, styles.connectButton)}>
-          Connect?
-        </Button>
+        <ReactPopover isOpen={this.state.open} place="below" onOuterAction={this.close} className="noWallet" body={
+          <div>
+            <p>You need Ethereum client installed.</p>
+            <p>Available desktop clients:</p>
+            <Client client="metamask"/>
+            <Client client="parity"/>
+          </div>
+        }>
+          <Button color="white" size="sm" onClick={this.open} className={classnames(styles.login, styles.connectButton)}>
+            Connect <SvgImage image={chevronDownSvg} style={{ display: 'inline-block', verticalAlign: 'middle' }} />
+          </Button>
+        </ReactPopover>
       </div>
     );
+  }
+
+  private open = () => {
+    this.setState({ open: true });
+  }
+
+  private close = () => {
+    this.setState({ open: false });
   }
 }
 

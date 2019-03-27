@@ -25,7 +25,7 @@ export class Client extends React.Component<ClientProps> {
       case 'parity':
         return (
           <a target="_blank" rel="noopener noreferrer"
-             href="https://parity.io"
+             href="https://www.parity.io/ethereum"
             className={styles.client}>
             <SvgImage image={paritySvg} />
           </a>

@@ -47,7 +47,7 @@
     align-items: center;
 
     cursor: pointer;
-    background: url("./icon_arrow_down.svg") no-repeat ($width - 34px) center;
+    background: url("../../icons/chevron-down.svg") no-repeat ($width - 34px) center;
 
     @include media-breakpoint-down(md){
       border-right: none;
