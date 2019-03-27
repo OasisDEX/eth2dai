@@ -84,7 +84,9 @@ export class FinalizationView extends React.Component<ViewProps> {
                                  <Money formatter={formatPrice} value={sellAmount}
                                         token={sellToken}/>
                                }
-                             />}/>
+                             />}
+                           status={<ProgressReport status={progress.tradeTxStatus || '' as TxStatus}/>}
+              />
               <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                            label={
                              <TradeData
@@ -127,7 +129,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                         token={sellToken}/>
                                }
                              />}
-                           status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                           status={<ProgressReport status={progress.tradeTxStatus || '' as TxStatus}/>}/>
               <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                            label={
                              <TradeData
@@ -159,7 +161,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                         token={sellToken}/>
                                }
                              />}
-                           status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                           status={<ProgressReport status={progress.tradeTxStatus || '' as TxStatus}/>}/>
               <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                            label={
                              <TradeData
