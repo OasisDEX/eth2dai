@@ -20,7 +20,7 @@ describe('Sell Order', () => {
 
     const orders = Orderbook.list(OrderType.SELL);
     orders.countIs(4);
-    makeScreenshots("new-order");
+    makeScreenshots('new-order');
 
     new Order()
       .sell()

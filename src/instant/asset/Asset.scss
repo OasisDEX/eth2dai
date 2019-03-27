@@ -1,0 +1,29 @@
+@import "../../utils/Variables";
+@import "../../utils/Mixins";
+
+.asset {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+
+  margin: auto auto 1rem;
+
+  border: 1px solid $button-border-disabled;
+  border-radius: .325rem;
+
+  max-width: 124px;
+  width: 100%;
+  height: 100px;
+
+  cursor: pointer;
+
+  @include fontMontserratSemibold;
+  font-size: 0.625rem;
+  letter-spacing: 1px;
+}
+
+.icon {
+  height: map-get($inputHeight, lg);
+  width: map-get($inputHeight, lg);
+}

@@ -20,6 +20,9 @@ export function combineAndMerge<O1, O2, O3, O4, O5, O6>(
 export function combineAndMerge<O1, O2, O3, O4, O5, O6, O7>(
   o1: O<O1>, o2: O<O2>, o3: O<O3>, o4: O<O4>, o5: O<O5>, o6: O<O6>, o7: O<O7>
 ): O<O1 | O2 | O3 | O4 | O5 | O6 | O7>;
+export function combineAndMerge<O1, O2, O3, O4, O5, O6, O7, O8>(
+  o1: O<O1>, o2: O<O2>, o3: O<O3>, o4: O<O4>, o5: O<O5>, o6: O<O6>, o7: O<O7>, o8: O<O8>
+): O<O1 | O2 | O3 | O4 | O5 | O6 | O7| O8>;
 export function combineAndMerge(...observables: Array<O<any>>): O<any> {
   return combineLatest(...observables).pipe(
     scan((previous: any[], current: any) => difference(current, previous), []),

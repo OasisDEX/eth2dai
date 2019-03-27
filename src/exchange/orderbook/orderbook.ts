@@ -98,6 +98,9 @@ function loadOffersAllAtOnce(
     context.tokens[sellToken].address,
     context.tokens[buyToken].address
   ).pipe(
+    tap(() => {
+      console.log(context.tokens);
+    }),
     map(parseOffers(sellToken, buyToken, type, true)),
     expand(({ lastOfferId }) => lastOfferId.isZero() ?
       of() :

@@ -1,6 +1,7 @@
-import { buildSize }  from 'build-size-super-plugin';
+import { codeChecks } from 'codechecks';
+import { buildSize }  from 'codecheck-build-size';
+import { typeCoverage} from 'codecheck-type-coverage';
 import { join } from 'path';
-import { superCI } from 'super-ci';
 // tslint:disable-next-line
 const exec = require('await-exec') as (cmd: string, opt: any) => Promise<void>;
 
@@ -12,38 +13,40 @@ export async function main() {
     ]
   });
 
+  await typeCoverage({ tsconfigPath: 'tsconfig.prod.json' });
+
   await deploy(join(__dirname, 'build'));
 
   await visReg();
 }
 
 async function deploy(path: string) {
-  if (superCI.isPr()) {
-    await superCI.saveCollection('build', path);
-    await superCI.success({
+  if (codeChecks.isPr()) {
+    await codeChecks.saveCollection('build', path);
+    await codeChecks.success({
       name: 'Commit deployment',
       shortDescription: 'Deployment for commit ready.',
-      detailsUrl: superCI.getArtifactLink('/build/index.html'),
+      detailsUrl: codeChecks.getPageLink('build'),
     });
   }
 }
 
 async function visReg() {
-  const execOptions = { timeout: 100000, cwd: process.cwd(), log: true };
+  const execOptions = { timeout: 300000, cwd: process.cwd(), log: true };
   await exec('yarn storybook:screenshots', execOptions);
-  await superCI.saveCollection('storybook-vis-reg', join(__dirname, '__screenshots__'));
+  await codeChecks.saveCollection('storybook-vis-reg', join(__dirname, '__screenshots__'));
 
-  if (superCI.isPr()) {
-    await superCI.getCollection('storybook-vis-reg', join(__dirname, '.reg/expected'));
+  if (codeChecks.isPr()) {
+    await codeChecks.getCollection('storybook-vis-reg', join(__dirname, '.reg/expected'));
     await exec('./node_modules/.bin/reg-suit compare', execOptions);
 
-    await superCI.saveCollection('storybook-vis-reg-report', join(__dirname, '.reg'));
+    await codeChecks.saveCollection('storybook-vis-reg-report', join(__dirname, '.reg'));
 
     const reportData = require('./.reg/out.json');
-    await superCI.success({
+    await codeChecks.success({
       name: 'Visual regression for Storybook',
       shortDescription: `Changed: ${reportData.failedItems.length}, New: ${reportData.newItems.length}, Deleted: ${reportData.deletedItems.length}`,
-      detailsUrl: superCI.getArtifactLink('/storybook-vis-reg-report/index.html'),
+      detailsUrl: codeChecks.getArtifactLink('/storybook-vis-reg-report/index.html'),
     });
   }
 }

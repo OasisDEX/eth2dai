@@ -1,16 +1,6 @@
 import { bindNodeCallback, combineLatest, Observable, of, Subject } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
-import {
-  catchError,
-  filter,
-  map,
-  mergeMap,
-  scan,
-  shareReplay,
-  startWith,
-  take,
-  tap
-} from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, scan, shareReplay, startWith, take, } from 'rxjs/operators';
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import { account$, context$, onEveryBlock$ } from './network';
 import { web3 } from './web3';
@@ -24,9 +14,35 @@ export enum TxStatus {
   Failure = 'Failure',
 }
 
+export function isDone(state: TxState) {
+  return [
+    TxStatus.CancelledByTheUser,
+    TxStatus.Error,
+    TxStatus.Failure,
+    TxStatus.Success
+  ].indexOf(state.status) >= 0;
+}
+
+export function isSuccess(state: TxState) {
+  return TxStatus.Success === state.status;
+}
+
+export function getTxHash(state: TxState): string | undefined {
+  if (
+    state.status === TxStatus.Success ||
+    state.status === TxStatus.Failure ||
+    state.status === TxStatus.Error ||
+    state.status === TxStatus.WaitingForConfirmation
+  ) {
+    return state.txHash;
+  }
+  return undefined;
+}
+
 export type TxState = {
   account: string;
   txNo: number;
+  networkId: string;
   meta: any;
   start: Date;
   end?: Date;
@@ -69,12 +85,14 @@ let txCounter: number = 1;
 
 export function send(
   account: string,
+  networkId: string,
   meta: any,
   method: (...args: any[]) => string, // Any contract method
   ...args: any[]
 ): Observable<TxState> {
   const common = {
     account,
+    networkId,
     meta,
     txNo: txCounter += 1,
     start: new Date(),
@@ -124,13 +142,13 @@ export function send(
         mergeMap(() => bindNodeCallback(web3.eth.getTransactionReceipt)(txHash)),
         filter(receipt => !!receipt),
         // to prevent degenerated infura response...
-        tap((receipt: any) =>
-          console.log('receipt', receipt, receipt.blockNumber)
-        ),
+        // tap((receipt: any) =>
+        //   console.log('receipt', receipt, receipt.blockNumber)
+        // ),
         filter((receipt: any) =>
           receipt.blockNumber !== undefined && receipt.blockNumber !== null
         ),
-        tap(receipt => console.log('filtered receipt', receipt)),
+        // tap(receipt => console.log('filtered receipt', receipt)),
         take(1),
         mergeMap(receipt => successOrFailure(txHash, receipt)),
         catchError(error => {
@@ -217,8 +235,11 @@ export const transactions$: Observable<TxState[]> = combineLatest(
     },   []),
   ),
   account$,
+  context$,
 ).pipe(
-  map(([transactions, account]) => transactions.filter((t: TxState) => t.account === account)),
+  map(([transactions, account, context]) =>
+    transactions.filter((t: TxState) => t.account === account && t.networkId === context.id)
+  ),
   startWith([]),
   shareReplay(1),
 );

@@ -1,6 +1,10 @@
 @import './Mixins';
 @import './Variables';
 
+:global(.hide-all) {
+  display: none !important;
+}
+
 :global(.hide-md) {
   @include media-breakpoint-down(md) {
     display: none !important;
@@ -18,13 +22,13 @@
 }
 
 :global(.bold) {
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 
 :global(.semi-bold) {
-  font-weight: 600;
+  font-weight: 600 !important;
 }
 
 :global(.medium) {
-  font-weight: 500;
+  font-weight: 500 !important;
 }

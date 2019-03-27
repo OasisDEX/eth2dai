@@ -22,22 +22,8 @@ const tradingPair = { base: 'WETH', quote: 'DAI' };
 
 const defaultCalls = {
   offerMakeEstimateGas: () => of(20),
-  offerMake: null as any,
-  cancelOffer: null as any,
-  cancelOfferEstimateGas: null as any,
-  offerMakeDirect: null as any,
   offerMakeDirectEstimateGas: () => of(30),
-  setupMTProxy: null as any,
-  setupMTProxyEstimateGas: null as any,
-  approve: null as any,
-  disapprove: null as any,
-  approveWallet: null as any,
-  disapproveWallet: null as any,
-  wrap: null as any,
-  wrapEstimateGas: null as any,
-  unwrap: null as any,
-  unwrapEstimateGas: null as any,
-};
+} as any;
 
 const defParams = {
   gasPrice$: of(new BigNumber(0.01)),
@@ -664,7 +650,7 @@ test('pick buy offer', () => {
   expect(unpack(controller).price).toEqual(new BigNumber(3));
   expect(unpack(controller).amount).toEqual(new BigNumber(2));
   expect(unpack(controller).total).toEqual(new BigNumber(6));
-  expect(unpack(controller).kind).toEqual(OfferType.sell);
+  expect(unpack(controller).kind).toEqual(OfferType.buy);
   expect(unpack(controller).stage).toEqual(FormStage.readyToProceed);
 });
 

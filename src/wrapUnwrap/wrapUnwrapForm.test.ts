@@ -12,23 +12,9 @@ import {
 } from './wrapUnwrapForm';
 
 const defaultCalls = {
-  offerMakeEstimateGas: () => of(20),
-  offerMake: null as any,
-  cancelOffer: null as any,
-  cancelOfferEstimateGas: null as any,
-  offerMakeDirect: null as any,
-  offerMakeDirectEstimateGas: null as any,
-  setupMTProxy: null as any,
-  setupMTProxyEstimateGas: null as any,
-  approve: null as any,
-  disapprove: null as any,
-  approveWallet: null as any,
-  disapproveWallet: null as any,
-  wrap: null as any,
   wrapEstimateGas: () => of(100),
-  unwrap: null as any,
   unwrapEstimateGas: () => of(100),
-};
+} as any;
 
 const gasPrice$ = of(new BigNumber(0.01));
 const etherPriceUSD$ = of(new BigNumber(1));

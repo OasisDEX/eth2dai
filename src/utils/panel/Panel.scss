@@ -82,3 +82,14 @@ $panel-padding-vertical: 12px;
 .panelFooterBordered {
   border-top: 1px solid $grey-dark;
 }
+
+// panel position placement
+
+// positioning
+
+.topRightCorner {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+}
+

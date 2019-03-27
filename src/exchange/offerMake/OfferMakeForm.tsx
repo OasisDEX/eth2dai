@@ -245,7 +245,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         disabled={setMaxSellDisabled}
         className={styles.balanceBtn}
       >
-        { this.props.baseToken && <BalanceIcon token={this.props.baseToken} />}
+        { this.props.baseToken && tokens[this.props.baseToken].icon }
         <span style={{ lineHeight: 1 }}>
                 { this.props.balances && this.props.balances[this.props.baseToken] &&
                 formatAmount(this.props.balances[this.props.baseToken], this.props.baseToken)
@@ -260,7 +260,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         disabled={setMaxBuyDisabled}
         className={styles.balanceBtn}
       >
-        { this.props.quoteToken && <BalanceIcon token={this.props.quoteToken} />}
+        { this.props.quoteToken && tokens[this.props.quoteToken].icon }
         <span style={{ lineHeight: 1 }}>
                 { this.props.balances && this.props.balances[this.props.quoteToken] &&
                 formatAmount(this.props.balances[this.props.quoteToken], this.props.quoteToken)
@@ -572,8 +572,3 @@ function messageContent(msg: Message) {
       </>;
   }
 }
-
-const BalanceIcon = ({ token }: { token: string }) => {
-  const Icon = tokens[token].icon;
-  return (<Icon />);
-};

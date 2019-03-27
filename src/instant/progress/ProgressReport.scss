@@ -1,0 +1,18 @@
+@import "../../utils/Variables";
+
+.progressReport {
+  display: flex;
+  align-items: center;
+}
+
+.progressIcon {
+  margin-left: .5rem;
+}
+
+.success {
+  color: $very-light-blue;
+}
+
+.failure {
+  color: $errors;
+}

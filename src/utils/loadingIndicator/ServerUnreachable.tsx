@@ -1,7 +1,8 @@
 import classnames from 'classnames';
 import * as React from 'react';
 
-import { ErrorIcon } from '../icons/Icons';
+import errorSvg from '../../icons/error.svg';
+import { SvgImage } from '../icons/utils';
 import { Muted } from '../text/Text';
 import * as styles from './ServerUnreachable.scss';
 
@@ -14,7 +15,7 @@ export const ServerUnreachable = ({ className, ...props }: {
        { ...props }
     >
       <div className={styles.mainInfo}>
-        <ErrorIcon className={styles.icon}/>
+        <SvgImage image={errorSvg} className={styles.icon}/>
         Server unreachable
       </div>
       <Muted className={styles.annotate}>
@@ -40,7 +41,7 @@ export const ServerUnreachableInline = ({ className, fallback, ...props }: {
       title={`Server unreachable!\nPlease try again later.`}
       {...props}
     >
-      <ErrorIcon className={styles.icon}/>
+      <SvgImage image={errorSvg} className={styles.icon}/>
       {fallback}
     </div>
   );

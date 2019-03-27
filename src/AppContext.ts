@@ -1,21 +1,21 @@
 import * as React from 'react';
-import { BehaviorSubject, interval, Observable } from 'rxjs';
-import { first, flatMap, shareReplay, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, interval, Observable } from 'rxjs';
+import { first, flatMap, map, shareReplay, switchMap } from 'rxjs/operators';
 
 import { curry } from 'ramda';
-import {
-  AssetOverviewView,
-  AssetsOverviewActionProps,
-  AssetsOverviewExtraProps
-} from './balances/AssetOverviewView';
+import { AssetOverviewView, AssetsOverviewActionProps, AssetsOverviewExtraProps } from './balances/AssetOverviewView';
 import {
   Balances,
   CombinedBalances,
   createBalances$,
   createCombinedBalances$,
   createDustLimits$,
-  createWalletApprove, createWalletDisapprove, createWethBalances$,
+  createWalletApprove,
+  createWalletDisapprove,
+  createWethBalances$,
 } from './balances/balances';
+import { createTaxExport$ } from './balances/taxExporter';
+import { TaxExporterView } from './balances/TaxExporterView';
 import { calls$ } from './blockchain/calls/calls';
 import {
   account$,
@@ -27,9 +27,7 @@ import {
   initializedAccount$,
   onEveryBlock$
 } from './blockchain/network';
-import {
-  createPickableOrderBookFromOfferMake$, loadOrderbook$, Orderbook
-} from './exchange/orderbook/orderbook';
+import { createPickableOrderBookFromOfferMake$, loadOrderbook$, Orderbook } from './exchange/orderbook/orderbook';
 import {
   createTradingPair$,
   currentTradingPair$,
@@ -38,55 +36,35 @@ import {
 } from './exchange/tradingPair/tradingPair';
 
 import { transactions$ } from './blockchain/transactions';
-import {
-  createAllTrades$, createTradesBrowser$, loadAllTrades
-} from './exchange/allTrades/allTrades';
+import { createAllTrades$, createTradesBrowser$, loadAllTrades } from './exchange/allTrades/allTrades';
 import { AllTrades } from './exchange/allTrades/AllTradesView';
+import { createDepthChartWithLoading$, DepthChartWithLoading } from './exchange/depthChart/DepthChartWithLoading';
 import {
-  createDepthChartWithLoading$,
-  DepthChartWithLoading
-} from './exchange/depthChart/DepthChartWithLoading';
-import {
-  createCurrentPrice$, createDailyVolume$, createYesterdayPrice$, createYesterdayPriceChange$,
+  createCurrentPrice$,
+  createDailyVolume$,
+  createYesterdayPrice$,
+  createYesterdayPriceChange$,
 } from './exchange/exchange';
 import { createMyClosedTrades$ } from './exchange/myTrades/closedTrades';
-import {
-  createMyCurrentTrades$,
-  createMyTrades$,
-  createMyTradesKind$
-} from './exchange/myTrades/myTrades';
+import { createMyCurrentTrades$, createMyTrades$, createMyTradesKind$ } from './exchange/myTrades/myTrades';
 import { MyTrades } from './exchange/myTrades/MyTradesView';
 import { createMyOpenTrades$ } from './exchange/myTrades/openTrades';
-import {
-  createFormController$, OfferFormState
-} from './exchange/offerMake/offerMake';
+import { createFormController$, OfferFormState } from './exchange/offerMake/offerMake';
 import { OfferMakePanel } from './exchange/offerMake/OfferMakePanel';
 import { OrderbookView } from './exchange/orderbook/OrderbookView';
-import {
-  createOrderbookPanel$,
-  OrderbookPanel,
-  OrderbookPanelProps,
-  SubViewsProps
-} from './exchange/OrderbookPanel';
-import {
-  GroupMode, loadAggregatedTrades, PriceChartDataPoint
-} from './exchange/priceChart/pricechart';
-import {
-  createPriceChartLoadable$,
-  PriceChartWithLoading
-} from './exchange/priceChart/PriceChartWithLoading';
+import { createOrderbookPanel$, OrderbookPanel, OrderbookPanelProps, SubViewsProps } from './exchange/OrderbookPanel';
+import { GroupMode, loadAggregatedTrades, PriceChartDataPoint } from './exchange/priceChart/pricechart';
+import { createPriceChartLoadable$, PriceChartWithLoading } from './exchange/priceChart/PriceChartWithLoading';
 import { TradingPairView } from './exchange/tradingPair/TradingPairView';
 import { createFooter$, TheFooter } from './footer/Footer';
 import { Network } from './header/Network';
+import { createFormController$ as createInstantFormController$ } from './instant/instantForm';
+import { InstantViewPanel } from './instant/InstantViewPanel';
 import { createTransactionNotifier$ } from './transactionNotifier/transactionNotifier';
 import { TransactionNotifierView } from './transactionNotifier/TransactionNotifierView';
 import { connect } from './utils/connect';
 import { inject } from './utils/inject';
-import {
-  Loadable,
-  LoadableWithTradingPair,
-  loadablifyLight,
-} from './utils/loadable';
+import { Loadable, LoadableWithTradingPair, loadablifyLight, } from './utils/loadable';
 import { withModal } from './utils/modal';
 import { createWrapUnwrapForm$ } from './wrapUnwrap/wrapUnwrapForm';
 
@@ -105,6 +83,10 @@ export function setupAppContext() {
   ).pipe(
     shareReplay(1)
   );
+  const balancesWithEth$ = combineLatest(balances$, etherBalance$).pipe(
+    map(([balances, etherBalance]) => ({ ...balances, ETH: etherBalance })),
+  );
+  balancesWithEth$.subscribe(console.log);
 
   const wethBalance$ = createWethBalances$(context$, initializedAccount$, onEveryBlock$);
 
@@ -215,17 +197,40 @@ export function setupAppContext() {
     createTransactionNotifier$(transactions$, interval(5 * 1000));
   const TransactionNotifierTxRx = connect(TransactionNotifierView, transactionNotifier$);
 
+  // const proxyAddress$ = createProxy$(context$, initializedAccount$, onEveryBlock$, calls$);
+
+  const instant$ = createInstantFormController$(
+    {
+      gasPrice$,
+      allowance$,
+      calls$,
+      etherPriceUsd$,
+      balances$,
+      etherBalance$,
+      // proxyAddress$,
+      dustLimits$: createDustLimits$(context$),
+    }
+  );
+
+  const InstantTxRx = connect(InstantViewPanel, loadablifyLight(instant$));
+
+  const TaxExporterTxRx = inject(TaxExporterView, {
+    export: () => createTaxExport$(context$, initializedAccount$)
+  });
+
   return {
     AllTradesTxRx,
     AssetOverviewViewRxTx,
     MyTradesTxRx,
     OfferMakePanelTxRx,
     OrderbookPanelTxRx,
+    InstantTxRx,
     PriceChartWithLoadingTxRx,
     TradingPairsTxRx,
     TransactionNotifierTxRx,
     NetworkTxRx,
     TheFooterTxRx,
+    TaxExporterTxRx
   };
 }
 

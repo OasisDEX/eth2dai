@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { SupportedClient } from '../../utils/icons/Icons';
+
+import metamaskSvg from '../../icons/clients/metamask.svg';
+import paritySvg from '../../icons/clients/parity.svg';
+import { SvgImage } from '../../utils/icons/utils';
 import * as styles from './Client.scss';
 
 type CLIENT_TYPE = 'metamask' | 'parity';
@@ -16,7 +19,7 @@ export class Client extends React.Component<ClientProps> {
           <a target="_blank" rel="noopener noreferrer"
              href="https://metamask.io"
             className={styles.client}>
-            {SupportedClient.METAMASK()}
+            <SvgImage image={metamaskSvg} />
           </a>
         );
       case 'parity':
@@ -24,7 +27,7 @@ export class Client extends React.Component<ClientProps> {
           <a target="_blank" rel="noopener noreferrer"
              href="https://parity.io"
             className={styles.client}>
-            {SupportedClient.PARITY()}
+            <SvgImage image={paritySvg} />
           </a>
         );
     }

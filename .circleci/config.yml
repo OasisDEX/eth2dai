@@ -1,6 +1,6 @@
 # speed up ideas:
 # - avoid creating production build multiple times (its done in e2e jobs)
-# - create custom docker image for super-ci jobs
+# - create custom docker image for codechecks jobs
 
 version: 2
 
@@ -61,7 +61,7 @@ jobs:
           name: Run build & e2e tests
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            yarn build:ci
+            ENV=dev yarn build:ci
             ./.circleci/run-e2e.sh
 
       - persist_to_workspace:
@@ -69,7 +69,7 @@ jobs:
           paths:
             - cypress/screenshots
 
-  super-ci:
+  codechecks:
     docker:
       - image: circleci/node:8.11.2-stretch
     steps:
@@ -97,9 +97,9 @@ jobs:
             keys:
             - v3-dependencies-{{ checksum "package.json" }}
       - run: PUBLIC_URL=. ENV=dev yarn build
-      - run: yarn super-ci
+      - run: yarn codechecks
 
-  super-ci-e2e:
+  codechecks-e2e:
     docker:
       - image: circleci/node:8.11.2-stretch
     steps:
@@ -135,7 +135,7 @@ jobs:
             mkdir -p /home/circleci/project/__screenshots__
             cp `find  | grep png` /home/circleci/project/__screenshots__
       - run:
-          command: yarn super-ci-e2e
+          command: yarn codechecks-e2e
 
   deploy_dev:
     docker:
@@ -196,7 +196,7 @@ workflows:
             branches:
               ignore:
                 - gh-pages
-      - super-ci:
+      - codechecks:
           requires: 
             - install
           filters:
@@ -204,7 +204,7 @@ workflows:
               ignore:
                 - gh-pages
 
-      - super-ci-e2e:
+      - codechecks-e2e:
           requires:
             - test-e2e
           filters:

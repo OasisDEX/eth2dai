@@ -1,4 +1,4 @@
-import { tid } from "../utils/index";
+import { tid } from '../utils/index';
 
 export class Balance {
   public static of = (tokenSymbol: string) => {
@@ -8,9 +8,9 @@ export class Balance {
     return {
       shouldBe: (amount: string | number | RegExp) => {
         cy.get(`@${symbol}`).within(() => {
-          cy.get(tid(`${symbol}-balance`)).contains(amount, { timeout: 10000 });
+          (cy.get(tid(`${symbol}-balance`)) as any).contains(amount, { timeout: 10000 });
         });
       },
     };
-  };
+  }
 }

@@ -1,8 +1,9 @@
+import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 
+import accountSvg from '../../icons/account.svg';
 import { Currency } from '../../utils/text/Text';
-import { DAIicon, ETHicon } from '../coinIcons/coinIcons';
-import { NetworkConfig } from '../config';
+import { NetworkConfig, tokens } from '../config';
 import { TransactionDef } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
@@ -10,19 +11,8 @@ export interface ApproveWalletData {
   token: string;
 }
 
-const descriptionIcon = ({ token }: ApproveWalletData) => {
-  switch (token) {
-    case 'WETH':
-      return <ETHicon theme="circle"/>;
-    case 'DAI':
-      return <DAIicon theme="circle"/>;
-    default:
-      throw new Error(`unknown token ${token}`);
-  }
-};
-
 export const approveWallet: TransactionDef<ApproveWalletData> = {
-  descriptionIcon,
+  descriptionIcon: ({ token }: ApproveWalletData) => tokens[token].iconCircle,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: (_: ApproveWalletData, context: NetworkConfig) => [context.otc.address, -1],
@@ -38,7 +28,7 @@ export const approveWallet: TransactionDef<ApproveWalletData> = {
 };
 
 export const disapproveWallet: TransactionDef<ApproveWalletData> = {
-  descriptionIcon,
+  descriptionIcon: ({ token }: ApproveWalletData) => tokens[token].iconCircle,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: (_: ApproveWalletData, context: NetworkConfig) => [context.otc.address, 0],
@@ -48,6 +38,39 @@ export const disapproveWallet: TransactionDef<ApproveWalletData> = {
     return (
       <React.Fragment>
         Lock <Currency value={token} /> for Trading
+      </React.Fragment>
+    );
+  },
+};
+
+export interface ApproveProxyData {
+  token: string;
+  proxyAddress: string;
+  gasPrice?: BigNumber;
+  gasEstimation?: number;
+}
+
+export const approveProxy = {
+  call: ({ token }: ApproveProxyData, context: NetworkConfig) =>
+    context.tokens[token].contract.approve['address,uint256'],
+  prepareArgs: ({ proxyAddress }: ApproveProxyData, _context: NetworkConfig) => [proxyAddress, -1],
+  options: ({ gasPrice, gasEstimation }: ApproveProxyData) => ({ ...gasPrice ? gasPrice : {}, ...gasEstimation ? { gas: gasEstimation } : {} }),
+  kind: TxMetaKind.approveProxy,
+  description: ({ token }: ApproveProxyData) =>
+    <React.Fragment>Approve proxy to transfer <Currency value={token}/></React.Fragment>
+};
+
+export const disapproveProxy: TransactionDef<ApproveProxyData> = {
+  descriptionIcon: accountSvg,
+  call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
+    context.tokens[token].contract.approve['address,uint256'],
+  prepareArgs: ({ proxyAddress }: ApproveProxyData) => [proxyAddress, 0],
+  options: () => ({ gas: 100000 }),
+  kind: TxMetaKind.disapproveProxy,
+  description: ({ token }: ApproveProxyData) => {
+    return (
+      <React.Fragment>
+        Lock <Currency value={token} /> for trading by proxy
       </React.Fragment>
     );
   },

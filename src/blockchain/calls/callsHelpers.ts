@@ -30,7 +30,9 @@ export function callCurried(context: NetworkConfig, account: string) {
       return bindNodeCallback(call(args, context, account).call)(
         ...prepareArgs(args, context, account),
         { from: account },
-      ).pipe(map(i => (postprocess ? postprocess(i, args) : i))) as Observable<R>;
+      ).pipe(
+        map(i => (postprocess ? postprocess(i, args) : i))
+      ) as Observable<R>;
     };
   };
 }
@@ -67,6 +69,7 @@ export function sendTransactionCurried(context: NetworkConfig, account: string) 
     return (args: D) => {
       return send(
         account,
+        context.id,
         {
           kind,
           description,
@@ -91,6 +94,7 @@ export function sendTransactionWithGasConstraintsCurried(context: NetworkConfig,
         switchMap(([gas, gasPrice]) => {
           return send(
             account,
+            context.id,
             {
               kind,
               description,
