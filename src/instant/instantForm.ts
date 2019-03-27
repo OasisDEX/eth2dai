@@ -495,7 +495,9 @@ function evaluateTrade(
   );
 }
 
-function mergeTradeEvaluation(state: InstantFormState, trade: TradeEvaluationState | undefined) {
+function mergeTradeEvaluation(
+  state:InstantFormState, trade: TradeEvaluationState | undefined
+): InstantFormState {
   if (!trade) {
     return state;
   }
