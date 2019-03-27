@@ -18,10 +18,19 @@ const input = (side: 'sellInput' | 'buyInput') => ({
 });
 
 export class Trade {
+  public expectReceiveToken = (token: string) => {
+    cy.get(tid('buying-token', tid('currency')))
+      .contains(`${token}`);
+  }
 
   public expectToReceive = (amount: string | RegExp) => {
     cy.get(tid('buying-token', tid('amount')))
       .should('have.value', `${amount}`);
+  }
+
+  public expectPayToken = (token: string) => {
+    cy.get(tid('selling-token', tid('currency')))
+      .contains(`${token}`);
   }
 
   public expectToPay = (amount: string | RegExp) => {

@@ -2,15 +2,12 @@ import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
 import { OfferType } from '../../exchange/orderbook/orderbook';
-import accountSvg from '../../icons/account.svg';
-import cogWheelSvg from '../../icons/cog-wheel.svg';
 import swapArrowsSvg from '../../icons/swap-arrows.svg';
 import { Approximate } from '../../utils/Approximate';
 import { formatAmount } from '../../utils/formatters/format';
 import { FormatPercent, Money } from '../../utils/formatters/Formatters';
-import { ButtonIcon, ProgressIcon } from '../../utils/icons/Icons';
+import { ProgressIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
-import { TopLeftCorner, TopRightCorner } from '../../utils/panel/TopRightCorner';
 import { TradeData } from '../details/TradeData';
 import * as styles from '../Instant.scss';
 import {
@@ -87,19 +84,27 @@ export class NewTradeView extends React.Component<InstantFormState> {
                           btnDisabled={!this.props.readyToProceed}
                           btnDataTestId="initiate-trade"
       >
-        <TopRightCorner>
-          <ButtonIcon
-            className={classnames(styles.cornerIcon, styles.settingsIcon)}
-            disabled={!price}
-            onClick={this.showTradeSettings}
-            image={cogWheelSvg}/>
-        </TopRightCorner>
-        <TopLeftCorner>
-          <ButtonIcon
-            className={styles.cornerIcon}
-            onClick={this.showAccountSettings}
-            image={accountSvg}/>
-        </TopLeftCorner>
+        {
+          /*
+          We plan to release basic instant version so people can trade with a single click
+          There are some design concerns that must be discussed so those two options are postponed
+
+          <TopRightCorner>
+            <ButtonIcon
+              className={classnames(styles.cornerIcon, styles.settingsIcon)}
+              disabled={!price}
+              onClick={this.showTradeSettings}
+              image={cogWheelSvg}/>
+          </TopRightCorner>
+          <TopLeftCorner>
+            <ButtonIcon
+              className={styles.cornerIcon}
+              onClick={this.showAccountSettings}
+              image={accountSvg}/>
+          </TopLeftCorner>
+          */
+        }
+
         <div
           className={classnames(
             styles.details,
@@ -232,6 +237,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
     });
   }
 
+  // @ts-ignore
   private showAccountSettings = () => {
     this.props.change({
       kind: InstantFormChangeKind.viewChange,
@@ -239,6 +245,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
     });
   }
 
+  // @ts-ignore
   private showTradeSettings = () => {
     this.props.change({
       kind: InstantFormChangeKind.viewChange,
