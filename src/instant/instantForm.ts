@@ -121,6 +121,7 @@ export enum ViewKind {
   assetSelector = 'assetSelector',
   account = 'account',
   finalization = 'finalization',
+  priceImpactWarning = 'priceImpactWarning',
   summary = 'summary'
 }
 
@@ -601,6 +602,7 @@ function calculatePriceAndImpact(state: InstantFormState): InstantFormState {
       .div(bestPrice)
       .times(100) :
     undefined;
+
   return {
     ...state,
     price,

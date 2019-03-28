@@ -1,0 +1,112 @@
+@import "../../utils/Variables";
+
+$base: 4px;
+$baseLength: (45 * $base);
+$barBackground: $soft-cyan;
+$barBorder: #5ED69C;
+$barBackgroundDanger: #FF8A80;
+$barBorderDanger: #E67C73;
+$arrowColor: #FF5252;
+
+.container {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border: 1px solid $button-border-disabled;
+  border-radius: 4px;
+  margin: auto 0;
+  padding: 42px 32px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.impactText {
+  letter-spacing: 1px;
+  text-align: center;
+
+  margin: 16px 0;
+
+  .danger {
+    color: $arrowColor;
+  }
+}
+
+.continueText {
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-align: center;
+
+  margin: 0;
+}
+
+.graph {
+  width: $baseLength;
+
+  margin-bottom: (8 * $base);
+}
+
+.bar {
+  background: $barBackground;
+  border: 1px solid $barBorder;
+  border-radius: 1px;
+
+  height: (5 * $base);
+  margin-top: (2.5 * $base);
+}
+
+.bar-1 {
+  margin-top: 0;
+  width: ($baseLength / 3);
+}
+
+.bar-2 {
+  width: ($baseLength / 2);
+}
+
+.bar-3 {
+  width: ($baseLength * 3 / 4);
+}
+
+.bar-4 {
+  width: $baseLength;
+}
+
+.bar.danger {
+  background: $barBackgroundDanger;
+  border: 1px solid $barBorderDanger;
+}
+
+.arrow-placeholder {
+  display: inline-block;
+  width: ($baseLength / 4);
+  height: (20 * $base);
+}
+
+.arrow {
+  position: relative;
+  display: block;
+  top: 0;
+
+  width: 4px;
+  height: (18.5 * $base);
+  background-color: $arrowColor;
+
+  margin: auto;
+}
+
+.arrow:after {
+  position: absolute;
+  display: block;
+  content: "";
+  width: 0;
+  height: 0;
+  bottom: -6px;
+  right: -4px;
+  border-top: 6px solid $arrowColor;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+}
+
+

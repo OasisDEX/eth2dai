@@ -223,11 +223,20 @@ export class NewTradeView extends React.Component<InstantFormState> {
   }
 
   private startTx = () => {
-    this.props.submit(this.props);
-    this.props.change({
-      kind: InstantFormChangeKind.viewChange,
-      view: ViewKind.finalization
-    });
+    const priceImpact = this.props.priceImpact;
+
+    if (priceImpact && priceImpact.gt(new BigNumber(5))) {
+      this.props.change({
+        kind: InstantFormChangeKind.viewChange,
+        view: ViewKind.priceImpactWarning
+      });
+    } else {
+      this.props.submit(this.props);
+      this.props.change({
+        kind: InstantFormChangeKind.viewChange,
+        view: ViewKind.finalization
+      });
+    }
   }
 
   private showAssets = () => {

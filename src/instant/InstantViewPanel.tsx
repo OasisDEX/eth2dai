@@ -11,10 +11,12 @@ import { AllowancesView } from './views/AllowancesView';
 import { AssetSelectorView } from './views/AssetSelectorView';
 import { FinalizationView } from './views/FinalizationView';
 import { NewTradeView } from './views/NewTradeView';
+import { PriceImpactWarning } from './views/PriceImpactWarning';
 import { TradeSummaryView } from './views/TradeSummaryView';
 
 const views = new Map<ViewKind, any>([
   [ViewKind.assetSelector, AssetSelectorView],
+  [ViewKind.priceImpactWarning, PriceImpactWarning],
   [ViewKind.account, AccountView],
   [ViewKind.allowances, AllowancesView],
   [ViewKind.finalization, FinalizationView],
