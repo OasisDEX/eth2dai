@@ -1,12 +1,12 @@
 import classnames from 'classnames';
 import * as React from 'react';
+import { formatPercent } from '../../utils/formatters/format';
 import { CloseButton } from '../../utils/forms/Buttons';
+import { ProgressIcon } from '../../utils/icons/Icons';
 import { TopRightCorner } from '../../utils/panel/TopRightCorner';
 import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './PriceImpactWarning.scss';
-import { formatPercent } from '../../utils/formatters/format';
-import { ProgressIcon } from "../../utils/icons/Icons";
 
 const PriceImpactGraph = () => (
   <div className={styles.graph}>
