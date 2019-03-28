@@ -140,7 +140,15 @@ export class NewTradeView extends React.Component<InstantFormState> {
               <TradeData label="Price Impact"
                          data-test-id="trade-price-impact"
                          info="Additional Info"
-                         value={<FormatPercent fallback={'N/A'} value={priceImpact} precision={2}/>}/>
+                         value={
+                           <FormatPercent
+                             className={priceImpact && priceImpact.gt(new BigNumber(5)) ? 'danger' : ''}
+                             fallback={'N/A'}
+                             value={priceImpact}
+                             precision={2}
+                           />
+                         }
+              />
             </>
           }
 

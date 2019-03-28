@@ -1,12 +1,11 @@
 import classnames from 'classnames';
 import * as React from 'react';
-import { formatPercent } from '../../utils/formatters/format';
 import { CloseButton } from '../../utils/forms/Buttons';
-import { ProgressIcon } from '../../utils/icons/Icons';
 import { TopRightCorner } from '../../utils/panel/TopRightCorner';
 import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './PriceImpactWarning.scss';
+import { FormatPercent } from "../../utils/formatters/Formatters";
 
 const PriceImpactGraph = () => (
   <div className={styles.graph}>
@@ -43,10 +42,8 @@ export class PriceImpactWarning extends React.Component<InstantFormState> {
           <PriceImpactGraph/>
           <p className={styles.impactText}>
             <span>Order has a significant </span>
-            <span className={styles.danger}>
-              price impact of {
-              priceImpact ? formatPercent(priceImpact, { precision: 2 }) : <ProgressIcon small={true}/>
-            }
+            <span className="danger">
+              price impact of <FormatPercent fallback={'N/A'} value={priceImpact} precision={2}/>
             </span>
           </p>
           <p className={styles.continueText}>
