@@ -510,6 +510,18 @@ function mergeTradeEvaluation(
   };
 }
 
+function mergeGasEstimation(
+  state: InstantFormState, estimation: HasGasEstimation | undefined
+): InstantFormState {
+  if (!estimation) {
+    return state;
+  }
+  return {
+    ...state,
+    ...estimation
+  };
+}
+
 function validate(state: InstantFormState): InstantFormState {
   if (state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated) {
     return state;
@@ -694,7 +706,7 @@ function isReadyToProceed(state: InstantFormState): InstantFormState {
 }
 
 function freezeIfInProgress(previous: InstantFormState, state: InstantFormState): InstantFormState {
-  if (state.progress) {
+  if (state.progress || previous.view !== state.view) {
     return {
       ...previous,
       progress: state.progress,

@@ -35,12 +35,11 @@ export class PriceImpactWarning extends React.Component<InstantFormState> {
                           btnAction={this.onAcknowledge}
                           btnDataTestId="proceed-with-order">
         <TopRightCorner>
-          <CloseButton onClick={this.onDismiss}/>
+          <CloseButton data-test-id="dismiss-warning" onClick={this.onDismiss}/>
         </TopRightCorner>
         <div className={styles.container}>
-
-          <PriceImpactGraph/>
-          <p className={styles.impactText}>
+          <PriceImpactGraph/>no
+          <p className={styles.impactText} data-test-id="price-impact-text">
             <span>Order has a significant </span>
             <span className="danger">
               price impact of <FormatPercent fallback={'N/A'} value={priceImpact} precision={2}/>

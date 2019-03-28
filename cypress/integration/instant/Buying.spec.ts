@@ -1,7 +1,7 @@
-import { ApplicationState } from '../pages/Application';
-import { Tab } from '../pages/Tab';
-import { Trade } from '../pages/Trade';
-import { cypressVisitWithWeb3, tid } from '../utils';
+import { ApplicationState } from '../../pages/Application';
+import { Tab } from '../../pages/Tab';
+import { Trade } from '../../pages/Trade';
+import { cypressVisitWithWeb3, tid } from '../../utils';
 
 const nextTrade = () => {
   cy.get(tid('new-trade')).click();

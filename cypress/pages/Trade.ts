@@ -18,7 +18,16 @@ const input = (side: 'sellInput' | 'buyInput') => ({
 });
 
 export class Trade {
-  public expectReceiveToken = (token: string) => {
+  public expectPriceImpact = (priceImpact: string | RegExp, aboveThreshold: boolean) => {
+    cy.get(tid('trade-price-impact', tid('value')))
+      .contains(`${priceImpact}`);
+
+    if (aboveThreshold) {
+      cy.get(tid('trade-price-impact', tid('value', 'span'))).should('have.class', 'danger');
+    }
+  }
+
+  public expectReceiveToken = (token: string | RegExp) => {
     cy.get(tid('buying-token', tid('currency')))
       .contains(`${token}`);
   }
