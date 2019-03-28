@@ -1,11 +1,11 @@
 import classnames from 'classnames';
 import * as React from 'react';
+import { FormatPercent } from '../../utils/formatters/Formatters';
 import { CloseButton } from '../../utils/forms/Buttons';
 import { TopRightCorner } from '../../utils/panel/TopRightCorner';
 import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './PriceImpactWarning.scss';
-import { FormatPercent } from "../../utils/formatters/Formatters";
 
 const PriceImpactGraph = () => (
   <div className={styles.graph}>
