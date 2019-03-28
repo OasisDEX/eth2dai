@@ -463,8 +463,10 @@ function evaluateTrade(
   }
 
   if (
-    state.kind === OfferType.buy && !state.buyAmount ||
-    state.kind === OfferType.sell && !state.sellAmount
+    state.kind === OfferType.buy && !state.buyAmount
+    || state.buyAmount && state.buyAmount.eq(new BigNumber(0))
+    || state.kind === OfferType.sell && !state.sellAmount
+    || state.sellAmount && state.sellAmount.eq(new BigNumber(0))
   ) {
     return of({ tradeEvaluationStatus: TradeEvaluationStatus.unset });
   }
