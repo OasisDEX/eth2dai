@@ -1,6 +1,7 @@
 import classnames from 'classnames';
 import * as React from 'react';
-import { InfoIcon } from '../../utils/icons/Icons';
+import warningSvg from '../../icons/warning.svg';
+import { SvgImage } from '../../utils/icons/utils';
 import * as styles from './TradeData.scss';
 
 interface EntryProps {
@@ -28,7 +29,7 @@ export class TradeData extends React.Component<EntryProps> {
           {label}
         </span>&nbsp;
         {
-          info && <InfoIcon className={styles.infoIcon}/>
+          info && <SvgImage className={styles.warningIcon} image={warningSvg}/>
         }
         <span data-test-id="value"
               className={styles.value}>

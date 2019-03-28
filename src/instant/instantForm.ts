@@ -510,18 +510,6 @@ function mergeTradeEvaluation(
   };
 }
 
-function mergeGasEstimation(
-  state: InstantFormState, estimation: HasGasEstimation | undefined
-): InstantFormState {
-  if (!estimation) {
-    return state;
-  }
-  return {
-    ...state,
-    ...estimation
-  };
-}
-
 function validate(state: InstantFormState): InstantFormState {
   if (state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated) {
     return state;
