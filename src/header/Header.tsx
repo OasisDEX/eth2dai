@@ -46,7 +46,7 @@ export class Header extends React.Component {
                 <HeaderNavLink to={`${rootUrl}exchange`} name="Exchange"/>
                 {process.env.REACT_APP_INSTANT_ENABLED === '1' &&
                 <HeaderNavLink to={`${rootUrl}instant`} name="Instant"/>}
-                <HeaderNavLink to={`${rootUrl}balances`} name="Account"/>
+                <HeaderNavLink to={`${rootUrl}balances`} name="Balances"/>
               </ul>
             </nav>
           </section >
