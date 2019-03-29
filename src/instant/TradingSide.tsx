@@ -22,9 +22,9 @@ interface TradingSideProps {
 
 class TradingSide extends React.Component<TradingSideProps> {
   public render() {
-    const { amount, asset, balance, placeholder, onAmountChange, dataTestId } = this.props;
+    const { amount, asset, balance, placeholder, onAmountChange } = this.props;
     return (
-      <div className={styles.assetPicker} data-test-id={dataTestId}>
+      <div className={styles.tradingSide} data-test-id={this.props.dataTestId}>
         <Asset currency={asset} balance={balance} onClick={this.changeToken}/>
         {/* TODO: Make it parameterized like the tokens in offerMakeForm.*/}
         <BigNumberInput
@@ -58,8 +58,8 @@ class TradingSide extends React.Component<TradingSideProps> {
 }
 
 export const Selling = (props: any) => (
-  <TradingSide data-test-id="selling-token" side={OfferType.sell} placeholder="Deposit Amount" {...props}/>
+  <TradingSide dataTestId="selling-token" side={OfferType.sell} placeholder="Deposit Amount" {...props}/>
 );
 export const Buying = (props: any) => (
-  <TradingSide data-test-id="buying-token" side={OfferType.buy} placeholder="Receive Amount" {...props}/>
+  <TradingSide dataTestId="buying-token" side={OfferType.buy} placeholder="Receive Amount" {...props}/>
 );

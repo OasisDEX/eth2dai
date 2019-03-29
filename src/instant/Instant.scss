@@ -50,7 +50,7 @@
   padding: .75rem 1rem;
 
   @include media-breakpoint-down(md) {
-    height: 98px;
+    min-height: 98px;
   }
 
   &.hidden {
@@ -139,7 +139,7 @@
 // Asset Picker
 
 
-.assetPicker {
+.tradingSide {
   display: inline-flex;
   flex-direction: column;
   max-width: 175px;
