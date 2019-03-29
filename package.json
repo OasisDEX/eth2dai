@@ -30,6 +30,7 @@
   "dependencies": {
     "@types/ramda": "^0.25.38",
     "@types/react-responsive": "^3.0.2",
+    "abi-decoder": "^1.2.0",
     "await-exec": "^0.1.2",
     "bignumber.js": "^7.2.1",
     "case-sensitive-paths-webpack-plugin": "2.1.1",
