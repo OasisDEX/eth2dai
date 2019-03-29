@@ -229,7 +229,12 @@ export interface PairChange {
   kind: InstantFormChangeKind.pairChange;
   buyToken: string;
   sellToken: string;
-  shouldClearInputs: boolean;
+}
+
+export interface TokenChange {
+  kind: InstantFormChangeKind.tokenChange;
+  token: string;
+  side: OfferType;
 }
 
 export interface DustLimitsChange {
@@ -251,6 +256,7 @@ export type ManualChange =
   BuyAmountChange |
   SellAmountChange |
   PairChange |
+  TokenChange |
   FormResetChange |
   ViewChange;
 
@@ -276,8 +282,47 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         buyToken: change.buyToken,
         sellToken: change.sellToken,
         kind: undefined,
-        buyAmount: change.shouldClearInputs ? undefined : state.buyAmount,
-        sellAmount: change.shouldClearInputs ? undefined : state.sellAmount,
+        buyAmount: undefined,
+        sellAmount: undefined,
+        tradeEvaluationStatus: TradeEvaluationStatus.unset,
+      };
+    case InstantFormChangeKind.tokenChange:
+      const { side, token } = change;
+      const currentBuyToken = state.buyToken;
+      const currentSellToken = state.sellToken;
+
+      let buyToken = currentBuyToken;
+      let sellToken = currentSellToken;
+      let shouldClearInputs = false;
+      if (side === OfferType.sell) {
+        sellToken = token;
+        shouldClearInputs = token !== currentSellToken;
+      }
+
+      if (side === OfferType.buy) {
+        buyToken = token;
+        shouldClearInputs = token !== currentBuyToken;
+      }
+
+      if (side === OfferType.buy && eth2weth(token) === eth2weth(currentSellToken)) {
+        buyToken = token;
+        sellToken = currentBuyToken;
+        shouldClearInputs = true;
+      }
+
+      if (side === OfferType.sell && eth2weth(token) === eth2weth(currentBuyToken)) {
+        buyToken = currentSellToken;
+        sellToken = token;
+        shouldClearInputs = true;
+      }
+
+      return {
+        ...state,
+        buyToken,
+        sellToken,
+        kind: undefined,
+        buyAmount: shouldClearInputs ? undefined : state.buyAmount,
+        sellAmount: shouldClearInputs ? undefined : state.sellAmount,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
     case InstantFormChangeKind.sellAmountFieldChange:

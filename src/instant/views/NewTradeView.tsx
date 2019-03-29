@@ -194,7 +194,6 @@ export class NewTradeView extends React.Component<InstantFormState> {
       kind: InstantFormChangeKind.pairChange,
       buyToken: this.props.sellToken,
       sellToken: this.props.buyToken,
-      shouldClearInputs: true
     });
   }
 
