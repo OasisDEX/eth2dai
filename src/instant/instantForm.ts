@@ -164,8 +164,13 @@ interface TradeEvaluationState {
   bestPrice?: BigNumber;
 }
 
+interface View {
+  kind: ViewKind;
+  meta?: any;
+}
+
 export interface InstantFormState extends HasGasEstimation, TradeEvaluationState {
-  view: any;
+  view: View;
   readyToProceed?: boolean;
   progress?: Progress;
   buyToken: string;
@@ -207,11 +212,7 @@ export interface ProgressChange {
 export interface ViewChange {
   kind: InstantFormChangeKind.viewChange;
   view: ViewKind;
-}
-
-export interface TokenChange {
-  kind: InstantFormChangeKind.tokenChange;
-  side: OfferType;
+  meta?: any;
 }
 
 export interface BuyAmountChange {
@@ -228,6 +229,7 @@ export interface PairChange {
   kind: InstantFormChangeKind.pairChange;
   buyToken: string;
   sellToken: string;
+  shouldClearInputs: boolean;
 }
 
 export interface DustLimitsChange {
@@ -246,7 +248,6 @@ export interface ProxyChange {
 }
 
 export type ManualChange =
-  TokenChange |
   BuyAmountChange |
   SellAmountChange |
   PairChange |
@@ -275,8 +276,8 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         buyToken: change.buyToken,
         sellToken: change.sellToken,
         kind: undefined,
-        buyAmount: undefined,
-        sellAmount: undefined,
+        buyAmount: change.shouldClearInputs ? undefined : state.buyAmount,
+        sellAmount: change.shouldClearInputs ? undefined : state.sellAmount,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
     case InstantFormChangeKind.sellAmountFieldChange:
@@ -322,7 +323,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         return {
           ...state,
           progress: change.progress,
-          view: change.progress.tradeTxStatus === TxStatus.Success ? ViewKind.summary : ViewKind.finalization
+          view: { kind: change.progress.tradeTxStatus === TxStatus.Success ? ViewKind.summary : ViewKind.finalization }
         };
       }
 
@@ -341,15 +342,10 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         etherBalance: change.etherBalance
       };
-    case InstantFormChangeKind.tokenChange:
-      return {
-        ...state,
-        kind: change.side
-      };
     case InstantFormChangeKind.viewChange:
       return {
         ...state,
-        view: change.view
+        view: { kind: change.view, meta: change.meta }
       };
     case InstantFormChangeKind.proxyChange:
       return {
@@ -743,7 +739,7 @@ export function createFormController$(
     gasEstimationStatus: GasEstimationStatus.unset,
     tradeEvaluationStatus: TradeEvaluationStatus.unset,
     slippageLimit: new BigNumber('0.05'),
-    view: 'new',
+    view: { kind: ViewKind.new },
   };
 
   function evaluateTradeWithCalls(theCalls$: Calls$) {

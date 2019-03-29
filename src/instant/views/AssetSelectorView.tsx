@@ -13,7 +13,7 @@ import { InstantFormChangeKind, ManualChange, ViewKind } from '../instantForm';
 import * as styles from './AssetSelectorView.scss';
 
 interface ViewProps {
-  kind: OfferType;
+  meta: any;
   sellToken: string;
   buyToken: string;
   balances: Balances;
@@ -22,7 +22,7 @@ interface ViewProps {
 
 export class AssetSelectorView extends React.Component<ViewProps> {
   public render() {
-    const { kind, balances } = this.props;
+    const { meta: side, balances } = this.props;
     return (
       <section className={classnames(instantStyles.panel, panelStyling.panel)}>
         <TopRightCorner>
@@ -34,7 +34,7 @@ export class AssetSelectorView extends React.Component<ViewProps> {
               return (
                 <li data-test-id={token.symbol.toLowerCase()} className={styles.listItem} key={index}>
                   <Asset currency={token.symbol} balance={balances[token.symbol]}
-                         onClick={() => this.selectAsset(token.symbol, kind)}/>
+                         onClick={() => this.selectAsset(token.symbol, side)}/>
                 </li>
               );
             })
@@ -54,27 +54,33 @@ export class AssetSelectorView extends React.Component<ViewProps> {
   private selectAsset = (asset: string, side: OfferType) => {
     let buyToken = this.props.buyToken;
     let sellToken = this.props.sellToken;
+    let shouldClearInputs = false;
     if (side === OfferType.sell) {
       sellToken = asset;
+      shouldClearInputs = asset !== this.props.sellToken;
     }
 
     if (side === OfferType.buy) {
       buyToken = asset;
+      shouldClearInputs = asset !== this.props.buyToken;
     }
 
     if (side === OfferType.buy && eth2weth(asset) === eth2weth(this.props.sellToken)) {
       buyToken = asset;
       sellToken = this.props.buyToken;
+      shouldClearInputs = true;
     }
 
     if (side === OfferType.sell && eth2weth(asset) === eth2weth(this.props.buyToken)) {
       buyToken = this.props.sellToken;
       sellToken = asset;
+      shouldClearInputs = true;
     }
 
     this.props.change({
       buyToken,
       sellToken,
+      shouldClearInputs,
       kind: InstantFormChangeKind.pairChange,
     });
 
