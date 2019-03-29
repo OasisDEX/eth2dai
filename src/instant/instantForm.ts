@@ -118,7 +118,8 @@ export enum ViewKind {
   new = 'new',
   allowances = 'allowances',
   settings = 'settings',
-  assetSelector = 'assetSelector',
+  buyAssetSelector = 'buyAssetSelector',
+  sellAssetSelector = 'sellAssetSelector',
   account = 'account',
   finalization = 'finalization',
   priceImpactWarning = 'priceImpactWarning',
@@ -164,13 +165,8 @@ interface TradeEvaluationState {
   bestPrice?: BigNumber;
 }
 
-interface View {
-  kind: ViewKind;
-  meta?: any;
-}
-
 export interface InstantFormState extends HasGasEstimation, TradeEvaluationState {
-  view: View;
+  view: ViewKind;
   readyToProceed?: boolean;
   progress?: Progress;
   buyToken: string;
@@ -368,7 +364,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         return {
           ...state,
           progress: change.progress,
-          view: { kind: change.progress.tradeTxStatus === TxStatus.Success ? ViewKind.summary : ViewKind.finalization }
+          view: change.progress.tradeTxStatus === TxStatus.Success ? ViewKind.summary : ViewKind.finalization
         };
       }
 
@@ -390,7 +386,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
     case InstantFormChangeKind.viewChange:
       return {
         ...state,
-        view: { kind: change.view, meta: change.meta }
+        view: change.view
       };
     case InstantFormChangeKind.proxyChange:
       return {
@@ -784,7 +780,7 @@ export function createFormController$(
     gasEstimationStatus: GasEstimationStatus.unset,
     tradeEvaluationStatus: TradeEvaluationStatus.unset,
     slippageLimit: new BigNumber('0.05'),
-    view: { kind: ViewKind.new },
+    view: ViewKind.new,
   };
 
   function evaluateTradeWithCalls(theCalls$: Calls$) {

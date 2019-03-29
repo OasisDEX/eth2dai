@@ -12,16 +12,16 @@ import { InstantFormChangeKind, ManualChange, ViewKind } from '../instantForm';
 import * as styles from './AssetSelectorView.scss';
 
 interface ViewProps {
-  meta: any;
+  side: OfferType;
   sellToken: string;
   buyToken: string;
   balances: Balances;
   change: (change: ManualChange) => void;
 }
 
-export class AssetSelectorView extends React.Component<ViewProps> {
+class AssetSelectorView extends React.Component<ViewProps> {
   public render() {
-    const { meta: side, balances } = this.props;
+    const { side, balances } = this.props;
     return (
       <section className={classnames(instantStyles.panel, panelStyling.panel)}>
         <TopRightCorner>
@@ -60,3 +60,11 @@ export class AssetSelectorView extends React.Component<ViewProps> {
     this.hideAssets();
   }
 }
+
+export const SellAssetSelectorView = (props: any) => (
+  <AssetSelectorView side={OfferType.sell} {...props}/>
+);
+
+export const BuyAssetSelectorView = (props: any) => (
+  <AssetSelectorView side={OfferType.buy} {...props}/>
+);

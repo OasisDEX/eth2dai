@@ -51,8 +51,7 @@ class TradingSide extends React.Component<TradingSideProps> {
   private changeToken = () => {
     this.props.change({
       kind: InstantFormChangeKind.viewChange,
-      view: ViewKind.assetSelector,
-      meta: this.props.side
+      view: this.props.side === OfferType.buy ? ViewKind.buyAssetSelector : ViewKind.sellAssetSelector,
     });
   }
 }
