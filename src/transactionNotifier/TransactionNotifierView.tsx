@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import { transactionObserver, TxState, TxStatus } from '../blockchain/transactions';
+import { transactionObserver, TxRebroadcastStatus, TxState, TxStatus } from '../blockchain/transactions';
 import crossSvg from '../icons/cross.svg';
 import { SvgImage } from '../utils/icons/utils';
 import { Timer } from '../utils/Timer';
@@ -69,7 +69,8 @@ export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...trans
 export function describeTxStatus(tx: TxState) {
   switch (tx.status) {
     case TxStatus.Success:
-      return 'Confirmed';
+      const rebroadcast: {[key in TxRebroadcastStatus]: string} = { speedup: 'gas price increased', cancel: 'cancelled' };
+      return 'Confirmed' + (tx.rebroadcast ? ` (${rebroadcast[tx.rebroadcast]})` : '');
     case TxStatus.Error:
     case TxStatus.Failure:
       return 'Failed';
