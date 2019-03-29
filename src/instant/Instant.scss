@@ -110,6 +110,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   width: 100%;
   height: map-get($inputHeight, lg);
   border: 1px solid $button-border-disabled;
@@ -123,6 +124,7 @@
 
   @include media-breakpoint-down(md) {
     margin: 1rem 0;
+    font-size: 10px;
   }
 
   @include media-breakpoint-down(sm) {
@@ -137,7 +139,7 @@
 // Asset Picker
 
 
-.assetPicker {
+.tradingSide {
   display: inline-flex;
   flex-direction: column;
   max-width: 175px;

@@ -8,15 +8,16 @@ import * as styles from './Instant.scss';
 import { InstantFormState, ViewKind } from './instantForm';
 import { AccountView } from './views/AccountView';
 import { AllowancesView } from './views/AllowancesView';
-import { AssetSelectorView } from './views/AssetSelectorView';
+import { BuyAssetSelectorView, SellAssetSelectorView } from './views/AssetSelectorView';
 import { FinalizationView } from './views/FinalizationView';
 import { NewTradeView } from './views/NewTradeView';
-import { PriceImpactWarning } from './views/PriceImpactWarning';
+import { PriceImpactWarningView } from './views/PriceImpactWarningView';
 import { TradeSummaryView } from './views/TradeSummaryView';
 
 const views = new Map<ViewKind, any>([
-  [ViewKind.assetSelector, AssetSelectorView],
-  [ViewKind.priceImpactWarning, PriceImpactWarning],
+  [ViewKind.buyAssetSelector, BuyAssetSelectorView],
+  [ViewKind.sellAssetSelector, SellAssetSelectorView],
+  [ViewKind.priceImpactWarning, PriceImpactWarningView],
   [ViewKind.account, AccountView],
   [ViewKind.allowances, AllowancesView],
   [ViewKind.finalization, FinalizationView],
@@ -32,7 +33,7 @@ export class InstantViewPanel extends React.Component<Loadable<InstantFormState>
     if (status === 'loaded') {
       const formState = value as InstantFormState;
       const View = views.get(formState.view);
-      return (<View {...formState} />);
+      return (<View {...formState}/>);
     }
 
     return (

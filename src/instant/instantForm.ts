@@ -118,7 +118,8 @@ export enum ViewKind {
   new = 'new',
   allowances = 'allowances',
   settings = 'settings',
-  assetSelector = 'assetSelector',
+  buyAssetSelector = 'buyAssetSelector',
+  sellAssetSelector = 'sellAssetSelector',
   account = 'account',
   finalization = 'finalization',
   priceImpactWarning = 'priceImpactWarning',
@@ -165,7 +166,7 @@ interface TradeEvaluationState {
 }
 
 export interface InstantFormState extends HasGasEstimation, TradeEvaluationState {
-  view: any;
+  view: ViewKind;
   readyToProceed?: boolean;
   progress?: Progress;
   buyToken: string;
@@ -207,11 +208,7 @@ export interface ProgressChange {
 export interface ViewChange {
   kind: InstantFormChangeKind.viewChange;
   view: ViewKind;
-}
-
-export interface TokenChange {
-  kind: InstantFormChangeKind.tokenChange;
-  side: OfferType;
+  meta?: any;
 }
 
 export interface BuyAmountChange {
@@ -230,6 +227,12 @@ export interface PairChange {
   sellToken: string;
 }
 
+export interface TokenChange {
+  kind: InstantFormChangeKind.tokenChange;
+  token: string;
+  side: OfferType;
+}
+
 export interface DustLimitsChange {
   kind: InstantFormChangeKind.dustLimitsChange;
   dustLimits: DustLimits;
@@ -246,10 +249,10 @@ export interface ProxyChange {
 }
 
 export type ManualChange =
-  TokenChange |
   BuyAmountChange |
   SellAmountChange |
   PairChange |
+  TokenChange |
   FormResetChange |
   ViewChange;
 
@@ -277,6 +280,45 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         kind: undefined,
         buyAmount: undefined,
         sellAmount: undefined,
+        tradeEvaluationStatus: TradeEvaluationStatus.unset,
+      };
+    case InstantFormChangeKind.tokenChange:
+      const { side, token } = change;
+      const currentBuyToken = state.buyToken;
+      const currentSellToken = state.sellToken;
+
+      let buyToken = currentBuyToken;
+      let sellToken = currentSellToken;
+      let shouldClearInputs = false;
+      if (side === OfferType.sell) {
+        sellToken = token;
+        shouldClearInputs = token !== currentSellToken;
+      }
+
+      if (side === OfferType.buy) {
+        buyToken = token;
+        shouldClearInputs = token !== currentBuyToken;
+      }
+
+      if (side === OfferType.buy && eth2weth(token) === eth2weth(currentSellToken)) {
+        buyToken = token;
+        sellToken = currentBuyToken;
+        shouldClearInputs = true;
+      }
+
+      if (side === OfferType.sell && eth2weth(token) === eth2weth(currentBuyToken)) {
+        buyToken = currentSellToken;
+        sellToken = token;
+        shouldClearInputs = true;
+      }
+
+      return {
+        ...state,
+        buyToken,
+        sellToken,
+        kind: undefined,
+        buyAmount: shouldClearInputs ? undefined : state.buyAmount,
+        sellAmount: shouldClearInputs ? undefined : state.sellAmount,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
     case InstantFormChangeKind.sellAmountFieldChange:
@@ -340,11 +382,6 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         etherBalance: change.etherBalance
-      };
-    case InstantFormChangeKind.tokenChange:
-      return {
-        ...state,
-        kind: change.side
       };
     case InstantFormChangeKind.viewChange:
       return {
@@ -743,7 +780,7 @@ export function createFormController$(
     gasEstimationStatus: GasEstimationStatus.unset,
     tradeEvaluationStatus: TradeEvaluationStatus.unset,
     slippageLimit: new BigNumber('0.05'),
-    view: 'new',
+    view: ViewKind.new,
   };
 
   function evaluateTradeWithCalls(theCalls$: Calls$) {
