@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
+import { tokens } from '../blockchain/config';
 import { BigNumberInput } from '../utils/bigNumberInput/BigNumberInput';
 import { formatPrice } from '../utils/formatters/format';
 import { Asset } from './asset/Asset';
@@ -29,7 +30,7 @@ class TradingSide extends React.Component<TradingSideProps> {
           className={styles.input}
           mask={createNumberMask({
             allowDecimal: true,
-            decimalLimit: 5,
+            decimalLimit: tokens[asset] ? tokens[asset].digits : 5,
             prefix: ''
           })}
           onChange={onAmountChange}
