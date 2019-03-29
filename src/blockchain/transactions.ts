@@ -177,7 +177,7 @@ export function send(
           broadcastedAt: new Date(),
           status: TxStatus.WaitingForConfirmation,
         } as TxState),
-      ) as Observable<TxState>;
+      ) as any as Observable<TxState>;
     }),
     catchError(error => {
       if ((error.message as string).indexOf('User denied transaction signature') === -1) {
