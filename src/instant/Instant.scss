@@ -50,7 +50,7 @@
   padding: .75rem 1rem;
 
   @include media-breakpoint-down(md) {
-    min-height: 98px;
+    height: 98px;
   }
 
   &.hidden {
@@ -110,6 +110,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   width: 100%;
   height: map-get($inputHeight, lg);
   border: 1px solid $button-border-disabled;
@@ -123,6 +124,7 @@
 
   @include media-breakpoint-down(md) {
     margin: 1rem 0;
+    font-size: 10px;
   }
 
   @include media-breakpoint-down(sm) {
