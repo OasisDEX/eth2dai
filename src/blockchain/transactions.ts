@@ -1,6 +1,9 @@
+import { fromPairs } from 'lodash';
 import { bindNodeCallback, combineLatest, Observable, of, Subject } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
-import { catchError, filter, map, mergeMap, scan, shareReplay, startWith, take, } from 'rxjs/operators';
+import { ajax } from 'rxjs/ajax';
+import { catchError, filter, first, map, mergeMap, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
+
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import { account$, context$, onEveryBlock$ } from './network';
 import { web3 } from './web3';
@@ -137,9 +140,10 @@ export function send(
   }
 
   const result: Observable<TxState> = bindNodeCallback(method)(...args).pipe(
-    mergeMap((txHash: string) => {
-      return onEveryBlock$.pipe(
-        mergeMap(() => bindNodeCallback(web3.eth.getTransactionReceipt)(txHash)),
+    mergeMap((originalTxHash: string) => {
+      return combineLatest(bindNodeCallback(web3.eth.getTransaction)(originalTxHash), externalNonce2tx$, onEveryBlock$).pipe(
+        map(([transaction, externalNonce2tx]) => externalNonce2tx[(transaction as any).nonce] || originalTxHash),
+        mergeMap(txHash => bindNodeCallback(web3.eth.getTransactionReceipt)(txHash)),
         filter(receipt => !!receipt),
         // to prevent degenerated infura response...
         // tap((receipt: any) =>
@@ -149,13 +153,13 @@ export function send(
           receipt.blockNumber !== undefined && receipt.blockNumber !== null
         ),
         // tap(receipt => console.log('filtered receipt', receipt)),
-        take(1),
-        mergeMap(receipt => successOrFailure(txHash, receipt)),
+        first(),
+        mergeMap(receipt => successOrFailure(receipt.transactionHash, receipt)),
         catchError(error => {
           return of({
             ...common,
-            txHash,
             error,
+            txHash: originalTxHash,
             end: new Date(),
             lastChange: new Date(),
             status: TxStatus.Error,
@@ -163,7 +167,7 @@ export function send(
         }),
         startWith({
           ...common,
-          txHash,
+          txHash: originalTxHash,
           broadcastedAt: new Date(),
           status: TxStatus.WaitingForConfirmation,
         } as TxState),
@@ -241,5 +245,13 @@ export const transactions$: Observable<TxState[]> = combineLatest(
     transactions.filter((t: TxState) => t.account === account && t.networkId === context.id)
   ),
   startWith([]),
+  shareReplay(1),
+);
+
+interface ExternalNonce2tx { [nonce: number]: string; }
+const externalNonce2tx$: Observable<ExternalNonce2tx> = combineLatest(context$, account$, onEveryBlock$.pipe(first()), onEveryBlock$).pipe(
+  switchMap(([context, account, firstBlock]) => ajax({ url: `${context.etherscan.apiUrl}?module=account&action=txlist&address=${account}&startblock=${firstBlock}&sort=desc&apikey=${context.etherscan.apiKey}` })),
+  map(({ response }) => response.result),
+  map(transactions => fromPairs(transactions.map((tx: any) => [tx.nonce, tx.hash])) as any as ExternalNonce2tx),
   shareReplay(1),
 );
