@@ -23,6 +23,7 @@ export class TheFooter extends React.Component<FooterProps> {
       <div>
         <hr className={styles.footerSeparator}/>
         <div className={styles.footer}>
+        TEST!
           <MediaQuery minWidth={768}>
             <div className={styles.links}>
               <span>
