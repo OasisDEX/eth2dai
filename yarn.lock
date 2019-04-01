@@ -53,10 +53,10 @@
     ts-node "^8.0.2"
     url-join "^4.0.0"
 
-"@codechecks/commit-deployment@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@codechecks/commit-deployment/-/commit-deployment-0.0.2.tgz#23b0908cc670022e1e4b8d75c4eb77d771422259"
-  integrity sha512-ZfKhfbpmwXt32B/UhwHRDLoqXhwviUuDNYLdKnLMnVO3DvTSAS/sJ+Pe0lf0HdxqezsdxPY8hTVCfdlpiwyEXg==
+"@codechecks/commit-deployment@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@codechecks/commit-deployment/-/commit-deployment-0.0.3.tgz#bf3c6a98c2a1114039f05f3786f348112353a317"
+  integrity sha512-GZr1xW6COH/2uOWISvoqK5tW3+8WvH6XYjP/YHOrgdcoKwt8Fs81HCwMdfKUiHk6uXxa7IiHcw5P3pMoToJoCg==
 
 "@codechecks/type-coverage-watcher@^0.0.7":
   version "0.0.7"
