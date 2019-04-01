@@ -23,13 +23,12 @@
     "cypress:run:ci": "rm -rf cypress/screenshots/* && cypress run --record --parallel",
     "cypress:dev": "rm -rf cypress/screenshots && NODE_ENV='development' cypress open",
     "tsc": "tsc -p ./tsconfig.prod.json --noEmit && tsc -p ./cypress/tsconfig.json --noEmit && tsc -p ./tsconfig.test.json --noEmit && tsc -p ./tsconfig.json --noEmit",
-    "storybook:screenshots": "storybook-chrome-screenshot -p 9001 --inject-files ./.storybook/disable-animations.js",
-    "codechecks": "codechecks",
-    "codechecks-e2e": "codechecks ./codechecks-e2e.ts"
+    "storybook:screenshots": "storybook-chrome-screenshot -p 9001 --inject-files ./.storybook/disable-animations.js"
   },
   "dependencies": {
     "@types/ramda": "^0.25.38",
     "@types/react-responsive": "^3.0.2",
+    "abi-decoder": "^1.2.0",
     "await-exec": "^0.1.2",
     "bignumber.js": "^7.2.1",
     "case-sensitive-paths-webpack-plugin": "2.1.1",
@@ -65,6 +64,9 @@
     "whatwg-fetch": "2.0.3"
   },
   "devDependencies": {
+    "@codechecks/build-size-watcher": "^0.0.13",
+    "@codechecks/client": "^0.0.55",
+    "@codechecks/type-coverage-watcher": "^0.0.7",
     "@cypress/webpack-preprocessor": "^1.0.0",
     "@storybook/addon-actions": "^3.4.10",
     "@storybook/addon-links": "^3.4.10",
@@ -97,9 +99,6 @@
     "babel-loader": "^7.1.2",
     "babel-preset-react-app": "^3.1.1",
     "babel-runtime": "^6.26.0",
-    "codecheck-build-size": "^0.0.10",
-    "codecheck-type-coverage": "^0.0.4",
-    "codechecks": "^0.0.47",
     "css-loader": "0.28.7",
     "cypress": "^3.1.5",
     "dotenv": "4.0.0",
