@@ -66,6 +66,7 @@
   "devDependencies": {
     "@codechecks/build-size-watcher": "^0.0.13",
     "@codechecks/client": "^0.0.55",
+    "@codechecks/commit-deployment": "^0.0.2",
     "@codechecks/type-coverage-watcher": "^0.0.7",
     "@cypress/webpack-preprocessor": "^1.0.0",
     "@storybook/addon-actions": "^3.4.10",

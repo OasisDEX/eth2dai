@@ -4,19 +4,7 @@ import { join } from 'path';
 const exec = require('await-exec') as (cmd: string, opt: any) => Promise<void>;
 
 export async function main() {
-  await deploy(join(__dirname, 'build'));
   await visReg();
-}
-
-async function deploy(path: string) {
-  if (codechecks.isPr()) {
-    await codechecks.saveCollection('build', path);
-    await codechecks.success({
-      name: 'Commit deployment',
-      shortDescription: 'Deployment for commit ready.',
-      detailsUrl: codechecks.getPageLink('build'),
-    });
-  }
 }
 
 async function visReg() {
