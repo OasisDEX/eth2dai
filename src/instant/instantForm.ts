@@ -316,7 +316,6 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         buyToken,
         sellToken,
-        kind: undefined,
         buyAmount: shouldClearInputs ? undefined : state.buyAmount,
         sellAmount: shouldClearInputs ? undefined : state.sellAmount,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
@@ -500,7 +499,6 @@ function evaluateTrade(
   }
 
   if (
-
     !state.kind || state.kind === OfferType.buy && !state.buyAmount
     || state.buyAmount && state.buyAmount.eq(new BigNumber(0))
     || state.kind === OfferType.sell && !state.sellAmount

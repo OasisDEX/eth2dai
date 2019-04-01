@@ -69,20 +69,57 @@ describe('New trade', () => {
     trade.expectToPay('');
   });
 
-  it('should allow swapping the tokens', () => {
+  it('should swap tokens', () => {
     swap();
 
     cy.get(tid('selling-token', tid('balance')), timeout()).contains(/170.../);
     cy.get(tid('buying-token', tid('balance')), timeout()).contains(/8,999.../);
   });
 
-  it('should clear input fields if populated on swap', () => {
-    new Trade().sell().amount('280.00');
+  it('should clear input values on swap', () => {
+    const trade = new Trade();
+    trade.sell('ETH').amount('280.00');
+    trade.buy('DAI');
 
     swap();
 
     cy.get(tid('selling-token', tid('balance')), timeout()).contains(/170.../);
     cy.get(tid('buying-token', tid('balance')), timeout()).contains(/8,999.../);
+
+    cy.get(tid('selling-token', tid('amount')), timeout()).should('be.empty');
+    cy.get(tid('buying-token', tid('amount')), timeout()).should('be.empty');
+  });
+
+  it('should keep values if we reselect same deposit token', () => {
+    const sell = 'ETH';
+    const willPay = '1';
+    const willReceive = '280.00';
+    const trade = new Trade();
+    trade.sell(sell).amount(willPay);
+
+    trade.expectToPay(willPay);
+    trade.expectToReceive(willReceive);
+
+    trade.sell('ETH');
+
+    trade.expectToPay('1.00000');
+    trade.expectToReceive(willReceive);
+  });
+
+  it('should keep values if we reselect same receive token', () => {
+    const sell = 'ETH';
+    const willPay = '1';
+    const willReceive = '280.00';
+    const trade = new Trade();
+    trade.sell(sell).amount(willPay);
+
+    trade.expectToPay(willPay);
+    trade.expectToReceive(willReceive);
+
+    trade.buy('DAI');
+
+    trade.expectToPay('1.00000');
+    trade.expectToReceive(willReceive);
   });
 
   it('should display error if balance is too low', () => {
