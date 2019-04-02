@@ -5,34 +5,34 @@
 version: 2
 
 jobs:
-  install:
-    docker:
-      - image: circleci/node:8.11.2-stretch
-    steps:
-      - checkout
-      - restore_cache:
-            keys:
-            - v3-dependencies-{{ checksum "package.json" }}
+  # install:
+    # docker:
+    #   - image: circleci/node:8.11.2-stretch
+    # steps:
+    #   - checkout
+    #   - restore_cache:
+    #         keys:
+    #         - v3-dependencies-{{ checksum "package.json" }}
 
-      - run: yarn install --frozen-lockfile
+    #   - run: yarn install --frozen-lockfile
 
-      - save_cache:
-          paths:
-            - node_modules
-            - ~/.cache
-          key: v3-dependencies-{{ checksum "package.json" }}
+    #   - save_cache:
+    #       paths:
+    #         - node_modules
+    #         - ~/.cache
+    #       key: v3-dependencies-{{ checksum "package.json" }}
 
-  test:
-    docker:
-      - image: circleci/node:8.11.2-stretch
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v3-dependencies-{{ checksum "package.json" }}
-      - run: 
-          name: Run linting & tests
-          command: yarn test
+  # test:
+  #   docker:
+  #     - image: circleci/node:8.11.2-stretch
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys:
+  #         - v3-dependencies-{{ checksum "package.json" }}
+  #     - run: 
+  #         name: Run linting & tests
+  #         command: yarn test
 
   test-e2e:
     machine:
@@ -180,56 +180,56 @@ workflows:
 
   mainflow:
     jobs:
-      - install
+      # - install
 
-      - test:
-          requires: 
-            - install
-          filters:
-            branches:
-              ignore:
-                - gh-pages
+      # - test:
+      #     requires: 
+      #       - install
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - gh-pages
       - test-e2e:
-          requires: 
-            - install
-          filters:
-            branches:
-              ignore:
-                - gh-pages
-      - codechecks:
-          requires: 
-            - install
-          filters:
-            branches:
-              ignore:
-                - gh-pages
+          # requires: 
+          #   - install
+          # filters:
+          #   branches:
+          #     ignore:
+                # - gh-pages
+      # - codechecks:
+      #     requires: 
+      #       - install
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - gh-pages
 
-      - codechecks-e2e:
-          requires:
-            - test-e2e
-          filters:
-            branches:
-              ignore:
-                - gh-pages
+      # - codechecks-e2e:
+      #     requires:
+      #       - test-e2e
+      #     filters:
+      #       branches:
+      #         ignore:
+                # - gh-pages
 
-      - deploy_dev:
-          requires:
-            - test
-            - test-e2e
-          filters:
-            branches:
-              only: dev
-      - deploy_stage:
-          requires:
-            - test
-            - test-e2e
-          filters:
-            branches:
-              only: staging
-      - deploy_prod:
-          requires:
-            - test
-            - test-e2e
-          filters:
-            branches:
-              only: master
+      # - deploy_dev:
+      #     requires:
+      #       - test
+      #       - test-e2e
+      #     filters:
+      #       branches:
+      #         only: dev
+      # - deploy_stage:
+      #     requires:
+      #       - test
+      #       - test-e2e
+      #     filters:
+      #       branches:
+      #         only: staging
+      # - deploy_prod:
+      #     requires:
+      #       - test
+      #       - test-e2e
+      #     filters:
+      #       branches:
+      #         only: master
