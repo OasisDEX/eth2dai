@@ -16,4 +16,6 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/source
 sudo apt-get update -o Dir::Etc::sourcelist="sources.list.d/yarn.list" \
         -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 
+sudo rm -f /var/lib/dpkg/lock
+
 sudo apt-get install -y yarn
