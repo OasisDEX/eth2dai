@@ -10,12 +10,8 @@ nvm use 8
 nvm alias default 8
 
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-sudo rm -f /var/lib/apt/lists/lock
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 
 sudo apt-get update -o Dir::Etc::sourcelist="sources.list.d/yarn.list" \
         -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
-
-sudo rm -f /var/lib/dpkg/lock
-
 sudo apt-get install -y yarn
