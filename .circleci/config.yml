@@ -7,7 +7,7 @@ version: 2
 jobs:
   install:
     docker:
-      - image: circleci/node:8.11.2-stretch
+      - image: circleci/node:11.9.0-stretch
     steps:
       - checkout
       - restore_cache:
