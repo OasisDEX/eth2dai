@@ -16,3 +16,15 @@ export class TopRightCorner extends React.Component<any> {
     );
   }
 }
+
+export class TopLeftCorner extends React.Component<any> {
+  public render() {
+    const className = this.props.className;
+
+    return (
+      <div {...this.props} className={classnames(className, styles.topLeftCorner)}>
+        {this.props.children}
+      </div>
+    );
+  }
+}

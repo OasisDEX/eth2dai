@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { BehaviorSubject, combineLatest, interval, Observable } from 'rxjs';
-import { first, flatMap, map, shareReplay, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, first, flatMap, map, shareReplay, switchMap } from 'rxjs/operators';
 
+import { isEqual } from 'lodash';
 import { curry } from 'ramda';
 import { AssetOverviewView, AssetsOverviewActionProps, AssetsOverviewExtraProps } from './balances/AssetOverviewView';
 import {
   Balances,
   CombinedBalances,
+  createAllowances$,
   createBalances$,
   createCombinedBalances$,
   createDustLimits$,
@@ -86,7 +88,6 @@ export function setupAppContext() {
   const balancesWithEth$ = combineLatest(balances$, etherBalance$).pipe(
     map(([balances, etherBalance]) => ({ ...balances, ETH: etherBalance })),
   );
-  balancesWithEth$.subscribe(console.log);
 
   const wethBalance$ = createWethBalances$(context$, initializedAccount$, onEveryBlock$);
 
@@ -197,18 +198,24 @@ export function setupAppContext() {
     createTransactionNotifier$(transactions$, interval(5 * 1000));
   const TransactionNotifierTxRx = connect(TransactionNotifierView, transactionNotifier$);
 
-  // const proxyAddress$ = createProxy$(context$, initializedAccount$, onEveryBlock$, calls$);
+  const proxyAddress$ = onEveryBlock$.pipe(
+    switchMap(() =>
+      calls$.pipe(
+        flatMap(calls => calls.proxyAddress())
+      )),
+    distinctUntilChanged(isEqual)
+  );
 
   const instant$ = createInstantFormController$(
     {
       gasPrice$,
-      allowance$,
       calls$,
       etherPriceUsd$,
-      balances$,
       etherBalance$,
-      // proxyAddress$,
+      proxyAddress$,
+      balances$: balancesWithEth$,
       dustLimits$: createDustLimits$(context$),
+      allowances$: createAllowances$(context$, initializedAccount$, onEveryBlock$),
     }
   );
 

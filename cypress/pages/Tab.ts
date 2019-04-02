@@ -7,10 +7,6 @@ export class Tab {
     cy.get(tid('Exchange'), { ...defaultTimeout }).click();
   }
 
-  public static margin = () => {
-    cy.get(tid('Margin'), { ...defaultTimeout }).click();
-  }
-
   public static balances = () => {
     cy.get(tid('Balances'), { ...defaultTimeout }).click();
   }

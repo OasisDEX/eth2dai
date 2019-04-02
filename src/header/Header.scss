@@ -1,8 +1,10 @@
 @import "../utils/Mixins";
 @import "../utils/Variables";
 
+$header-media-breakpoint: 800px;
+
 :global(.paper) {
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down($header-media-breakpoint) {
     height: 20px !important;
     width: 20px !important;
   }
@@ -32,14 +34,14 @@
   &Navigation {
     margin-right: auto;
 
-    @include media-breakpoint-down(md) {
+    @include media-breakpoint-down($header-media-breakpoint) {
       order: 3;
       width: 100%;
     }
   }
 
   &Status {
-    @include media-breakpoint-down(md) {
+    @include media-breakpoint-down($header-media-breakpoint) {
       flex: 1 1 auto;
       justify-content: flex-end;
     }
@@ -47,7 +49,7 @@
 }
 
 .nav, .list, .item {
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down($header-media-breakpoint) {
     width: 100%;
   }
 }
@@ -57,7 +59,7 @@
     list-style-type: none;
     padding: 0;
 
-    @include media-breakpoint-down(md) {
+  @include media-breakpoint-down($header-media-breakpoint) {
       margin-top: 24px;
     }
 
@@ -103,7 +105,7 @@
     cursor: pointer;
   }
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down($header-media-breakpoint) {
     width: 100%;
   }
 }
@@ -121,13 +123,13 @@
   border-radius: $border-radius;
   margin-right: 12px;
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down($header-media-breakpoint) {
     width: 32px;
     height: 32px;
   }
 
   & span {
-    @include media-breakpoint-down(md) {
+    @include media-breakpoint-down($header-media-breakpoint) {
       display: none
     }
   }
@@ -150,7 +152,7 @@
 
   text-transform: capitalize;
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down($header-media-breakpoint) {
     max-width: 68px;
     font-size: 14px;
     height: 32px;
