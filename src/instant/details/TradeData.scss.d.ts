@@ -3,3 +3,4 @@ export const reversed: string;
 export const label: string;
 export const value: string;
 export const infoIcon: string;
+export const warningIcon: string;

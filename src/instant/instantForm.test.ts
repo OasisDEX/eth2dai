@@ -18,8 +18,7 @@ function snapshotify(object: any): any {
   return omit(object, 'change', 'submit');
 }
 
-const defaultCalls = {
-} as any;
+const defaultCalls = {} as any;
 
 const defaultReadCalls = {
 } as any;
@@ -31,10 +30,11 @@ const defaultUser = {
 const defParams = {
   gasPrice$: of(new BigNumber(0.01)),
   etherPriceUsd$: of(new BigNumber(1)),
-  allowance$: () => of(true),
   balances$: of({ DAI: new BigNumber(1000), WETH: new BigNumber(10), ETH: new BigNumber(5) }),
   etherBalance$: of(zero),
+  proxyAddress$: of('0x0'),
   dustLimits$: of({ DAI: new BigNumber(0.1), WETH: new BigNumber(0.1) }),
+  allowances$: of({ DAI: true, WETH: false }),
   calls$: of(defaultCalls) as Calls$,
   readCalls$: of(defaultReadCalls) as ReadCalls$,
   user$: of(defaultUser),

@@ -2,15 +2,25 @@ import * as React from 'react';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/internal/operators';
 import { Button } from '../utils/forms/Buttons';
+import { ProgressIcon } from '../utils/icons/Icons';
 import { Panel, PanelBody, PanelHeader } from '../utils/panel/Panel';
 import { Muted } from '../utils/text/Text';
+import { TradeExport } from './taxExporter';
 import * as styles from './TaxExporter.scss';
 
 interface TaxExporterViewProps {
   export: () => Observable<any[]>;
 }
 
-export class TaxExporterView extends React.Component<TaxExporterViewProps> {
+interface TaxExporterState {
+  inProgress: boolean;
+}
+
+export class TaxExporterView extends React.Component<TaxExporterViewProps, TaxExporterState> {
+  public state = {
+    inProgress: false
+  };
+
   public render(): React.ReactNode {
     return (
       <Panel footerBordered={true} style={{ width: '100%' }}>
@@ -25,18 +35,24 @@ export class TaxExporterView extends React.Component<TaxExporterViewProps> {
           onClick={this.exportTrades}
           className={styles.taxExporterButton}
         >
-          Export
+          {this.state.inProgress ? <ProgressIcon className={styles.progressIcon}/> : 'Export'}
         </Button>
         </PanelBody>
       </Panel>);
   }
 
   private exportTrades = () => {
-    this.props.export().pipe(take(1))
-      .subscribe(trades => {
-        const url = 'data:text/csv;charset=utf-8,' + encodeURIComponent(toCSV(trades));
-        downloadCSV(url);
-      });
+    if (!this.state.inProgress) {
+      this.setState({ ...this.state, inProgress: true });
+      this.props.export().pipe(take(1))
+        .subscribe({
+          next: (trades: TradeExport[]) => {
+            const url = 'data:text/csv;charset=utf-8,' + encodeURIComponent(toCSV(trades));
+            downloadCSV(url);
+          },
+          complete: () => this.setState({ ...this.state, inProgress: false })
+        });
+    }
   }
 }
 
@@ -45,7 +61,7 @@ function toCSVRow(trade: any): string {
 }
 
 function toCSV(trades: any[]) {
-  const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Address";"Tx";"Proxy"';
+  const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Address";"Tx";"Exchange"';
   return `${header}\r\n${trades.map(trade => `${toCSVRow(trade)}\r\n`).join('')}`;
 }
 

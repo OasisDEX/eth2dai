@@ -23,6 +23,49 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.0.0-beta.53.tgz#1f45eb617bf9463d482b2c04d349d9e4edbf4892"
   integrity sha1-H0XrYXv5Rj1IKywE00nZ5O2/SJI=
 
+"@codechecks/build-size-watcher@^0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@codechecks/build-size-watcher/-/build-size-watcher-0.0.13.tgz#8c87fddc507aec78667e78f7e9fbd727875846c4"
+  integrity sha512-1t5G4CSqe01/T8EOKYMQZ0Y0fZPR12spG1YrzPr4pKmHsRCEMH/uPN0H13M/yH/LMZPSojmGWIOX9YLtNScS0g==
+  dependencies:
+    bytes "^3.0.0"
+    get-folder-size "^2.0.0"
+    glob "^7.1.3"
+    gzip-size "^5.0.0"
+    lodash "^4.17.11"
+
+"@codechecks/client@^0.0.55":
+  version "0.0.55"
+  resolved "https://registry.yarnpkg.com/@codechecks/client/-/client-0.0.55.tgz#5ffb9b6753483c09cbedccc5d37685f508e9c7a8"
+  integrity sha512-FKXm4GM8cCWbCo+to40YRxKsXEC24IYsRhDDbsfGwYaYiqk6oD4oWTIzvVVgaHs9QGefvy1aFncJKn1LM7PmQg==
+  dependencies:
+    bluebird "^3.5.3"
+    commander "^2.19.0"
+    glob "^7.1.3"
+    graceful-fs "^4.1.15"
+    json5 "^2.1.0"
+    mkdirp "^0.5.1"
+    ms "^2.1.1"
+    promise "^8.0.2"
+    request "^2.88.0"
+    request-promise "^4.2.2"
+    ts-essentials "^1.0.2"
+    ts-node "^8.0.2"
+    url-join "^4.0.0"
+
+"@codechecks/commit-deployment@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@codechecks/commit-deployment/-/commit-deployment-0.0.4.tgz#fb31502aecc5caf36ad2a3d12c3cd0afeb85c696"
+  integrity sha512-hJCyJLq680Oz/TNqhznRb1VcNy6RM07o4Zr4vPnGutQyP150tIDcZbIyJfBhjC6Kh3Mg0FXSmCTA6C1MIMJ05Q==
+
+"@codechecks/type-coverage-watcher@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@codechecks/type-coverage-watcher/-/type-coverage-watcher-0.0.7.tgz#5a8db8c793efe828693b3f85f509d79c0d1248ae"
+  integrity sha512-KqTN63GvtrPw8ClYKHvPCrVx8Y0avnNI/6o1iT985TEWFDsQ/Ycr953KyYrO+GSWul5IIdnExwyE7n9WAc/i1A==
+  dependencies:
+    lodash "^4.17.11"
+    type-coverage "^1.10.0"
+
 "@cypress/listr-verbose-renderer@0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@cypress/listr-verbose-renderer/-/listr-verbose-renderer-0.4.1.tgz#a77492f4b11dcc7c446a34b3e28721afd33c642a"
@@ -844,6 +887,13 @@ abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
+
+abi-decoder@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/abi-decoder/-/abi-decoder-1.2.0.tgz#c42882dbb91b444805f0cd203a87a5cc3c22f4a8"
+  integrity sha512-y2OKSEW4gf2838Eavc56vQY9V46zaXkf3Jl1WpTfUBbzAVrXSr4JRZAAWv55Tv9s5WNz1rVgBgz5d2aJIL1QCg==
+  dependencies:
+    web3 "^0.18.4"
 
 abstract-leveldown@~2.6.0:
   version "2.6.3"
@@ -2643,6 +2693,10 @@ bignumber.js@^7.2.1:
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-7.2.1.tgz#80c048759d826800807c4bfd521e50edbba57a5f"
   integrity sha512-S4XzBk5sMB+Rcb/LNcpzXr57VRTxgAvaAEDAl1AwRx27j00hT84O6OkteE7u8UB3NuaaygCRrEpqox4uDOrbdQ==
 
+"bignumber.js@git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2":
+  version "2.0.7"
+  resolved "git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2"
+
 "bignumber.js@git+https://github.com/frozeman/bignumber.js-nolookahead.git":
   version "2.0.7"
   resolved "git+https://github.com/frozeman/bignumber.js-nolookahead.git#57692b3ecfc98bbdd6b3a516cb2353652ea49934"
@@ -3458,42 +3512,6 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
-
-codecheck-build-size@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/codecheck-build-size/-/codecheck-build-size-0.0.10.tgz#dada0252bb4e129e1b5343a5e32ffb41238305d9"
-  integrity sha512-+iVg+aAt/2k6Jjqb72KkhZPqNwLIQTo5AwC7fue5xJHESMtDTSDp3AKL0OUM4gM4tRTyqQHgSGaH+D8xhyVnxw==
-  dependencies:
-    bytes "^3.0.0"
-    get-folder-size "^2.0.0"
-    glob "^7.1.3"
-    gzip-size "^5.0.0"
-    lodash "^4.17.11"
-
-codecheck-type-coverage@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/codecheck-type-coverage/-/codecheck-type-coverage-0.0.4.tgz#1f000ebea1bcb899d209eeafd8d0c193ea8b63da"
-  integrity sha512-Ht+kPU1v+LxhDR31AtiekeE9ppWIPiERk8m9gQkX6NmXcbcZiHzRcuw82FxAOxbbTUvzPAS/BGbV695HxHv+5w==
-  dependencies:
-    lodash "^4.17.11"
-    type-coverage "^1.10.0"
-
-codechecks@^0.0.47:
-  version "0.0.47"
-  resolved "https://registry.yarnpkg.com/codechecks/-/codechecks-0.0.47.tgz#27f50c427b5fa0e8316ad2743b0d4475632fb9e5"
-  integrity sha512-61C6XfLZFKVeztZdW6Fj7hgj+fchb+bqso6yPkcGSiWS9nJOpq1dCFdYTrflkcaTz/TJA3uI8s1BSqkiHq/+YA==
-  dependencies:
-    bluebird "^3.5.3"
-    commander "^2.19.0"
-    glob "^7.1.3"
-    graceful-fs "^4.1.15"
-    mkdirp "^0.5.1"
-    ms "^2.1.1"
-    promise "^8.0.2"
-    request-promise "^4.2.2"
-    ts-essentials "^1.0.2"
-    ts-node "^8.0.2"
-    url-join "^4.0.0"
 
 coinstring@^2.0.0:
   version "2.3.0"
@@ -8449,6 +8467,13 @@ json5@^1.0.1:
   dependencies:
     minimist "^1.2.0"
 
+json5@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-2.1.0.tgz#e7a0c62c48285c628d20a10b85c89bb807c32850"
+  integrity sha512-8Mh9h6xViijj36g7Dxi+Y4S6hNGV96vcJZr/SrlHh1LR/pEn/8j/+qIBbs44YKl69Lrfctp4QD+AdWLTMqEZAQ==
+  dependencies:
+    minimist "^1.2.0"
+
 jsonfile@^2.1.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-2.4.0.tgz#3736a2b428b87bbda0cc83b53fa3d633a35c2ae8"
@@ -10848,9 +10873,9 @@ promise@^7.1.1:
     asap "~2.0.3"
 
 promise@^8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/promise/-/promise-8.0.2.tgz#9dcd0672192c589477d56891271bdc27547ae9f0"
-  integrity sha512-EIyzM39FpVOMbqgzEHhxdrEhtOSDOtjMZQ0M6iVfCE+kWNgCkAyOdnuCWqfmflylftfadU6FkiMgHZA2kUzwRw==
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/promise/-/promise-8.0.3.tgz#f592e099c6cddc000d538ee7283bb190452b0bf6"
+  integrity sha512-HeRDUL1RJiLhyA0/grn+PTShlBAcLuh/1BJGtrvjwbvRDCTLLMEz9rOGCV+R3vHY4MixIuoMEd9Yq/XvsTPcjw==
   dependencies:
     asap "~2.0.6"
 
@@ -11880,7 +11905,7 @@ request@2.87.0, request@^2.87.0:
     tunnel-agent "^0.6.0"
     uuid "^3.1.0"
 
-request@^2.67.0, request@^2.79.0, request@^2.85.0:
+request@^2.67.0, request@^2.79.0, request@^2.85.0, request@^2.88.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==
@@ -13801,9 +13826,9 @@ type-check@~0.3.2:
     prelude-ls "~1.1.2"
 
 type-coverage@^1.10.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/type-coverage/-/type-coverage-1.10.0.tgz#da9d664389126b54a8bd38beb6defd5fb9d2fc14"
-  integrity sha512-+mL02T3iM1gJ/ZK4txyQqj6Sq58jbgD4UeMhG8KBdFcIY/vwOVTeds7R7O8dAnzbiE24pgK5fPlciRWlBdt15w==
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/type-coverage/-/type-coverage-1.12.0.tgz#dc4699d504fc7df14f283de09577d9cc4247b863"
+  integrity sha512-rJQsLz9uOZRxxcDAKCQLx9GihJgVvBcKaPmMpNGvU22YorF08eewUzMHo08BEv5d8g8crm8w6MWgovKFmC7N3Q==
   dependencies:
     glob "7.1.3"
     minimist "1.2.0"
@@ -13837,9 +13862,9 @@ typedarray@^0.0.6:
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
 "typescript@2 || 3":
-  version "3.3.3333"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.3.3333.tgz#171b2c5af66c59e9431199117a3bcadc66fdcfd6"
-  integrity sha512-JjSKsAfuHBE/fB2oZ8NxtRTk5iGcg6hkYXMnZ3Wc+b2RSqejEqTaem11mHASMnFilHrax3sLK0GDzcJrekZYLw==
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.1.tgz#b6691be11a881ffa9a05765a205cb7383f3b63c6"
+  integrity sha512-3NSMb2VzDQm8oBTLH6Nj55VVtUEpe/rgkIzMir0qVoLyjDZlnMBva0U6vDiV3IH+sl/Yu6oP5QwsAQtHPmDd2Q==
 
 typescript@^3.0.1:
   version "3.0.1"
@@ -14618,6 +14643,17 @@ web3@0.20.6:
   integrity sha1-PpcwauAk+yThCj11yIQwJWIhUSA=
   dependencies:
     bignumber.js "git+https://github.com/frozeman/bignumber.js-nolookahead.git"
+    crypto-js "^3.1.4"
+    utf8 "^2.1.1"
+    xhr2 "*"
+    xmlhttprequest "*"
+
+web3@^0.18.4:
+  version "0.18.4"
+  resolved "https://registry.yarnpkg.com/web3/-/web3-0.18.4.tgz#81ec1784145491f2eaa8955b31c06049e07c5e7d"
+  integrity sha1-gewXhBRUkfLqqJVbMcBgSeB8Xn0=
+  dependencies:
+    bignumber.js "git+https://github.com/debris/bignumber.js.git#94d7146671b9719e00a09c29b01a691bc85048c2"
     crypto-js "^3.1.4"
     utf8 "^2.1.1"
     xhr2 "*"

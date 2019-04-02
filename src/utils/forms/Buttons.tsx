@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import * as styles from './Buttons.scss';
 
-type ButtonProps =
+export type ButtonProps =
   React.ButtonHTMLAttributes<HTMLButtonElement> &
   {  color?: 'green' | 'red' | 'grey' | 'white' | 'greyWhite' | 'whiteOutlined',
     size?: 'xs' | 'md' | 'sm' | 'lg' | 'unsized',

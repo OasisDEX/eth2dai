@@ -6,9 +6,7 @@ import { NavLink } from 'react-router-dom';
 import { tokens, tradingPairs } from '../../blockchain/config';
 import { FormatAmount, FormatPercent, FormatPrice } from '../../utils/formatters/Formatters';
 import { WithLoadingIndicatorInline } from '../../utils/loadingIndicator/LoadingIndicator';
-import {
-  ServerUnreachableInline
-} from '../../utils/loadingIndicator/ServerUnreachable';
+import { ServerUnreachableInline } from '../../utils/loadingIndicator/ServerUnreachable';
 import { BoundarySpan, InfoLabel } from '../../utils/text/Text';
 import { TradingPair, TradingPairsProps } from './tradingPair';
 import * as styles from './TradingPairView.scss';
@@ -41,7 +39,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
   public static PairView({ base, quote }: any) {
     return (
       <div className={styles.pairView}>
-        <div className={styles.pairViewIcon}>{tokens[base].iconInverse}</div>
+        <div className={styles.pairViewIcon}>{tokens[base].iconCircle}</div>
         <div className={styles.pairViewCurrency}>{base}</div>
         <div className={styles.pairViewCurrency}>{quote}</div>
       </div>

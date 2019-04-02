@@ -1,13 +1,10 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 
+import { tokens } from '../../blockchain/config';
 import { User } from '../../blockchain/user';
-import daiCircleSvg from '../../icons/coins/dai-circle.svg';
-import ethCircleSvg from '../../icons/coins/eth-circle.svg';
-import ethInverseSvg from '../../icons/coins/eth-inverse.svg';
 import { FormatAmount } from '../../utils/formatters/Formatters';
 import { ProgressIcon } from '../../utils/icons/Icons';
-import { SvgImage } from '../../utils/icons/utils';
 import { Currency } from '../../utils/text/Text';
 import * as styles from './Asset.scss';
 
@@ -18,19 +15,6 @@ export interface AssetProps {
   user?: User;
 }
 
-const iconOf = (asset: string) => {
-  switch (asset.toLowerCase()) {
-    case 'eth':
-      return <SvgImage image={ethCircleSvg}/>;
-    case 'weth':
-      return <SvgImage image={ethInverseSvg}/>;
-    case 'dai':
-      return <SvgImage image={daiCircleSvg}/>;
-    default:
-      throw new Error(`unknown asset ${asset}`);
-  }
-};
-
 export class Asset extends React.Component<AssetProps> {
   public render() {
     const { user, currency, onClick } = this.props;
@@ -38,7 +22,7 @@ export class Asset extends React.Component<AssetProps> {
     return (
       <div className={styles.asset} onClick={onClick}>
         <span className={styles.icon}>
-          {iconOf(currency)}
+          {tokens[currency].iconCircle}
         </span>
         {
           !balance && <ProgressIcon small={true}/>
