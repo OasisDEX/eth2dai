@@ -12,6 +12,12 @@
       "options": {
         "tsconfigPath": "tsconfig.prod.json"
       }
+    },
+    {
+      "name": "commit-deployment",
+      "options": {
+        "buildPath": "./build"
+      }
     }
   ]
 }
