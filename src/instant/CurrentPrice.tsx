@@ -16,7 +16,7 @@ export class CurrentPrice extends React.Component<{
         <span>Current Estimated Price</span>
         <span style={{ marginLeft: '12px', color: '#828287' }}>
           <Approximate>
-            {price ? formatAmount(price, 'USD') : ''}
+            {price && formatAmount(price, 'USD')}
             <span style={{ fontWeight: 'bold' }}>{quotation ? quotation : ''}</span>
           </Approximate>
         </span>

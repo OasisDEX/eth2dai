@@ -13,10 +13,12 @@ export class Finalization {
 
   public acceptPriceImpact = () => {
     cy.get(tid('proceed-with-order')).click();
+    return this;
   }
 
   public dismissPriceImpact = () => {
     cy.get(tid('dismiss-warning')).click();
+    return this;
   }
 
   public shouldCreateProxy = () => {
