@@ -325,8 +325,8 @@ function estimateDoSetupProxy(
 function simulateEstimateDoSetupProxy(
   _state: InstantFormState,
 ) {
-  // based on calls.setupProxyEstimateGas on main
-  return of(800000);
+  // based on sample transaction from main
+  return of(600000);
 }
 
 export function estimateTradePayWithERC20(
