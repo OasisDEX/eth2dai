@@ -14,24 +14,21 @@ import {
   skip,
   startWith,
   switchMap,
-  // tap,
 } from 'rxjs/operators';
 
 import * as dsValue from './abi/ds-value.abi.json';
 import { NetworkConfig, networks } from './config';
 import { amountFromWei } from './utils';
-import { web3, web3Ready$ } from './web3';
+import { web3 } from './web3';
 
 export const every3Seconds$ = interval(3000).pipe(startWith(0));
 export const every5Seconds$ = interval(5000).pipe(startWith(0));
 export const every10Seconds$ = interval(10000).pipe(startWith(0));
 export const every30Seconds$ = interval(30000).pipe(startWith(0));
 
-export const version$ = web3Ready$.pipe(
-  switchMap(() => bindNodeCallback(web3.version.getNode)()),
-);
+export const version$ = web3 && bindNodeCallback(web3.version.getNode)();
 
-export const networkId$ = interval(250).pipe(
+export const networkId$ = every3Seconds$.pipe(
   startWith(0),
   switchMap(() => bindNodeCallback(web3.version.getNetwork)()),
   distinctUntilChanged(),
@@ -39,9 +36,8 @@ export const networkId$ = interval(250).pipe(
 );
 
 export const account$: Observable<string | undefined> = every3Seconds$.pipe(
-  switchMap(() =>
-    bindNodeCallback(web3.eth.getAccounts)().pipe(map((x: string[]) => x[0]))
-  ),
+  switchMap(() => bindNodeCallback(web3.eth.getAccounts)()),
+  map(([account]) => account),
   distinctUntilChanged(),
   shareReplay(1)
 );
@@ -113,29 +109,12 @@ export function allowance$(token: string, guy?: string): Observable<boolean> {
 
 export type GasPrice$ = Observable<BigNumber>;
 
-export const gasPrice$: GasPrice$ = web3Ready$.pipe(
-  switchMap(() => concat(
-    bindNodeCallback(web3.eth.getGasPrice)(),
-    // onEveryBlock$.pipe(
-    //   switchMap(() => ajax({
-    //     url: 'https://ethgasstation.info/json/ethgasAPI.json',
-    //     method: 'GET',
-    //     headers: {
-    //       Accept: 'application/json',
-    //     },
-    //     crossDomain: true,
-    //   })),
-    //   retryWhen(errors => errors.pipe(delayWhen(() => onEveryBlock$.pipe(skip(1))))),
-    //   map(({ response }) =>
-    //     new BigNumber(response.average).times(1.1).times(new BigNumber(10).pow(8))
-    //   ),
-    // )
-  ).pipe(
-    map(x => x.mul(1.25)),
-    distinctUntilChanged((x: BigNumber, y: BigNumber) => x.eq(y)),
-    shareReplay(1),
-  )
-));
+export const gasPrice$: GasPrice$ = onEveryBlock$.pipe(
+  switchMap(() => bindNodeCallback(web3.eth.getGasPrice)()),
+  map(x => x.mul(1.25)),
+  distinctUntilChanged((x: BigNumber, y: BigNumber) => x.eq(y)),
+  shareReplay(1),
+);
 
 export const etherPriceUsd$: Observable<BigNumber> = concat(
   context$.pipe(

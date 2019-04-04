@@ -50,10 +50,10 @@ function error(msg: Message | undefined) {
           No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
         </>
       );
-    default:
+    case MessageKind.notConnected:
       return (
         <>
-          Don't know how to show message: {msg.kind}
+          Connect wallet to proceed with order
         </>
       );
   }
@@ -74,6 +74,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
       priceImpact,
       gasEstimationUsd,
       quotation,
+      user,
     } = this.props;
 
     return (
@@ -166,7 +167,8 @@ export class NewTradeView extends React.Component<InstantFormState> {
                    balance={
                      (sellToken === 'ETH' && etherBalance ||
                        balances && balances[sellToken]) || undefined
-                   }/>
+                   }
+                   user={user}/>
           <div data-test-id="swap" className={styles.swapIcon} onClick={this.swap}>
             <SvgImage image={swapArrowsSvg}/>
           </div>
@@ -177,12 +179,14 @@ export class NewTradeView extends React.Component<InstantFormState> {
                   balance={
                     (buyToken === 'ETH' && etherBalance ||
                       balances && balances[buyToken]) || undefined
-                  }/>
+                  }
+                  user={user}/>
         </div>
         <div data-test-id="error"
-             className={
-               classnames(styles.errors, message && message.placement === Position.BOTTOM ? '' : styles.hidden)
-             }>
+             className={classnames(
+               message && message.kind === MessageKind.notConnected ? styles.warnings : styles.errors,
+               message && message.placement === Position.BOTTOM ? '' : styles.hidden,
+             )}>
           {error(message)}
         </div>
       </InstantFormWrapper>

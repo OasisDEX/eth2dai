@@ -1,5 +1,8 @@
+import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
+
 import { tokens } from '../../blockchain/config';
+import { User } from '../../blockchain/user';
 import { FormatAmount } from '../../utils/formatters/Formatters';
 import { ProgressIcon } from '../../utils/icons/Icons';
 import { Currency } from '../../utils/text/Text';
@@ -9,11 +12,13 @@ export interface AssetProps {
   currency: string;
   balance?: any;
   onClick?: () => void;
+  user?: User;
 }
 
 export class Asset extends React.Component<AssetProps> {
   public render() {
-    const { balance, currency, onClick } = this.props;
+    const { user, currency, onClick } = this.props;
+    const balance = user && user.account ? this.props.balance : new BigNumber(0);
     return (
       <div className={styles.asset} onClick={onClick}>
         <span className={styles.icon}>

@@ -8,6 +8,7 @@ import { Calls, Calls$ } from '../../blockchain/calls/calls';
 import { OfferMakeData, OfferMakeDirectData } from '../../blockchain/calls/offerMake';
 import { tokens } from '../../blockchain/config';
 import { TxState, TxStatus } from '../../blockchain/transactions';
+import { User } from '../../blockchain/user';
 import { combineAndMerge } from '../../utils/combineAndMerge';
 import {
   AllowanceChange,
@@ -34,7 +35,9 @@ import {
   toDustLimitChange$,
   toEtherPriceUSDChange,
   toGasPriceChange,
-  toOrderbookChange$
+  toOrderbookChange$,
+  toUserChange,
+  UserChange,
 } from '../../utils/form';
 import { firstOfOrTrue } from '../../utils/operators';
 import { zero } from '../../utils/zero';
@@ -62,6 +65,7 @@ export enum MessageKind {
   incredibleAmount = 'incredibleAmount',
   dustAmount = 'dustAmount',
   orderbookTotalExceeded = 'orderbookTotalExceeded',
+  notConnected = 'notConnected',
   slippageLimitNotSet = 'slippageNotSet',
   slippageLimitToLow = 'slippageLimitToLow',
   slippageLimitToHigh = 'slippageLimitToHigh',
@@ -82,7 +86,9 @@ export type Message = {
 } | {
   kind: MessageKind.slippageLimitToHigh |
     MessageKind.slippageLimitToLow |
-    MessageKind.slippageLimitNotSet | MessageKind.orderbookTotalExceeded
+    MessageKind.slippageLimitNotSet |
+    MessageKind.orderbookTotalExceeded |
+    MessageKind.notConnected
   field: string;
   priority: number;
 };
@@ -117,6 +123,7 @@ export interface OfferFormState extends HasGasEstimation {
   dustLimitQuote?: BigNumber;
   dustLimitBase?: BigNumber;
   balances?: Balances;
+  user?: User;
 }
 
 export enum OfferMakeChangeKind {
@@ -149,7 +156,8 @@ export type EnvironmentChange =
   AllowanceChange |
   OrderbookChange |
   BalancesChange |
-  DustLimitChange;
+  DustLimitChange |
+  UserChange;
 
 // export interface FormStageChange {
 //   kind: InstantFormChangeKind.formStageChange;
@@ -405,6 +413,11 @@ function applyChange(state: OfferFormState,
         balances: change.balances,
         gasEstimationStatus: GasEstimationStatus.unset
       };
+    case FormChangeKind.userChange:
+      return {
+        ...state,
+        user: change.user
+      };
     case OfferMakeChangeKind.slippageLimitChange:
       return {
         ...state,
@@ -417,7 +430,10 @@ function applyChange(state: OfferFormState,
 
 function addGasEstimation(theCalls$: Calls$,
                           state: OfferFormState): Observable<OfferFormState> {
-  return doGasEstimation(theCalls$, state, (calls: Calls) =>
+  if (!state.user || !state.user.account) {
+    return of({ ...state, gasEstimationStatus: GasEstimationStatus.unknown });
+  }
+  return doGasEstimation(theCalls$, undefined, state, (calls: Calls) =>
     state.messages.length !== 0 ||
     !state.price || state.price.isZero() ||
     !state.amount || state.amount.isZero() ||
@@ -445,6 +461,13 @@ function validate(state: OfferFormState): OfferFormState {
         state.total, state.quoteToken, 'total'] :
       [state.total, state.quoteToken, 'total', state.dustLimitQuote,
         state.amount, state.baseToken, 'amount'];
+    if (!state.user || !state.user.account) {
+      messages.push({
+        kind: MessageKind.notConnected,
+        field: 'total',
+        priority: 1000,
+      });
+    }
     if (allowance === false) {
       messages.push({
         kind: MessageKind.noAllowance,
@@ -616,18 +639,22 @@ export function createFormController$(
     dustLimits$: Observable<DustLimits>;
     orderbook$: Observable<Orderbook>,
     calls$: Calls$;
-    etherPriceUsd$: Observable<BigNumber>
+    etherPriceUsd$: Observable<BigNumber>,
+    user$: Observable<User>,
   },
   tradingPair: TradingPair
 ): Observable<OfferFormState> {
 
   const manualChange$ = new Subject<ManualChange>();
 
-  const environmentChange$ = combineAndMerge(
-    toGasPriceChange(params.gasPrice$),
-    toEtherPriceUSDChange(params.etherPriceUsd$),
-    toOrderbookChange$(params.orderbook$),
-    toDustLimitChange$(params.dustLimits$, tradingPair.base, tradingPair.quote),
+  const environmentChange$ = merge(
+    combineAndMerge(
+      toGasPriceChange(params.gasPrice$),
+      toEtherPriceUSDChange(params.etherPriceUsd$),
+      toOrderbookChange$(params.orderbook$),
+      toDustLimitChange$(params.dustLimits$, tradingPair.base, tradingPair.quote),
+      toUserChange(params.user$),
+    ),
     toAllowanceChange$(FormChangeKind.buyAllowanceChange, tradingPair.base, params.allowance$),
     toAllowanceChange$(FormChangeKind.sellAllowanceChange, tradingPair.quote, params.allowance$),
     toBalancesChange(params.balances$),

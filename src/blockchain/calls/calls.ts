@@ -23,8 +23,6 @@ import { cancelOffer, offerMake, offerMakeDirect } from './offerMake';
 import { unwrap, wrap } from './wrapUnwrapCalls';
 
 function calls([context, account]: [NetworkConfig, string]) {
-
-  const call = callCurried(context, account);
   const estimateGas = estimateGasCurried(context, account);
   const sendTransaction = sendTransactionCurried(context, account);
   const sendTransactionWithGasConstraints = sendTransactionWithGasConstraintsCurried(context, account);
@@ -47,11 +45,6 @@ function calls([context, account]: [NetworkConfig, string]) {
     tradePayWithETHNoProxyEstimateGas: estimateGas(tradePayWithETHNoProxy),
     tradePayWithETHWithProxyEstimateGas: estimateGas(tradePayWithETHWithProxy),
     tradePayWithERC20EstimateGas: estimateGas(tradePayWithERC20),
-    otcGetBuyAmount: call(getBuyAmount),
-    otcGetPayAmount: call(getPayAmount),
-    otcGetOffersAmount: call(getOffersAmount),
-    otcGetBestOffer: call(getBestOffer),
-    otcOffers: call(offers),
     proxyAddress: () => proxyAddress$(context, account),
     setupProxy: sendTransaction(setupProxy),
     setupProxyEstimateGas: estimateGas(setupProxy),
@@ -62,10 +55,30 @@ function calls([context, account]: [NetworkConfig, string]) {
   };
 }
 
+function readCalls(context: NetworkConfig) {
+  const call = callCurried(context);
+
+  return {
+    otcGetBuyAmount: call(getBuyAmount),
+    otcGetPayAmount: call(getPayAmount),
+    otcGetOffersAmount: call(getOffersAmount),
+    otcGetBestOffer: call(getBestOffer),
+    otcOffers: call(offers),
+  };
+}
+
 export const calls$ = combineLatest(context$, initializedAccount$).pipe(
   map(calls),
+);
+
+export const readCalls$ = context$.pipe(
+  map(readCalls),
 );
 
 export type Calls$ = typeof calls$;
 
 export type Calls = ObservableItem<Calls$>;
+
+export type ReadCalls$ = typeof readCalls$;
+
+export type ReadCalls = ObservableItem<ReadCalls$>;

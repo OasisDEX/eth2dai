@@ -2,6 +2,7 @@ import classnames from 'classnames';
 import * as React from 'react';
 import { Balances } from '../../balances/balances';
 import { tokens } from '../../blockchain/config';
+import { User } from '../../blockchain/user';
 import { OfferType } from '../../exchange/orderbook/orderbook';
 import { CloseButton } from '../../utils/forms/Buttons';
 import * as panelStyling from '../../utils/panel/Panel.scss';
@@ -16,12 +17,13 @@ interface ViewProps {
   sellToken: string;
   buyToken: string;
   balances: Balances;
+  user: User;
   change: (change: ManualChange) => void;
 }
 
 class AssetSelectorView extends React.Component<ViewProps> {
   public render() {
-    const { side, balances } = this.props;
+    const { side, balances, user } = this.props;
     return (
       <section className={classnames(instantStyles.panel, panelStyling.panel)}>
         <TopRightCorner>
@@ -32,7 +34,7 @@ class AssetSelectorView extends React.Component<ViewProps> {
             Object.values(tokens).map((token, index) => {
               return (
                 <li data-test-id={token.symbol.toLowerCase()} className={styles.listItem} key={index}>
-                  <Asset currency={token.symbol} balance={balances[token.symbol]}
+                  <Asset currency={token.symbol} balance={balances[token.symbol]} user={user}
                          onClick={() => this.selectAsset(token.symbol, side)}/>
                 </li>
               );

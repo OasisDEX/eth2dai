@@ -10,6 +10,16 @@
   }
 }
 
+.noResourcesInfoBox {
+  display: flex;
+  height: 38px;
+  justify-content: center;
+  align-items: center;
+  border: rgba(88, 88, 95, 0.4) dashed 1px;
+  border-radius: 2px;
+  color: #828288;
+}
+
 .btnGroup {
   margin-left: auto;
 }

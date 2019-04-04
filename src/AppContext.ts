@@ -18,7 +18,7 @@ import {
 } from './balances/balances';
 import { createTaxExport$ } from './balances/taxExporter';
 import { TaxExporterView } from './balances/TaxExporterView';
-import { calls$ } from './blockchain/calls/calls';
+import { calls$, readCalls$ } from './blockchain/calls/calls';
 import {
   account$,
   allowance$,
@@ -29,6 +29,7 @@ import {
   initializedAccount$,
   onEveryBlock$
 } from './blockchain/network';
+import { user$ } from './blockchain/user';
 import { createPickableOrderBookFromOfferMake$, loadOrderbook$, Orderbook } from './exchange/orderbook/orderbook';
 import {
   createTradingPair$,
@@ -64,6 +65,7 @@ import { createFormController$ as createInstantFormController$ } from './instant
 import { InstantViewPanel } from './instant/InstantViewPanel';
 import { createTransactionNotifier$ } from './transactionNotifier/transactionNotifier';
 import { TransactionNotifierView } from './transactionNotifier/TransactionNotifierView';
+import { Authorizable, authorizablify } from './utils/authorizable';
 import { connect } from './utils/connect';
 import { inject } from './utils/inject';
 import { Loadable, LoadableWithTradingPair, loadablifyLight, } from './utils/loadable';
@@ -100,9 +102,9 @@ export function setupAppContext() {
   const AssetOverviewViewRxTx =
     inject(
       withModal<AssetsOverviewActionProps, AssetsOverviewExtraProps>(
-        connect<Loadable<CombinedBalances>, AssetsOverviewExtraProps>(
+        connect<Authorizable<Loadable<CombinedBalances>>, AssetsOverviewExtraProps>(
           AssetOverviewView,
-          loadablifyLight(combinedBalances$)
+          authorizablify(() => loadablifyLight(combinedBalances$))
         )
       ),
       { approve, disapprove, wrapUnwrapForm$ }
@@ -210,9 +212,11 @@ export function setupAppContext() {
     {
       gasPrice$,
       calls$,
+      readCalls$,
       etherPriceUsd$,
       etherBalance$,
       proxyAddress$,
+      user$,
       balances$: balancesWithEth$,
       dustLimits$: createDustLimits$(context$),
       allowances$: createAllowances$(context$, initializedAccount$, onEveryBlock$),
@@ -255,6 +259,7 @@ function offerMake(
         etherPriceUsd$,
         orderbook$,
         balances$,
+        user$,
         dustLimits$: createDustLimits$(context$),
       },
       tp)

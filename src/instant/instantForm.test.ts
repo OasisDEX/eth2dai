@@ -3,22 +3,29 @@ import jestEach from 'jest-each';
 import { omit } from 'lodash';
 import { of } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { setupFakeWeb3ForTesting } from '../blockchain/web3';
 
-import { Calls$ } from '../blockchain/calls/calls';
+import { setupFakeWeb3ForTesting } from '../blockchain/web3';
+setupFakeWeb3ForTesting();
+
+import { Calls$, ReadCalls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
 import { createFakeOrderbook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
 import { zero } from '../utils/zero';
 import { createFormController$, InstantFormChangeKind } from './instantForm';
 
-setupFakeWeb3ForTesting();
-
 function snapshotify(object: any): any {
   return omit(object, 'change', 'submit');
 }
 
 const defaultCalls = {} as any;
+
+const defaultReadCalls = {
+} as any;
+
+const defaultUser = {
+  account: '0x1234',
+};
 
 const defParams = {
   gasPrice$: of(new BigNumber(0.01)),
@@ -29,6 +36,8 @@ const defParams = {
   dustLimits$: of({ DAI: new BigNumber(0.1), WETH: new BigNumber(0.1) }),
   allowances$: of({ DAI: true, WETH: false }),
   calls$: of(defaultCalls) as Calls$,
+  readCalls$: of(defaultReadCalls) as ReadCalls$,
+  user$: of(defaultUser),
 };
 
 const controllerWithFakeOrderBook = (buys: any = [], sells: any = [], overrides: {} = {}) => {

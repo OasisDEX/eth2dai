@@ -26,13 +26,10 @@ class App extends React.Component<Props> {
     switch (this.props.status) {
       case 'initializing':
         return LoadingState.INITIALIZATION;
-      case 'waiting':
-        return LoadingState.WAITING_FOR_APPROVAL;
-      case 'denied':
-        return LoadingState.ACCESS_DENIED;
       case 'missing':
         return LoadingState.MISSING_PROVIDER;
       case 'ready':
+      case 'readonly':
         if (this.props.network !== undefined && !networks[this.props.network]) {
           return LoadingState.UNSUPPORTED;
         }
@@ -65,7 +62,7 @@ const accepted$: Observable<boolean> = interval(500).pipe(
 
 const web3StatusResolve$: Observable<Props> = web3Status$.pipe(
   switchMap(status =>
-    status === 'ready' ?
+    status === 'ready' || status === 'readonly' ?
       combineLatest(networkId$, account$).pipe(
         tap(([network, account]) =>
           console.log(`status: ${status}, network: ${network}, account: ${account}`)),

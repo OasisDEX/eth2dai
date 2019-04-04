@@ -1,7 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
+
 import { tokens } from '../blockchain/config';
+import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { BigNumberInput } from '../utils/bigNumberInput/BigNumberInput';
 import { formatPrice } from '../utils/formatters/format';
@@ -16,16 +18,17 @@ interface TradingSideProps {
   side: OfferType;
   amount: BigNumber;
   balance: BigNumber;
+  user: User;
   onAmountChange: () => void;
   change: (change: ManualChange) => void;
 }
 
 class TradingSide extends React.Component<TradingSideProps> {
   public render() {
-    const { amount, asset, balance, placeholder, onAmountChange } = this.props;
+    const { amount, asset, balance, placeholder, onAmountChange, user } = this.props;
     return (
       <div className={styles.tradingSide} data-test-id={this.props.dataTestId}>
-        <Asset currency={asset} balance={balance} onClick={this.changeToken}/>
+        <Asset currency={asset} balance={balance} user={user} onClick={this.changeToken}/>
         {/* TODO: Make it parameterized like the tokens in offerMakeForm.*/}
         <BigNumberInput
           data-test-id={'amount'}

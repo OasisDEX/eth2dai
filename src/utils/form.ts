@@ -1,10 +1,11 @@
 import { BigNumber } from 'bignumber.js';
-import { Observable, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
 import { catchError, first, flatMap, map, startWith, switchMap } from 'rxjs/operators';
 import { Balances, DustLimits } from '../balances/balances';
-import { Calls, Calls$ } from '../blockchain/calls/calls';
+import { Calls, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/calls/calls';
 import { TxState, TxStatus } from '../blockchain/transactions';
+import { User } from '../blockchain/user';
 import { amountFromWei } from '../blockchain/utils';
 import { Offer, OfferType, Orderbook } from '../exchange/orderbook/orderbook';
 
@@ -36,6 +37,7 @@ export enum FormChangeKind {
   balancesChange = 'balancesChange',
   tokenChange = 'tokenChange',
   dustLimitChange = 'dustLimitChange',
+  userChange = 'userChange',
   matchTypeChange = 'matchType',
   pickOfferChange = 'pickOffer',
   progress = 'progress',
@@ -125,6 +127,11 @@ export interface DustLimitChange {
   dustLimitQuote: BigNumber;
 }
 
+export interface UserChange {
+  kind: FormChangeKind.userChange;
+  user: User;
+}
+
 export interface ProgressChange {
   kind: FormChangeKind.progress;
   progress?: ProgressStage;
@@ -209,6 +216,15 @@ export function toBalancesChange(balances$: Observable<Balances>) {
   );
 }
 
+export function toUserChange(user$: Observable<User>) {
+  return user$.pipe(
+    map(user => ({
+      user,
+      kind: FormChangeKind.userChange
+    } as UserChange))
+  );
+}
+
 type TransationStateToX<X> =
   (transactionState$: Observable<TxState>) => Observable<X>;
 
@@ -247,6 +263,7 @@ export enum GasEstimationStatus {
   calculating = 'calculating',
   calculated = 'calculated',
   error = 'error',
+  unknown = 'unknown',
 }
 
 export interface HasGasEstimationEthUsd {
@@ -264,12 +281,36 @@ export interface HasGasEstimation extends HasGasEstimationEthUsd {
 
 export function doGasEstimation<S extends HasGasEstimation>(
   calls$: Calls$,
+  readCalls$: ReadCalls$ | undefined,
   state: S,
-  call: (calls: Calls, state: S) => Observable<number> | undefined,
+  call: (calls: Calls, readCalls: ReadCalls | undefined, state: S) => Observable<number> | undefined,
+): Observable<S>;
+
+export function doGasEstimation<S extends HasGasEstimation>(
+  calls$: Calls$,
+  readCalls$: ReadCalls$,
+  state: S,
+  call: (calls: Calls, readCalls: ReadCalls, state: S) => Observable<number> | undefined,
+): Observable<S>;
+
+export function doGasEstimation<S extends HasGasEstimation>(
+  calls$: Calls$ | undefined,
+  readCalls$: ReadCalls$,
+  state: S,
+  call: (calls: Calls | undefined, readCalls: ReadCalls, state: S) => Observable<number> | undefined,
+): Observable<S>;
+
+export function doGasEstimation<S extends HasGasEstimation>(
+  calls$: Calls$ | undefined,
+  readCalls$: ReadCalls$ | undefined,
+  state: S,
+  call:
+    ((calls: Calls | undefined, readCalls: ReadCalls | undefined, state: S) => Observable<number> | undefined) |
+    ((calls: Calls, readCalls: ReadCalls, state: S) => Observable<number> | undefined),
 ): Observable<S> {
-  return calls$.pipe(
+  return combineLatest(calls$ || of(undefined), readCalls$ || of(undefined)).pipe(
     first(),
-    switchMap((calls) => {
+    switchMap(([calls, readCalls]) => {
       if (state.gasEstimationStatus !== GasEstimationStatus.unset) {
         return of(state);
       }
@@ -282,7 +323,7 @@ export function doGasEstimation<S extends HasGasEstimation>(
         ...stateWithoutGasEstimation
       } = state as object;
 
-      const gasCall = call(calls, state);
+      const gasCall = call(calls, readCalls, state);
       const gasPrice = state.gasPrice;
       const etherPriceUsd = state.etherPriceUsd;
 

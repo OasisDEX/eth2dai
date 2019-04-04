@@ -82,22 +82,6 @@ export class LoadingState {
     );
   }
 
-  public static get WAITING_FOR_APPROVAL() {
-    return (
-      <section className={styles.section}>
-        <h4> Initializing </h4>
-      </section>
-    );
-  }
-
-  public static get ACCESS_DENIED() {
-    return (
-      <section className={styles.section}>
-        <h4> Access Denied </h4>
-      </section>
-    );
-  }
-
   public static get MISSING_PROVIDER() {
     return (
       <section className={styles.section}>
