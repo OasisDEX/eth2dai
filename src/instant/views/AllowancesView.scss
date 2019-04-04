@@ -1,0 +1,43 @@
+@import "../../utils/Variables";
+
+.list {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  list-style-type: none;
+  padding: 0;
+}
+
+.listItem {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #3F3F47;
+  padding: 1rem 1.5rem;
+  margin: .25rem;
+  font-size: 12px;
+  font-weight: 400;
+  width: 100%;
+  max-width: 212px;
+}
+
+.tokenIcon {
+  height: 28px;
+  width: 28px;
+  margin-right: 12px;
+}
+
+.doneIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 16px;
+  height: 16px;
+}
+
+.isAllowed {
+  :global(.done-icon) {
+    fill: $soft-cyan;
+  }
+}

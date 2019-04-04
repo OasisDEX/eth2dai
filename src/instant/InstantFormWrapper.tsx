@@ -6,8 +6,8 @@ import * as styles from './Instant.scss';
 
 interface InstantFormProps {
   heading: string | React.ReactNode;
-  btnLabel: string;
-  btnAction: () => void;
+  btnLabel?: string;
+  btnAction?: () => void;
   btnDisabled?: boolean;
   btnDataTestId?: string;
 }
@@ -24,18 +24,22 @@ export class InstantFormWrapper extends React.Component<InstantFormProps> {
         {
           children
         }
-        <footer className={styles.footer}>
-          <Button
-            data-test-id={btnDataTestId}
-            size="lg"
-            color="greyWhite"
-            onClick={btnAction}
-            style={{ width: '100%' }}
-            disabled={btnDisabled}
-          >
-            {btnLabel}
-          </Button>
-        </footer>
+        {
+          btnLabel && (
+            <footer className={styles.footer}>
+              <Button
+                data-test-id={btnDataTestId}
+                size="lg"
+                color="greyWhite"
+                onClick={btnAction}
+                style={{ width: '100%' }}
+                disabled={btnDisabled}
+              >
+                {btnLabel}
+              </Button>
+            </footer>
+          )
+        }
       </section>
     );
   }

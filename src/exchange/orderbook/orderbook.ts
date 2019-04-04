@@ -2,8 +2,6 @@ import { BigNumber } from 'bignumber.js';
 import { isEmpty, uniqBy, unzip } from 'lodash';
 import { bindNodeCallback, combineLatest, Observable, of, zip } from 'rxjs';
 import { expand, map, reduce, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
-
-import { tap } from 'rxjs/internal/operators';
 import { NetworkConfig } from '../../blockchain/config';
 import { amountFromWei } from '../../blockchain/utils';
 import { PickOfferChange } from '../../utils/form';
@@ -98,9 +96,6 @@ function loadOffersAllAtOnce(
     context.tokens[sellToken].address,
     context.tokens[buyToken].address
   ).pipe(
-    tap(() => {
-      console.log(context.tokens);
-    }),
     map(parseOffers(sellToken, buyToken, type, true)),
     expand(({ lastOfferId }) => lastOfferId.isZero() ?
       of() :
@@ -146,10 +141,6 @@ export function loadOrderbook$(
         })),
       )
     ),
-    tap(({ blockNumber, buy, sell }) =>
-      console.log('orderbook length for block:', blockNumber, buy.length, sell.length)),
-    // in order to fix broken empty responses accept empty orderbook
-    // only if it happens twice in a row
     scan(
       ({ buy: prevBuy, sell: prevSell }, current) => ({ prevBuy, prevSell, ...current }),
       {

@@ -140,6 +140,11 @@
 // ----- size ------
 @include formInputSizes();
 
+.unsized {
+  @include formInputSizes('unsized');
+  padding: 0;
+}
+
 .block {
   display: block;
   width: 100%;

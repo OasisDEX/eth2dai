@@ -14,7 +14,7 @@
     }
 
     .value {
-      color: #828287;
+      color: $dark-gray-blue;
     }
 
     .infoIcon {
@@ -22,26 +22,34 @@
       border-color: rgba(255, 255, 255, 0.90);
     }
   }
+
+  @include media-breakpoint-down(md) {
+    max-width: none;
+  }
 }
 
 .label {
   @include fontMontserratMedium;
   font-size: 12px;
-  color: #828287;
+  color: $dark-gray-blue;
   letter-spacing: 1.1px;
 }
 
 .value {
   @include fontMontserratSemibold;
-  font-size: 12px;
+  font-size: 11px;
   color: rgba(255, 255, 255, 0.90);
   letter-spacing: 1px;
   text-align: right;
 }
 
-.infoIcon {
-  width: 13px;
-  height: 13px;
-  font-size: 9px;
+.warningIcon {
+  width: 17px;
+  height: 17px;
   margin-right: auto;
+
+  :global(.warning-icon) {
+    fill: $dark-gray-blue;
+  }
 }
+
