@@ -259,5 +259,6 @@ const externalNonce2tx$: Observable<ExternalNonce2tx> = combineLatest(context$, 
   switchMap(([context, account, firstBlock]) => ajax({ url: `${context.etherscan.apiUrl}?module=account&action=txlist&address=${account}&startblock=${firstBlock}&sort=desc&apikey=${context.etherscan.apiKey}` })),
   map(({ response }) => response.result),
   map((transactions: Array<{ hash: string, nonce: string, input: string }>) => fromPairs(transactions.map<[string, { hash: string, callData: string }]>(tx => [tx.nonce, { hash: tx.hash, callData: tx.input }]))),
+  catchError(() => of({})),
   shareReplay(1),
 );
