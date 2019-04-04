@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { fromPairs } from 'ramda';
 import { bindNodeCallback, combineLatest, Observable, of, Subject } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
@@ -108,7 +109,9 @@ export function send(
     lastChange: new Date(),
   };
 
-  function successOrFailure(txHash: string, receipt: any, rebroadcast: TxRebroadcastStatus|undefined): Observable<TxState> {
+  function successOrFailure(
+    txHash: string, receipt: any, rebroadcast: TxRebroadcastStatus | undefined
+  ): Observable<TxState> {
     const end = new Date();
 
     if (receipt.status !== '0x1') {
@@ -151,14 +154,22 @@ export function send(
     mergeMap((transaction: { hash: string, nonce: number, input: string }) => {
       return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
         map(([externalNonce2tx]) =>
-          externalNonce2tx[transaction.nonce] ?
-            [externalNonce2tx[transaction.nonce].hash, transaction.input === externalNonce2tx[transaction.nonce].callData ? TxRebroadcastStatus.speedup : TxRebroadcastStatus.cancel] :
-            [transaction.hash, undefined]
+          externalNonce2tx[transaction.nonce] ? [
+            externalNonce2tx[transaction.nonce].hash,
+            transaction.input === externalNonce2tx[transaction.nonce].callData ?
+              TxRebroadcastStatus.speedup :
+              TxRebroadcastStatus.cancel
+          ] : [
+            transaction.hash,
+            undefined
+          ]
         ),
-        mergeMap(([txHash, rebroadcast]) => bindNodeCallback(web3.eth.getTransactionReceipt)(txHash).pipe(map(receipt => [receipt, rebroadcast]))),
-        filter(([receipt]: [any, TxRebroadcastStatus]) =>
-          receipt && receipt.blockNumber !== undefined && receipt.blockNumber !== null
+        mergeMap(([txHash, rebroadcast]) =>
+          bindNodeCallback(web3.eth.getTransactionReceipt)(txHash).pipe(
+            map(receipt => [receipt, rebroadcast])
+          )
         ),
+        filter(([receipt]: [any, TxRebroadcastStatus]) => receipt && receipt.blockNumber),
         first(),
         mergeMap(([receipt, rebroadcast]) => successOrFailure(receipt.transactionHash, receipt, rebroadcast)),
         catchError(error => {
@@ -255,10 +266,21 @@ export const transactions$: Observable<TxState[]> = combineLatest(
 );
 
 interface ExternalNonce2tx { [nonce: number]: { hash: string, callData: string }; }
-const externalNonce2tx$: Observable<ExternalNonce2tx> = combineLatest(context$, account$, onEveryBlock$.pipe(first()), onEveryBlock$).pipe(
-  switchMap(([context, account, firstBlock]) => ajax({ url: `${context.etherscan.apiUrl}?module=account&action=txlist&address=${account}&startblock=${firstBlock}&sort=desc&apikey=${context.etherscan.apiKey}` })),
+const externalNonce2tx$: Observable<ExternalNonce2tx> = combineLatest(
+  context$, account$, onEveryBlock$.pipe(first()), onEveryBlock$
+).pipe(
+  switchMap(([context, account, firstBlock]) =>
+    ajax({ url: `${context.etherscan.apiUrl}?module=account&action=txlist&address=${account}&startblock=${firstBlock}&sort=desc&apikey=${context.etherscan.apiKey}` })
+  ),
   map(({ response }) => response.result),
-  map((transactions: Array<{ hash: string, nonce: string, input: string }>) => fromPairs(transactions.map<[string, { hash: string, callData: string }]>(tx => [tx.nonce, { hash: tx.hash, callData: tx.input }]))),
-  catchError(() => of({})),
+  map((transactions: Array<{ hash: string, nonce: string, input: string }>) =>
+    fromPairs(_.map(transactions, tx =>
+      [tx.nonce, { hash: tx.hash, callData: tx.input }] as [string, { hash: string, callData: string }]
+    ))
+  ),
+  catchError(error => {
+    console.error(error);
+    return of({});
+  }),
   shareReplay(1),
 );

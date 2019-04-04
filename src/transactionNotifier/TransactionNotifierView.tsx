@@ -69,7 +69,10 @@ export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...trans
 export function describeTxStatus(tx: TxState) {
   switch (tx.status) {
     case TxStatus.Success:
-      const rebroadcast: {[key in TxRebroadcastStatus]: string} = { speedup: 'gas price increased', cancel: 'cancelled' };
+      const rebroadcast: {[key in TxRebroadcastStatus]: string} = {
+        speedup: 'gas price increased',
+        cancel: 'cancelled',
+      };
       return 'Confirmed' + (tx.rebroadcast ? ` (${rebroadcast[tx.rebroadcast]})` : '');
     case TxStatus.Error:
     case TxStatus.Failure:
