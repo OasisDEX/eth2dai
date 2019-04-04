@@ -1,14 +1,26 @@
+@import "../../utils/Variables";
+@import "../../utils/Mixins";
+
 .details {
   margin-top: 0;
   padding: 1rem;
   font-size: .75rem;
+
+  @include media-breakpoint-down(md) {
+    position: relative;
+    padding-bottom: 3rem;
+  }
 }
 
 .summary {
   line-height: 1rem;
-  color: #97979B;
+  color: $grey-lighter;
   font-weight: 400;
   letter-spacing: .8px;
+
+  @include media-breakpoint-down(md) {
+    font-size: .625rem;
+  }
 }
 
 .highlight {

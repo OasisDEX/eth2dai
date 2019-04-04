@@ -1,5 +1,5 @@
-import { from, fromEvent, Observable } from 'rxjs';
-import { catchError, filter, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import { from, Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 import * as Web3 from 'web3';
 
 import coinbaseSvg from '../icons/providers/coinbase.svg';
@@ -13,7 +13,7 @@ import { SvgImageSimple } from '../utils/icons/utils';
 
 export let web3 : Web3;
 
-export type Web3Status = 'waiting' | 'ready' | 'denied' | 'missing' | 'initializing';
+export type Web3Status = 'ready' | 'readonly' | 'missing' | 'initializing';
 
 export interface Web3Window {
   web3?: any;
@@ -26,31 +26,19 @@ export interface ProviderMetaData {
   icon: JSX.Element | string;
 }
 
-export const web3Status$: Observable<Web3Status> = fromEvent(document, 'visibilitychange').pipe(
-  startWith(null),
-  filter(() => !web3),
-  filter(() => !document.hidden),
-  switchMap(() => {
+export const web3Status$: Observable<Web3Status> = from(['initializing']).pipe(
+  map(() => {
     const win = window as Web3Window;
-    if (win.ethereum) {
-      web3 = new Web3(win.ethereum);
-      return from(win.ethereum.enable()).pipe(
-        map(() => 'ready'),
-        startWith('waiting'),
-        catchError(() => from(['denied'])),
-      );
-    }
     if (win.web3) {
       web3 = new Web3(win.web3.currentProvider);
-      return from(['ready']);
+      return 'ready';
     }
-    return from(['missing']);
+    web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io'));
+    return 'readonly';
   }),
   shareReplay(1),
 );
 web3Status$.subscribe();
-
-export const web3Ready$ = web3Status$.pipe(filter(status => status === 'ready'));
 
 export function setupFakeWeb3ForTesting() {
   web3 = new Web3();

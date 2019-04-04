@@ -1,0 +1,19 @@
+@import "../../utils/Variables";
+@import "../../utils/Mixins";
+
+.list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style-type: none;
+  padding: 0;
+  margin: auto 0;
+
+  @include media-breakpoint-down(md) {
+    flex-wrap: wrap;
+  }
+}
+
+.list-item {
+  width: 100%;
+}

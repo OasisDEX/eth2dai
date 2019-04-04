@@ -6,8 +6,8 @@ import { send } from '../transactions';
 import { TxMetaKind } from './txMeta';
 
 export interface BaseDef<A> {
-  call: (args: A, context: NetworkConfig, account: string) => any;
-  prepareArgs: (args: A, context: NetworkConfig, account: string) => any[];
+  call: (args: A, context: NetworkConfig, account?: string) => any;
+  prepareArgs: (args: A, context: NetworkConfig, account?: string) => any[];
 }
 
 export interface CallDef<A, R> extends BaseDef<A> {
@@ -24,12 +24,11 @@ export interface TransactionDef<A> extends GasDef<A> {
   descriptionIcon?: (args: A) => JSX.Element;
 }
 
-export function callCurried(context: NetworkConfig, account: string) {
+export function callCurried(context: NetworkConfig) {
   return <D, R>({ call, prepareArgs, postprocess }: CallDef<D, R>) => {
     return (args: D) => {
-      return bindNodeCallback(call(args, context, account).call)(
-        ...prepareArgs(args, context, account),
-        { from: account },
+      return bindNodeCallback(call(args, context).call)(
+        ...prepareArgs(args, context),
       ).pipe(
         map(i => (postprocess ? postprocess(i, args) : i))
       ) as Observable<R>;

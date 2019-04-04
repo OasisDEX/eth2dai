@@ -37,7 +37,7 @@ jobs:
   test-e2e:
     machine:
       enabled: true
-      image: circleci/classic:edge
+      image: circleci/classic:201710-01
       docker_layer_caching: true
     parallelism: 3
     steps:
@@ -135,7 +135,7 @@ jobs:
             mkdir -p /home/circleci/project/__screenshots__
             cp `find  | grep png` /home/circleci/project/__screenshots__
       - run:
-          command: yarn codechecks-e2e
+          command: yarn codechecks codechecks-e2e-vis-reg.ts
 
   deploy_dev:
     docker:

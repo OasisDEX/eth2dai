@@ -1,20 +1,24 @@
 import { BigNumber } from 'bignumber.js';
 import { combineLatest, Observable, of } from 'rxjs';
+import { bindNodeCallback } from 'rxjs/index';
+import { combineAll, mergeMap } from 'rxjs/internal/operators';
 import { flatMap, map, switchMap } from 'rxjs/operators';
-import { NetworkConfig } from '../blockchain/config';
+import { NetworkConfig, networks } from '../blockchain/config';
 import { Placeholder, vulcan0x } from '../blockchain/vulcan0x';
 import { web3 } from '../blockchain/web3';
 
-interface TradeWithProxy {
-  offerId: BigNumber;
-  maker: string; // Offer creator address
-  lotAmt: BigNumber; // Lot amount
-  lotTkn: string; // Lot token
-  bidAmt: BigNumber; // Bid amount
-  bidTkn: string; // Bid token
-  time: Date; // Block timestamp
-  tx?: string; // Transaction hash
-  tag: string; // Proxy tag
+const abiDecoder = require('abi-decoder');
+const DSProxyAbi = require('../blockchain/abi/ds-proxy.abi.json');
+
+export interface TradeExport {
+  sellAmount: BigNumber;
+  buyAmount: BigNumber;
+  buyToken: string;
+  sellToken: string;
+  date: string;
+  address: string;
+  tx: string;
+  exchange: string;
 }
 
 function queryTrades(context: NetworkConfig, addresses: string[]) {
@@ -43,36 +47,90 @@ function queryTrades(context: NetworkConfig, addresses: string[]) {
   );
 }
 
-function parseTrade({ time, maker, lotAmt, lotTkn, bidAmt, bidTkn, tx }: TradeWithProxy, address: string) {
+function getContractName(networkId: string, address: string) {
+  const config: NetworkConfig = networks[networkId];
+  const contracts_names = {
+    [config.instantProxyCreationAndExecute.address]: 'ProxyCreationAndExecute',
+    '0xb0a00896f34655edff6c8d915fb342194c4a6d48' : 'ProxyCreationAndExecute',
+    '0xd64979357160e8146f6e1d805cf20437397bf1ba' : 'SaiProxyCreateAndExecute',
+    '0x526af336d614ade5cc252a407062b8861af998f5' : 'SaiProxyCreateAndExecute',
+    '0x279594b6843014376a422ebb26a6eab7a30e36f0' : 'OasisDirectProxy',
+  };
+
+  return contracts_names[address];
+}
+
+function getExchangeNameByProxy(context: NetworkConfig, proxyName: string | null, tx: string): Observable<string> {
+  if (proxyName === '' || proxyName === null) {
+    return of('oasisdex.com');
+  }
+  if (proxyName === 'ProxyCreationAndExecute') {
+    return of('oasis.direct');
+  }
+  if (proxyName === 'SaiProxyCreateAndExecute') {
+    return of('cdp.makerdao.com');
+  }
+  if (proxyName === 'DSProxy') {
+    return bindNodeCallback((web3 as any).eth.getTransaction)(tx).pipe(
+      map((transaction: any) => {
+        abiDecoder.addABI(DSProxyAbi);
+        const transactionData = abiDecoder.decodeMethod(transaction.input);
+        const contract_name = getContractName(context.id, transactionData.params[0].value);
+
+        if (contract_name && contract_name === 'OasisDirectProxy') return 'oasis.direct';
+        return transactionData.params[0].value;
+      })
+    );
+  }
+  return of('');
+}
+
+function getTradeInfoWithProxy(
+  context: NetworkConfig,
+  { time, maker, lotAmt, lotTkn, bidAmt, bidTkn, tx, tag }: any,
+  address: string
+): Observable<TradeExport> {
+
   const date: string = new Date(time).toLocaleString().replace(',', '');
   const buyAmount = address === maker ? lotAmt : bidAmt;
   const sellAmount = address === maker ? bidAmt : lotAmt;
   const buyToken = address === maker ? bidTkn : lotTkn;
   const sellToken = address === maker ? lotTkn : bidTkn;
 
-  return {
-    sellAmount,
-    buyToken,
-    buyAmount,
-    sellToken,
-    date,
-    address,
-    tx
-  };
+  return getExchangeNameByProxy(context, tag, String(tx)).pipe(
+    map((exchange: string) => {
+      return {
+        sellAmount,
+        buyToken,
+        buyAmount,
+        sellToken,
+        date,
+        address,
+        tx,
+        exchange
+      } as TradeExport;
+    })
+  );
 }
 
 export function createTaxExport$(
   context$: Observable<NetworkConfig>,
   address$: Observable<string>
-) {
+): Observable<TradeExport[]> {
   return combineLatest(context$, address$).pipe(
     switchMap(([context, address]) => {
       return of(address).pipe(
-        flatMap(owner_address => {
-          owner_address = (web3 as any).toChecksumAddress(owner_address);
-          return queryTrades(context, [owner_address]).pipe(
-            map(trades => trades.map((trade) => parseTrade(trade, owner_address)))
-          );
+        flatMap(() => {
+          address = (web3 as any).toChecksumAddress(address);
+          return (queryTrades(context, [address]).pipe(
+            mergeMap((trades): Array<Observable<any>> => {
+              if (trades.length) {
+                return (trades.map((trade:any) => getTradeInfoWithProxy(context, trade, address)));
+              }
+              return [of('')];
+            }),
+            combineAll()
+          ));
         })
       );
     })

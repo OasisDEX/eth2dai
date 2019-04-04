@@ -6,9 +6,9 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { setupAppContext, theAppContext } from './AppContext';
 import { BalancesView } from './balances/BalancesView';
 import { ExchangeViewTxRx } from './exchange/ExchangeView';
-import { Header } from './header/Header';
+import { HeaderTxRx } from './header/Header';
 import * as styles from './index.scss';
-import { InstantExchange } from './instant/InstantView';
+import { InstantExchange } from './instant/InstantViewPanel';
 
 const browserHistoryInstance = createBrowserHistory();
 
@@ -36,7 +36,7 @@ export class MainContent extends React.Component<RouterProps> {
               <TransactionNotifierTxRx />
             }
           </theAppContext.Consumer>
-          <Header />
+          <HeaderTxRx />
           <Switch>
             <Route exact={false} path={'/exchange'} component={ExchangeViewTxRx}/>
             {process.env.REACT_APP_INSTANT_ENABLED === '1' &&

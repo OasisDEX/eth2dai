@@ -4,6 +4,23 @@ import { Summary } from './Summary';
 export class Finalization {
   public currentTx: string = '';
 
+  public shoulHavePriceImpactWarning = () => {
+    cy.get(tid('price-impact-text'))
+      .contains(/Order has a significant .../);
+
+    return this;
+  }
+
+  public acceptPriceImpact = () => {
+    cy.get(tid('proceed-with-order')).click();
+    return this;
+  }
+
+  public dismissPriceImpact = () => {
+    cy.get(tid('dismiss-warning')).click();
+    return this;
+  }
+
   public shouldCreateProxy = () => {
     this.currentTx = 'proxyTx';
 

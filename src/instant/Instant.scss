@@ -49,6 +49,10 @@
 
   padding: .75rem 1rem;
 
+  @include media-breakpoint-down(md) {
+    min-height: 98px;
+  }
+
   &.hidden {
     visibility: hidden;
   }
@@ -56,7 +60,12 @@
   &.errors {
     align-items: center;
     justify-content: center;
+
+    @include media-breakpoint-down(sm) {
+      text-align: center;
+    }
   }
+
 
   &.finalization {
     font-size: 0.75rem;
@@ -66,9 +75,15 @@
     letter-spacing: 1px;
     margin-bottom: 1rem;
     padding: 0;
+
+    @include media-breakpoint-down(md) {
+      min-height: 3rem;
+      padding: 6px;
+    }
   }
 
   &.transaction {
+    position: relative;
     min-height: 0;
 
     padding: 1rem 1.5rem;
@@ -78,6 +93,11 @@
     &:last-child {
       margin-bottom: 0;
     }
+
+    @include media-breakpoint-down(md) {
+      min-height: 3rem;
+      padding-bottom: 3rem;
+    }
   }
 }
 
@@ -86,10 +106,11 @@
   justify-content: space-between;
 }
 
-.errors {
+%errors-base {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   width: 100%;
   height: map-get($inputHeight, lg);
   border: 1px solid $button-border-disabled;
@@ -98,14 +119,36 @@
 
   @include fontMontserratMedium;
   font-size: 12px;
-  color: $errors;
   letter-spacing: 1.10px;
+
+  @include media-breakpoint-down(md) {
+    margin: 1rem 0;
+    font-size: 10px;
+  }
+
+  @include media-breakpoint-down(sm) {
+    font-size: 9px;
+  }
+
+  &.hidden {
+    visibility: hidden;
+  }
+}
+
+.errors {
+  @extend %errors-base;
+  color: $errors;
+}
+
+.warnings {
+  @extend %errors-base;
+  color: #828287;
 }
 
 // Asset Picker
 
 
-.assetPicker {
+.tradingSide {
   display: inline-flex;
   flex-direction: column;
   max-width: 175px;
@@ -120,12 +163,15 @@
   cursor: pointer;
 }
 
-.settingsIcon {
+.cornerIcon {
   height: 28px;
   width: 28px;
-  border: 1px solid #3F3F47;
+  border: 1px solid $button-border-disabled;
   border-radius: 100%;
-  padding: .25rem;
+
+  &.settingsIcon {
+    padding: .25rem;
+  }
 }
 
 .input {

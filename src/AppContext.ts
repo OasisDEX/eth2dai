@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { BehaviorSubject, combineLatest, interval, Observable } from 'rxjs';
-import { first, flatMap, map, shareReplay, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, first, flatMap, map, shareReplay, switchMap } from 'rxjs/operators';
 
+import { isEqual } from 'lodash';
 import { curry } from 'ramda';
 import { AssetOverviewView, AssetsOverviewActionProps, AssetsOverviewExtraProps } from './balances/AssetOverviewView';
 import {
   Balances,
   CombinedBalances,
+  createAllowances$,
   createBalances$,
   createCombinedBalances$,
   createDustLimits$,
@@ -16,7 +18,7 @@ import {
 } from './balances/balances';
 import { createTaxExport$ } from './balances/taxExporter';
 import { TaxExporterView } from './balances/TaxExporterView';
-import { calls$ } from './blockchain/calls/calls';
+import { calls$, readCalls$ } from './blockchain/calls/calls';
 import {
   account$,
   allowance$,
@@ -27,6 +29,7 @@ import {
   initializedAccount$,
   onEveryBlock$
 } from './blockchain/network';
+import { user$ } from './blockchain/user';
 import { createPickableOrderBookFromOfferMake$, loadOrderbook$, Orderbook } from './exchange/orderbook/orderbook';
 import {
   createTradingPair$,
@@ -62,6 +65,7 @@ import { createFormController$ as createInstantFormController$ } from './instant
 import { InstantViewPanel } from './instant/InstantViewPanel';
 import { createTransactionNotifier$ } from './transactionNotifier/transactionNotifier';
 import { TransactionNotifierView } from './transactionNotifier/TransactionNotifierView';
+import { Authorizable, authorizablify } from './utils/authorizable';
 import { connect } from './utils/connect';
 import { inject } from './utils/inject';
 import { Loadable, LoadableWithTradingPair, loadablifyLight, } from './utils/loadable';
@@ -86,7 +90,6 @@ export function setupAppContext() {
   const balancesWithEth$ = combineLatest(balances$, etherBalance$).pipe(
     map(([balances, etherBalance]) => ({ ...balances, ETH: etherBalance })),
   );
-  balancesWithEth$.subscribe(console.log);
 
   const wethBalance$ = createWethBalances$(context$, initializedAccount$, onEveryBlock$);
 
@@ -99,9 +102,9 @@ export function setupAppContext() {
   const AssetOverviewViewRxTx =
     inject(
       withModal<AssetsOverviewActionProps, AssetsOverviewExtraProps>(
-        connect<Loadable<CombinedBalances>, AssetsOverviewExtraProps>(
+        connect<Authorizable<Loadable<CombinedBalances>>, AssetsOverviewExtraProps>(
           AssetOverviewView,
-          loadablifyLight(combinedBalances$)
+          authorizablify(() => loadablifyLight(combinedBalances$))
         )
       ),
       { approve, disapprove, wrapUnwrapForm$ }
@@ -197,18 +200,26 @@ export function setupAppContext() {
     createTransactionNotifier$(transactions$, interval(5 * 1000));
   const TransactionNotifierTxRx = connect(TransactionNotifierView, transactionNotifier$);
 
-  // const proxyAddress$ = createProxy$(context$, initializedAccount$, onEveryBlock$, calls$);
+  const proxyAddress$ = onEveryBlock$.pipe(
+    switchMap(() =>
+      calls$.pipe(
+        flatMap(calls => calls.proxyAddress())
+      )),
+    distinctUntilChanged(isEqual)
+  );
 
   const instant$ = createInstantFormController$(
     {
       gasPrice$,
-      allowance$,
       calls$,
+      readCalls$,
       etherPriceUsd$,
-      balances$,
       etherBalance$,
-      // proxyAddress$,
+      proxyAddress$,
+      user$,
+      balances$: balancesWithEth$,
       dustLimits$: createDustLimits$(context$),
+      allowances$: createAllowances$(context$, initializedAccount$, onEveryBlock$),
     }
   );
 
@@ -248,6 +259,7 @@ function offerMake(
         etherPriceUsd$,
         orderbook$,
         balances$,
+        user$,
         dustLimits$: createDustLimits$(context$),
       },
       tp)

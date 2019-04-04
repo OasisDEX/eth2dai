@@ -1,4 +1,5 @@
 export const ownedResourcesInfoBox: string;
+export const noResourcesInfoBox: string;
 export const btnGroup: string;
 export const btn: string;
 export const balanceBtn: string;

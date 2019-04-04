@@ -9,3 +9,4 @@ export const panelBodyScrollable: string;
 export const panelFooter: string;
 export const panelFooterBordered: string;
 export const topRightCorner: string;
+export const topLeftCorner: string;

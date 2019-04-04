@@ -228,6 +228,14 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   }
 
   private balanceButtons() {
+    if (!this.props.user || !this.props.user.account) {
+      return (
+        <div className={styles.noResourcesInfoBox}>
+          <span>Connect to view Balances</span>
+        </div>
+      );
+    }
+
     const disabled = this.props.stage === 'waitingForApproval';
     const setMaxSellDisabled = this.props.kind === OfferType.buy || disabled;
     const setMaxBuyDisabled = this.props.kind === OfferType.sell ||
@@ -557,6 +565,10 @@ function messageContent(msg: Message) {
     case MessageKind.orderbookTotalExceeded:
       return <>
         {`Your order exceeds the order book total`}
+      </>;
+    case MessageKind.notConnected:
+      return <>
+        {`Connect to create Orders`}
       </>;
     case MessageKind.slippageLimitToLow:
       return <>
