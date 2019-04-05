@@ -46,6 +46,7 @@ jobs:
           keys:
           - v3-dependencies-{{ checksum "package.json" }}
       - run: .circleci/install-yarn.sh
+      - run: .circleci/upgrade-chrome.sh
       - run: 
           name: Get & run localnode image
           command: |
