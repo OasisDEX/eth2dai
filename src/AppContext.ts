@@ -39,7 +39,13 @@ import {
 } from './exchange/tradingPair/tradingPair';
 
 import { transactions$ } from './blockchain/transactions';
-import { createAllTrades$, createTradesBrowser$, loadAllTrades } from './exchange/allTrades/allTrades';
+import {
+  createAllTrades$,
+  createTradesBrowser$,
+  loadAllTrades,
+  loadPriceOneDayAgo,
+  loadVolumeForThePastDay
+} from './exchange/allTrades/allTrades';
 import { AllTrades } from './exchange/allTrades/AllTradesView';
 import { createDepthChartWithLoading$, DepthChartWithLoading } from './exchange/depthChart/DepthChartWithLoading';
 import {
@@ -122,9 +128,23 @@ export function setupAppContext() {
   const tradeHistory = memoizeTradingPair(
     curry(loadAllTrades)(context$, onEveryBlock$)
   );
+
   const currentTradeHistory$ = currentTradingPair$.pipe(
     switchMap(tradeHistory),
   );
+
+  const lastDayVolume$ = currentTradingPair$.pipe(
+    switchMap(memoizeTradingPair(
+      curry(loadVolumeForThePastDay)(context$, onEveryBlock$)
+    )),
+  );
+
+  const lastDayPriceHistory$ = currentTradingPair$.pipe(
+    switchMap(memoizeTradingPair(
+      curry(loadPriceOneDayAgo)(context$, onEveryBlock$)
+    )),
+  );
+
   const currentTradesBrowser$ = loadablifyPlusTradingPair(
     currentTradingPair$,
     curry(createTradesBrowser$)(context$, tradeHistory),
@@ -185,15 +205,15 @@ export function setupAppContext() {
   const MyTradesTxRx = connect(MyTrades, myTrades$);
 
   const currentPrice$ = createCurrentPrice$(currentTradeHistory$);
-  const yesterdayPrice$ = createYesterdayPrice$(currentTradeHistory$);
+  const yesterdayPrice$ = createYesterdayPrice$(lastDayPriceHistory$);
   const yesterdayPriceChange$ = createYesterdayPriceChange$(currentPrice$, yesterdayPrice$);
-  const weeklyVolume$ = createDailyVolume$(currentTradeHistory$);
+  const dailyVolume$ = createDailyVolume$(lastDayVolume$);
 
   const tradingPairView$ = createTradingPair$(
     currentTradingPair$,
     currentPrice$,
     yesterdayPriceChange$,
-    weeklyVolume$);
+    dailyVolume$);
   const TradingPairsTxRx = connect(TradingPairView, tradingPairView$);
 
   const transactionNotifier$ =
