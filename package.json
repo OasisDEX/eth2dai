@@ -17,6 +17,7 @@
     "deploy:dev": "ENV=dev yarn build && surge --project ./build --domain http://eth2dai-dev.surge.sh/",
     "deploy:stage": "yarn build && surge --project ./build --domain http://eth2dai-staging.surge.sh/",
     "deploy:prod": "sh ./deploy-prod.sh",
+    "deploy:beta": "rm -rf ./build && yarn build && echo 'beta.eth2dai.com' > ./build/CNAME && surge ./build -d https://beta.eth2dai.com",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "cypress:run": "rm -rf cypress/screenshots/* && cypress run",
