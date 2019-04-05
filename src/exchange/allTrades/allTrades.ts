@@ -65,12 +65,32 @@ export function load24hTrades$(
   { base, quote }: TradingPair,
 ): Observable<Trade[]> {
   return context$$.pipe(
-    switchMap(context => {
-      return getTrades(context, base, quote, 'allTradesCurrent', {
-        to: moment().subtract(1, 'day').toDate(),
+    switchMap((context) => onEveryBlock$$.pipe(
+      exhaustMap(() => getTrades(context, base, quote, 'allTradesCurrent', {
+        to: moment().subtract(1, 'days').toDate(),
         from: moment().subtract(2, 'days').toDate()
-      });
-    }),
+      })))
+    ),
+    map((
+      trades: Trade[]) => trades.sort((current, next) => next.time.getTime() - current.time.getTime())
+    ),
+    distinctUntilChanged((x, y) => equals(x, y)),
+    shareReplay(1),
+  );
+}
+
+export function loadVolumeForThePastDay(
+  context$$: Observable<NetworkConfig>,
+  onEveryBlock$$: Observable<number>,
+  { base, quote }: TradingPair,
+): Observable<Trade[]> {
+  return context$$.pipe(
+    switchMap((context) => onEveryBlock$$.pipe(
+      exhaustMap(() => getTrades(context, base, quote, 'allTradesCurrent', {
+        to: moment().toDate(),
+        from: moment().subtract(1, 'days').toDate()
+      })))
+    ),
     map((
       trades: Trade[]) => trades.sort((current, next) => next.time.getTime() - current.time.getTime())
     ),
