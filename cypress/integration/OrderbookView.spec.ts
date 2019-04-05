@@ -2,7 +2,7 @@ import { ApplicationState } from '../pages/Application';
 import { cypressVisitWithWeb3, tid } from '../utils';
 import { makeScreenshots } from '../utils/makeScreenshots';
 
-describe('Orderbook view ', () => {
+describe.skip('Orderbook view ', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();

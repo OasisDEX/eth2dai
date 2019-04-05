@@ -14,7 +14,7 @@ const waitForBalancesToLoad = () => {
 
 const swap = () => cy.get(tid('swap'), timeout(1000)).click();
 
-describe('New trade', () => {
+describe.skip('New trade', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();

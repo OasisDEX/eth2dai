@@ -3,7 +3,7 @@ import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
 import { cypressVisitWithWeb3 } from '../../utils';
 
-describe('Selecting an asset', () => {
+describe.skip('Selecting an asset', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();

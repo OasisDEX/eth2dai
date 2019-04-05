@@ -3,7 +3,7 @@ import { ApplicationState } from '../pages/Application';
 import { Tab } from '../pages/Tab';
 import { cypressVisitWithWeb3 } from '../utils/index';
 
-describe('Setting allowances', () => {
+describe.skip('Setting allowances', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();

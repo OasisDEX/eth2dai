@@ -7,7 +7,7 @@ import { Orderbook, OrderType } from '../pages/Orderbook';
 import { Tab } from '../pages/Tab';
 import { Trades } from '../pages/Trades';
 
-describe('Buy Order', () => {
+describe.skip('Buy Order', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
