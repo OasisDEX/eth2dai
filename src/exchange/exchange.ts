@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as moment from 'moment';
 import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 import { Trade } from './trades';
 
@@ -19,14 +19,8 @@ export function createYesterdayPrice$(
   tradeHistory$: Observable<Trade[]>
 ): Observable<BigNumber | undefined> {
   return tradeHistory$.pipe(
-    map(trades => {
-      if (!trades[0]) {
-        return undefined;
-      }
-      const borderline = moment(trades[0].time).subtract(1, 'days').toDate();
-      const trade = trades.find((t: Trade) => t.time <= borderline);
-      return trade ? trade.price : undefined;
-    }),
+    map(trades => !trades[0] ? undefined : trades[0].price),
+    tap(price => console.log(price && price.valueOf()))
   );
 }
 

@@ -3,8 +3,16 @@
 import * as moment from 'moment';
 import { equals } from 'ramda';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { delay, distinctUntilChanged, exhaustMap,
-  map, mergeScan, retryWhen, shareReplay, startWith, switchMap
+import {
+  delay,
+  distinctUntilChanged,
+  exhaustMap,
+  map,
+  mergeScan,
+  retryWhen,
+  shareReplay,
+  startWith,
+  switchMap
 } from 'rxjs/operators';
 
 import { NetworkConfig } from '../../blockchain/config';
@@ -46,6 +54,26 @@ export function loadAllTrades(
       )
     ),
     map(([recent, later]) => [...recent, ...later]),
+    distinctUntilChanged((x, y) => equals(x, y)),
+    shareReplay(1),
+  );
+}
+
+export function load24hTrades$(
+  context$$: Observable<NetworkConfig>,
+  onEveryBlock$$: Observable<number>,
+  { base, quote }: TradingPair,
+): Observable<Trade[]> {
+  return context$$.pipe(
+    switchMap(context => {
+      return getTrades(context, base, quote, 'allTradesCurrent', {
+        to: moment().subtract(1, 'day').toDate(),
+        from: moment().subtract(2, 'days').toDate()
+      });
+    }),
+    map((
+      trades: Trade[]) => trades.sort((current, next) => next.time.getTime() - current.time.getTime())
+    ),
     distinctUntilChanged((x, y) => equals(x, y)),
     shareReplay(1),
   );

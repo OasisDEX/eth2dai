@@ -39,7 +39,7 @@ import {
 } from './exchange/tradingPair/tradingPair';
 
 import { transactions$ } from './blockchain/transactions';
-import { createAllTrades$, createTradesBrowser$, loadAllTrades } from './exchange/allTrades/allTrades';
+import { createAllTrades$, createTradesBrowser$, load24hTrades$, loadAllTrades } from './exchange/allTrades/allTrades';
 import { AllTrades } from './exchange/allTrades/AllTradesView';
 import { createDepthChartWithLoading$, DepthChartWithLoading } from './exchange/depthChart/DepthChartWithLoading';
 import {
@@ -122,9 +122,19 @@ export function setupAppContext() {
   const tradeHistory = memoizeTradingPair(
     curry(loadAllTrades)(context$, onEveryBlock$)
   );
+
+  const lastDayPriceHistory = memoizeTradingPair(
+    curry(load24hTrades$)(context$, onEveryBlock$)
+  );
+
   const currentTradeHistory$ = currentTradingPair$.pipe(
     switchMap(tradeHistory),
   );
+
+  const lastDayPriceHistory$ = currentTradingPair$.pipe(
+    switchMap(lastDayPriceHistory),
+  );
+
   const currentTradesBrowser$ = loadablifyPlusTradingPair(
     currentTradingPair$,
     curry(createTradesBrowser$)(context$, tradeHistory),
@@ -185,7 +195,7 @@ export function setupAppContext() {
   const MyTradesTxRx = connect(MyTrades, myTrades$);
 
   const currentPrice$ = createCurrentPrice$(currentTradeHistory$);
-  const yesterdayPrice$ = createYesterdayPrice$(currentTradeHistory$);
+  const yesterdayPrice$ = createYesterdayPrice$(lastDayPriceHistory$);
   const yesterdayPriceChange$ = createYesterdayPriceChange$(currentPrice$, yesterdayPrice$);
   const weeklyVolume$ = createDailyVolume$(currentTradeHistory$);
 
