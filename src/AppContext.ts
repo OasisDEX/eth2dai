@@ -42,8 +42,8 @@ import { transactions$ } from './blockchain/transactions';
 import {
   createAllTrades$,
   createTradesBrowser$,
-  load24hTrades$,
   loadAllTrades,
+  loadPriceOneDayAgo,
   loadVolumeForThePastDay
 } from './exchange/allTrades/allTrades';
 import { AllTrades } from './exchange/allTrades/AllTradesView';
@@ -141,7 +141,7 @@ export function setupAppContext() {
 
   const lastDayPriceHistory$ = currentTradingPair$.pipe(
     switchMap(memoizeTradingPair(
-      curry(load24hTrades$)(context$, onEveryBlock$)
+      curry(loadPriceOneDayAgo)(context$, onEveryBlock$)
     )),
   );
 
