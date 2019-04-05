@@ -105,6 +105,8 @@ const protoMain = {
   },
   etherscan: {
     url: 'https://etherscan.io',
+    apiUrl: 'http://api.etherscan.io/api',
+    apiKey: '34JVYM6RPM3J1SK8QXQFRNSHD9XG4UHXVU',
   },
   taxProxyRegistries: ['0xaa63c8683647ef91b3fdab4b4989ee9588da297b']
 };
@@ -145,6 +147,8 @@ const kovan: NetworkConfig = {
   },
   etherscan: {
     url: 'https://kovan.etherscan.io',
+    apiUrl: 'http://api-kovan.etherscan.io/api',
+    apiKey: '34JVYM6RPM3J1SK8QXQFRNSHD9XG4UHXVU',
   },
   taxProxyRegistries: ['0x64a436ae831c1672ae81f674cab8b6775df3475c']
 };
@@ -181,6 +185,8 @@ const localnet: NetworkConfig =   {
   },
   etherscan: {
     url: 'https://kovan.etherscan.io',
+    apiUrl: 'http://api-kovan.etherscan.io/api',
+    apiKey: '34JVYM6RPM3J1SK8QXQFRNSHD9XG4UHXVU',
   },
   taxProxyRegistries: []
 };
