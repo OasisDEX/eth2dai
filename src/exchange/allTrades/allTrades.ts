@@ -15,7 +15,7 @@ import { TradingPair } from '../tradingPair/tradingPair';
 
 export type IntervalUnit = 'hour' | 'day' | 'week' | 'month';
 
-const TRADES_PAGE_SIZE = 100;
+const TRADES_PAGE_SIZE = 1000;
 
 export interface AllTradesProps extends LoadableWithTradingPair<TradesBrowser> {
   etherscan: EtherscanConfig;
