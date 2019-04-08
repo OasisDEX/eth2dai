@@ -8,7 +8,7 @@ import * as ReactPopover from 'react-popover';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { IoIosWifi } from 'react-icons/io';
+import { IoIosUnlock, IoIosWifi } from 'react-icons/io';
 import MediaQuery from 'react-responsive';
 import { NavLink } from 'react-router-dom';
 import { theAppContext } from '../AppContext';
@@ -114,7 +114,7 @@ class NoClient extends React.Component<{}, { open: boolean }> {
             <Client client="metamask"/>
             <Client client="parity"/>
           </div>
-        }><Button color="greyWhite"
+        }><Button color="white"
                   size="sm"
                   onClick={this.open}
                   className={classnames(styles.login, styles.connectButton)}>
@@ -165,10 +165,25 @@ class Status extends React.Component<StatusProps> {
             {account ? <>
               <Jazzicon diameter={25} seed={jsNumberForAddress(account)} />
               <span style={{ marginLeft: '1em' }}>{label}</span>
-            </> :
-            <Button disabled={!available} color="white" size="sm" onClick={this.logIn} className={classnames(styles.login, styles.connectButton)}>
-              Connect Wallet
-            </Button>}
+            </> : (<Button disabled={!available}
+                           color="white"
+                           size="sm"
+                           onClick={this.logIn}
+                           className={classnames(styles.login, styles.connectButton)}>
+                <MediaQuery minWidth={800}>
+                  {(matches) => {
+                    if (matches) {
+                      return (
+                        <span>
+                          Connect Wallet
+                        </span>
+                      );
+                    }
+                    return <IoIosUnlock/>;
+                  }}
+                </MediaQuery>
+              </Button>
+            )}
           </div>
         );
       } }
