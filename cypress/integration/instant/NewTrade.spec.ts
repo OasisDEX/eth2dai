@@ -154,9 +154,11 @@ describe('New trade', () => {
     trade.sell('ETH')
       .amount('5');
 
-    makeScreenshots('price-impact-highlight');
-
     trade.expectPriceImpact(`19.28%`, true);
+
+    cy.get(tid('notification-cross')).click();
+
+    makeScreenshots('price-impact-highlight');
   });
 
   it('should display warning message if the price impact is higher than threshold', () => {
