@@ -49,6 +49,7 @@
     "react-dev-utils": "^5.0.1",
     "react-dom": "^16.3.2",
     "react-faux-dom": "^4.2.0",
+    "react-icons": "^3.5.0",
     "react-jazzicon": "^0.1.2",
     "react-modal": "^3.6.1",
     "react-popover": "^0.5.10",

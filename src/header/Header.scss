@@ -139,8 +139,16 @@ $header-media-breakpoint: 800px;
   margin-right: 12px;
 }
 .login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   width: 100%;
   height: 100%;
+
+  @include media-breakpoint-down($header-media-breakpoint) {
+    padding: 0;
+  }
 }
 
 .connectButton {

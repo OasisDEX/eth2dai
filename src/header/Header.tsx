@@ -8,6 +8,8 @@ import * as ReactPopover from 'react-popover';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { IoIosWifi } from 'react-icons/io';
+import MediaQuery from 'react-responsive';
 import { NavLink } from 'react-router-dom';
 import { theAppContext } from '../AppContext';
 import { account$ } from '../blockchain/network';
@@ -112,10 +114,24 @@ class NoClient extends React.Component<{}, { open: boolean }> {
             <Client client="metamask"/>
             <Client client="parity"/>
           </div>
-        }>
-          <Button color="white" size="sm" onClick={this.open} className={classnames(styles.login, styles.connectButton)}>
-            Connect <SvgImage image={chevronDownSvg} style={{ display: 'inline-block', verticalAlign: 'middle' }} />
-          </Button>
+        }><Button color="greyWhite"
+                  size="sm"
+                  onClick={this.open}
+                  className={classnames(styles.login, styles.connectButton)}>
+          <MediaQuery minWidth={800}>
+            {(matches) => {
+              if (matches) {
+                return (
+                  <>
+                    Connect <SvgImage image={chevronDownSvg}
+                                      style={{ display: 'inherit' }}/>
+                  </>
+                );
+              }
+              return <IoIosWifi/>;
+            }}
+          </MediaQuery>
+        </Button>
         </ReactPopover>
       </div>
     );

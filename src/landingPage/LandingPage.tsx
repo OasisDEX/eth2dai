@@ -9,7 +9,7 @@ import { SvgImage } from '../utils/icons/utils';
 import { Client } from './client/Client';
 import * as styles from './LandingPage.scss';
 
-class AcceptTos extends React.Component<any, any> {
+export class AcceptTos extends React.Component<any, any> {
 
   constructor(props: any) {
     super(props);
