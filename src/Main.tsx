@@ -9,6 +9,7 @@ import { ExchangeViewTxRx } from './exchange/ExchangeView';
 import { HeaderTxRx } from './header/Header';
 import * as styles from './index.scss';
 import { InstantExchange } from './instant/InstantViewPanel';
+import { RegistrationView } from './registration/RegistrationView';
 
 const browserHistoryInstance = createBrowserHistory();
 
@@ -42,6 +43,7 @@ export class MainContent extends React.Component<RouterProps> {
             {process.env.REACT_APP_INSTANT_ENABLED === '1' &&
             <Route exact={false} path={'/instant'} component={InstantExchange}/>}
             <Route path={'/balances'} component={BalancesView} />
+            <Route path={'/register'} component={RegistrationView} />
             <Redirect from={'/'} to={'/exchange'}/>
           </Switch>
           <theAppContext.Consumer>

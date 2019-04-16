@@ -11,6 +11,7 @@ import { SvgImageSimple } from '../utils/icons/utils';
 import * as eth from './abi/ds-eth-token.abi.json';
 import * as dsProxyFactory from './abi/ds-proxy-factory.abi.json';
 import * as erc20 from './abi/erc20.abi.json';
+import * as kycStorage from './abi/kyc-storage.abi.json';
 import * as otc from './abi/matching-market.abi.json';
 import * as otcSupport from './abi/otc-support-methods.abi.json';
 import * as proxyCreationAndExecute from './abi/proxy-creation-and-execute.abi.json';
@@ -100,6 +101,12 @@ const protoMain = {
   get instantProxyCreationAndExecute() {
     return load(proxyCreationAndExecute, '0x793ebbe21607e4f04788f89c7a9b97320773ec59');
   },
+  get kycStorage() {
+    return load(kycStorage, '0x0');
+  },
+  kycBackend: {
+    url: 'http://localhost:3003/kyc',
+  },
   oasisDataService: {
     url: 'https://oasisvulcan0x.makerfoundation.com/v1'
   },
@@ -142,6 +149,12 @@ const kovan: NetworkConfig = {
   get instantProxyCreationAndExecute() {
     return load(proxyCreationAndExecute, '0xee419971e63734fed782cfe49110b1544ae8a773');
   },
+  get kycStorage() {
+    return load(kycStorage, '0x0');
+  },
+  kycBackend: {
+    url: 'http://localhost:3003/kyc',
+  },
   oasisDataService: {
     url: 'https://kovan-oasisvulcan0x.makerfoundation.com/v1'
   },
@@ -179,6 +192,12 @@ const localnet: NetworkConfig =   {
   },
   get instantProxyCreationAndExecute() {
     return load(proxyCreationAndExecute, '0x99C7F543e310A4143D22ce840a348b4EcDbBA8Ce');
+  },
+  get kycStorage() {
+    return load(kycStorage, '0xEdB7c08603b4e1Eaf965638E9675B462B060A378');
+  },
+  kycBackend: {
+    url: 'http://localhost:3003/kyc',
   },
   oasisDataService: {
     url: 'http://localhost:4000/v1'

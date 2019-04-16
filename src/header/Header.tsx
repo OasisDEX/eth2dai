@@ -64,6 +64,7 @@ class Header extends React.Component<HeaderProps> {
                 <HeaderNavLink to={`${rootUrl}instant`} name="Instant"/>}
                 {this.props.account &&
                 <HeaderNavLink to={`${rootUrl}balances`} name="Balances"/>}
+                <HeaderNavLink to={`${rootUrl}register`} name="Register"/>
               </ul>
             </nav>
           </section >
