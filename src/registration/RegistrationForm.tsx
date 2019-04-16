@@ -1,10 +1,11 @@
-import { fromPairs } from 'ramda';
+import { fromPairs, toPairs } from 'ramda';
 import * as React from 'react';
-import { combineLatest } from 'rxjs';
+import { bindNodeCallback, combineLatest } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { map } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 import { account$, context$ } from '../blockchain/network';
+import { web3 } from '../blockchain/web3';
 import { connect } from '../utils/connect';
 import { Button } from '../utils/forms/Buttons';
 import { InputGroup, InputGroupAddon } from '../utils/forms/InputGroup';
@@ -46,8 +47,19 @@ class RegistrationForm extends React.Component<RegistrationFormProps> {
     e.preventDefault();
     const fields = ['email', 'firstName', 'lastName'];
     const values = fromPairs(fields.map(f => [f, (e.target as any)[f].value] as [string, string]));
-    const data = { address: this.props.account, ...values };
-    ajax({ url: this.props.kycBackend.url, body: data, method: 'POST', headers: { 'Content-Type': 'application/json' } }).subscribe(console.log);
+    const signData = [
+      toPairs(values).map(([name, value]) => ({ name, value, type: 'string' })),
+      this.props.account,
+    ];
+    bindNodeCallback(web3.currentProvider.sendAsync)({ method: 'eth_signTypedData', params: signData } as any).pipe(
+      filter((result: { error?: any }) => !result.error),
+      switchMap((signature : { result: string }) => ajax({
+        url: this.props.kycBackend.url,
+        body: { ...values, address: this.props.account, signature: signature.result },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })),
+    ).subscribe(console.log);
   }
 }
 
