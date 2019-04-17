@@ -1,10 +1,11 @@
 import { fromPairs, toPairs } from 'ramda';
 import * as React from 'react';
-import { bindNodeCallback, combineLatest } from 'rxjs';
+import { bindNodeCallback, combineLatest, Observable, of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { catchError, filter, map, startWith, switchMap } from 'rxjs/operators';
 
-import { account$, context$ } from '../blockchain/network';
+import { account$, context$, onEveryBlock$ } from '../blockchain/network';
+import { user$ } from '../blockchain/user';
 import { web3 } from '../blockchain/web3';
 import { connect } from '../utils/connect';
 import { Button } from '../utils/forms/Buttons';
@@ -39,6 +40,7 @@ class RegistrationForm extends React.Component<RegistrationFormProps> {
           </InputGroup>
           <Button type="submit">Submit</Button>
         </form>
+        <RegistrationStatusTxRx />
       </Panel>
     );
   }
@@ -65,4 +67,24 @@ class RegistrationForm extends React.Component<RegistrationFormProps> {
 
 export const RegistrationFormTxRx = connect(RegistrationForm, combineLatest(context$, account$).pipe(
   map(([context, account]) => ({ account, kycBackend: context.kycBackend })),
+));
+
+class RegistrationStatus extends React.Component<{ status: string | undefined }> {
+  public render() {
+    return <p>Status: {this.props.status || 'unknown'}</p>;
+  }
+}
+
+const registrationStatus$: Observable<string | undefined> = combineLatest(user$, context$, onEveryBlock$).pipe(
+  filter(([user]) => !!user.account),
+  switchMap(([user, context]) => ajax({
+    url: `${context.kycBackend.url}/${(user.account as string).replace(/^0x/, '')}`,
+  })),
+  map(({ response }) => response.status),
+  catchError(() => of(undefined)),
+  startWith(undefined),
+);
+
+const RegistrationStatusTxRx = connect(RegistrationStatus, registrationStatus$.pipe(
+  map(status => ({ status })),
 ));
