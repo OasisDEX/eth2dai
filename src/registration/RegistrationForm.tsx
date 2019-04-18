@@ -26,19 +26,25 @@ class RegistrationForm extends React.Component<RegistrationFormProps> {
       <Panel footerBordered={true} style={{ width: '100%' }}>
         <PanelHeader>Register</PanelHeader>
         <form className={styles.form} onSubmit={this.handleSubmit}>
-          <InputGroup>
+          <InputGroup className={styles.inputRow}>
             <InputGroupAddon className={styles.inputLabel}>Email</InputGroupAddon>
-            <input type="email" name="email" />
+            <div className={styles.inputTail}>
+              <input type="email" name="email" className={styles.input} />
+            </div>
           </InputGroup>
-          <InputGroup>
+          <InputGroup className={styles.inputRow}>
             <InputGroupAddon className={styles.inputLabel}>First name</InputGroupAddon>
-            <input type="text" name="firstName" />
+            <div className={styles.inputTail}>
+              <input type="text" name="firstName" className={styles.input} />
+            </div>
           </InputGroup>
-          <InputGroup>
+          <InputGroup className={styles.inputRow}>
             <InputGroupAddon className={styles.inputLabel}>Last name</InputGroupAddon>
-            <input type="text" name="lastName" />
+            <div className={styles.inputTail}>
+              <input type="text" name="lastName" className={styles.input} />
+            </div>
           </InputGroup>
-          <Button type="submit">Submit</Button>
+          <Button size="lg" color="white" type="submit" className={styles.submit}>Sign &amp; submit</Button>
         </form>
         <RegistrationStatusTxRx />
       </Panel>
@@ -81,7 +87,7 @@ const registrationStatus$: Observable<string | undefined> = combineLatest(user$,
     url: `${context.kycBackend.url}/${(user.account as string).replace(/^0x/, '')}`,
   })),
   map(({ response }) => response.status),
-  catchError(() => of(undefined)),
+  catchError(() => of('error')),
   startWith(undefined),
 );
 

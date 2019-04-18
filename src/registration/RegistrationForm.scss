@@ -1,7 +1,41 @@
+@import "../utils/Variables";
+
 .form {
   margin: 2em;
 }
 
+.inputRow {
+  margin-bottom: 2.5em;
+}
+
 .inputLabel {
-  width: 10em;
+  display: flex;
+  justify-content: flex-end;
+  flex-basis: 10em;
+  &:after {
+    content: ':';
+  }
+  border: none !important;
+}
+
+.input {
+  background-color: initial;
+  border: initial;
+  color: $white;
+  width: 300px;
+  height: 2em;
+  &:-internal-autofill-selected {
+    background-color: $white !important;
+  }
+}
+
+.inputTail {
+  border-left: 1px solid $grey-light;
+  display: inline-flex;
+  border-radius: 2px;
+}
+
+.submit {
+  margin-left: 10em;
+  width: 300px;
 }
