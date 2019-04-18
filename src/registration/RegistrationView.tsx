@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { MdCheck, MdClear } from 'react-icons/md';
 
 import { User, user$ } from '../blockchain/user';
 import { connect } from '../utils/connect';
 import { FlexLayoutRow } from '../utils/layout/FlexLayoutRow';
-import { RegistrationFormTxRx } from './RegistrationForm';
+import { RegistrationFormPanel } from './RegistrationForm';
 
 export class RegistrationView extends React.Component<{}> {
   public render() {
@@ -12,7 +13,9 @@ export class RegistrationView extends React.Component<{}> {
         <div>
           <FlexLayoutRow>
             <AuthorizedTxRx />
-            <RegistrationFormTxRx />
+          </FlexLayoutRow>
+          <FlexLayoutRow>
+            <RegistrationFormPanel />
           </FlexLayoutRow>
         </div>
       </div>
@@ -22,7 +25,14 @@ export class RegistrationView extends React.Component<{}> {
 
 class Authorized extends React.Component<User> {
   public render() {
-    return <p>Authorized: {(!!this.props.authorized).toString()}</p>;
+    const authorized = !!this.props.authorized;
+    return (
+      <div style={{ display: 'flex', margin: '2em' }}>
+        {authorized ? <MdCheck size="30"/> : <MdClear size="30"/>}
+        &nbsp;
+        <span style={{ fontSize: '1.6em' }}>{authorized ? 'Able' : 'Not able'} to trade</span>
+      </div>
+    );
   }
 }
 
