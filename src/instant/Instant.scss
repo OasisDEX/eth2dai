@@ -184,17 +184,25 @@
     font-size: .625rem;
   }
 
-  border: 1px solid rgba(255, 255, 255, 0.25);;
+  border: 1px solid $grey-light;
   border-radius: .125rem;
 
   padding: .5rem;
 
   text-align: center;
   letter-spacing: 1.1px;
+  color: $white;
 
   &::placeholder {
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.90);
+    color: $input-number-color;
   }
 
+}
+
+.button {
+  width: 100%;
+  &:disabled {
+    color: $grey-light
+  }
 }

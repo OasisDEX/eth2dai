@@ -30,9 +30,9 @@ export class InstantFormWrapper extends React.Component<InstantFormProps> {
               <Button
                 data-test-id={btnDataTestId}
                 size="lg"
-                color="greyWhite"
+                color="white"
                 onClick={btnAction}
-                style={{ width: '100%' }}
+                className={styles.button}
                 disabled={btnDisabled}
               >
                 {btnLabel}

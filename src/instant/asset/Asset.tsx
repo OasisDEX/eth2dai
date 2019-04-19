@@ -22,7 +22,7 @@ export class Asset extends React.Component<AssetProps> {
     return (
       <div className={styles.asset} onClick={onClick}>
         <span className={styles.icon}>
-          {tokens[currency].iconCircle}
+          {tokens[currency].iconColor}
         </span>
         {
           !balance && <ProgressIcon small={true}/>

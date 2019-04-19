@@ -2,9 +2,12 @@ import { fromPairs, memoize, zip } from 'lodash';
 
 import { TradingPair } from '../exchange/tradingPair/tradingPair';
 import daiCircleSvg from '../icons/coins/dai-circle.svg';
+import daiColorSvg from '../icons/coins/dai-color.svg';
 import daiInverseSvg from '../icons/coins/dai-inverse.svg';
 import daiSvg from '../icons/coins/dai.svg';
 import ethCircleSvg from '../icons/coins/eth-circle.svg';
+import ethColorInverseSvg from '../icons/coins/eth-color-inverse.svg';
+import ethColorSvg from '../icons/coins/eth-color.svg';
 import ethInverseSvg from '../icons/coins/eth-inverse.svg';
 import ethSvg from '../icons/coins/eth.svg';
 import { SvgImageSimple } from '../utils/icons/utils';
@@ -36,6 +39,7 @@ export const tokens = asMap('symbol', [
     icon: SvgImageSimple(ethSvg),
     iconInverse: SvgImageSimple(ethInverseSvg),
     iconCircle: SvgImageSimple(ethCircleSvg),
+    iconColor: SvgImageSimple(ethColorSvg),
   },
   {
     symbol: 'WETH',
@@ -46,6 +50,7 @@ export const tokens = asMap('symbol', [
     icon: SvgImageSimple(ethSvg),
     iconInverse: SvgImageSimple(ethCircleSvg),
     iconCircle: SvgImageSimple(ethInverseSvg),
+    iconColor: SvgImageSimple(ethColorInverseSvg),
   },
   {
     symbol: 'DAI',
@@ -56,6 +61,7 @@ export const tokens = asMap('symbol', [
     icon: SvgImageSimple(daiSvg),
     iconInverse: SvgImageSimple(daiInverseSvg),
     iconCircle: SvgImageSimple(daiCircleSvg),
+    iconColor: SvgImageSimple(daiColorSvg),
   },
 ]);
 
