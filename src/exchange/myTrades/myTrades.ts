@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { BehaviorSubject, combineLatest, noop, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, startWith, switchMap } from 'rxjs/operators';
 
 import { Calls$ } from '../../blockchain/calls/calls';
 import { CancelData } from '../../blockchain/calls/offerMake';
@@ -46,7 +46,7 @@ export function createMyTrades$(
   context$: Observable<NetworkConfig>,
   gasPrice$: Observable<BigNumber>,
 ): Observable<MyTradesPropsLoadable> {
-  return combineLatest(myTradesKind$, myCurrentTrades$, context$, calls$).pipe(
+  return combineLatest(myTradesKind$, myCurrentTrades$, context$, calls$.pipe(startWith({} as any))).pipe(
     map(([kind, loadableTrades, context, calls]) => ({
       kind,
       ...loadableTrades,

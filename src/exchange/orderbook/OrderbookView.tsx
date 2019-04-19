@@ -208,7 +208,9 @@ export class OrderbookView extends React.Component<Props> {
   }
 
   private changeChartListView = () => {
-    this.props.kindChange(OrderbookViewKind.depthChart);
+    if (this.props.kindChange) {
+      this.props.kindChange(OrderbookViewKind.depthChart);
+    }
   }
 
 }
