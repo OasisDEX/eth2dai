@@ -75,6 +75,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
       gasEstimationUsd,
       quotation,
       user,
+      kind,
     } = this.props;
 
     return (
@@ -168,7 +169,8 @@ export class NewTradeView extends React.Component<InstantFormState> {
                      (sellToken === 'ETH' && etherBalance ||
                        balances && balances[sellToken]) || undefined
                    }
-                   user={user}/>
+                   user={user}
+                   approx={sellAmount && kind === 'buy'}/>
           <div data-test-id="swap" className={styles.swapIcon} onClick={this.swap}>
             <SvgImage image={swapArrowsSvg}/>
           </div>
@@ -180,7 +182,8 @@ export class NewTradeView extends React.Component<InstantFormState> {
                     (buyToken === 'ETH' && etherBalance ||
                       balances && balances[buyToken]) || undefined
                   }
-                  user={user}/>
+                  user={user}
+                  approx={buyAmount && kind === 'sell'}/>
         </div>
         <div data-test-id="error"
              className={classnames(

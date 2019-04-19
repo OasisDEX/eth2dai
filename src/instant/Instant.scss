@@ -200,6 +200,17 @@
 
 }
 
+.inputWrapper {
+  position: relative;
+  color: $white;
+}
+
+.inputApprox {
+  position: absolute;
+  left: 1em;
+  top: 0.5em;
+}
+
 .button {
   width: 100%;
   &:disabled {
