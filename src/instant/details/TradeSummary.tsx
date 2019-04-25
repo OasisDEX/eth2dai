@@ -6,7 +6,7 @@ import { OfferType } from '../../exchange/orderbook/orderbook';
 import { formatPrice } from '../../utils/formatters/format';
 import { Money } from '../../utils/formatters/Formatters';
 import * as genericStyles from '../Instant.scss';
-import { ProgressReport } from '../progress/ProgressReport';
+import { ProgressReport, Report } from '../progress/ProgressReport';
 import * as styles from './TradeSummary.scss';
 import { TxStatusRow } from './TxStatusRow';
 
@@ -28,7 +28,8 @@ export class TradeSummary extends React.Component<TradeSummaryProps> {
 
     return <div className={classnames(genericStyles.details, styles.details)}>
 
-      <TxStatusRow label={'Congratulations!'} status={<ProgressReport status={TxStatus.Success}/>}/>
+      <TxStatusRow label={'Congratulations!'}
+                   status={<ProgressReport report={{ txStatus: TxStatus.Success } as Report}/>}/>
 
       <div>
         <span data-test-id="summary" className={styles.summary}>

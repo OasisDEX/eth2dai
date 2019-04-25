@@ -237,6 +237,7 @@ export function setupAppContext() {
       etherBalance$,
       proxyAddress$,
       user$,
+      context$,
       balances$: balancesWithEth$,
       dustLimits$: createDustLimits$(context$),
       allowances$: createAllowances$(context$, initializedAccount$, onEveryBlock$),

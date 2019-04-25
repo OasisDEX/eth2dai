@@ -4,15 +4,16 @@ import { omit } from 'lodash';
 import { of } from 'rxjs';
 import { first } from 'rxjs/operators';
 
-import { setupFakeWeb3ForTesting } from '../blockchain/web3';
-setupFakeWeb3ForTesting();
-
 import { Calls$, ReadCalls$ } from '../blockchain/calls/calls';
+import { NetworkConfig } from '../blockchain/config';
 import { TxState, TxStatus } from '../blockchain/transactions';
+import { setupFakeWeb3ForTesting } from '../blockchain/web3';
 import { createFakeOrderbook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
 import { zero } from '../utils/zero';
 import { createFormController$, InstantFormChangeKind } from './instantForm';
+
+setupFakeWeb3ForTesting();
 
 function snapshotify(object: any): any {
   return omit(object, 'change', 'submit');
@@ -38,6 +39,7 @@ const defParams = {
   calls$: of(defaultCalls) as Calls$,
   readCalls$: of(defaultReadCalls) as ReadCalls$,
   user$: of(defaultUser),
+  context$: of({} as NetworkConfig)
 };
 
 const controllerWithFakeOrderBook = (buys: any = [], sells: any = [], overrides: {} = {}) => {

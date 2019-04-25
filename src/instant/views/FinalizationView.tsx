@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
+import { NetworkConfig } from '../../blockchain/config';
 import { TxStatus } from '../../blockchain/transactions';
 import accountSvg from '../../icons/account.svg';
 import daiCircleSvg from '../../icons/coins/dai-circle.svg';
@@ -27,6 +28,7 @@ interface ViewProps {
   buyAmount: BigNumber;
   price: BigNumber;
   quotation: string;
+  context: NetworkConfig;
 }
 
 export class FinalizationView extends React.Component<ViewProps> {
@@ -39,7 +41,7 @@ export class FinalizationView extends React.Component<ViewProps> {
       buyAmount,
       price,
       quotation,
-      progress
+      progress,
     } = this.props;
 
     return (
@@ -60,7 +62,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                label="Create Account"
                                info="Something about Proxy"
                              />}
-                           status={<ProgressReport status={progress.proxyTxStatus || '' as TxStatus}/>}/>
+                           status={<ProgressReport report={this._proxyProgress()}/>}/>
             </div>
             <div className={classnames(styles.details, styles.transaction)}>
               <TxStatusRow icon={<SvgImage image={doneSvg}/>}
@@ -71,7 +73,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                label={`Unlock ${sellToken.toUpperCase()}`}
                                info="Something about allowances"
                              />}
-                           status={<ProgressReport status={progress.allowanceTxStatus || '' as TxStatus}/>}/>
+                           status={<ProgressReport report={this._allowanceProgress()}/>}/>
             </div>
             <div className={classnames(styles.details, styles.transaction)}>
               <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
@@ -85,7 +87,8 @@ export class FinalizationView extends React.Component<ViewProps> {
                                         token={sellToken}/>
                                }
                              />}
-                           status={<ProgressReport status={progress.tradeTxStatus || '' as TxStatus}/>}
+                           status={<ProgressReport
+                             report={this._tradeProgress()}/>}
               />
               <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                            label={
@@ -115,7 +118,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                label={`Unlock ${sellToken.toUpperCase()}`}
                                info="Something about allowances"
                              />}
-                           status={<ProgressReport status={progress.allowanceTxStatus || '' as TxStatus}/>}/>
+                           status={<ProgressReport report={this._allowanceProgress()}/>}/>
             </div>
             <div className={classnames(styles.details, styles.transaction)}>
               <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
@@ -129,7 +132,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                         token={sellToken}/>
                                }
                              />}
-                           status={<ProgressReport status={progress.tradeTxStatus || '' as TxStatus}/>}/>
+                           status={<ProgressReport report={this._tradeProgress()}/>}/>
               <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                            label={
                              <TradeData
@@ -161,7 +164,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                         token={sellToken}/>
                                }
                              />}
-                           status={<ProgressReport status={progress.tradeTxStatus || '' as TxStatus}/>}/>
+                           status={<ProgressReport report={this._tradeProgress()}/>}/>
               <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                            label={
                              <TradeData
@@ -190,7 +193,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                label="Create Account"
                                info="Something about Proxy"
                              />}
-                           status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                           status={<ProgressReport report={this._tradeProgress()}/>}/>
               <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
                            label={
                              <TradeData
@@ -235,7 +238,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                         token={sellToken}/>
                                }
                              />}
-                           status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
+                           status={<ProgressReport report={this._tradeProgress()}/>}/>
               <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
                            label={
                              <TradeData
@@ -267,4 +270,37 @@ export class FinalizationView extends React.Component<ViewProps> {
       view: ViewKind.new
     });
   }
+
+  private _tradeProgress = () => {
+    const { tradeTxStatus: txStatus, tradeTxHash: txHash } = this.props.progress as {
+      tradeTxStatus: TxStatus,
+      tradeTxHash: string
+    };
+
+    return this._createReport(txStatus, txHash);
+  }
+
+  private _proxyProgress = () => {
+    const { proxyTxStatus: txStatus, proxyTxHash: txHash } = this.props.progress as {
+      proxyTxStatus: TxStatus,
+      proxyTxHash: string
+    };
+
+    return this._createReport(txStatus, txHash);
+  }
+
+  private _allowanceProgress = () => {
+    const { allowanceTxStatus: txStatus, allowanceTxHash: txHash } = this.props.progress as {
+      allowanceTxStatus: TxStatus,
+      allowanceTxHash: string
+    };
+
+    return this._createReport(txStatus, txHash);
+  }
+
+  private _createReport = (txStatus: TxStatus, txHash: string) => ({
+    txStatus,
+    txHash,
+    etherscanURI: this.props.context.etherscan.url
+  })
 }
