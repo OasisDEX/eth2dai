@@ -26,8 +26,10 @@ const statuses = new Map<string, (params: Params) => React.ReactNode>([
       <ProgressIcon className={styles.progressIcon}/>
     </>
   )],
-  [TxStatus.Success, () => (
-    <><span className={styles.success}>Confirmed</span></>
+  [TxStatus.Success, (params: Params) => (
+    <>
+      <a href={params.txReport} target="_blank" rel="noreferrer noopener" className={styles.link}><span>Confirmed</span></a>
+    </>
   )],
   [TxStatus.CancelledByTheUser, () => (
     <><span className={styles.failure}>Rejected</span></>

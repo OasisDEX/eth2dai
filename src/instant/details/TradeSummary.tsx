@@ -13,7 +13,9 @@ import { TxStatusRow } from './TxStatusRow';
 interface TradeSummaryProps {
   price: BigNumber;
   quotation: string;
-  gasUsed: BigNumber;
+  gasCost: BigNumber;
+  etherscanURI: string;
+  txHash: string;
   sold: BigNumber;
   soldToken: string;
   bought: BigNumber;
@@ -24,19 +26,33 @@ interface TradeSummaryProps {
 
 export class TradeSummary extends React.Component<TradeSummaryProps> {
   public render() {
-    const { type, soldToken, boughtToken, sold, bought, gasUsed, hadCreatedProxy, price, quotation } = this.props;
+    const {
+      type,
+      soldToken,
+      boughtToken,
+      sold,
+      bought,
+      gasCost,
+      txHash,
+      etherscanURI,
+      hadCreatedProxy,
+      price, quotation
+    } = this.props;
 
     return <div className={classnames(genericStyles.details, styles.details)}>
-
       <TxStatusRow label={'Congratulations!'}
-                   status={<ProgressReport report={{ txStatus: TxStatus.Success } as Report}/>}/>
+                   status={<ProgressReport report={{
+                     txHash,
+                     etherscanURI,
+                     txStatus: TxStatus.Success
+                   } as Report}/>}/>
 
       <div>
         <span data-test-id="summary" className={styles.summary}>
           {
             hadCreatedProxy &&
             <p data-test-id="has-proxy" style={{ marginTop: '0' }}>
-              You have successfully created a <span className={styles.highlight}>Proxy!</span>
+              You have successfully created your <span className={styles.highlight}>Proxy!</span>
             </p>
           }
           By using your <span className={styles.highlight}> Proxy </span> you
@@ -54,9 +70,9 @@ export class TradeSummary extends React.Component<TradeSummaryProps> {
           </span>
           &nbsp;by paying&nbsp;
           <span className={styles.highlight}>
-            {gasUsed ? gasUsed : 'N/A'}
+            {gasCost ? <Money value={gasCost} token="USD"/> : 'N/A'}
           </span>
-          &nbsp;gas
+          &nbsp;gas cost
         </span>
       </div>
     </div>;
