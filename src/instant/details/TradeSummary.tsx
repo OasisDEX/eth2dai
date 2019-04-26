@@ -35,9 +35,11 @@ export class TradeSummary extends React.Component<TradeSummaryProps> {
         <span data-test-id="summary" className={styles.summary}>
           {
             hadCreatedProxy &&
-            <p data-test-id="has-proxy" style={{ marginTop: '0' }}>You have successfully created a Proxy!</p>
+            <p data-test-id="has-proxy" style={{ marginTop: '0' }}>
+              You have successfully created a <span className={styles.highlight}>Proxy!</span>
+            </p>
           }
-          By using your Proxy you
+          By using your <span className={styles.highlight}> Proxy </span> you
           {
             type === OfferType.sell
               ? summarizeSell(sold, soldToken, bought, boughtToken)
