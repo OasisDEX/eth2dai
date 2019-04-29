@@ -47,33 +47,30 @@ export class TradeSummary extends React.Component<TradeSummaryProps> {
                      txStatus: TxStatus.Success
                    } as Report}/>}/>
 
-      <div>
-        <span data-test-id="summary" className={styles.summary}>
-          {
-            hadCreatedProxy &&
-            <p data-test-id="has-proxy" style={{ marginTop: '0' }}>
-              You have successfully created your <span className={styles.highlight}>Proxy!</span>
-            </p>
-          }
-          By using your <span className={styles.highlight}> Proxy </span> you
-          {
-            type === OfferType.sell
-              ? summarizeSell(sold, soldToken, bought, boughtToken)
-              : summarizeBuy(sold, soldToken, bought, boughtToken)
-          }
-          <br/>
-          at&nbsp;
-          <span data-test-id="final-price"
-                className={styles.highlight}>
+      <div data-test-id="summary" className={styles.summary}>
+        {
+          hadCreatedProxy &&
+          <p data-test-id="has-proxy" style={{ marginTop: '0' }}>
+            You successfully created your <span className={styles.highlight}>Proxy!</span>
+          </p>
+        }
+        By using your <span className={styles.highlight}> Proxy </span> you
+        {
+          type === OfferType.sell
+            ? summarizeSell(sold, soldToken, bought, boughtToken)
+            : summarizeBuy(sold, soldToken, bought, boughtToken)
+        }
+        <span> at </span>
+        <span data-test-id="final-price"
+              className={styles.highlight}>
             <span>{price.valueOf()}</span>
-            <span> {quotation}</span>
+            <span> {quotation} </span>
           </span>
-          &nbsp;by paying&nbsp;
-          <span className={styles.highlight}>
+        <span> by paying </span>
+        <span className={styles.highlight}>
             {gasCost ? <Money value={gasCost} token="USD"/> : 'N/A'}
           </span>
-          &nbsp;gas cost
-        </span>
+        <span> gas cost</span>
       </div>
     </div>;
   }
@@ -82,15 +79,13 @@ export class TradeSummary extends React.Component<TradeSummaryProps> {
 const summarizeSell = (sold: BigNumber, soldToken: string, bought: BigNumber, boughtToken: string) => {
   return (
     <>
-      &nbsp;sold&nbsp;
-      <span data-test-id="sold-token"
-            className={styles.highlight}>
-      <Money formatter={formatPrice} value={sold} token={soldToken.toUpperCase()}/>
+      <span> sold </span>
+      <span data-test-id="sold-token" className={styles.highlight}>
+        <Money formatter={formatPrice} value={sold} token={soldToken.toUpperCase()}/>
       </span>
-      &nbsp;for&nbsp;
-      <span data-test-id="bought-token"
-            className={styles.highlight}>
-      <Money formatter={formatPrice} value={bought} token={boughtToken.toUpperCase()}/>
+      <span> for </span>
+      <span data-test-id="bought-token" className={styles.highlight}>
+        <Money formatter={formatPrice} value={bought} token={boughtToken.toUpperCase()}/>
       </span>
     </>
   );
@@ -99,15 +94,13 @@ const summarizeSell = (sold: BigNumber, soldToken: string, bought: BigNumber, bo
 const summarizeBuy = (sold: BigNumber, soldToken: string, bought: BigNumber, boughtToken: string) => {
   return (
     <>
-      &nbsp;bought&nbsp;
-      <span data-test-id="bought-token"
-            className={styles.highlight}>
-      <Money formatter={formatPrice} value={bought} token={boughtToken.toUpperCase()}/>
+      <span> bought </span>
+      <span data-test-id="bought-token" className={styles.highlight}>
+         <Money formatter={formatPrice} value={bought} token={boughtToken.toUpperCase()}/>
       </span>
-      &nbsp;for&nbsp;
-      <span data-test-id="sold-token"
-            className={styles.highlight}>
-      <Money formatter={formatPrice} value={sold} token={soldToken.toUpperCase()}/>
+      <span> for </span>
+      <span data-test-id="sold-token" className={styles.highlight}>
+         <Money formatter={formatPrice} value={sold} token={soldToken.toUpperCase()}/>
       </span>
     </>
   );

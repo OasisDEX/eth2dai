@@ -17,6 +17,7 @@
   color: $grey-lighter;
   font-weight: 400;
   letter-spacing: .8px;
+  word-break: break-word;
 
   @include media-breakpoint-down(md) {
     font-size: .625rem;
