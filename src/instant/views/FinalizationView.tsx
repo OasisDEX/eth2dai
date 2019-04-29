@@ -33,10 +33,6 @@ export class FinalizationView extends React.Component<ViewProps> {
 
   public render() {
     const {
-      sellToken,
-      sellAmount,
-      buyToken,
-      buyAmount,
       price,
       quotation,
       progress,
@@ -48,212 +44,29 @@ export class FinalizationView extends React.Component<ViewProps> {
                           btnDisabled={!(progress && progress.done)}
                           btnLabel="Trade Again">
         <CurrentPrice price={price} quotation={quotation}/>
-        {
-          progress && progress.kind === ProgressKind.noProxyNoAllowancePayWithERC20 &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={accountSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="create-proxy"
-                               theme="reversed"
-                               label="Create Account"
-                               info="Something about Proxy"
-                             />}
-                           status={<ProgressReport report={this._proxyProgress()}/>}/>
-            </div>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={doneSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="set-token-allowance"
-                               theme="reversed"
-                               label={`Unlock ${sellToken.toUpperCase()}`}
-                               info="Something about allowances"
-                             />}
-                           status={<ProgressReport report={this._allowanceProgress()}/>}/>
-            </div>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={tokens[sellToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-                           status={<ProgressReport
-                             report={this._tradeProgress()}/>}
-              />
-              <TxStatusRow icon={tokens[buyToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}/>
-            </div>
-          </>
-        }
-        {
-          progress && progress.kind === ProgressKind.proxyNoAllowancePayWithERC20 &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={doneSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="set-token-allowance"
-                               theme="reversed"
-                               label={`Unlock ${sellToken.toUpperCase()}`}
-                               info="Something about allowances"
-                             />}
-                           status={<ProgressReport report={this._allowanceProgress()}/>}/>
-            </div>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={tokens[sellToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-                           status={<ProgressReport report={this._tradeProgress()}/>}/>
-              <TxStatusRow icon={tokens[buyToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}/>
-            </div>
-          </>
-        }
-        {
-          progress && progress.kind === ProgressKind.proxyAllowancePayWithERC20 &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={tokens[sellToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-                           status={<ProgressReport report={this._tradeProgress()}/>}/>
-              <TxStatusRow icon={tokens[buyToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}/>
-            </div>
-          </>
-        }
-        {
-          progress && progress.kind === ProgressKind.noProxyPayWithETH &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={accountSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="create-proxy"
-                               theme="reversed"
-                               label="Create Account"
-                               info="Something about Proxy"
-                             />}
-                           status={<ProgressReport report={this._tradeProgress()}/>}/>
-              <TxStatusRow icon={tokens[sellToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-              />
-              <TxStatusRow icon={tokens[buyToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}
-              />
-            </div>
-          </>
-        }
-        {
-          progress && progress.kind === ProgressKind.proxyPayWithETH &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={tokens[sellToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-                           status={<ProgressReport report={this._tradeProgress()}/>}/>
-              <TxStatusRow icon={tokens[buyToken].iconColor}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}/>
-            </div>
-          </>
-        }
-
+        <>
+          {
+            progress && progress.kind === ProgressKind.noProxyNoAllowancePayWithERC20
+            && (
+              <>
+                {
+                  this._proxyCreationTx()
+                }
+                {
+                  this._tokenAllowanceTx()
+                }
+              </>
+            )
+          }
+          {
+            progress && progress.kind === ProgressKind.proxyNoAllowancePayWithERC20
+            && this._tokenAllowanceTx()
+          }
+          {
+            progress
+            && this._tradeTx()
+          }
+        </>
       </InstantFormWrapper>
     );
   }
@@ -267,6 +80,89 @@ export class FinalizationView extends React.Component<ViewProps> {
       kind: InstantFormChangeKind.viewChange,
       view: ViewKind.new
     });
+  }
+
+  private _tradeTx = () => {
+
+    const { sellToken, buyToken, sellAmount, buyAmount, progress } = this.props;
+
+    return (
+      <>
+        <div className={classnames(styles.details, styles.transaction)}>
+          {
+            progress && progress.kind === ProgressKind.noProxyPayWithETH &&
+            <TxStatusRow icon={<SvgImage image={accountSvg}/>}
+                         label={
+                           <TradeData
+                             data-test-id="create-proxy"
+                             theme="reversed"
+                             label="Create Account"
+                             info="Something about Proxy"
+                           />}
+                         status={<ProgressReport report={this._tradeProgress()}/>}/>
+          }
+          <TxStatusRow icon={tokens[sellToken].iconColor}
+                       label={
+                         <TradeData
+                           data-test-id="pay-token"
+                           theme="reversed"
+                           label="Sell"
+                           value={
+                             <Money formatter={formatPrice} value={sellAmount}
+                                    token={sellToken}/>
+                           }
+                         />}
+                       status={progress.kind !== ProgressKind.noProxyPayWithETH &&
+                       <ProgressReport report={this._tradeProgress()}/>}/>
+          <TxStatusRow icon={tokens[buyToken].iconColor}
+                       label={
+                         <TradeData
+                           data-test-id="buy-token"
+                           theme="reversed"
+                           label="Buy"
+                           value={
+                             <Approximate>
+                               <Money formatter={formatPrice} value={buyAmount}
+                                      token={buyToken}/>
+                             </Approximate>
+                           }
+                         />}/>
+        </div>
+      </>
+    );
+  }
+
+  private _proxyCreationTx = () => {
+    return (
+      <div className={classnames(styles.details, styles.transaction)}>
+        <TxStatusRow icon={<SvgImage image={accountSvg}/>}
+                     label={
+                       <TradeData
+                         data-test-id="create-proxy"
+                         theme="reversed"
+                         label="Create Account"
+                         info="Something about Proxy"
+                       />}
+                     status={<ProgressReport report={this._proxyProgress()}/>}/>
+      </div>
+    );
+  }
+
+  private _tokenAllowanceTx = () => {
+    const { sellToken } = this.props;
+    return (
+      <div className={classnames(styles.details, styles.transaction)}>
+        <TxStatusRow icon={<SvgImage image={doneSvg}/>}
+                     label={
+                       <TradeData
+                         data-test-id="set-token-allowance"
+                         theme="reversed"
+                         label={`Unlock ${sellToken.toUpperCase()}`}
+                         info="Something about allowances"
+                       />}
+                     status={<ProgressReport report={this._allowanceProgress()}/>}/>
+      </div>
+    );
   }
 
   private _tradeProgress = () => {
