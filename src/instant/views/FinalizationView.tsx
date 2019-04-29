@@ -1,11 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
-import { NetworkConfig } from '../../blockchain/config';
+import { NetworkConfig, tokens } from '../../blockchain/config';
 import { TxStatus } from '../../blockchain/transactions';
 import accountSvg from '../../icons/account.svg';
-import daiCircleSvg from '../../icons/coins/dai-circle.svg';
-import ethCircleSvg from '../../icons/coins/eth-circle.svg';
 import doneSvg from '../../icons/done.svg';
 import { Approximate } from '../../utils/Approximate';
 import { formatPrice } from '../../utils/formatters/format';
@@ -76,7 +74,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                            status={<ProgressReport report={this._allowanceProgress()}/>}/>
             </div>
             <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
+              <TxStatusRow icon={tokens[sellToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="pay-token"
@@ -90,7 +88,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                            status={<ProgressReport
                              report={this._tradeProgress()}/>}
               />
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
+              <TxStatusRow icon={tokens[buyToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="buy-token"
@@ -121,7 +119,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                            status={<ProgressReport report={this._allowanceProgress()}/>}/>
             </div>
             <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
+              <TxStatusRow icon={tokens[sellToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="pay-token"
@@ -133,7 +131,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                }
                              />}
                            status={<ProgressReport report={this._tradeProgress()}/>}/>
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
+              <TxStatusRow icon={tokens[buyToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="buy-token"
@@ -153,7 +151,7 @@ export class FinalizationView extends React.Component<ViewProps> {
           progress && progress.kind === ProgressKind.proxyAllowancePayWithERC20 &&
           <>
             <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
+              <TxStatusRow icon={tokens[sellToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="pay-token"
@@ -165,7 +163,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                }
                              />}
                            status={<ProgressReport report={this._tradeProgress()}/>}/>
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
+              <TxStatusRow icon={tokens[buyToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="buy-token"
@@ -194,7 +192,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                info="Something about Proxy"
                              />}
                            status={<ProgressReport report={this._tradeProgress()}/>}/>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
+              <TxStatusRow icon={tokens[sellToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="pay-token"
@@ -206,7 +204,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                }
                              />}
               />
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
+              <TxStatusRow icon={tokens[buyToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="buy-token"
@@ -227,7 +225,7 @@ export class FinalizationView extends React.Component<ViewProps> {
           progress && progress.kind === ProgressKind.proxyPayWithETH &&
           <>
             <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
+              <TxStatusRow icon={tokens[sellToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="pay-token"
@@ -239,7 +237,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                                }
                              />}
                            status={<ProgressReport report={this._tradeProgress()}/>}/>
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
+              <TxStatusRow icon={tokens[buyToken].iconColor}
                            label={
                              <TradeData
                                data-test-id="buy-token"
