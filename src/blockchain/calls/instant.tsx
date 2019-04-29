@@ -87,10 +87,10 @@ export const tradePayWithETHWithProxy: TransactionDef<InstantOrderData> = {
   description: ({ kind, buyToken, buyAmount, sellToken, sellAmount }: InstantOrderData) =>
     kind === 'sell' ?
     <>
-      Create Sell Order for: <Money value={sellAmount} token={sellToken}/>
+      Create Sell Order <Money value={sellAmount} token={sellToken}/>
     </> :
     <>
-      Create Buy Order for: <Money value={buyAmount} token={buyToken}/>
+      Create Buy Order <Money value={buyAmount} token={buyToken}/>
     </>
 };
 
@@ -135,10 +135,10 @@ export const tradePayWithETHNoProxy: TransactionDef<InstantOrderData> = {
   description: ({ kind, buyToken, buyAmount, sellToken, sellAmount }: InstantOrderData) =>
     kind === 'sell' ?
       <>
-        Create Sell Order for: <Money value={sellAmount} token={sellToken}/>
+        Create Sell Order <Money value={sellAmount} token={sellToken}/>
       </> :
       <>
-        Create Buy Order for: <Money value={buyAmount} token={buyToken}/>
+        Create Buy Order <Money value={buyAmount} token={buyToken}/>
       </>
 };
 
@@ -207,10 +207,10 @@ export const tradePayWithERC20: TransactionDef<InstantOrderData> = {
   description: ({ kind, buyToken, buyAmount, sellToken, sellAmount }: InstantOrderData) =>
     kind === 'sell' ?
       <>
-        Create Sell Order for: <Money value={sellAmount} token={sellToken}/>
+        Create Sell Order <Money value={sellAmount} token={sellToken}/>
       </> :
       <>
-        Create Buy Order for: <Money value={buyAmount} token={buyToken}/>
+        Create Buy Order <Money value={buyAmount} token={buyToken}/>
       </>
 };
 
