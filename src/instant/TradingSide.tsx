@@ -29,7 +29,9 @@ class TradingSide extends React.Component<TradingSideProps> {
     const { amount, asset, balance, placeholder, onAmountChange, user, approx } = this.props;
     return (
       <div className={styles.tradingSide} data-test-id={this.props.dataTestId}>
-        <Asset currency={asset} balance={balance} user={user} onClick={this.changeToken}/>
+        <div className={styles.tradingAsset}>
+          <Asset currency={asset} balance={balance} user={user} onClick={this.changeToken}/>
+        </div>
         {/* TODO: Make it parameterized like the tokens in offerMakeForm.*/}
         <span className={styles.inputWrapper}>
           <BigNumberInput

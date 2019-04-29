@@ -182,3 +182,19 @@
   background: white;
   border-radius: 100%;
 }
+
+.instantClose {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 100%;
+  border: 1px solid $errors;
+  padding: 5px;
+
+  &:hover {
+    border: 1px solid $red-dark !important;
+  }
+
+  svg {
+    fill: $errors;
+  }
+}

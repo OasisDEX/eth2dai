@@ -31,6 +31,10 @@ export function formatPriceDown(amount: BigNumber, token: string): string {
   return amount.toFormat(tokens[token].digits, BigNumber.ROUND_DOWN);
 }
 
+export function formatPrecision(amount: BigNumber, precision: number): string {
+  return amount.toFormat(precision, BigNumber.ROUND_DOWN);
+}
+
 export function formatPercent(number: BigNumber, { precision = 0, plus = false } = {}) {
   return (plus && number.isGreaterThan(0) ? '+' : '') + String(number.toFixed(precision)) + '%';
 }

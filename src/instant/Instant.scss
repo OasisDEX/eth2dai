@@ -213,7 +213,14 @@
 
 .button {
   width: 100%;
+
   &:disabled {
     color: $grey-light
   }
+}
+
+.tradingAsset {
+  width: 100%;
+  max-width: 7.75rem;
+  margin: auto auto 1rem;
 }
