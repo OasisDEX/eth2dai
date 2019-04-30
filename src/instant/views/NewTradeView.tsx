@@ -59,6 +59,15 @@ function error(msg: Message | undefined) {
   }
 }
 
+const priceImpactTooltip = {
+  id: 'price-impact',
+  text: 'The difference between the best current price on the Eth2Dai order book and the estimated price of your order.'
+};
+const slippageLimitTooltip = {
+  id: 'slippage-limit',
+  text: 'The maximum allowed difference between the estimated price of the order and the actual price. The two may differ if the order book changes before your trade executes.'
+};
+
 export class NewTradeView extends React.Component<InstantFormState> {
 
   public render() {
@@ -126,7 +135,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
               />
               <TradeData label="Slippage Limit"
                          data-test-id="trade-slippage-limit"
-                         info="Additional Info"
+                         tooltip={slippageLimitTooltip}
                          value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}
                          style={{ marginBottom: '2px' }}
               />
@@ -143,7 +152,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
                          }/>
               <TradeData label="Price Impact"
                          data-test-id="trade-price-impact"
-                         info="Additional Info"
+                         tooltip={priceImpactTooltip}
                          value={
                            <FormatPercent
                              className={priceImpact && priceImpact.gt(new BigNumber(5)) ? 'danger' : ''}

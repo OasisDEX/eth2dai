@@ -42,14 +42,3 @@
   letter-spacing: 1px;
   text-align: right;
 }
-
-.warningIcon {
-  width: 17px;
-  height: 17px;
-  margin-right: auto;
-
-  :global(.warning-icon) {
-    fill: $dark-gray-blue;
-  }
-}
-

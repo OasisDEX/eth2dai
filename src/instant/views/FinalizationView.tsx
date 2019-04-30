@@ -9,6 +9,7 @@ import { Approximate } from '../../utils/Approximate';
 import { formatAmountInstant } from '../../utils/formatters/format';
 import { Money } from '../../utils/formatters/Formatters';
 import { SvgImage } from '../../utils/icons/utils';
+import { Tooltip } from '../../utils/tooltip/Tooltip';
 import { CurrentPrice } from '../CurrentPrice';
 import { TradeData } from '../details/TradeData';
 import { TxStatusRow } from '../details/TxStatusRow';
@@ -28,6 +29,17 @@ interface ViewProps {
   quotation: string;
   context: NetworkConfig;
 }
+
+const proxyTooltip = {
+  id: 'proxy-tooltip',
+  text: 'Proxy is a supporting contract owned by you that groups different actions as one Ethereum transaction.',
+  iconColor: 'white'
+} as Tooltip;
+const allowanceTooltip = {
+  id: 'allowance-tooltip',
+  text: 'Enabling token trading allows your Proxy to take tokens from you and trade them on the exchange.',
+  iconColor: 'white'
+} as Tooltip;
 
 export class FinalizationView extends React.Component<ViewProps> {
 
@@ -97,7 +109,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                              data-test-id="create-proxy"
                              theme="reversed"
                              label="Create Account"
-                             info="Something about Proxy"
+                             tooltip={proxyTooltip}
                            />}
                          status={<ProgressReport report={this._tradeProgress()}/>}/>
           }
@@ -141,7 +153,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                          data-test-id="create-proxy"
                          theme="reversed"
                          label="Create Account"
-                         info="Something about Proxy"
+                         tooltip={proxyTooltip}
                        />}
                      status={<ProgressReport report={this._proxyProgress()}/>}/>
       </div>
@@ -158,7 +170,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                          data-test-id="set-token-allowance"
                          theme="reversed"
                          label={`Unlock ${sellToken.toUpperCase()}`}
-                         info="Something about allowances"
+                         tooltip={allowanceTooltip}
                        />}
                      status={<ProgressReport report={this._allowanceProgress()}/>}/>
       </div>

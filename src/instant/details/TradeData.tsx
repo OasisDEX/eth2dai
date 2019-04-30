@@ -1,7 +1,6 @@
 import classnames from 'classnames';
 import * as React from 'react';
-import warningSvg from '../../icons/warning.svg';
-import { SvgImage } from '../../utils/icons/utils';
+import { Tooltip } from '../../utils/tooltip/Tooltip';
 import * as styles from './TradeData.scss';
 
 interface EntryProps {
@@ -10,6 +9,7 @@ interface EntryProps {
   value?: string | React.ReactNode;
   info?: string;
   theme?: 'reversed';
+  tooltip?: Tooltip;
 }
 
 const skin = (theme: string) => {
@@ -23,14 +23,14 @@ const skin = (theme: string) => {
 
 export class TradeData extends React.Component<EntryProps> {
   public render() {
-    const { label, value, info, theme, ...rest } = this.props;
+    const { label, value, tooltip, theme, ...rest } = this.props;
     return (
       <div className={classnames(styles.entry, theme ? skin(theme) : '')} {...rest}>
         <span data-test-id="label" className={styles.label}>
           {label}
         </span>&nbsp;
         {
-          info && <SvgImage className={styles.warningIcon} image={warningSvg}/>
+          tooltip && <Tooltip {...tooltip}/>
         }
         <span data-test-id="value"
               className={styles.value}>
