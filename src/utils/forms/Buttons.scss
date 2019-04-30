@@ -114,12 +114,12 @@
 
 .white {
   @include button((
-          color: black,
-          bg: $white,
-          border-color: $white,
-          color-hover: #333,
-          border-color-hover: #ddd,
-          bg-hover: #ddd
+    color: $very-dark-greyish-blue,
+    bg: $whitish,
+    border-color: $white,
+    color-hover: #000,
+    border-color-hover: #ddd,
+    bg-hover: $white
   ));
   font-weight: 600; //semibold
 }
