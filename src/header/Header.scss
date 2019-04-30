@@ -183,7 +183,7 @@ $header-media-breakpoint: 800px;
   background: transparent;
   border-radius: $border-radius;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
   letter-spacing: 1.4px;
 
@@ -198,8 +198,7 @@ $header-media-breakpoint: 800px;
 
 .networkIndicator.kovan {
   color: $moderate-violet;
-  border: 2px solid $moderate-violet;
-  background-color: #2F2F38;
+  border: 1px solid $moderate-violet;;
 }
 
 .networkIndicator.main{
