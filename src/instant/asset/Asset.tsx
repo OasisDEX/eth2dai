@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { tokens } from '../../blockchain/config';
 import { User } from '../../blockchain/user';
-import { formatPrecision } from '../../utils/formatters/format';
+import { formatAmountInstant } from '../../utils/formatters/format';
 import { ProgressIcon } from '../../utils/icons/Icons';
 import { Currency } from '../../utils/text/Text';
 import * as styles from './Asset.scss';
@@ -32,11 +32,11 @@ export class Asset extends React.Component<AssetProps> {
           <div data-test-id="balance">
             <span data-vis-reg-hide={true}>
               {
-                formatPrecision(balance, 3)
+                formatAmountInstant(balance, currency)
               }
             </span>
             &nbsp;
-            <Currency value={currency} theme="semi-bold"/>
+            <Currency value={currency} theme="medium"/>
           </div>
         }
       </div>

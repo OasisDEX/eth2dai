@@ -6,7 +6,7 @@ import { TxStatus } from '../../blockchain/transactions';
 import accountSvg from '../../icons/account.svg';
 import doneSvg from '../../icons/done.svg';
 import { Approximate } from '../../utils/Approximate';
-import { formatPrice } from '../../utils/formatters/format';
+import { formatAmountInstant } from '../../utils/formatters/format';
 import { Money } from '../../utils/formatters/Formatters';
 import { SvgImage } from '../../utils/icons/utils';
 import { CurrentPrice } from '../CurrentPrice';
@@ -108,7 +108,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                            theme="reversed"
                            label="Sell"
                            value={
-                             <Money formatter={formatPrice} value={sellAmount}
+                             <Money formatter={formatAmountInstant} value={sellAmount}
                                     token={sellToken}/>
                            }
                          />}
@@ -122,7 +122,7 @@ export class FinalizationView extends React.Component<ViewProps> {
                            label="Buy"
                            value={
                              <Approximate>
-                               <Money formatter={formatPrice} value={buyAmount}
+                               <Money formatter={formatAmountInstant} value={buyAmount}
                                       token={buyToken}/>
                              </Approximate>
                            }

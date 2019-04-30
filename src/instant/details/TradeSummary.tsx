@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import * as React from 'react';
 import { TxStatus } from '../../blockchain/transactions';
 import { OfferType } from '../../exchange/orderbook/orderbook';
-import { formatPrice } from '../../utils/formatters/format';
+import { formatAmountInstant } from '../../utils/formatters/format';
 import { Money } from '../../utils/formatters/Formatters';
 import * as genericStyles from '../Instant.scss';
 import { ProgressReport, Report } from '../progress/ProgressReport';
@@ -81,11 +81,11 @@ const summarizeSell = (sold: BigNumber, soldToken: string, bought: BigNumber, bo
     <>
       <span> sold </span>
       <span data-test-id="sold-token" className={styles.highlight}>
-        <Money formatter={formatPrice} value={sold} token={soldToken.toUpperCase()}/>
+        <Money formatter={formatAmountInstant} value={sold} token={soldToken.toUpperCase()}/>
       </span>
       <span> for </span>
       <span data-test-id="bought-token" className={styles.highlight}>
-        <Money formatter={formatPrice} value={bought} token={boughtToken.toUpperCase()}/>
+        <Money formatter={formatAmountInstant} value={bought} token={boughtToken.toUpperCase()}/>
       </span>
     </>
   );
@@ -96,11 +96,11 @@ const summarizeBuy = (sold: BigNumber, soldToken: string, bought: BigNumber, bou
     <>
       <span> bought </span>
       <span data-test-id="bought-token" className={styles.highlight}>
-         <Money formatter={formatPrice} value={bought} token={boughtToken.toUpperCase()}/>
+         <Money formatter={formatAmountInstant} value={bought} token={boughtToken.toUpperCase()}/>
       </span>
       <span> for </span>
       <span data-test-id="sold-token" className={styles.highlight}>
-         <Money formatter={formatPrice} value={sold} token={soldToken.toUpperCase()}/>
+         <Money formatter={formatAmountInstant} value={sold} token={soldToken.toUpperCase()}/>
       </span>
     </>
   );

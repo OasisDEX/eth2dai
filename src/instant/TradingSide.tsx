@@ -6,7 +6,7 @@ import { tokens } from '../blockchain/config';
 import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { BigNumberInput } from '../utils/bigNumberInput/BigNumberInput';
-import { formatPrice } from '../utils/formatters/format';
+import { formatAmountInstant } from '../utils/formatters/format';
 import { Asset } from './asset/Asset';
 import * as styles from './Instant.scss';
 import { InstantFormChangeKind, ManualChange, ViewKind } from './instantForm';
@@ -27,6 +27,7 @@ interface TradingSideProps {
 class TradingSide extends React.Component<TradingSideProps> {
   public render() {
     const { amount, asset, balance, placeholder, onAmountChange, user, approx } = this.props;
+    const decimalLimit = tokens[asset] ? tokens[asset].digitsInstant : 3;
     return (
       <div className={styles.tradingSide} data-test-id={this.props.dataTestId}>
         <div className={styles.tradingAsset}>
@@ -39,14 +40,14 @@ class TradingSide extends React.Component<TradingSideProps> {
             type="text"
             className={styles.input}
             mask={createNumberMask({
+              decimalLimit,
               allowDecimal: true,
-              decimalLimit: tokens[asset] ? tokens[asset].digits : 5,
               prefix: ''
             })}
             onChange={onAmountChange}
             value={
               (amount || null) &&
-              formatPrice(amount, asset)
+              formatAmountInstant(amount, asset)
             }
             guide={true}
             placeholder={placeholder}

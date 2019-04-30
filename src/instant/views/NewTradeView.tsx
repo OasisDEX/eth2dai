@@ -117,7 +117,6 @@ export class NewTradeView extends React.Component<InstantFormState> {
             <>
               <TradeData label="Price"
                          data-test-id="trade-price"
-                         info="Additional Info"
                          value={
                            <Approximate>
                              {formatAmount(price, 'USD')} {quotation || ''}

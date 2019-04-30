@@ -187,11 +187,11 @@
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 100%;
-  border: 1px solid $errors;
+  border: 1px solid $brown-reddish;
   padding: 5px;
 
   &:hover {
-    border: 1px solid $red-dark !important;
+    border: 1px solid $brown-reddish-highlight !important;
   }
 
   svg {
