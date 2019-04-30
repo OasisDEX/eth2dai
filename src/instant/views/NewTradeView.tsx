@@ -121,11 +121,15 @@ export class NewTradeView extends React.Component<InstantFormState> {
                            <Approximate>
                              {formatAmount(price, 'USD')} {quotation || ''}
                            </Approximate>
-                         }/>
+                         }
+                         style={{ marginBottom: '2px' }}
+              />
               <TradeData label="Slippage Limit"
                          data-test-id="trade-slippage-limit"
                          info="Additional Info"
-                         value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}/>
+                         value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}
+                         style={{ marginBottom: '2px' }}
+              />
               <TradeData label="Gas cost"
                          data-test-id="trade-gas-cost"
                          value={

@@ -6,6 +6,7 @@ import * as styles from './TradeData.scss';
 
 interface EntryProps {
   label: string | React.ReactNode;
+  style?: React.CSSProperties;
   value?: string | React.ReactNode;
   info?: string;
   theme?: 'reversed';
