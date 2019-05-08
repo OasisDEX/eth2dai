@@ -41,7 +41,7 @@ export function Slider(props: SliderProps) {
     {inProgress &&
       <ProgressIcon
         light={true}
-        small={true}
+        size="sm"
         className={classnames(
           styles.progressIcon, {
             [styles.progressBlocked]: blocked,

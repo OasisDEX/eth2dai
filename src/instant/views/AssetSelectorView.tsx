@@ -28,7 +28,7 @@ class AssetSelectorView extends React.Component<ViewProps> {
     return (
       <section className={classnames(instantStyles.panel, panelStyling.panel)}>
         <TopRightCorner>
-          <CloseButton onClick={this.hideAssets}/>
+          <CloseButton theme="instant" onClick={this.hideAssets}/>
         </TopRightCorner>
         <ul className={styles.list}>
           {
@@ -37,7 +37,9 @@ class AssetSelectorView extends React.Component<ViewProps> {
 
               return (
                 <li data-test-id={token.symbol.toLowerCase()} className={styles.listItem} key={index}>
-                  <Asset currency={token.symbol} balance={balance} user={user}
+                  <Asset currency={token.symbol}
+                         balance={balance}
+                         user={user}
                          onClick={() => this.selectAsset(token.symbol, side)}/>
                 </li>
               );

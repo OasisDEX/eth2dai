@@ -28,16 +28,17 @@ export const ButtonIcon = (props: ButtonProps & { image: any }) => {
 
 export type ProgressIconProps = React.HTMLAttributes<HTMLDivElement> & {
   light?: boolean,
-  small?: boolean,
+  size?: 'sm' | 'lg',
 };
 
 export const ProgressIcon = (props: ProgressIconProps) => {
-  const { className, light, small, ...otherProps } = props;
+  const { className, light, size, ...otherProps } = props;
   return (
     <div
       className={classnames(styles.progressIcon, className, {
         [styles.progressIconLight]: light,
-        [styles.progressIconSm]: small,
+        [styles.progressIconSm]: size === 'sm',
+        [styles.progressIconLg]: size === 'lg',
       })}
       {...otherProps}
     />

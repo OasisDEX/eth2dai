@@ -29,6 +29,7 @@ export class AllTrades extends React.Component<AllTradesProps> {
       >Trade history</PanelHeader>
       <WithLoadingIndicator
         loadable={this.props}
+        size="lg"
         error={<ServerUnreachable/>}
       >
         {({ trades, loading, more$ }) => (

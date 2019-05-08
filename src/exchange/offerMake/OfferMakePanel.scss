@@ -1,7 +1,7 @@
+@import "../../utils/panel/Panel";
 
-.loggedOut {
-  height: 100%;
+.loaderWithFooterBordered {
+  @extend .panelWithFooterBordered;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 100%;
 }

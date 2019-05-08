@@ -13,6 +13,6 @@ stories.add('Icons', () => (
     <h4>ProgressIcon Light</h4>
     <ProgressIcon light={true}/>
     <h4>ProgressIcon Small</h4>
-    <ProgressIcon small={true}/>
+    <ProgressIcon size="sm"/>
   </div>
 ));

@@ -4,13 +4,10 @@
   align-items: center;
   flex-grow: 1;
   min-height: 50px;
-  background-image: url('./LoadingIndicatorDark.gif');
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 .inline {
-  display: inline-block;
+  display: inline-flex;
   width: 20px;
   flex-grow: 0; // reset loading's flex-grow: 1
   min-height: 20px;

@@ -19,6 +19,11 @@ export function formatAmount(amount: BigNumber, token: string): string {
   return amount.toFormat(digits, BigNumber.ROUND_DOWN);
 }
 
+export function formatAmountInstant(amount: BigNumber, token: string): string {
+  const digits = token === 'USD' ? 2 : tokens[token].digitsInstant;
+  return amount.toFormat(digits, BigNumber.ROUND_DOWN);
+}
+
 export function formatPrice(amount: BigNumber, token: string): string {
   return amount.toFormat(tokens[token].digits, BigNumber.ROUND_HALF_UP);
 }
@@ -29,6 +34,10 @@ export function formatPriceUp(amount: BigNumber, token: string): string {
 
 export function formatPriceDown(amount: BigNumber, token: string): string {
   return amount.toFormat(tokens[token].digits, BigNumber.ROUND_DOWN);
+}
+
+export function formatPrecision(amount: BigNumber, precision: number): string {
+  return amount.toFormat(precision, BigNumber.ROUND_DOWN);
 }
 
 export function formatPercent(number: BigNumber, { precision = 0, plus = false } = {}) {

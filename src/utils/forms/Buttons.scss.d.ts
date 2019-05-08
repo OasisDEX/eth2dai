@@ -15,3 +15,4 @@ export const unsized: string;
 export const block: string;
 export const actionButton: string;
 export const close: string;
+export const instantClose: string;

@@ -157,7 +157,7 @@ class Status extends React.Component<StatusProps> {
   public render() {
     return (
       <span className={styles.accountLoader}>
-      <WithLoadingIndicatorInline loadable={this.props} light={true} className={styles.account}>
+      <WithLoadingIndicatorInline loadable={this.props} className={styles.account}>
       { ({ account, available }: Account) => {
         const label = account ? account.slice(0, 6) + '...' + account.slice(-4) : 'Logged out';
         return (

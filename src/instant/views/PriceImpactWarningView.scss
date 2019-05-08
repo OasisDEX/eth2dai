@@ -1,12 +1,13 @@
 @import "../../utils/Variables";
+@import "../../utils/Mixins";
 
 $base: 4px;
 $baseLength: (45 * $base);
-$barBackground: $soft-cyan;
-$barBorder: #5ED69C;
-$barBackgroundDanger: #FF8A80;
-$barBorderDanger: #E67C73;
-$arrowColor: #FF5252;
+$barBackground: $cyan;
+$barBorder: $cyan;
+$barBackgroundDanger: #AC4648;
+$barBorderDanger: #AC4648;
+$arrowColor: #AC4648;
 
 .container {
   width: 100%;
@@ -16,21 +17,25 @@ $arrowColor: #FF5252;
   flex-direction: column;
   border: 1px solid $button-border-disabled;
   border-radius: 4px;
-  margin: auto 0;
-  padding: 42px 32px;
+  margin: 1.25rem 0 1rem;
+  padding: 2.375rem 0;
   color: #fff;
   font-size: 14px;
+
+  @include media-breakpoint-down(sm) {
+    font-size: 12px;
+  }
 }
 
 .impactText {
   letter-spacing: 1px;
   text-align: center;
-
+  color: $grey-lighter;
   margin: 16px 0;
 }
 
 .continueText {
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 1px;
   text-align: center;
 
