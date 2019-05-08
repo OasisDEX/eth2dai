@@ -44,7 +44,15 @@ export function setupFakeWeb3ForTesting() {
   web3 = new Web3();
 }
 
-export const getCurrentProviderName = (provider = (window as Web3Window).web3.currentProvider): ProviderMetaData => {
+export const getCurrentProviderName = (provider = ((window as Web3Window).web3 ? (window as Web3Window).web3.currentProvider : null)): ProviderMetaData => {
+  if (!provider) {
+    return {
+      alias: 'other',
+      fullName: 'Other',
+      icon: SvgImageSimple(ethereumSvg)
+    };
+  }
+
   if (provider.isMetaMask) {
     return {
       alias: 'metamask',
