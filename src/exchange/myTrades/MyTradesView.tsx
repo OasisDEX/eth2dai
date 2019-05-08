@@ -68,6 +68,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
         </Table>
         <Authorization authorizable={this.props} view={`${kind} orders`}>
           {loadable => <WithLoadingIndicator
+            size="lg"
             loadable={loadable}
             error={kind === MyTradesKind.closed ? <ServerUnreachable/> : undefined}
           >

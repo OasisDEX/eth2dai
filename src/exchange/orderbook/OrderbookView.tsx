@@ -105,7 +105,7 @@ export class OrderbookView extends React.Component<Props> {
           </MediaQuery>
         </div>
       </PanelHeader>
-      <WithLoadingIndicator loadable={this.props}>
+        <WithLoadingIndicator loadable={this.props} size="lg">
         {(orderbook: Orderbook) => (
           <>
           <Table align="right" className={styles.orderbookTable}>

@@ -18,7 +18,7 @@ export class OfferMakePanel extends React.Component<Loadable<OfferFormState>> {
     return (<>
       <PanelHeader bordered={true}>Create order</PanelHeader>
       <div className={styles.loaderWithFooterBordered}>
-        <LoadingIndicator />
+        <LoadingIndicator size="lg"/>
       </div>
     </>);
   }
