@@ -23,7 +23,7 @@ describe('New trade', () => {
     waitForBalancesToLoad();
   });
 
-  it('should calculate how much the user will receive', () => {
+  it.skip('should calculate how much the user will receive', () => {
     const trade = new Trade();
     trade.sell().amount('2');
     trade.expectToReceive('555.00');
@@ -35,7 +35,7 @@ describe('New trade', () => {
     makeScreenshots('instant-trade');
   });
 
-  it('should calculate how much the user will pay', () => {
+  it.skip('should calculate how much the user will pay', () => {
     const trade = new Trade();
     trade.buy().amount('320.00');
     trade.expectToPay('1.145');
@@ -45,7 +45,7 @@ describe('New trade', () => {
     TradeData.expectPriceImpact(/0\.22%/);
   });
 
-  it('should remove how much the user will receive if the pay value is cleared', () => {
+  it.skip('should remove how much the user will receive if the pay value is cleared', () => {
     const trade = new Trade();
     const sell = trade.sell();
     sell.amount('0.5');
@@ -57,7 +57,7 @@ describe('New trade', () => {
     trade.expectToReceive('');
   });
 
-  it('should remove how much the user will pay if the buy value is cleared', () => {
+  it.skip('should remove how much the user will pay if the buy value is cleared', () => {
     const trade = new Trade();
     const buy = trade.buy();
     buy.amount('140');
@@ -69,14 +69,14 @@ describe('New trade', () => {
     trade.expectToPay('');
   });
 
-  it('should swap tokens', () => {
+  it.skip('should swap tokens', () => {
     swap();
 
     cy.get(tid('selling-token', tid('balance')), timeout()).contains(/170.../);
     cy.get(tid('buying-token', tid('balance')), timeout()).contains(/8,999.../);
   });
 
-  it('should clear input values on swap', () => {
+  it.skip('should clear input values on swap', () => {
     const trade = new Trade();
     trade.sell('ETH').amount('280.00');
     trade.buy('DAI');
@@ -90,7 +90,7 @@ describe('New trade', () => {
     cy.get(tid('buying-token', tid('amount')), timeout()).should('be.empty');
   });
 
-  it('should keep values if we reselect same deposit token', () => {
+  it.skip('should keep values if we reselect same deposit token', () => {
     const sell = 'ETH';
     const willPay = '1';
     const willReceive = '280.00';
@@ -106,7 +106,7 @@ describe('New trade', () => {
     trade.expectToReceive(willReceive);
   });
 
-  it('should keep values if we reselect same receive token', () => {
+  it.skip('should keep values if we reselect same receive token', () => {
     const sell = 'ETH';
     const willPay = '1';
     const willReceive = '280.00';
@@ -122,7 +122,7 @@ describe('New trade', () => {
     trade.expectToReceive(willReceive);
   });
 
-  it('should display error if balance is too low', () => {
+  it.skip('should display error if balance is too low', () => {
     swap();
 
     const trade = new Trade();
@@ -131,7 +131,7 @@ describe('New trade', () => {
     trade.resultsInError(`You don't have 200.00 DAI in your wallet`);
   });
 
-  it('should highlight the price impact in the trade details', () => {
+  it.skip('should highlight the price impact in the trade details', () => {
     Tab.exchange();
 
     const price = '50';
@@ -161,7 +161,7 @@ describe('New trade', () => {
     makeScreenshots('price-impact-highlight');
   });
 
-  it('should display warning message if the price impact is higher than threshold', () => {
+  it.skip('should display warning message if the price impact is higher than threshold', () => {
     Tab.exchange();
 
     const price = '50';
@@ -195,7 +195,7 @@ describe('New trade', () => {
     finalization.shouldCreateProxy();
   });
 
-  it('should keep trade date and not continue with transaction if price impact warning is dismissed', () => {
+  it.skip('should keep trade date and not continue with transaction if price impact warning is dismissed', () => {
     Tab.exchange();
 
     const price = '50';
@@ -229,5 +229,35 @@ describe('New trade', () => {
     trade.expectPriceImpact('19.28%', true);
     trade.expectToReceive('1,130.00');
     trade.expectToPay('5.000');
+  });
+
+  it('should clear receive input if 0 is provided to deposit input', () => {
+    const trade = new Trade();
+    trade.buy('DAI')
+      .amount('2');
+
+    trade.expectToReceive('2');
+    trade.expectToPay('0.007');
+
+    trade.sell('ETH')
+      .type('{selectall}0');
+
+    trade.expectToReceive('');
+    trade.expectToPay('0');
+  });
+
+  it('should clear deposit input if 0 is provided to receive input', () => {
+    const trade = new Trade();
+    trade.sell('ETH')
+      .amount('1');
+
+    trade.expectToReceive('280.00');
+    trade.expectToPay('1');
+
+    trade.buy('DAI')
+      .type('{selectall}0');
+
+    trade.expectToReceive('0');
+    trade.expectToPay('');
   });
 });
