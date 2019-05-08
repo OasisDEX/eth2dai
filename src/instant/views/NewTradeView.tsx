@@ -148,7 +148,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
                                  <Money value={gasEstimationUsd} token="USD"/>
                                </Approximate>
                              )
-                             : <ProgressIcon data-vis-reg-hide={true} small={true}/>
+                             : <ProgressIcon data-vis-reg-hide={true} size="sm"/>
                          }/>
               <TradeData label="Price Impact"
                          data-test-id="trade-price-impact"

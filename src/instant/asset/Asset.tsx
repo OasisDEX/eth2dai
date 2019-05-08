@@ -25,7 +25,7 @@ export class Asset extends React.Component<AssetProps> {
           {tokens[currency].iconColor}
         </span>
         {
-          !balance && <ProgressIcon small={true}/>
+          !balance && <ProgressIcon size="sm"/>
         }
         {
           balance &&
