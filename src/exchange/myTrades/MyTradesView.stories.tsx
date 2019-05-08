@@ -21,10 +21,6 @@ const defaultProps = {
   authorized: true,
   value: {
     status: 'loaded' as LoadableStatus,
-    tradingPair: {
-      base: 'ETH',
-      quote: 'DAI',
-    },
   },
   user: {
     account: '0x1234',
@@ -84,6 +80,7 @@ stories.add('Empty open', () => (
   <Panel>
     <MyTrades
       {...defaultProps}
+      value={{ ...defaultProps.value, value: [] }}
     />
   </Panel>
 ));
@@ -92,6 +89,7 @@ stories.add('Open with sample trades', () => (
   <Panel style={{ width: '936px' }}>
     <MyTrades
       {...defaultProps}
+      value={{ ...defaultProps.value, value: sampleTrades }}
     />
   </Panel>
 ));
@@ -101,6 +99,7 @@ stories.add('Close with sample trades', () => (
     <MyTrades
       {...defaultProps}
       kind={MyTradesKind.closed}
+      value={{ ...defaultProps.value, value: sampleTrades }}
     />
   </Panel>
 ));
