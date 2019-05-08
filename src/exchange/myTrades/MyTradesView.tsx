@@ -21,7 +21,7 @@ import { TradeWithStatus } from './openTrades';
 
 export class MyTrades extends React.Component<MyTradesPropsLoadable> {
   public render() {
-    const { value, kind, changeKind } = this.props;
+    const { value, kind, changeKind, tradingPair } = this.props;
     return (
       <>
         <PanelHeader bordered={value && value.status === 'error'}>
@@ -51,13 +51,13 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
           <tr>
             <th>Type</th>
             <th className={styles.right}>
-              <InfoLabel>Price</InfoLabel> {value && value.tradingPair.quote}
+              <InfoLabel>Price</InfoLabel> {tradingPair.quote}
             </th>
             <th className={styles.right}>
-              <InfoLabel>Amount</InfoLabel> {value && value.tradingPair.base}
+              <InfoLabel>Amount</InfoLabel> {tradingPair.base}
             </th>
             <th className={styles.right}>
-              <InfoLabel>Total</InfoLabel> {value && value.tradingPair.quote}
+              <InfoLabel>Total</InfoLabel> {tradingPair.quote}
             </th>
             <th className={classnames(this.props.kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>Time</th>
             {this.props.kind === MyTradesKind.open &&
