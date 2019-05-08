@@ -1,4 +1,5 @@
 @import "../../utils/Variables";
+@import "../../utils/Mixins";
 
 $base: 4px;
 $baseLength: (45 * $base);
@@ -20,6 +21,10 @@ $arrowColor: #AC4648;
   padding: 2.375rem 0;
   color: #fff;
   font-size: 14px;
+
+  @include media-breakpoint-down(sm) {
+    font-size: 12px;
+  }
 }
 
 .impactText {
