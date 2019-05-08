@@ -201,7 +201,7 @@ export function setupAppContext() {
   );
 
   const myCurrentTrades$ = createMyCurrentTrades$(myTradesKind$, myOpenTrades$, myClosedTrades$);
-  const myTrades$ = createMyTrades$(myTradesKind$, myCurrentTrades$, calls$, context$, gasPrice$);
+  const myTrades$ = createMyTrades$(myTradesKind$, myCurrentTrades$, calls$, context$, gasPrice$, currentTradingPair$);
   const MyTradesTxRx = connect(MyTrades, myTrades$);
 
   const currentPrice$ = createCurrentPrice$(currentTradeHistory$);
