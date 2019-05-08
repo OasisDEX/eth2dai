@@ -337,11 +337,13 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         kind: OfferType.sell,
         sellAmount: change.value,
+        buyAmount: undefined,
       };
     case InstantFormChangeKind.buyAmountFieldChange:
       return {
         ...state,
         kind: OfferType.buy,
+        sellAmount: undefined,
         buyAmount: change.value,
       };
     case FormChangeKind.gasPriceChange:
