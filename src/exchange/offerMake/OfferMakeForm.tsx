@@ -231,7 +231,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
     if (!this.props.user || !this.props.user.account) {
       return (
         <div className={styles.noResourcesInfoBox}>
-          <span>Connect to view Balances</span>
+          <span>Connect to view Account</span>
         </div>
       );
     }
@@ -546,7 +546,7 @@ function messageContent(msg: Message) {
         {`Unlock ${msg.token} for Trading in the `}
         <routerContext.Consumer>
         { ({ rootUrl }) =>
-          <Link to={`${rootUrl}balances`} style={{ whiteSpace: 'nowrap' }}>Balances Page</Link>
+          <Link to={`${rootUrl}account`} style={{ whiteSpace: 'nowrap' }}>Account Page</Link>
         }
         </routerContext.Consumer>
       </span>;
