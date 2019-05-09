@@ -1,3 +1,5 @@
+@import "../utils/Mixins";
+
 .taxExporterDescription {
   flex-grow: 1;
   font-size: 14px;
@@ -5,11 +7,19 @@
   margin-top: 8px;
   margin-bottom: 8px;
 
+  @include media-breakpoint-down(sm) {
+    font-size: 12px;
+  }
+
   span {
     color: #fff;
     display: block;
     font-size: 15px;
     margin-bottom: 8px;
+
+    @include media-breakpoint-down(sm){
+      font-size: 14px;
+    }
   }
 
   a {
@@ -25,6 +35,11 @@
 
 .taxExporterButton {
   margin-top: 8px;
+
+  @include media-breakpoint-down(sm){
+    margin-top: 0;
+    align-self: center;
+  }
 }
 
 .progressIcon {
