@@ -348,6 +348,11 @@ export function estimateTradePayWithERC20(
       if (!sellAllowance) {
         return estimateDoApprove(calls, readCalls, state, proxyAddress);
       }
+
+      if (state.message) {
+        return simulateEstimateDoTradePayWithERC20(readCalls, state);
+      }
+
       return estimateDoTradePayWithERC20(calls, proxyAddress, state);
     }),
   );
