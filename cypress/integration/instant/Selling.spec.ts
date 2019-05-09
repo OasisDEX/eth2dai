@@ -31,7 +31,7 @@ describe('Selling', () => {
 
       const summary = finalization
         .shouldCreateProxy()
-        .shouldCommitATrade(`${willPay}.00000`, from, `${willReceive}.00`, to);
+        .shouldCommitATrade(`${willPay}.000`, from, `${willReceive}.00`, to);
 
       summary.expectProxyBeingCreated();
       summary.expectBought(willReceive, to);
@@ -92,7 +92,7 @@ describe('Selling', () => {
       const from = 'DAI';
       const to = 'ETH';
       const willPay = '100';
-      const willReceive = '0.33223';
+      const willReceive = '0.332';
       const price = '301 ETH/DAI';
 
       const trade = new Trade();
@@ -108,7 +108,7 @@ describe('Selling', () => {
       const summary = finalization.shouldCommitATrade(willPay, from, willReceive, to);
 
       summary.expectBought(willReceive, to);
-      summary.expectSold(willPay, from);
+      summary.expectSold('99.99', from);
       summary.expectPriceOf(price);
     });
 
@@ -138,7 +138,7 @@ describe('Selling', () => {
       nextTrade();
 
       const willPayMore = '200';
-      const willReceiveMore = '0.66445';
+      const willReceiveMore = '0.664';
       const newPrice = '301 ETH/DAI';
 
       const secondTrade = new Trade();
@@ -160,7 +160,7 @@ describe('Selling', () => {
 
       finalSummary.expectProxyNotBeingCreated();
       finalSummary.expectBought(willReceiveMore, from);
-      finalSummary.expectSold(willPayMore, to);
+      finalSummary.expectSold('199.99', to);
       finalSummary.expectPriceOf(newPrice);
     });
 
@@ -177,7 +177,7 @@ describe('Selling', () => {
       nextTrade();
 
       const willPayMore = '70';
-      const willReceiveMore = '0.23256';
+      const willReceiveMore = '0.232';
 
       const secondTrade = new Trade();
       secondTrade.sell(from).amount(willPayMore);
@@ -193,7 +193,7 @@ describe('Selling', () => {
 
       summary.expectProxyNotBeingCreated();
       summary.expectBought(willReceiveMore, to);
-      summary.expectSold(willPayMore, from);
+      summary.expectSold('69.99', from);
       summary.expectPriceOf(price);
     });
   });
@@ -203,7 +203,7 @@ describe('Selling', () => {
       const from = 'DAI';
       const to = 'WETH';
       const willPay = '5';
-      const willReceive = '0.01661';
+      const willReceive = '0.016';
       const price = '301 WETH/DAI';
 
       const trade = new Trade();
@@ -220,7 +220,7 @@ describe('Selling', () => {
       const summary = finalization.shouldCommitATrade(willPay, from, willReceive, to);
 
       summary.expectBought(willReceive, to);
-      summary.expectSold(willPay, from);
+      summary.expectSold('4.99', from);
       summary.expectPriceOf(price);
     });
 
@@ -252,7 +252,7 @@ describe('Selling', () => {
       const switchTo = 'WETH';
       const switchFrom = 'DAI';
       const willPayMore = '5';
-      const willReceiveMore = '0.01661';
+      const willReceiveMore = '0.016';
       const newPrice = '301 WETH/DAI';
 
       const secondTrade = new Trade();
@@ -273,7 +273,7 @@ describe('Selling', () => {
 
       finalSummary.expectProxyNotBeingCreated();
       finalSummary.expectBought(willReceiveMore, switchTo);
-      finalSummary.expectSold(willPayMore, switchFrom);
+      finalSummary.expectSold('4.99', switchFrom);
       finalSummary.expectPriceOf(newPrice);
     });
 
@@ -281,7 +281,7 @@ describe('Selling', () => {
       const from = 'DAI';
       const to = 'WETH';
       const willPay = '5';
-      const willReceive = '0.01661';
+      const willReceive = '0.016';
       const price = '301 WETH/DAI';
 
       const trade = new Trade();
@@ -306,7 +306,7 @@ describe('Selling', () => {
 
       summary.expectProxyNotBeingCreated();
       summary.expectBought(willReceive, to);
-      summary.expectSold(willPay, from);
+      summary.expectSold('4.99', from);
       summary.expectPriceOf(price);
     });
   });

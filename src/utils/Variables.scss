@@ -2,12 +2,14 @@
 $body-bg: #424250;
 
 $white: #fff; // text colors
+$whitish: #fbfbfb;
 $grey-lightest: #87878C; // muted text colors
 $grey-lighter: #97979B;
 $grey-light: #58585F;
 $grey-dark: #393942; // table header bg, input bg, order subsection bg
 $grey-darkest: #2F2F38; // components bg
 $grey-darken-darkest: #2B2B33; // panel border
+$very-dark-greyish-blue: #263238;
 $dark-greyish-blue: #555561;
 $dark-gray-blue: #828287;
 $input-number-color: #ABABAF; //
@@ -15,8 +17,11 @@ $button-border-hover: #707076;
 $button-border-disabled: #3F3F47;
 
 $soft-cyan: #69F0AE; // main network indicator
+$cyan: #55AC85; //bars in the price impact warning view
 $green: #1CBA80 ; // button bg, buy color
 $green-dark: #22906A; // depth chart buy dark color
+$brown-reddish: #7C3D42;
+$brown-reddish-highlight: #A24546;
 $red: #FF6951; // sell color
 $errors: #EF5350;
 $red-dark: #C15849; // depth chart sell dark color
@@ -28,7 +33,7 @@ $etherColor: #4f6cb1;
 $makerColor: #3ab493;
 $daiColor: #f7a600;
 $dgxColor: #be9e57;
-$moderate-violet: #7E57C2; // kovan network indicator
+$moderate-violet: #B388FF; // kovan network indicator
 
 $font-color-base: $white;
 

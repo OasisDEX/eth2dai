@@ -13,3 +13,7 @@ export const swapIcon: string;
 export const cornerIcon: string;
 export const settingsIcon: string;
 export const input: string;
+export const inputWrapper: string;
+export const inputApprox: string;
+export const button: string;
+export const tradingAsset: string;

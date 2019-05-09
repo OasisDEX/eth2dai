@@ -36,20 +36,9 @@
 }
 
 .value {
-  @include fontMontserratSemibold;
-  font-size: 11px;
+  @include fontMontserratMedium;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.90);
   letter-spacing: 1px;
   text-align: right;
 }
-
-.warningIcon {
-  width: 17px;
-  height: 17px;
-  margin-right: auto;
-
-  :global(.warning-icon) {
-    fill: $dark-gray-blue;
-  }
-}
-

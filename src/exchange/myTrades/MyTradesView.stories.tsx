@@ -21,14 +21,14 @@ const defaultProps = {
   authorized: true,
   value: {
     status: 'loaded' as LoadableStatus,
-    tradingPair: {
-      base: 'ETH',
-      quote: 'DAI',
-    },
   },
   user: {
     account: '0x1234',
-  }
+  },
+  tradingPair: {
+    base: 'ETH',
+    quote: 'DAI',
+  },
 };
 
 const sampleTrades = [

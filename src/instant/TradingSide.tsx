@@ -6,7 +6,7 @@ import { tokens } from '../blockchain/config';
 import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { BigNumberInput } from '../utils/bigNumberInput/BigNumberInput';
-import { formatPrice } from '../utils/formatters/format';
+import { formatAmountInstant } from '../utils/formatters/format';
 import { Asset } from './asset/Asset';
 import * as styles from './Instant.scss';
 import { InstantFormChangeKind, ManualChange, ViewKind } from './instantForm';
@@ -21,32 +21,39 @@ interface TradingSideProps {
   user: User;
   onAmountChange: () => void;
   change: (change: ManualChange) => void;
+  approx: boolean;
 }
 
 class TradingSide extends React.Component<TradingSideProps> {
   public render() {
-    const { amount, asset, balance, placeholder, onAmountChange, user } = this.props;
+    const { amount, asset, balance, placeholder, onAmountChange, user, approx } = this.props;
+    const decimalLimit = tokens[asset] ? tokens[asset].digitsInstant : 3;
     return (
       <div className={styles.tradingSide} data-test-id={this.props.dataTestId}>
-        <Asset currency={asset} balance={balance} user={user} onClick={this.changeToken}/>
+        <div className={styles.tradingAsset}>
+          <Asset currency={asset} balance={balance} user={user} onClick={this.changeToken}/>
+        </div>
         {/* TODO: Make it parameterized like the tokens in offerMakeForm.*/}
-        <BigNumberInput
-          data-test-id={'amount'}
-          type="text"
-          className={styles.input}
-          mask={createNumberMask({
-            allowDecimal: true,
-            decimalLimit: tokens[asset] ? tokens[asset].digits : 5,
-            prefix: ''
-          })}
-          onChange={onAmountChange}
-          value={
-            (amount || null) &&
-            formatPrice(amount, asset)
-          }
-          guide={true}
-          placeholder={placeholder}
-        />
+        <span className={styles.inputWrapper}>
+          <BigNumberInput
+            data-test-id={'amount'}
+            type="text"
+            className={styles.input}
+            mask={createNumberMask({
+              decimalLimit,
+              allowDecimal: true,
+              prefix: ''
+            })}
+            onChange={onAmountChange}
+            value={
+              (amount || null) &&
+              formatAmountInstant(amount, asset)
+            }
+            guide={true}
+            placeholder={placeholder}
+          />
+          { approx && <span className={styles.inputApprox}>~</span> }
+        </span>
       </div>
     );
   }

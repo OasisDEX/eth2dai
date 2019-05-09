@@ -1,15 +1,15 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
+import { NetworkConfig, tokens } from '../../blockchain/config';
 import { TxStatus } from '../../blockchain/transactions';
 import accountSvg from '../../icons/account.svg';
-import daiCircleSvg from '../../icons/coins/dai-circle.svg';
-import ethCircleSvg from '../../icons/coins/eth-circle.svg';
 import doneSvg from '../../icons/done.svg';
 import { Approximate } from '../../utils/Approximate';
-import { formatPrice } from '../../utils/formatters/format';
+import { formatAmountInstant } from '../../utils/formatters/format';
 import { Money } from '../../utils/formatters/Formatters';
 import { SvgImage } from '../../utils/icons/utils';
+import { Tooltip } from '../../utils/tooltip/Tooltip';
 import { CurrentPrice } from '../CurrentPrice';
 import { TradeData } from '../details/TradeData';
 import { TxStatusRow } from '../details/TxStatusRow';
@@ -27,19 +27,27 @@ interface ViewProps {
   buyAmount: BigNumber;
   price: BigNumber;
   quotation: string;
+  context: NetworkConfig;
 }
+
+const proxyTooltip = {
+  id: 'proxy-tooltip',
+  text: 'Proxy is a supporting contract owned by you that groups different actions as one Ethereum transaction.',
+  iconColor: 'white'
+} as Tooltip;
+const allowanceTooltip = {
+  id: 'allowance-tooltip',
+  text: 'Enabling token trading allows your Proxy to take tokens from you and trade them on the exchange.',
+  iconColor: 'white'
+} as Tooltip;
 
 export class FinalizationView extends React.Component<ViewProps> {
 
   public render() {
     const {
-      sellToken,
-      sellAmount,
-      buyToken,
-      buyAmount,
       price,
       quotation,
-      progress
+      progress,
     } = this.props;
 
     return (
@@ -48,211 +56,29 @@ export class FinalizationView extends React.Component<ViewProps> {
                           btnDisabled={!(progress && progress.done)}
                           btnLabel="Trade Again">
         <CurrentPrice price={price} quotation={quotation}/>
-        {
-          progress && progress.kind === ProgressKind.noProxyNoAllowancePayWithERC20 &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={accountSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="create-proxy"
-                               theme="reversed"
-                               label="Create Account"
-                               info="Something about Proxy"
-                             />}
-                           status={<ProgressReport status={progress.proxyTxStatus || '' as TxStatus}/>}/>
-            </div>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={doneSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="set-token-allowance"
-                               theme="reversed"
-                               label={`Unlock ${sellToken.toUpperCase()}`}
-                               info="Something about allowances"
-                             />}
-                           status={<ProgressReport status={progress.allowanceTxStatus || '' as TxStatus}/>}/>
-            </div>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-                           status={<ProgressReport status={progress.tradeTxStatus || '' as TxStatus}/>}
-              />
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}/>
-            </div>
-          </>
-        }
-        {
-          progress && progress.kind === ProgressKind.proxyNoAllowancePayWithERC20 &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={doneSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="set-token-allowance"
-                               theme="reversed"
-                               label={`Unlock ${sellToken.toUpperCase()}`}
-                               info="Something about allowances"
-                             />}
-                           status={<ProgressReport status={progress.allowanceTxStatus || '' as TxStatus}/>}/>
-            </div>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-                           status={<ProgressReport status={progress.tradeTxStatus || '' as TxStatus}/>}/>
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}/>
-            </div>
-          </>
-        }
-        {
-          progress && progress.kind === ProgressKind.proxyAllowancePayWithERC20 &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-                           status={<ProgressReport status={progress.tradeTxStatus || '' as TxStatus}/>}/>
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}/>
-            </div>
-          </>
-        }
-        {
-          progress && progress.kind === ProgressKind.noProxyPayWithETH &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={accountSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="create-proxy"
-                               theme="reversed"
-                               label="Create Account"
-                               info="Something about Proxy"
-                             />}
-                           status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-              />
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}
-              />
-            </div>
-          </>
-        }
-        {
-          progress && progress.kind === ProgressKind.proxyPayWithETH &&
-          <>
-            <div className={classnames(styles.details, styles.transaction)}>
-              <TxStatusRow icon={<SvgImage image={ethCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="pay-token"
-                               theme="reversed"
-                               label="Sell"
-                               value={
-                                 <Money formatter={formatPrice} value={sellAmount}
-                                        token={sellToken}/>
-                               }
-                             />}
-                           status={<ProgressReport status={progress.tradeTxStatus || 'unknown' as TxStatus}/>}/>
-              <TxStatusRow icon={<SvgImage image={daiCircleSvg}/>}
-                           label={
-                             <TradeData
-                               data-test-id="buy-token"
-                               theme="reversed"
-                               label="Buy"
-                               value={
-                                 <Approximate>
-                                   <Money formatter={formatPrice} value={buyAmount}
-                                          token={buyToken}/>
-                                 </Approximate>
-                               }
-                             />}/>
-            </div>
-          </>
-        }
-
+        <>
+          {
+            progress && progress.kind === ProgressKind.noProxyNoAllowancePayWithERC20
+            && (
+              <>
+                {
+                  this._proxyCreationTx()
+                }
+                {
+                  this._tokenAllowanceTx()
+                }
+              </>
+            )
+          }
+          {
+            progress && progress.kind === ProgressKind.proxyNoAllowancePayWithERC20
+            && this._tokenAllowanceTx()
+          }
+          {
+            progress
+            && this._tradeTx()
+          }
+        </>
       </InstantFormWrapper>
     );
   }
@@ -267,4 +93,120 @@ export class FinalizationView extends React.Component<ViewProps> {
       view: ViewKind.new
     });
   }
+
+  private _tradeTx = () => {
+
+    const { sellToken, buyToken, sellAmount, buyAmount, progress } = this.props;
+
+    return (
+      <>
+        <div className={classnames(styles.details, styles.transaction)}>
+          {
+            progress && progress.kind === ProgressKind.noProxyPayWithETH &&
+            <TxStatusRow icon={<SvgImage image={accountSvg}/>}
+                         label={
+                           <TradeData
+                             data-test-id="create-proxy"
+                             theme="reversed"
+                             label="Create Account"
+                             tooltip={proxyTooltip}
+                           />}
+                         status={<ProgressReport report={this._tradeProgress()}/>}/>
+          }
+          <TxStatusRow icon={tokens[sellToken].iconColor}
+                       label={
+                         <TradeData
+                           data-test-id="pay-token"
+                           theme="reversed"
+                           label="Sell"
+                           value={
+                             <Money formatter={formatAmountInstant} value={sellAmount}
+                                    token={sellToken}/>
+                           }
+                         />}
+                       status={progress.kind !== ProgressKind.noProxyPayWithETH &&
+                       <ProgressReport report={this._tradeProgress()}/>}/>
+          <TxStatusRow icon={tokens[buyToken].iconColor}
+                       label={
+                         <TradeData
+                           data-test-id="buy-token"
+                           theme="reversed"
+                           label="Buy"
+                           value={
+                             <Approximate>
+                               <Money formatter={formatAmountInstant} value={buyAmount}
+                                      token={buyToken}/>
+                             </Approximate>
+                           }
+                         />}/>
+        </div>
+      </>
+    );
+  }
+
+  private _proxyCreationTx = () => {
+    return (
+      <div className={classnames(styles.details, styles.transaction)}>
+        <TxStatusRow icon={<SvgImage image={accountSvg}/>}
+                     label={
+                       <TradeData
+                         data-test-id="create-proxy"
+                         theme="reversed"
+                         label="Create Account"
+                         tooltip={proxyTooltip}
+                       />}
+                     status={<ProgressReport report={this._proxyProgress()}/>}/>
+      </div>
+    );
+  }
+
+  private _tokenAllowanceTx = () => {
+    const { sellToken } = this.props;
+    return (
+      <div className={classnames(styles.details, styles.transaction)}>
+        <TxStatusRow icon={<SvgImage image={doneSvg}/>}
+                     label={
+                       <TradeData
+                         data-test-id="set-token-allowance"
+                         theme="reversed"
+                         label={`Unlock ${sellToken.toUpperCase()}`}
+                         tooltip={allowanceTooltip}
+                       />}
+                     status={<ProgressReport report={this._allowanceProgress()}/>}/>
+      </div>
+    );
+  }
+
+  private _tradeProgress = () => {
+    const { tradeTxStatus: txStatus, tradeTxHash: txHash } = this.props.progress as {
+      tradeTxStatus: TxStatus,
+      tradeTxHash: string
+    };
+
+    return this._createReport(txStatus, txHash);
+  }
+
+  private _proxyProgress = () => {
+    const { proxyTxStatus: txStatus, proxyTxHash: txHash } = this.props.progress as {
+      proxyTxStatus: TxStatus,
+      proxyTxHash: string
+    };
+
+    return this._createReport(txStatus, txHash);
+  }
+
+  private _allowanceProgress = () => {
+    const { allowanceTxStatus: txStatus, allowanceTxHash: txHash } = this.props.progress as {
+      allowanceTxStatus: TxStatus,
+      allowanceTxHash: string
+    };
+
+    return this._createReport(txStatus, txHash);
+  }
+
+  private _createReport = (txStatus: TxStatus, txHash: string) => ({
+    txStatus,
+    txHash,
+    etherscanURI: this.props.context.etherscan.url
+  })
 }

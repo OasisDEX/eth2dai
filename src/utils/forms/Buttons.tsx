@@ -1,6 +1,8 @@
 import classnames from 'classnames';
 import * as React from 'react';
 
+import closeSvg from '../../icons/close.svg';
+import { SvgImage } from '../icons/utils';
 import * as styles from './Buttons.scss';
 
 export type ButtonProps =
@@ -56,13 +58,26 @@ export const Buttons = ({ onClick, className, children, ...props }:
 );
 
 export const CloseButton = (props: any) => {
-  const { className, ...otherProps } = props;
-  return (
-    <Buttons
-      className={classnames(styles.close, className)}
-      {...otherProps}
-    >
-      &times;
-    </Buttons>
-  );
+  const { className, theme, ...otherProps } = props;
+
+  switch (theme) {
+    case 'instant':
+      return (
+        <Button className={classnames(styles.instantClose, className)}
+                {...otherProps}
+        >
+          <SvgImage image={closeSvg}/>
+        </Button>
+      );
+    default:
+      return (
+        <Buttons
+          className={classnames(styles.close, className)}
+          {...otherProps}
+        >
+          &times;
+        </Buttons>
+      );
+  }
+
 };

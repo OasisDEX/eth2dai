@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
 import { Balances } from '../../balances/balances';
@@ -27,14 +28,18 @@ class AssetSelectorView extends React.Component<ViewProps> {
     return (
       <section className={classnames(instantStyles.panel, panelStyling.panel)}>
         <TopRightCorner>
-          <CloseButton onClick={this.hideAssets}/>
+          <CloseButton theme="instant" onClick={this.hideAssets}/>
         </TopRightCorner>
         <ul className={styles.list}>
           {
             Object.values(tokens).map((token, index) => {
+              const balance = user && user.account ? balances[token.symbol] : new BigNumber(0);
+
               return (
                 <li data-test-id={token.symbol.toLowerCase()} className={styles.listItem} key={index}>
-                  <Asset currency={token.symbol} balance={balances[token.symbol]} user={user}
+                  <Asset currency={token.symbol}
+                         balance={balance}
+                         user={user}
                          onClick={() => this.selectAsset(token.symbol, side)}/>
                 </li>
               );
