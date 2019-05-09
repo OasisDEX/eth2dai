@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import { combineLatest, Observable, of } from 'rxjs';
 import { first, flatMap, map, startWith, switchMap } from 'rxjs/operators';
-import { Calls } from '../blockchain/calls/calls';
+import { Calls, ReadCalls } from '../blockchain/calls/calls';
 import { GetOffersAmountData, InstantOrderData } from '../blockchain/calls/instant';
 import { allowance$ } from '../blockchain/network';
 import { getTxHash, isDone, isSuccess, TxState, TxStatus } from '../blockchain/transactions';
@@ -251,6 +251,7 @@ export function tradePayWithERC20(
 
 export function estimateTradePayWithETH(
   calls: Calls,
+  _readCalls: ReadCalls,
   proxyAddress: string | undefined,
   state: InstantFormState
 ): Observable<number> {
@@ -273,7 +274,7 @@ function estimateDoTradePayWithERC20(
 }
 
 function simulateEstimateDoTradePayWithERC20(
-  calls: Calls,
+  calls: ReadCalls,
   { kind, buyAmount, buyToken, sellAmount, sellToken }: InstantFormState,
 ): Observable<number> {
   return calls.otcGetOffersAmount({ kind, buyAmount, buyToken, sellAmount, sellToken } as GetOffersAmountData).pipe(
@@ -285,6 +286,7 @@ function simulateEstimateDoTradePayWithERC20(
 
 function estimateDoApprove(
   calls: Calls,
+  readCalls: ReadCalls,
   state: InstantFormState,
   proxyAddress: string,
 ): Observable<number> {
@@ -293,7 +295,7 @@ function estimateDoApprove(
       proxyAddress,
       token: state.sellToken,
     }),
-    simulateEstimateDoTradePayWithERC20(calls, state),
+    simulateEstimateDoTradePayWithERC20(readCalls, state),
   ).pipe(
     map(([approve, trade]) => approve + trade),
   );
@@ -308,19 +310,28 @@ function simulateEstimateDoApprove(
 
 function estimateDoSetupProxy(
   calls: Calls,
+  readCalls: ReadCalls,
   state: InstantFormState,
 ): Observable<number> {
   return combineLatest(
     calls.setupProxyEstimateGas({}),
     simulateEstimateDoApprove(state),
-    simulateEstimateDoTradePayWithERC20(calls, state),
+    simulateEstimateDoTradePayWithERC20(readCalls, state),
   ).pipe(
     map(([createProxy, approve, trade]) => createProxy + approve + trade),
   );
 }
 
+function simulateEstimateDoSetupProxy(
+  _state: InstantFormState,
+) {
+  // based on sample transaction from main
+  return of(600000);
+}
+
 export function estimateTradePayWithERC20(
   calls: Calls,
+  readCalls: ReadCalls,
   proxyAddress: string | undefined,
   state: InstantFormState
 ): Observable<number> {
@@ -332,15 +343,29 @@ export function estimateTradePayWithERC20(
   return sellAllowance$.pipe(
     flatMap(sellAllowance => {
       if (!proxyAddress) {
-        return estimateDoSetupProxy(calls, state);
+        return estimateDoSetupProxy(calls, readCalls, state);
       }
       if (!sellAllowance) {
-        return estimateDoApprove(calls, state, proxyAddress);
+        return estimateDoApprove(calls, readCalls, state, proxyAddress);
       }
+
+      if (state.message) {
+        return simulateEstimateDoTradePayWithERC20(readCalls, state);
+      }
+
       return estimateDoTradePayWithERC20(calls, proxyAddress, state);
     }),
   );
 
+}
+
+export function estimateTradeReadonly(
+  readCalls: ReadCalls,
+  state: InstantFormState,
+): Observable<number> {
+  return combineLatest(simulateEstimateDoSetupProxy(state), simulateEstimateDoApprove(state), simulateEstimateDoTradePayWithERC20(readCalls, state)).pipe(
+    map(([createProxy, approve, trade]) => createProxy + approve + trade),
+  );
 }
 
 const extractTradeSummary = (logs: any): { sold: BigNumber, bought: BigNumber } => {

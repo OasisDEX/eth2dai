@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/internal/Observable';
 
 import { tokens } from '../blockchain/config';
 import { TxState } from '../blockchain/transactions';
+import { Authorizable } from '../utils/authorizable';
 import '../utils/Common.scss';
 import { connect } from '../utils/connect';
 import { FormatAmount } from '../utils/formatters/Formatters';
@@ -11,6 +12,7 @@ import { Button } from '../utils/forms/Buttons';
 import { Slider } from '../utils/forms/Slider';
 import { inject } from '../utils/inject';
 import { Loadable, loadablifyLight } from '../utils/loadable';
+import { Authorization } from '../utils/loadingIndicator/Authorization';
 import { WithLoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
 import { ModalOpenerProps, ModalProps } from '../utils/modal';
 import { Panel, PanelHeader } from '../utils/panel/Panel';
@@ -32,22 +34,24 @@ export type AssetsOverviewExtraProps =
   ModalOpenerProps & AssetsOverviewActionProps;
 
 export class AssetOverviewView
-  extends React.Component<Loadable<CombinedBalances> & AssetsOverviewExtraProps>
+  extends React.Component<Authorizable<Loadable<CombinedBalances>> & AssetsOverviewExtraProps>
 {
   public render() {
     return (
       <Panel footerBordered={true} style={{ width: '100%' }}>
         <PanelHeader>Asset overview</PanelHeader>
-        <WithLoadingIndicator loadable={this.props}>
-          {(combinedBalances) => (
-            <AssetsOverviewViewInternal
-              { ...{
-                ...combinedBalances,
-                ...this.props
-              } }
-            />
-          )}
-        </WithLoadingIndicator>
+        <Authorization authorizable={this.props} view="Balances">
+          {loadable => <WithLoadingIndicator loadable={loadable}>
+            {(combinedBalances) => (
+              <AssetsOverviewViewInternal
+                { ...{
+                  ...combinedBalances,
+                  ...this.props
+                } }
+              />
+            )}
+          </WithLoadingIndicator>}
+        </Authorization>
       </Panel>
     );
   }

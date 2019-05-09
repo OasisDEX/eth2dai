@@ -49,6 +49,8 @@ export class Trade {
 
   public sell = (token: string = '') => {
     if (token) {
+      cy.get(tid('selling-token', tid('balance')));
+
       cy.get(tid('selling-token'))
         .click();
 
@@ -63,6 +65,8 @@ export class Trade {
 
   public buy = (token: string = '') => {
     if (token) {
+      cy.get(tid('buying-token', tid('balance')));
+
       cy.get(tid('buying-token'))
         .click();
 

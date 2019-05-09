@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
-
 import { isEqual } from 'lodash';
+import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
@@ -11,14 +11,15 @@ import {
   scan,
   shareReplay,
   startWith,
-  switchMap
+  switchMap,
 } from 'rxjs/operators';
-import { Allowances, Balances, DustLimits } from '../balances/balances';
-import { tokens } from '../blockchain/config';
 
-import { Calls, calls$, Calls$ } from '../blockchain/calls/calls';
+import { Allowances, Balances, DustLimits } from '../balances/balances';
+import { Calls, calls$, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/calls/calls';
 import { eth2weth } from '../blockchain/calls/instant';
+import { NetworkConfig, tokens } from '../blockchain/config';
 import { isDone, TxStatus } from '../blockchain/transactions';
+import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
 import {
@@ -34,6 +35,8 @@ import {
   toEtherBalanceChange,
   toEtherPriceUSDChange,
   toGasPriceChange,
+  toUserChange,
+  UserChange,
 } from '../utils/form';
 import { calculateTradePrice } from '../utils/price';
 import { switchSpread } from '../utils/switchSpread';
@@ -41,6 +44,7 @@ import { pluginDevModeHelpers } from './instantDevModeHelpers';
 import {
   estimateTradePayWithERC20,
   estimateTradePayWithETH,
+  estimateTradeReadonly,
   tradePayWithERC20,
   tradePayWithETH,
 } from './instantTransactions';
@@ -62,18 +66,11 @@ export enum MessageKind {
   incredibleAmount = 'incredibleAmount',
   dustAmount = 'dustAmount',
   orderbookTotalExceeded = 'orderbookTotalExceeded',
-  custom = 'custom'
+  notConnected = 'notConnected',
 }
 
 export type Message = {
-  kind: MessageKind.noAllowance;
-  field: string;
-  priority: number;
-  token: string;
-  placement: Placement;
-} | {
   kind: MessageKind.dustAmount
-    | MessageKind.noAllowance
     | MessageKind.insufficientAmount
     | MessageKind.incredibleAmount;
   field: string;
@@ -91,11 +88,16 @@ export type Message = {
   placement: Placement;
   error: any
 } | {
-  kind: MessageKind.custom
+  kind: MessageKind.notConnected;
   field: string;
   priority: number;
   placement: Placement;
-  error: any
+// } | {
+//   kind: MessageKind.custom
+//   field: string;
+//   priority: number;
+//   placement: Placement;
+//   error: any
 };
 
 export enum TradeEvaluationStatus {
@@ -185,6 +187,8 @@ export interface InstantFormState extends HasGasEstimation, TradeEvaluationState
   priceImpact?: BigNumber;
   slippageLimit: BigNumber;
   proxyAddress?: string;
+  user?: User;
+  context?: NetworkConfig;
 }
 
 export enum InstantFormChangeKind {
@@ -197,7 +201,8 @@ export enum InstantFormChangeKind {
   progressChange = 'progressChange',
   proxyChange = 'proxyChange',
   dustLimitsChange = 'dustLimitsChange',
-  allowancesChange = 'allowancesChange'
+  allowancesChange = 'allowancesChange',
+  contextChange = 'contextChange',
 }
 
 export interface ProgressChange {
@@ -248,6 +253,11 @@ export interface ProxyChange {
   value?: string;
 }
 
+export interface ContextChange {
+  kind: InstantFormChangeKind.contextChange;
+  context: NetworkConfig;
+}
+
 export type ManualChange =
   BuyAmountChange |
   SellAmountChange |
@@ -263,7 +273,9 @@ export type EnvironmentChange =
   DustLimitsChange |
   AllowancesChange |
   ProxyChange |
-  EtherBalanceChange;
+  EtherBalanceChange |
+  UserChange |
+  ContextChange;
 
 export type InstantFormChange =
   ManualChange |
@@ -392,12 +404,22 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         proxyAddress: change.value
       };
+    case InstantFormChangeKind.contextChange:
+      return {
+        ...state,
+        context: change.context
+      };
+    case FormChangeKind.userChange:
+      return {
+        ...state,
+        user: change.user
+      };
   }
 
   return state;
 }
 
-function evaluateBuy(calls: Calls, state: InstantFormState) {
+function evaluateBuy(calls: ReadCalls, state: InstantFormState) {
 
   const { buyToken, sellToken, buyAmount } = state;
 
@@ -426,7 +448,7 @@ function evaluateBuy(calls: Calls, state: InstantFormState) {
   );
 }
 
-function evaluateSell(calls: Calls, state: InstantFormState) {
+function evaluateSell(calls: ReadCalls, state: InstantFormState) {
 
   const { buyToken, sellToken, sellAmount } = state;
 
@@ -455,7 +477,7 @@ function evaluateSell(calls: Calls, state: InstantFormState) {
   );
 }
 
-function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observable<BigNumber> {
+function getBestPrice(calls: ReadCalls, sellToken: string, buyToken: string): Observable<BigNumber> {
   return calls.otcGetBestOffer({ sellToken, buyToken }).pipe(
     flatMap(offerId =>
       calls.otcOffers(offerId).pipe(
@@ -468,20 +490,29 @@ function getBestPrice(calls: Calls, sellToken: string, buyToken: string): Observ
   );
 }
 
-function gasEstimation(calls: Calls, state: InstantFormState): Observable<number> | undefined {
+function estimateGas(calls$_: Calls$, readCalls$: ReadCalls$, state: InstantFormState) {
+  return state.user && state.user.account ?
+    doGasEstimation(calls$_, readCalls$, state, gasEstimation) :
+    doGasEstimation(undefined, readCalls$, state, (_calls, readCalls, state_) =>
+      state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
+        undefined :
+        estimateTradeReadonly(readCalls, state_)
+    );
+}
 
-  return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated ?
+function gasEstimation(calls: Calls, readCalls: ReadCalls, state: InstantFormState): Observable<number> | undefined {
+  return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
     undefined :
     calls.proxyAddress().pipe(
       switchMap(proxyAddress => {
         const sell = state.sellToken === 'ETH' ? estimateTradePayWithETH : estimateTradePayWithERC20;
-        return sell(calls, proxyAddress, state);
+        return sell(calls, readCalls, proxyAddress, state);
       })
     );
 }
 
 function evaluateTrade(
-  theCalls$: Calls$, previousState: InstantFormState, state: InstantFormState
+  theCalls$: ReadCalls$, previousState: InstantFormState, state: InstantFormState
 ): Observable<TradeEvaluationState> | undefined {
 
   if (
@@ -504,7 +535,10 @@ function evaluateTrade(
     || state.kind === OfferType.sell && !state.sellAmount
     || state.sellAmount && state.sellAmount.eq(new BigNumber(0))
   ) {
-    return of({ tradeEvaluationStatus: TradeEvaluationStatus.unset });
+    return of({
+      tradeEvaluationStatus: TradeEvaluationStatus.unset,
+      ...state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }
+    });
   }
 
   return theCalls$.pipe(
@@ -534,7 +568,7 @@ function evaluateTrade(
 }
 
 function mergeTradeEvaluation(
-  state:InstantFormState, trade: TradeEvaluationState | undefined
+  state: InstantFormState, trade: TradeEvaluationState | undefined
 ): InstantFormState {
   if (!trade) {
     return state;
@@ -556,6 +590,15 @@ function validate(state: InstantFormState): InstantFormState {
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
   const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
   const dustLimits = state.dustLimits;
+
+  if (!state.user || !state.user.account) {
+    message = prioritize(message, {
+      kind: MessageKind.notConnected,
+      field: spendField,
+      priority: 1000,
+      placement: Position.BOTTOM,
+    });
+  }
 
   if (spendAmount && (
     spendToken === 'ETH' && state.etherBalance && state.etherBalance.lt(spendAmount) ||
@@ -721,6 +764,15 @@ function toProxyChange(proxyAddress$: Observable<string>): Observable<ProxyChang
   );
 }
 
+function toContextChange(context$: Observable<NetworkConfig>): Observable<ContextChange> {
+  return context$.pipe(
+    map(context => ({
+      context,
+      kind: InstantFormChangeKind.contextChange,
+    } as ContextChange))
+  );
+}
+
 function isReadyToProceed(state: InstantFormState): InstantFormState {
   return {
     ...state,
@@ -748,7 +800,10 @@ export function createFormController$(
     dustLimits$: Observable<DustLimits>;
     proxyAddress$: Observable<string>;
     calls$: Calls$;
+    readCalls$: ReadCalls$;
     etherPriceUsd$: Observable<BigNumber>;
+    user$: Observable<User>;
+    context$: Observable<NetworkConfig>
   }
 ): Observable<InstantFormState> {
 
@@ -756,12 +811,16 @@ export function createFormController$(
 
   const manualChange$ = new Subject<ManualChange>();
 
-  const environmentChange$ = combineAndMerge(
-    toGasPriceChange(params.gasPrice$),
-    toEtherPriceUSDChange(params.etherPriceUsd$),
+  const environmentChange$ = merge(
+    combineAndMerge(
+      toGasPriceChange(params.gasPrice$),
+      toEtherPriceUSDChange(params.etherPriceUsd$),
+      toDustLimitsChange(params.dustLimits$),
+      toUserChange(params.user$),
+      toContextChange(params.context$),
+    ),
     toBalancesChange(params.balances$),
     toEtherBalanceChange(params.etherBalance$),
-    toDustLimitsChange(params.dustLimits$),
     toAllowancesChange(params.allowances$),
     toProxyChange(params.proxyAddress$),
   );
@@ -781,9 +840,9 @@ export function createFormController$(
     view: ViewKind.new,
   };
 
-  function evaluateTradeWithCalls(theCalls$: Calls$) {
+  function evaluateTradeWithCalls(readCalls$: ReadCalls$) {
     return (previousState: InstantFormState, state: InstantFormState) =>
-      evaluateTrade(theCalls$, previousState, state);
+      evaluateTrade(readCalls$, previousState, state);
   }
 
   return merge(
@@ -795,11 +854,11 @@ export function createFormController$(
     scan(applyChange, initialState),
     distinctUntilChanged(isEqual),
     switchSpread(
-      evaluateTradeWithCalls(params.calls$),
+      evaluateTradeWithCalls(params.readCalls$),
       mergeTradeEvaluation
     ),
     map(validate),
-    switchMap(state => doGasEstimation(params.calls$, state, gasEstimation)),
+    switchMap(curry(estimateGas)(params.calls$, params.readCalls$)),
     map(calculatePriceAndImpact),
     map(isReadyToProceed),
     scan(freezeIfInProgress),

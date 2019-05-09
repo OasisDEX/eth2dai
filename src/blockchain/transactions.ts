@@ -1,6 +1,10 @@
+import * as _ from 'lodash';
+import { fromPairs } from 'ramda';
 import { bindNodeCallback, combineLatest, Observable, of, Subject } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
-import { catchError, filter, map, mergeMap, scan, shareReplay, startWith, take, } from 'rxjs/operators';
+import { ajax } from 'rxjs/ajax';
+import { catchError, filter, first, map, mergeMap, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
+
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import { account$, context$, onEveryBlock$ } from './network';
 import { web3 } from './web3';
@@ -39,6 +43,11 @@ export function getTxHash(state: TxState): string | undefined {
   return undefined;
 }
 
+export enum TxRebroadcastStatus {
+  speedup = 'speedup',
+  cancel = 'cancel',
+}
+
 export type TxState = {
   account: string;
   txNo: number;
@@ -68,6 +77,7 @@ export type TxState = {
     receipt: any;
     confirmations: number;
     safeConfirmations: number;
+    rebroadcast?: TxRebroadcastStatus;
   }
   | {
     status: TxStatus.Failure;
@@ -99,7 +109,9 @@ export function send(
     lastChange: new Date(),
   };
 
-  function successOrFailure(txHash: string, receipt: any): Observable<TxState> {
+  function successOrFailure(
+    txHash: string, receipt: any, rebroadcast: TxRebroadcastStatus | undefined
+  ): Observable<TxState> {
     const end = new Date();
 
     if (receipt.status !== '0x1') {
@@ -123,6 +135,7 @@ export function send(
           txHash,
           receipt,
           end,
+          rebroadcast,
           lastChange: new Date(),
           blockNumber: receipt.blockNumber,
           status: TxStatus.Success,
@@ -137,25 +150,33 @@ export function send(
   }
 
   const result: Observable<TxState> = bindNodeCallback(method)(...args).pipe(
-    mergeMap((txHash: string) => {
-      return onEveryBlock$.pipe(
-        mergeMap(() => bindNodeCallback(web3.eth.getTransactionReceipt)(txHash)),
-        filter(receipt => !!receipt),
-        // to prevent degenerated infura response...
-        // tap((receipt: any) =>
-        //   console.log('receipt', receipt, receipt.blockNumber)
-        // ),
-        filter((receipt: any) =>
-          receipt.blockNumber !== undefined && receipt.blockNumber !== null
+    mergeMap(txHash => bindNodeCallback(web3.eth.getTransaction)(txHash)),
+    mergeMap((transaction: { hash: string, nonce: number, input: string }) => {
+      return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
+        map(([externalNonce2tx]) =>
+          externalNonce2tx[transaction.nonce] ? [
+            externalNonce2tx[transaction.nonce].hash,
+            transaction.input === externalNonce2tx[transaction.nonce].callData ?
+              TxRebroadcastStatus.speedup :
+              TxRebroadcastStatus.cancel
+          ] : [
+            transaction.hash,
+            undefined
+          ]
         ),
-        // tap(receipt => console.log('filtered receipt', receipt)),
-        take(1),
-        mergeMap(receipt => successOrFailure(txHash, receipt)),
+        mergeMap(([txHash, rebroadcast]) =>
+          bindNodeCallback(web3.eth.getTransactionReceipt)(txHash).pipe(
+            map(receipt => [receipt, rebroadcast])
+          )
+        ),
+        filter(([receipt]: [any, TxRebroadcastStatus]) => receipt && receipt.blockNumber),
+        first(),
+        mergeMap(([receipt, rebroadcast]) => successOrFailure(receipt.transactionHash, receipt, rebroadcast)),
         catchError(error => {
           return of({
             ...common,
-            txHash,
             error,
+            txHash: transaction.hash,
             end: new Date(),
             lastChange: new Date(),
             status: TxStatus.Error,
@@ -163,11 +184,11 @@ export function send(
         }),
         startWith({
           ...common,
-          txHash,
+          txHash: transaction.hash,
           broadcastedAt: new Date(),
           status: TxStatus.WaitingForConfirmation,
         } as TxState),
-      );
+      ) as any as Observable<TxState>;
     }),
     catchError(error => {
       if ((error.message as string).indexOf('User denied transaction signature') === -1) {
@@ -241,5 +262,25 @@ export const transactions$: Observable<TxState[]> = combineLatest(
     transactions.filter((t: TxState) => t.account === account && t.networkId === context.id)
   ),
   startWith([]),
+  shareReplay(1),
+);
+
+interface ExternalNonce2tx { [nonce: number]: { hash: string, callData: string }; }
+const externalNonce2tx$: Observable<ExternalNonce2tx> = combineLatest(
+  context$, account$, onEveryBlock$.pipe(first()), onEveryBlock$
+).pipe(
+  switchMap(([context, account, firstBlock]) =>
+    ajax({ url: `${context.etherscan.apiUrl}?module=account&action=txlist&address=${account}&startblock=${firstBlock}&sort=desc&apikey=${context.etherscan.apiKey}` })
+  ),
+  map(({ response }) => response.result),
+  map((transactions: Array<{ hash: string, nonce: string, input: string }>) =>
+    fromPairs(_.map(transactions, tx =>
+      [tx.nonce, { hash: tx.hash, callData: tx.input }] as [string, { hash: string, callData: string }]
+    ))
+  ),
+  catchError(error => {
+    console.error(error);
+    return of({});
+  }),
   shareReplay(1),
 );

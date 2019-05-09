@@ -9,8 +9,12 @@
   margin-left: .5rem;
 }
 
-.success {
+.success, .link {
   color: $very-light-blue;
+}
+
+.link {
+  text-decoration: none;
 }
 
 .failure {

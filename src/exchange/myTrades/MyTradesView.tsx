@@ -7,6 +7,7 @@ import { formatDateTime } from '../../utils/formatters/format';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button, ButtonGroup, CloseButton } from '../../utils/forms/Buttons';
 import { ProgressIcon } from '../../utils/icons/Icons';
+import { Authorization } from '../../utils/loadingIndicator/Authorization';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
@@ -20,116 +21,122 @@ import { TradeWithStatus } from './openTrades';
 
 export class MyTrades extends React.Component<MyTradesPropsLoadable> {
   public render() {
+    const { value, kind, changeKind, tradingPair } = this.props;
     return (
       <>
-        <PanelHeader bordered={this.props.status === 'error'}>
+        <PanelHeader bordered={value && value.status === 'error'}>
           <span>My Orders</span>
           <ButtonGroup style={{ marginLeft: 'auto' }}>
             <Button
               size="sm"
-              color={ this.props.kind === MyTradesKind.open ? 'whiteOutlined' : 'grey' }
+              color={kind === MyTradesKind.open ? 'whiteOutlined' : 'grey'}
               className={styles.orderTypeBtn}
-              onClick={() => this.props.changeKind(MyTradesKind.open)}
+              onClick={() => changeKind && changeKind(MyTradesKind.open)}
             >Open</Button>
             <Button
               size="sm"
-              color={ this.props.kind === MyTradesKind.closed ? 'whiteOutlined' : 'grey' }
+              color={kind === MyTradesKind.closed ? 'whiteOutlined' : 'grey'}
               className={styles.orderTypeBtn}
-              onClick={() => this.props.changeKind(MyTradesKind.closed)}
+              onClick={() => changeKind && changeKind(MyTradesKind.closed)}
             >Close</Button>
           </ButtonGroup>
         </PanelHeader>
-        <WithLoadingIndicator
-          loadable={this.props}
-          error={this.props.kind === MyTradesKind.closed ? <ServerUnreachable/> : undefined }
-        >
-          { (trades: TradeWithStatus[]) => (
-            <>
-            <Table align="left"
-              className={classnames(styles.myTradesTable, {
-                [styles.myOpenTradesTable]: this.props.kind === MyTradesKind.open,
-                [styles.myCloseTradesTable]: this.props.kind === MyTradesKind.closed,
-              })}>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th className={styles.right}>
-                  <InfoLabel>Price</InfoLabel> {this.props.tradingPair.quote}
-                </th>
-                <th className={styles.right}>
-                  <InfoLabel>Amount</InfoLabel> {this.props.tradingPair.base}
-                </th>
-                <th className={styles.right}>
-                  <InfoLabel>Total</InfoLabel> {this.props.tradingPair.quote}
-                </th>
-                <th className={classnames(this.props.kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>Time</th>
-                { this.props.kind === MyTradesKind.open &&
-                  <th className={styles.right}>Status</th>
-                }
-              </tr>
-            </thead>
-            </Table>
-            <Scrollbar>
-              <Table align="left" className={styles.myTradesTable}>
-                <tbody>
-                {trades
-                  .map((trade: TradeWithStatus, i: number) => {
-                    return (
-                      <RowClickable
-                        data-test-id="my-trades"
-                        key={i}
-                        clickable={this.props.kind === MyTradesKind.closed}
-                        onClick={this.showInEtherscan(trade)}
-                      >
-                        <td data-test-id="type">
-                          <SellBuySpan type={trade.act}>{trade.act}</SellBuySpan>
-                        </td>
-                        <td data-test-id="price" className={styles.right}>
-                          <FormatPriceOrder value={trade.price} token={trade.quoteToken} kind={trade.kind} />
-                        </td>
-                        <td data-test-id="amount" className={styles.right}>
-                          <FormatAmount value={trade.baseAmount} token={trade.baseToken} />
-                        </td>
-                        <td data-test-id="total" className={styles.right}>
-                          <FormatAmount value={trade.quoteAmount} token={trade.quoteToken} />
-                        </td>
-                        <td className={classnames(this.props.kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>
-                          <Muted data-vis-reg-mask={true}>{formatDateTime(trade.time)}</Muted>
-                        </td>
-                        { this.props.kind === MyTradesKind.open &&
-                        trade.status === undefined &&
-                        <td className={styles.right}>
-                        <span className={classnames('hide-md', styles.statusText)}>
-                          Open
-                        </span>
-                          <CloseButton data-test-id="cancel"
-                                       onClick={this.cancelOffer(trade.offerId, trade.act, trade.baseAmount, trade.baseToken)}
-                          />
-                        </td>
-                        }
-                        { this.props.kind === MyTradesKind.open &&
-                        trade.status !== undefined &&
-                        <td className={classnames(styles.status, styles.right)}>
+
+        <Table align="left"
+               className={classnames(styles.myTradesTable, {
+                 [styles.myOpenTradesTable]: kind === MyTradesKind.open,
+                 [styles.myCloseTradesTable]: kind === MyTradesKind.closed,
+               })}>
+          <thead>
+          <tr>
+            <th>Type</th>
+            <th className={styles.right}>
+              <InfoLabel>Price</InfoLabel> {tradingPair.quote}
+            </th>
+            <th className={styles.right}>
+              <InfoLabel>Amount</InfoLabel> {tradingPair.base}
+            </th>
+            <th className={styles.right}>
+              <InfoLabel>Total</InfoLabel> {tradingPair.quote}
+            </th>
+            <th className={classnames(this.props.kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>Time</th>
+            {this.props.kind === MyTradesKind.open &&
+            <th className={styles.right}>Status</th>
+            }
+          </tr>
+          </thead>
+        </Table>
+        <Authorization authorizable={this.props} view={`${kind} orders`}>
+          {loadable => <WithLoadingIndicator
+            size="lg"
+            loadable={loadable}
+            error={kind === MyTradesKind.closed ? <ServerUnreachable/> : undefined}
+          >
+            {(trades: TradeWithStatus[]) => (
+              <>
+                <Scrollbar>
+                  <Table align="left" className={styles.myTradesTable}>
+                    <tbody>
+                    {trades
+                      .map((trade: TradeWithStatus, i: number) => {
+                        return (
+                          <RowClickable
+                            data-test-id="my-trades"
+                            key={i}
+                            clickable={kind === MyTradesKind.closed}
+                            onClick={this.showInEtherscan(trade)}
+                          >
+                            <td data-test-id="type">
+                              <SellBuySpan type={trade.act}>{trade.act}</SellBuySpan>
+                            </td>
+                            <td data-test-id="price" className={styles.right}>
+                              <FormatPriceOrder value={trade.price} token={trade.quoteToken} kind={trade.kind}/>
+                            </td>
+                            <td data-test-id="amount" className={styles.right}>
+                              <FormatAmount value={trade.baseAmount} token={trade.baseToken}/>
+                            </td>
+                            <td data-test-id="total" className={styles.right}>
+                              <FormatAmount value={trade.quoteAmount} token={trade.quoteToken}/>
+                            </td>
+                            <td
+                              className={classnames(kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>
+                              <Muted data-vis-reg-mask={true}>{formatDateTime(trade.time)}</Muted>
+                            </td>
+                            {kind === MyTradesKind.open &&
+                            trade.status === undefined &&
+                            <td className={styles.right}>
                           <span className={classnames('hide-md', styles.statusText)}>
-                            pending
+                            Open
                           </span>
-                          <ProgressIcon className={styles.statusProgress}/>
-                        </td>
-                        }
-                      </RowClickable>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </Scrollbar>
-            </>
-        )}
-        </WithLoadingIndicator>
+                              <CloseButton data-test-id="cancel"
+                                           onClick={this.cancelOffer(trade.offerId, trade.act, trade.baseAmount, trade.baseToken)}
+                              />
+                            </td>
+                            }
+                            {kind === MyTradesKind.open &&
+                            trade.status !== undefined &&
+                            <td className={classnames(styles.status, styles.right)}>
+                            <span className={classnames('hide-md', styles.statusText)}>
+                              pending
+                            </span>
+                              <ProgressIcon className={styles.statusProgress}/>
+                            </td>
+                            }
+                          </RowClickable>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </Scrollbar>
+              </>
+            )}
+          </WithLoadingIndicator>}
+        </Authorization>
       </>
     );
   }
 
-  public cancelOffer = (offerId:BigNumber, type: TradeAct, amount: BigNumber, token: string) => {
+  public cancelOffer = (offerId: BigNumber, type: TradeAct, amount: BigNumber, token: string) => {
     return (): void => {
       this.props.cancelOffer({ offerId, type, amount, token });
     };

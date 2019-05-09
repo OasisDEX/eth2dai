@@ -18,7 +18,7 @@ import {
 } from './balances/balances';
 import { createTaxExport$ } from './balances/taxExporter';
 import { TaxExporterView } from './balances/TaxExporterView';
-import { calls$ } from './blockchain/calls/calls';
+import { calls$, readCalls$ } from './blockchain/calls/calls';
 import {
   account$,
   allowance$,
@@ -29,6 +29,7 @@ import {
   initializedAccount$,
   onEveryBlock$
 } from './blockchain/network';
+import { user$ } from './blockchain/user';
 import { createPickableOrderBookFromOfferMake$, loadOrderbook$, Orderbook } from './exchange/orderbook/orderbook';
 import {
   createTradingPair$,
@@ -38,7 +39,13 @@ import {
 } from './exchange/tradingPair/tradingPair';
 
 import { transactions$ } from './blockchain/transactions';
-import { createAllTrades$, createTradesBrowser$, loadAllTrades } from './exchange/allTrades/allTrades';
+import {
+  createAllTrades$,
+  createTradesBrowser$,
+  loadAllTrades,
+  loadPriceOneDayAgo,
+  loadVolumeForThePastDay
+} from './exchange/allTrades/allTrades';
 import { AllTrades } from './exchange/allTrades/AllTradesView';
 import { createDepthChartWithLoading$, DepthChartWithLoading } from './exchange/depthChart/DepthChartWithLoading';
 import {
@@ -64,6 +71,7 @@ import { createFormController$ as createInstantFormController$ } from './instant
 import { InstantViewPanel } from './instant/InstantViewPanel';
 import { createTransactionNotifier$ } from './transactionNotifier/transactionNotifier';
 import { TransactionNotifierView } from './transactionNotifier/TransactionNotifierView';
+import { Authorizable, authorizablify } from './utils/authorizable';
 import { connect } from './utils/connect';
 import { inject } from './utils/inject';
 import { Loadable, LoadableWithTradingPair, loadablifyLight, } from './utils/loadable';
@@ -100,9 +108,9 @@ export function setupAppContext() {
   const AssetOverviewViewRxTx =
     inject(
       withModal<AssetsOverviewActionProps, AssetsOverviewExtraProps>(
-        connect<Loadable<CombinedBalances>, AssetsOverviewExtraProps>(
+        connect<Authorizable<Loadable<CombinedBalances>>, AssetsOverviewExtraProps>(
           AssetOverviewView,
-          loadablifyLight(combinedBalances$)
+          authorizablify(() => loadablifyLight(combinedBalances$))
         )
       ),
       { approve, disapprove, wrapUnwrapForm$ }
@@ -120,9 +128,23 @@ export function setupAppContext() {
   const tradeHistory = memoizeTradingPair(
     curry(loadAllTrades)(context$, onEveryBlock$)
   );
+
   const currentTradeHistory$ = currentTradingPair$.pipe(
     switchMap(tradeHistory),
   );
+
+  const lastDayVolume$ = currentTradingPair$.pipe(
+    switchMap(memoizeTradingPair(
+      curry(loadVolumeForThePastDay)(context$, onEveryBlock$)
+    )),
+  );
+
+  const lastDayPriceHistory$ = currentTradingPair$.pipe(
+    switchMap(memoizeTradingPair(
+      curry(loadPriceOneDayAgo)(context$, onEveryBlock$)
+    )),
+  );
+
   const currentTradesBrowser$ = loadablifyPlusTradingPair(
     currentTradingPair$,
     curry(createTradesBrowser$)(context$, tradeHistory),
@@ -179,19 +201,19 @@ export function setupAppContext() {
   );
 
   const myCurrentTrades$ = createMyCurrentTrades$(myTradesKind$, myOpenTrades$, myClosedTrades$);
-  const myTrades$ = createMyTrades$(myTradesKind$, myCurrentTrades$, calls$, context$, gasPrice$);
+  const myTrades$ = createMyTrades$(myTradesKind$, myCurrentTrades$, calls$, context$, gasPrice$, currentTradingPair$);
   const MyTradesTxRx = connect(MyTrades, myTrades$);
 
   const currentPrice$ = createCurrentPrice$(currentTradeHistory$);
-  const yesterdayPrice$ = createYesterdayPrice$(currentTradeHistory$);
+  const yesterdayPrice$ = createYesterdayPrice$(lastDayPriceHistory$);
   const yesterdayPriceChange$ = createYesterdayPriceChange$(currentPrice$, yesterdayPrice$);
-  const weeklyVolume$ = createDailyVolume$(currentTradeHistory$);
+  const dailyVolume$ = createDailyVolume$(lastDayVolume$);
 
   const tradingPairView$ = createTradingPair$(
     currentTradingPair$,
     currentPrice$,
     yesterdayPriceChange$,
-    weeklyVolume$);
+    dailyVolume$);
   const TradingPairsTxRx = connect(TradingPairView, tradingPairView$);
 
   const transactionNotifier$ =
@@ -210,9 +232,12 @@ export function setupAppContext() {
     {
       gasPrice$,
       calls$,
+      readCalls$,
       etherPriceUsd$,
       etherBalance$,
       proxyAddress$,
+      user$,
+      context$,
       balances$: balancesWithEth$,
       dustLimits$: createDustLimits$(context$),
       allowances$: createAllowances$(context$, initializedAccount$, onEveryBlock$),
@@ -255,6 +280,7 @@ function offerMake(
         etherPriceUsd$,
         orderbook$,
         balances$,
+        user$,
         dustLimits$: createDustLimits$(context$),
       },
       tp)

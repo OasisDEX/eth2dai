@@ -116,7 +116,7 @@ function validate(state: WrapUnwrapFormState) {
 function estimateGasPrice(
   calls$: Calls$, state: WrapUnwrapFormState
 ): Observable<WrapUnwrapFormState> {
-  return doGasEstimation(calls$, state, (calls: Calls) => {
+  return doGasEstimation(calls$, undefined, state, (calls: Calls) => {
     if (!state.amount || !state.gasPrice) {
       return undefined;
     }

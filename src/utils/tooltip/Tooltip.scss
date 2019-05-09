@@ -1,0 +1,69 @@
+@import '../../utils/Variables';
+
+:global(.instantTooltip.show) {
+  opacity: 1;
+  box-shadow: 0 0 4px 1px rgba(0, 0, 0, .15);
+  border: 1px solid hsla(240, 1%, 72%, .05);
+  background-color: #ffffff;
+  font-size: 12px;
+  padding: 0px 16px;
+  color: #616161;
+
+  max-width: 200px;
+}
+
+:global(.instantTooltip.show p) {
+  font-family: Montserrat, sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 1.1px;
+}
+
+:global(.instantTooltip.show:after) {
+  box-sizing: border-box;
+  transform-origin: 0 0;
+  transform: rotate(-45deg);
+  width: 0;
+  height: 0;
+  border: 0.5em solid white !important;
+}
+
+:global(.instantTooltip.show.place-top:after) {
+  bottom: -12px;
+  box-shadow: -3px 3px 5px -2px rgba(0, 0, 0, .15);
+}
+
+:global(.instantTooltip.show.place-right:after) {
+  left: -9px;
+  box-shadow: -3px -3px 5px -2px rgba(0, 0, 0, .15);
+}
+
+:global(.instantTooltip.show.place-left:after) {
+  right: -4px;
+  box-shadow: 3px 3px 5px -2px rgba(0, 0, 0, .15);
+}
+
+:global(.instantTooltip.show.place-bottom:after) {
+  top: 0;
+  box-shadow: 3px -3px 5px -2px rgba(0, 0, 0, .15);
+}
+
+
+.warningIcon {
+  width: 17px;
+  height: 17px;
+  margin-right: auto;
+
+  &.grey {
+    :global(.warning-icon) {
+      fill: $dark-gray-blue;
+    }
+  }
+
+  &.white {
+    :global(.warning-icon) {
+      fill: rgba(255, 255, 255, 0.9);
+    }
+  }
+}

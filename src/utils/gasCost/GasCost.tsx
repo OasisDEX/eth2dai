@@ -1,5 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
+
 import { GasEstimationStatus, HasGasEstimation } from '../form';
 import { Money } from '../formatters/Formatters';
 import { Muted } from '../text/Text';
@@ -10,9 +11,11 @@ export const GasCost = (props: HasGasEstimation) => {
 
   switch (gasEstimationStatus) {
     case GasEstimationStatus.calculating:
-      return (<span>...</span>);
+      return <span>...</span>;
     case GasEstimationStatus.error:
-      return (<span>error</span>);
+      return <span>error</span>;
+    case GasEstimationStatus.unknown:
+      return <span>-</span>;
     case GasEstimationStatus.unset:
     case undefined:
     case GasEstimationStatus.calculated:

@@ -70,7 +70,7 @@ export function vulcan0x<R>(
   const queryParams = isEmpty(variables) ? '' :
     `(${variables.map(({ name, type }) => `$${name}: ${type}`).join(', ')})`;
 
-  console.log('process.env.REACT_APP_GRAPHQL_DEVMODE', process.env.REACT_APP_GRAPHQL_DEVMODE);
+  // console.log('process.env.REACT_APP_GRAPHQL_DEVMODE', process.env.REACT_APP_GRAPHQL_DEVMODE);
 
   return ajax({
     url,

@@ -57,7 +57,7 @@ export const approveProxy = {
   options: ({ gasPrice, gasEstimation }: ApproveProxyData) => ({ ...gasPrice ? gasPrice : {}, ...gasEstimation ? { gas: gasEstimation } : {} }),
   kind: TxMetaKind.approveProxy,
   description: ({ token }: ApproveProxyData) =>
-    <React.Fragment>Approve proxy to transfer <Currency value={token}/></React.Fragment>
+    <React.Fragment>Unlock <Currency value={token}/> on proxy</React.Fragment>
 };
 
 export const disapproveProxy: TransactionDef<ApproveProxyData> = {

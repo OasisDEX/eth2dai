@@ -18,7 +18,13 @@ const defaultProps = {
   changeKind: () => null,
   cancelOffer: () => null,
   etherscan: {} as EtherscanConfig,
-  status: 'loaded' as LoadableStatus,
+  authorized: true,
+  value: {
+    status: 'loaded' as LoadableStatus,
+  },
+  user: {
+    account: '0x1234',
+  },
   tradingPair: {
     base: 'ETH',
     quote: 'DAI',
@@ -61,11 +67,20 @@ const sampleTrades = [
   } as TradeWithStatus,
 ];
 
+stories.add('Not logged in', () => (
+  <Panel>
+    <MyTrades
+      {...defaultProps}
+      authorized={false}
+    />
+  </Panel>
+));
+
 stories.add('Empty open', () => (
   <Panel>
     <MyTrades
       {...defaultProps}
-      value={[]}
+      value={{ ...defaultProps.value, value: [] }}
     />
   </Panel>
 ));
@@ -74,7 +89,7 @@ stories.add('Open with sample trades', () => (
   <Panel style={{ width: '936px' }}>
     <MyTrades
       {...defaultProps}
-      value={sampleTrades}
+      value={{ ...defaultProps.value, value: sampleTrades }}
     />
   </Panel>
 ));
@@ -84,7 +99,7 @@ stories.add('Close with sample trades', () => (
     <MyTrades
       {...defaultProps}
       kind={MyTradesKind.closed}
-      value={sampleTrades}
+      value={{ ...defaultProps.value, value: sampleTrades }}
     />
   </Panel>
 ));

@@ -114,12 +114,12 @@
 
 .white {
   @include button((
-          color: black,
-          bg: $white,
-          border-color: $white,
-          color-hover: #333,
-          border-color-hover: #ddd,
-          bg-hover: #ddd
+    color: $very-dark-greyish-blue,
+    bg: $whitish,
+    border-color: $white,
+    color-hover: #000,
+    border-color-hover: #ddd,
+    bg-hover: $white
   ));
   font-weight: 600; //semibold
 }
@@ -181,4 +181,20 @@
 
   background: white;
   border-radius: 100%;
+}
+
+.instantClose {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 100%;
+  border: 1px solid $brown-reddish;
+  padding: 5px;
+
+  &:hover {
+    border: 1px solid $brown-reddish-highlight !important;
+  }
+
+  svg {
+    fill: $errors;
+  }
 }
