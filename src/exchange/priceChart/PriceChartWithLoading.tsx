@@ -8,9 +8,7 @@ import { LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
-import {
-  GroupMode, PriceChartDataPoint,
-} from './pricechart';
+import { GroupMode, PriceChartDataPoint, } from './pricechart';
 import { PriceChartView } from './PriceChartView';
 import * as styles from './PriceChartWithLoading.scss';
 
@@ -59,6 +57,7 @@ export class PriceChartWithLoading extends React.Component<PriceChartProps> {
         </PanelHeader>
         <WithLoadingIndicator
           error={<ServerUnreachable/>}
+          size="lg"
           loadable={this.props}
         >
           {(points: PriceChartDataPoint[]) => (

@@ -5,6 +5,7 @@ import { LoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator'
 import { PanelHeader } from '../../utils/panel/Panel';
 import { OfferFormState } from './offerMake';
 import { OfferMakeForm } from './OfferMakeForm';
+import * as styles from './OfferMakePanel.scss';
 
 export class OfferMakePanel extends React.Component<Loadable<OfferFormState>> {
 
@@ -14,9 +15,11 @@ export class OfferMakePanel extends React.Component<Loadable<OfferFormState>> {
       return (<OfferMakeForm {...formState} />);
     }
 
-    return (<div>
+    return (<>
       <PanelHeader bordered={true}>Create order</PanelHeader>
-      <LoadingIndicator />
-    </div>);
+      <div className={styles.loaderWithFooterBordered}>
+        <LoadingIndicator size="lg"/>
+      </div>
+    </>);
   }
 }

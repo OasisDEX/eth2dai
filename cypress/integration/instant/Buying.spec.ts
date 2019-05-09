@@ -18,7 +18,7 @@ describe('Buying', () => {
     it('without proxy', () => {
       const from = 'ETH';
       const to = 'DAI';
-      const willPay = '0.35714';
+      const willPay = '0.357';
       const willReceive = '100';
       const price = '280 ETH/DAI';
 
@@ -52,7 +52,7 @@ describe('Buying', () => {
       nextTrade();
 
       const willReceiveMore = '500';
-      const willPay = '1.80649';
+      const willPay = '1.806';
       const price = '276.78 ETH/DAI';
 
       const secondTrade = new Trade();
@@ -77,8 +77,8 @@ describe('Buying', () => {
     it('without proxy and allowance', () => {
       const from = 'DAI';
       const to = 'ETH';
-      const willPay = '37.26';
-      const willReceive = '0.12378';
+      const willPay = '37.02';
+      const willReceive = '0.123';
       const price = '301 ETH/DAI';
 
       const trade = new Trade();
@@ -112,8 +112,8 @@ describe('Buying', () => {
 
       const nextFrom = 'DAI';
       const nextTo = 'ETH';
-      const nextWillPay = '37.26';
-      const nextWillReceive = '0.12378';
+      const nextWillPay = '37.02';
+      const nextWillReceive = '0.123';
       const price = '301 ETH/DAI';
 
       const secondTrade = new Trade();
@@ -141,8 +141,8 @@ describe('Buying', () => {
     it('with proxy and allowance', () => {
       const from = 'DAI';
       const to = 'ETH';
-      const willPay = '37.26';
-      const willReceive = '0.12378';
+      const willPay = '37.02';
+      const willReceive = '0.123';
       const price = '301 ETH/DAI';
 
       const trade = new Trade();

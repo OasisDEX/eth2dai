@@ -17,7 +17,7 @@ import {
 import { Allowances, Balances, DustLimits } from '../balances/balances';
 import { Calls, calls$, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/calls/calls';
 import { eth2weth } from '../blockchain/calls/instant';
-import { tokens } from '../blockchain/config';
+import { NetworkConfig, tokens } from '../blockchain/config';
 import { isDone, TxStatus } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
@@ -188,6 +188,7 @@ export interface InstantFormState extends HasGasEstimation, TradeEvaluationState
   slippageLimit: BigNumber;
   proxyAddress?: string;
   user?: User;
+  context?: NetworkConfig;
 }
 
 export enum InstantFormChangeKind {
@@ -200,7 +201,8 @@ export enum InstantFormChangeKind {
   progressChange = 'progressChange',
   proxyChange = 'proxyChange',
   dustLimitsChange = 'dustLimitsChange',
-  allowancesChange = 'allowancesChange'
+  allowancesChange = 'allowancesChange',
+  contextChange = 'contextChange',
 }
 
 export interface ProgressChange {
@@ -251,6 +253,11 @@ export interface ProxyChange {
   value?: string;
 }
 
+export interface ContextChange {
+  kind: InstantFormChangeKind.contextChange;
+  context: NetworkConfig;
+}
+
 export type ManualChange =
   BuyAmountChange |
   SellAmountChange |
@@ -267,7 +274,8 @@ export type EnvironmentChange =
   AllowancesChange |
   ProxyChange |
   EtherBalanceChange |
-  UserChange;
+  UserChange |
+  ContextChange;
 
 export type InstantFormChange =
   ManualChange |
@@ -396,6 +404,11 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         ...state,
         proxyAddress: change.value
       };
+    case InstantFormChangeKind.contextChange:
+      return {
+        ...state,
+        context: change.context
+      };
     case FormChangeKind.userChange:
       return {
         ...state,
@@ -522,7 +535,10 @@ function evaluateTrade(
     || state.kind === OfferType.sell && !state.sellAmount
     || state.sellAmount && state.sellAmount.eq(new BigNumber(0))
   ) {
-    return of({ tradeEvaluationStatus: TradeEvaluationStatus.unset });
+    return of({
+      tradeEvaluationStatus: TradeEvaluationStatus.unset,
+      ...state.kind === OfferType.buy ? { sellAmount: undefined } : { buyAmount: undefined }
+    });
   }
 
   return theCalls$.pipe(
@@ -552,7 +568,7 @@ function evaluateTrade(
 }
 
 function mergeTradeEvaluation(
-  state:InstantFormState, trade: TradeEvaluationState | undefined
+  state: InstantFormState, trade: TradeEvaluationState | undefined
 ): InstantFormState {
   if (!trade) {
     return state;
@@ -748,6 +764,15 @@ function toProxyChange(proxyAddress$: Observable<string>): Observable<ProxyChang
   );
 }
 
+function toContextChange(context$: Observable<NetworkConfig>): Observable<ContextChange> {
+  return context$.pipe(
+    map(context => ({
+      context,
+      kind: InstantFormChangeKind.contextChange,
+    } as ContextChange))
+  );
+}
+
 function isReadyToProceed(state: InstantFormState): InstantFormState {
   return {
     ...state,
@@ -778,6 +803,7 @@ export function createFormController$(
     readCalls$: ReadCalls$;
     etherPriceUsd$: Observable<BigNumber>;
     user$: Observable<User>;
+    context$: Observable<NetworkConfig>
   }
 ): Observable<InstantFormState> {
 
@@ -791,6 +817,7 @@ export function createFormController$(
       toEtherPriceUSDChange(params.etherPriceUsd$),
       toDustLimitsChange(params.dustLimits$),
       toUserChange(params.user$),
+      toContextChange(params.context$),
     ),
     toBalancesChange(params.balances$),
     toEtherBalanceChange(params.etherBalance$),

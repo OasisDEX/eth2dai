@@ -38,7 +38,7 @@ describe('New trade', () => {
   it('should calculate how much the user will pay', () => {
     const trade = new Trade();
     trade.buy().amount('320.00');
-    trade.expectToPay('1.14545');
+    trade.expectToPay('1.145');
 
     TradeData.expectPriceOf(/(279\.37)/);
     TradeData.expectSlippageLimit(/2\.5%/);
@@ -62,7 +62,7 @@ describe('New trade', () => {
     const buy = trade.buy();
     buy.amount('140');
 
-    trade.expectToPay('0.50000');
+    trade.expectToPay('0.500');
 
     buy.clear();
 
@@ -102,7 +102,7 @@ describe('New trade', () => {
 
     trade.sell('ETH');
 
-    trade.expectToPay('1.00000');
+    trade.expectToPay('1.000');
     trade.expectToReceive(willReceive);
   });
 
@@ -118,7 +118,7 @@ describe('New trade', () => {
 
     trade.buy('DAI');
 
-    trade.expectToPay('1.00000');
+    trade.expectToPay('1.000');
     trade.expectToReceive(willReceive);
   });
 
@@ -228,6 +228,36 @@ describe('New trade', () => {
 
     trade.expectPriceImpact('19.28%', true);
     trade.expectToReceive('1,130.00');
-    trade.expectToPay('5.00000');
+    trade.expectToPay('5.000');
+  });
+
+  it('should clear receive input if 0 is provided to deposit input', () => {
+    const trade = new Trade();
+    trade.buy('DAI')
+      .amount('2');
+
+    trade.expectToReceive('2');
+    trade.expectToPay('0.007');
+
+    trade.sell('ETH')
+      .type('{selectall}0');
+
+    trade.expectToReceive('');
+    trade.expectToPay('0');
+  });
+
+  it('should clear deposit input if 0 is provided to receive input', () => {
+    const trade = new Trade();
+    trade.sell('ETH')
+      .amount('1');
+
+    trade.expectToReceive('280.00');
+    trade.expectToPay('1');
+
+    trade.buy('DAI')
+      .type('{selectall}0');
+
+    trade.expectToReceive('0');
+    trade.expectToPay('');
   });
 });

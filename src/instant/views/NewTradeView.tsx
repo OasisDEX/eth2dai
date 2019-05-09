@@ -59,6 +59,15 @@ function error(msg: Message | undefined) {
   }
 }
 
+const priceImpactTooltip = {
+  id: 'price-impact',
+  text: 'The difference between the best current price on the Eth2Dai order book and the estimated price of your order.'
+};
+const slippageLimitTooltip = {
+  id: 'slippage-limit',
+  text: 'The maximum allowed difference between the estimated price of the order and the actual price. The two may differ if the order book changes before your trade executes.'
+};
+
 export class NewTradeView extends React.Component<InstantFormState> {
 
   public render() {
@@ -75,6 +84,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
       gasEstimationUsd,
       quotation,
       user,
+      kind,
     } = this.props;
 
     return (
@@ -116,16 +126,19 @@ export class NewTradeView extends React.Component<InstantFormState> {
             <>
               <TradeData label="Price"
                          data-test-id="trade-price"
-                         info="Additional Info"
                          value={
                            <Approximate>
                              {formatAmount(price, 'USD')} {quotation || ''}
                            </Approximate>
-                         }/>
+                         }
+                         style={{ marginBottom: '2px' }}
+              />
               <TradeData label="Slippage Limit"
                          data-test-id="trade-slippage-limit"
-                         info="Additional Info"
-                         value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}/>
+                         tooltip={slippageLimitTooltip}
+                         value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}
+                         style={{ marginBottom: '2px' }}
+              />
               <TradeData label="Gas cost"
                          data-test-id="trade-gas-cost"
                          value={
@@ -135,11 +148,11 @@ export class NewTradeView extends React.Component<InstantFormState> {
                                  <Money value={gasEstimationUsd} token="USD"/>
                                </Approximate>
                              )
-                             : <ProgressIcon data-vis-reg-hide={true} small={true}/>
+                             : <ProgressIcon data-vis-reg-hide={true} size="sm"/>
                          }/>
               <TradeData label="Price Impact"
                          data-test-id="trade-price-impact"
-                         info="Additional Info"
+                         tooltip={priceImpactTooltip}
                          value={
                            <FormatPercent
                              className={priceImpact && priceImpact.gt(new BigNumber(5)) ? 'danger' : ''}
@@ -168,7 +181,8 @@ export class NewTradeView extends React.Component<InstantFormState> {
                      (sellToken === 'ETH' && etherBalance ||
                        balances && balances[sellToken]) || undefined
                    }
-                   user={user}/>
+                   user={user}
+                   approx={sellAmount && kind === 'buy'}/>
           <div data-test-id="swap" className={styles.swapIcon} onClick={this.swap}>
             <SvgImage image={swapArrowsSvg}/>
           </div>
@@ -180,7 +194,8 @@ export class NewTradeView extends React.Component<InstantFormState> {
                     (buyToken === 'ETH' && etherBalance ||
                       balances && balances[buyToken]) || undefined
                   }
-                  user={user}/>
+                  user={user}
+                  approx={buyAmount && kind === 'sell'}/>
         </div>
         <div data-test-id="error"
              className={classnames(
