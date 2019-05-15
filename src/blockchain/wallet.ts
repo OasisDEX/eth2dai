@@ -1,5 +1,5 @@
-import { concat, from, Observable, Subject } from 'rxjs';
-import { catchError, filter, first, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import { from, merge, Observable, Subject } from 'rxjs';
+import { catchError, filter, first, map, mapTo, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import * as Web3 from 'web3';
 
 import { account$ } from './network';
@@ -8,7 +8,8 @@ import { Web3Window } from './web3';
 export type WalletStatus = 'disconnected' | 'connecting' | 'connected' | 'denied' | 'missing';
 
 export const connectToWallet$: Subject<number> = new Subject();
-export const walletStatus$: Observable<WalletStatus> = concat(
+export const disconnected$: Subject<string> = new Subject();
+export const walletStatus$: Observable<WalletStatus> = merge(
   account$.pipe(
     first(),
     map(account => account ?
@@ -16,7 +17,10 @@ export const walletStatus$: Observable<WalletStatus> = concat(
       (window as Web3Window).ethereum ?
         'disconnected' :
         'missing'
-      ),
+    ),
+  ),
+  disconnected$.pipe(
+    mapTo('disconnected' as WalletStatus)
   ),
   connectToWallet$.pipe(
     switchMap(() => {
@@ -39,4 +43,5 @@ export const walletStatus$: Observable<WalletStatus> = concat(
 ).pipe(
   shareReplay(1),
 );
+
 walletStatus$.subscribe();

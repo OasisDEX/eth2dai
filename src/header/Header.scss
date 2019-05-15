@@ -22,6 +22,7 @@ $header-media-breakpoint: 800px;
     width: 132px;
     max-height: 37px;
     margin: auto 1.5em auto auto;
+
     svg:hover :global(#bg) {
       fill-opacity: 0.35;
     }
@@ -41,6 +42,7 @@ $header-media-breakpoint: 800px;
   }
 
   &Status {
+    align-items: center;
     @include media-breakpoint-down($header-media-breakpoint) {
       flex: 1 1 auto;
       justify-content: flex-end;
@@ -55,48 +57,48 @@ $header-media-breakpoint: 800px;
 }
 
 .list {
-    display: flex;
-    list-style-type: none;
-    padding: 0;
+  display: flex;
+  list-style-type: none;
+  padding: 0;
 
   @include media-breakpoint-down($header-media-breakpoint) {
-      margin-top: 24px;
+    margin-top: 24px;
+  }
+
+  .item + .item {
+    margin-left: -1px;
+
+    .navLink {
+      border-left-color: transparent;
     }
+  }
 
-    .item + .item {
-        margin-left: -1px;
-
-      .navLink {
-        border-left-color: transparent;
-      }
-    }
-
-    // left and right item border radius
+  // left and right item border radius
   .item:first-child, .item:first-child > * {
-        border-bottom-left-radius: $border-radius;
-        border-top-left-radius: $border-radius;
-    }
+    border-bottom-left-radius: $border-radius;
+    border-top-left-radius: $border-radius;
+  }
 
   .item:last-child, .item:last-child > * {
-        border-bottom-right-radius: $border-radius;
-        border-top-right-radius: $border-radius;
-    }
+    border-bottom-right-radius: $border-radius;
+    border-top-right-radius: $border-radius;
+  }
 
-    .item:last-child {
-      margin-right: 0;
-    }
+  .item:last-child {
+    margin-right: 0;
+  }
 }
 
 .navElement {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-    height: 40px;
+  height: 40px;
 
-    border: 1px solid rgba($white, 0.1);
-    color: $white;
-    border-radius: 0;
+  border: 1px solid rgba($white, 0.1);
+  color: $white;
+  border-radius: 0;
 }
 
 .navLink {
@@ -104,6 +106,7 @@ $header-media-breakpoint: 800px;
   text-decoration: none;
   width: 108px;
   color: $grey-lightest;
+
   &:hover {
     background-color: rgba($white, 0.1);
     cursor: pointer;
@@ -113,13 +116,14 @@ $header-media-breakpoint: 800px;
     width: 100%;
   }
 }
+
 .activeNavLink {
-    &,
-    &:hover {
-        color: white;
-      border: 1px solid $grey-lightest !important;
-        background: initial;
-    }
+  &,
+  &:hover {
+    color: white;
+    border: 1px solid $grey-lightest !important;
+    background: initial;
+  }
 }
 
 .account {
@@ -138,10 +142,12 @@ $header-media-breakpoint: 800px;
     }
   }
 }
+
 .accountLoader {
   display: flex;
-  margin-right: 12px;
+  margin-left: 12px;
 }
+
 .login {
   display: inline-flex;
   align-items: center;
@@ -155,53 +161,48 @@ $header-media-breakpoint: 800px;
   }
 }
 
-.connectButton {
+.connectWallet {
   text-transform: none;
   font-size: 16px;
 }
+
 :global(.Popover.noWallet) {
+
   & :global(.Popover-tip) {
-    fill: $white;
-  }
-  & :global(.Popover-body) {
-    background-color: $white;
-    border-color: $white;
-    border-radius: 2px;
-    color: black;
-    padding: 1em;
+    fill: none;
   }
 }
 
 .networkIndicator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 79px;
-  height: 40px;
-
-  background: transparent;
-  border-radius: $border-radius;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
-  font-size: 16px;
-  letter-spacing: 1.4px;
-
-  text-transform: capitalize;
-
-  @include media-breakpoint-down($header-media-breakpoint) {
-    max-width: 68px;
-    font-size: 14px;
-    height: 32px;
-  }
+  width: 12px;
+  height: 12px;
+  margin-right: 1rem;
+  border-radius: 100%;
 }
 
 .networkIndicator.kovan {
-  color: $moderate-violet;
+  background-color: $moderate-violet;
   border: 1px solid $moderate-violet;;
 }
 
-.networkIndicator.main{
-  color: $soft-cyan;
+.networkIndicator.main {
+  background-color: $soft-cyan;
   border: 1px solid $soft-cyan;
+}
+
+.arrowDown {
+  width: 10px;
+  height: 6px;
+  margin-left: 1rem;
+  display: inherit;
+
+  &.dark svg path {
+    fill: #3c3c3c;
+  }
+}
+
+.connectWallet:hover {
+  .arrowDown.dark svg path {
+    fill: black;
+  }
 }

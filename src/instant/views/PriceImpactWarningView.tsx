@@ -6,6 +6,7 @@ import { TopRightCorner } from '../../utils/panel/TopRightCorner';
 import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './PriceImpactWarningView.scss';
+import * as instantStyles from '../Instant.scss';
 
 const PriceImpactGraph = () => (
   <div className={styles.graph}>
@@ -35,7 +36,9 @@ export class PriceImpactWarningView extends React.Component<InstantFormState> {
                           btnAction={this.onAcknowledge}
                           btnDataTestId="proceed-with-order">
         <TopRightCorner>
-          <CloseButton theme="instant" data-test-id="dismiss-warning" onClick={this.onDismiss}/>
+          <CloseButton className={instantStyles.closeButton}
+                       theme="danger" data-test-id="dismiss-warning"
+                       onClick={this.onDismiss}/>
         </TopRightCorner>
         <div className={styles.container}>
           <PriceImpactGraph/>

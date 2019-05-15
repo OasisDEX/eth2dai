@@ -66,3 +66,8 @@ body {
   opacity: 0;
   transition: opacity 250ms ease-out;
 }
+
+:global(a) {
+  color: inherit;
+  text-decoration: none;
+}

@@ -2,7 +2,7 @@ import { isEqual } from 'lodash';
 import 'normalize.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { combineLatest, interval, Observable, of } from 'rxjs/index';
+import { combineLatest, interval, Observable, of } from 'rxjs';
 import { distinctUntilChanged, startWith, switchMap, tap } from 'rxjs/internal/operators';
 import { map } from 'rxjs/operators';
 import { networks } from './blockchain/config';
@@ -34,10 +34,6 @@ class App extends React.Component<Props> {
           return LoadingState.UNSUPPORTED;
         }
 
-        if (!this.props.tosAccepted) {
-          return LoadingState.ACCEPT_TOS;
-        }
-
         /*
         * The way to present announcement before loading the app is:
         * <Announcement
@@ -55,7 +51,7 @@ class App extends React.Component<Props> {
   }
 }
 
-const accepted$: Observable<boolean> = interval(500).pipe(
+export const accepted$: Observable<boolean> = interval(500).pipe(
   startWith(false),
   map(() => localStorage.getItem('tosAccepted') === 'true')
 );
@@ -72,10 +68,9 @@ const web3StatusResolve$: Observable<Props> = web3Status$.pipe(
   startWith({ status: 'initializing' as Web3Status })
 );
 
-const props$: Observable<Props> = combineLatest(accepted$, web3StatusResolve$).pipe(
-  map(([tosAccepted, web3Status]) => {
+const props$: Observable<Props> = web3StatusResolve$.pipe(
+  map((web3Status) => {
     return {
-      tosAccepted,
       ...web3Status
     } as Props;
   }),
