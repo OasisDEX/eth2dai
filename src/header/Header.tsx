@@ -6,8 +6,8 @@ import * as React from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 // @ts-ignore
 import * as ReactPopover from 'react-popover';
-import { combineLatest, merge, Observable } from 'rxjs';
-import { distinctUntilChanged, map, tap } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { IoIosWifi } from 'react-icons/io';
 import MediaQuery from 'react-responsive';
@@ -41,6 +41,7 @@ const {
   activeNavLink,
   arrowDown,
   dark,
+  walletConnection,
 } = styles;
 
 interface HeaderProps {
@@ -50,31 +51,26 @@ interface HeaderProps {
   view: WalletConnectionViewKind;
 }
 
-const walletConnectionView$: Observable<WalletConnectionViewKind> = merge(
-  walletConnectionViewManual$,
-  combineLatest(walletStatus$, web3Status$)
+const walletConnectionView$: Observable<WalletConnectionViewKind> =
+  combineLatest(walletConnectionViewManual$, walletStatus$, web3Status$)
     .pipe(
-      map(([walletStatus, web3Status]) => {
-        if (web3Status === 'readonly') {
-          return WalletConnectionViewKind.noClient;
+      map(([manualViewChange, walletStatus, web3Status]) => {
+        if (manualViewChange) {
+          return manualViewChange;
         }
 
-        if ((walletStatus === 'disconnected' || walletStatus === 'missing') && web3Status === 'ready') {
-          return WalletConnectionViewKind.notConnected;
+        if (web3Status === 'readonly') {
+          return WalletConnectionViewKind.noClient;
         }
 
         if (walletStatus === 'connected') {
           return WalletConnectionViewKind.connected;
         }
 
-        return WalletConnectionViewKind.noClient;
+        return WalletConnectionViewKind.notConnected;
       }),
       distinctUntilChanged(isEqual)
-    )
-).pipe(
-  map(view => view),
-  distinctUntilChanged(isEqual),
-);
+    );
 
 walletConnectionView$.subscribe();
 
@@ -112,8 +108,7 @@ class Header extends React.Component<HeaderProps> {
 
 export const HeaderTxRx = connect(Header, combineLatest(account$, walletStatus$, web3Status$, walletConnectionView$).pipe(
   map(([account, walletStatus, web3status, view]) => ({ account, walletStatus, web3status, view })),
-  tap(result => console.log(result)))
-);
+));
 
 class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
 
@@ -134,43 +129,44 @@ class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
                     className="noWallet"
                     body={<View/>}
       >
-        {
-          this.props.connected
-            ? (<>
-              <theAppContext.Consumer>
-                {({ NetworkTxRx }) =>
-                  // @ts-ignore
-                  <NetworkTxRx/>
-                }
-              </theAppContext.Consumer>
-              <div onClick={this._open}>
-                <StatusTxRx/>
-              </div>
-            </>)
-            : (
-              <div className={classnames(navElement, styles.account)}>
-                <Button color="white"
-                        size="sm"
-                        onClick={this._open}
-                        className={classnames(styles.login, styles.connectWallet)}>
-                  <MediaQuery minWidth={800}>
-                    {(matches) => {
-                      if (matches) {
-                        return (
-                          <>
-                            Connect Wallet<SvgImage image={arrowDownSvg}
-                                                    className={classnames(arrowDown, dark)}/>
-                          </>
-                        );
-                      }
-                      return <IoIosWifi/>;
-                    }}
-                  </MediaQuery>
-                </Button>
-              </div>
-            )
-        }
-
+        <div className={walletConnection}>
+          <theAppContext.Consumer>
+            {({ NetworkTxRx }) =>
+              // @ts-ignore
+              <NetworkTxRx/>
+            }
+          </theAppContext.Consumer>
+          {
+            this.props.connected
+              ? (
+                <div onClick={this._open}>
+                  <StatusTxRx/>
+                </div>
+              )
+              : (
+                <div className={classnames(navElement, styles.account)}>
+                  <Button color="white"
+                          size="sm"
+                          onClick={this._open}
+                          className={classnames(styles.login, styles.connectWallet)}>
+                    <MediaQuery minWidth={800}>
+                      {(matches) => {
+                        if (matches) {
+                          return (
+                            <>
+                              Connect Wallet<SvgImage image={arrowDownSvg}
+                                                      className={classnames(arrowDown, dark)}/>
+                            </>
+                          );
+                        }
+                        return <IoIosWifi/>;
+                      }}
+                    </MediaQuery>
+                  </Button>
+                </div>
+              )
+          }
+        </div>
       </ReactPopover>
     );
   }
@@ -181,6 +177,13 @@ class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
 
   private _close = () => {
     this.setState({ isOpen: false });
+    /* We need to update the view with a small delay.
+    * The dropdown contains animation when showing/hiding.
+    */
+    setTimeout(
+      () => walletConnectionViewManual$.next(''),
+      500
+    );
   }
 }
 
@@ -218,9 +221,6 @@ interface Account {
 
 const loadableAccount$: Observable<Loadable<Account>> = combineLatest(walletStatus$, account$).pipe(
   map(([walletStatus, account]) => {
-    if (walletStatus === 'disconnected') {
-      return { status: 'loaded', value: { account: undefined } } as Loadable<Account>;
-    }
     if (walletStatus === 'connecting') {
       return { status: 'loading' } as Loadable<Account>;
     }

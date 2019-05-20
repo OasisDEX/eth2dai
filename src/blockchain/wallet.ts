@@ -1,26 +1,41 @@
-import { from, merge, Observable, Subject } from 'rxjs';
-import { catchError, filter, first, map, mapTo, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import { combineLatest, from, interval, merge, Observable, Subject } from 'rxjs';
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  first,
+  map,
+  shareReplay,
+  startWith,
+  switchMap
+} from 'rxjs/operators';
 import * as Web3 from 'web3';
 
+import { isEqual } from 'lodash';
 import { account$ } from './network';
 import { Web3Window } from './web3';
 
 export type WalletStatus = 'disconnected' | 'connecting' | 'connected' | 'denied' | 'missing';
 
+const accepted$ = interval(500).pipe(
+  map(() => JSON.parse(localStorage.getItem('tos') || 'false')),
+  startWith(JSON.parse(localStorage.getItem('tos') || 'false')),
+  distinctUntilChanged(isEqual)
+);
+
 export const connectToWallet$: Subject<number> = new Subject();
-export const disconnected$: Subject<string> = new Subject();
 export const walletStatus$: Observable<WalletStatus> = merge(
-  account$.pipe(
-    first(),
-    map(account => account ?
-      'connected' :
-      (window as Web3Window).ethereum ?
-        'disconnected' :
-        'missing'
+  combineLatest(
+    account$,
+    accepted$
+  ).pipe(
+    map(([account, hasAcceptedToS]) =>
+      account && hasAcceptedToS ?
+        'connected' :
+        (window as Web3Window).ethereum ?
+          'disconnected' :
+          'missing'
     ),
-  ),
-  disconnected$.pipe(
-    mapTo('disconnected' as WalletStatus)
   ),
   connectToWallet$.pipe(
     switchMap(() => {
@@ -31,7 +46,10 @@ export const walletStatus$: Observable<WalletStatus> = merge(
           switchMap(([enabled]) => account$.pipe(
             filter(account => account === enabled),
             first(),
-            map(() => 'connected'),
+            map(() => {
+              window.localStorage.setItem('tos', 'true');
+              return 'connected';
+            }),
           )),
           startWith('connecting' as WalletStatus),
           catchError(() => from(['denied'])),

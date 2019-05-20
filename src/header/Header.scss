@@ -145,7 +145,6 @@ $header-media-breakpoint: 800px;
 
 .accountLoader {
   display: flex;
-  margin-left: 12px;
 }
 
 .login {
@@ -199,6 +198,11 @@ $header-media-breakpoint: 800px;
   &.dark svg path {
     fill: #3c3c3c;
   }
+}
+
+.walletConnection {
+  display: inline-flex;
+  align-items: center;
 }
 
 .connectWallet:hover {

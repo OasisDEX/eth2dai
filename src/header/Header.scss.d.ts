@@ -18,3 +18,4 @@ export const kovan: string;
 export const main: string;
 export const arrowDown: string;
 export const dark: string;
+export const walletConnection: string;

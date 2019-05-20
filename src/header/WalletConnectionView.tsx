@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import * as React from 'react';
-import { Subject } from 'rxjs';
-import { connectToWallet$, disconnected$ } from '../blockchain/wallet';
+import { BehaviorSubject } from 'rxjs';
+import { connectToWallet$ } from '../blockchain/wallet';
 import { Button } from '../utils/forms/Buttons';
 import { Checkbox } from '../utils/forms/Checkbox';
 import {
@@ -230,10 +230,6 @@ class NoClient extends React.Component<any, { isChecked: boolean, selectedWallet
     });
   }
 
-  private _selectWallet = (selectedWallet: Provider) => {
-    this.setState({ selectedWallet });
-  }
-
   private _connect = () => {
     connectToWallet$.next();
   }
@@ -257,7 +253,7 @@ class Connected extends React.Component<any> {
   public render() {
     return <>
       <section className={section}>
-        <h4 className={heading}> Metamask Connected </h4>
+        <h4 className={heading}> {getCurrentProviderName().name} Connected </h4>
         <ul className={classnames(list, single)}>
           {
             hwWallets.map((hwWallet) =>
@@ -269,11 +265,6 @@ class Connected extends React.Component<any> {
             )
           }
         </ul>
-        <div className={buttonPlaceholder}>
-          <Button color="darkRed" size="lg" className={button} onClick={
-            () => disconnected$.next()
-          }> Disconnect </Button>
-        </div>
       </section>
     </>
       ;
@@ -287,7 +278,7 @@ export enum WalletConnectionViewKind {
   noClient = 'noClient',
 }
 
-export const walletConnectionViewManual$ = new Subject();
+export const walletConnectionViewManual$ = new BehaviorSubject('');
 walletConnectionViewManual$.subscribe();
 
 export const WalletConnectionViews = new Map<WalletConnectionViewKind, any>(
