@@ -106,7 +106,7 @@ describe('Wallet', () => {
 
       WalletConnection.close();
 
-      cy.wait(300); // because of the animation the state is not cleared. We have to wait for the component to completely unmount
+      cy.wait(1000); // because of the animation the state is not cleared. We have to wait for the component to completely unmount
 
       WalletConnection.open();
 
@@ -136,7 +136,7 @@ describe('Wallet', () => {
     it('should display which provider is connected', () => {
       WalletConnection.open().web().acceptToS().connect();
 
-      cy.wait(300);
+      cy.wait(1000);
 
       WalletConnection.headingIs('Web Wallet Connected');
     });
