@@ -38,7 +38,7 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
               color={kind === MyTradesKind.closed ? 'whiteOutlined' : 'grey'}
               className={styles.orderTypeBtn}
               onClick={() => changeKind && changeKind(MyTradesKind.closed)}
-            >Close</Button>
+            >Closed</Button>
           </ButtonGroup>
         </PanelHeader>
 

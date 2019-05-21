@@ -1,3 +1,5 @@
+rm -rf ./build
+
 yarn build
 
 echo "eth2dai.com" > ./build/CNAME
