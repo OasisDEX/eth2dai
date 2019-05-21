@@ -97,6 +97,10 @@
 
   letter-spacing: .4px;
 
+  input[type=checkbox] + span:before {
+    margin-left: 4px;
+  }
+
   a {
     color: white;
     text-decoration: underline;
@@ -119,8 +123,8 @@
     bg: $vivid-blue,
     border-color: $vivid-blue,
     color-hover: $very-pale-blue,
-    border-color-hover: $vivid-blue,
-    bg-hover: $vivid-blue
+    border-color-hover: $vivid-blue-hover,
+    bg-hover: $vivid-blue-hover
   ));
 
   &:disabled {
