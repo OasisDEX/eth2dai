@@ -1,5 +1,6 @@
 @import "../utils/Mixins";
 @import "../utils/Variables";
+@import "../utils/forms/Buttons";
 
 $header-media-breakpoint: 800px;
 
@@ -165,9 +166,28 @@ $header-media-breakpoint: 800px;
   }
 }
 
-.connectWallet {
-  text-transform: none;
-  font-size: 16px;
+.connectWalletButton {
+  width: 196px;
+  height: 38px;
+  font-size: 16px !important;
+  text-transform: capitalize;
+  letter-spacing: 0.8px;
+
+  border-radius: 4px;
+
+  @include button((
+    color: #3c3c3c,
+    bg: $white,
+    border-color: $white,
+    color-hover: #3c3c3c,
+    border-color-hover: $whitish,
+    bg-hover: $whitish
+  ));
+
+  @include media-breakpoint-down($header-media-breakpoint) {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 :global(.Popover.noWallet) {
@@ -212,10 +232,4 @@ $header-media-breakpoint: 800px;
 .walletConnection {
   display: inline-flex;
   align-items: center;
-}
-
-.connectWallet:hover {
-  .arrowDown.dark svg path {
-    fill: black;
-  }
 }

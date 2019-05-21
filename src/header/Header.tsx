@@ -145,27 +145,26 @@ class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
                 </div>
               )
               : (
-                <div className={classnames(navElement, styles.account)}>
-                  <Button color="white"
-                          size="sm"
-                          onClick={this._open}
-                          data-test-id="new-connection"
-                          className={classnames(styles.login, styles.connectWallet)}>
-                    <MediaQuery minWidth={800}>
-                      {(matches) => {
-                        if (matches) {
-                          return (
-                            <>
-                              Connect Wallet<SvgImage image={chevronDownSvg}
-                                                      className={classnames(arrowDown, dark)}/>
-                            </>
-                          );
-                        }
-                        return <IoIosWifi/>;
-                      }}
-                    </MediaQuery>
-                  </Button>
-                </div>
+
+                <Button color="white"
+                        size="sm"
+                        onClick={this._open}
+                        data-test-id="new-connection"
+                        className={classnames(styles.login, styles.connectWalletButton)}>
+                  <MediaQuery minWidth={800}>
+                    {(matches) => {
+                      if (matches) {
+                        return (
+                          <>
+                            Connect Wallet<SvgImage image={chevronDownSvg}
+                                                    className={classnames(arrowDown, dark)}/>
+                          </>
+                        );
+                      }
+                      return <IoIosWifi/>;
+                    }}
+                  </MediaQuery>
+                </Button>
               )
           }
         </div>
