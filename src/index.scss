@@ -23,6 +23,7 @@ body {
 .container {
   width: 932px;
   margin: 0 auto;
+  position: relative;
 
   @include media-breakpoint-down(lg) {
     width: auto;

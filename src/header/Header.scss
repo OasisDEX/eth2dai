@@ -141,7 +141,7 @@ $header-media-breakpoint: 800px;
     height: 32px;
   }
 
-  & span {
+  & span, & .arrowDown {
     @include media-breakpoint-down($header-media-breakpoint) {
       display: none
     }

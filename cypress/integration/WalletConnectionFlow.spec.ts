@@ -54,6 +54,8 @@ describe('Wallet', () => {
 
       WalletConnection.close();
 
+      cy.wait(1000);
+
       WalletConnection.open();
 
       WalletConnection.hasAcceptedToS(false);
