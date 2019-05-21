@@ -16,7 +16,7 @@ import { theAppContext } from '../AppContext';
 import { account$ } from '../blockchain/network';
 import { WalletStatus, walletStatus$ } from '../blockchain/wallet';
 import { Web3Status, web3Status$ } from '../blockchain/web3';
-import arrowDownSvg from '../icons/arrow-down.svg';
+import chevronDownSvg from '../icons/chevron-down.svg';
 import { routerContext } from '../Main';
 import { connect } from '../utils/connect';
 import { Button } from '../utils/forms/Buttons';
@@ -41,6 +41,7 @@ const {
   activeNavLink,
   arrowDown,
   dark,
+  light,
   walletConnection,
 } = styles;
 
@@ -155,7 +156,7 @@ class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
                         if (matches) {
                           return (
                             <>
-                              Connect Wallet<SvgImage image={arrowDownSvg}
+                              Connect Wallet<SvgImage image={chevronDownSvg}
                                                       className={classnames(arrowDown, dark)}/>
                             </>
                           );
@@ -205,8 +206,10 @@ class Status extends React.Component<StatusProps> {
                data-test-id="status"
                className={classnames(navElement, styles.account)}
           >
-            <Jazzicon diameter={25} seed={jsNumberForAddress(account)}/>
-            <span data-test-id="account" style={{ marginLeft: '1em' }}>{label}</span>
+            <Jazzicon diameter={20} seed={jsNumberForAddress(account)}/>
+            <span data-test-id="account" style={{ marginLeft: '.625rem', letterSpacing: '.2px' }}>{label}</span>
+            <SvgImage image={chevronDownSvg}
+                      className={classnames(arrowDown, light)}/>
           </div>
         );
       }}

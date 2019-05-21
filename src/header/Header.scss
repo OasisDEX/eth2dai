@@ -131,6 +131,11 @@ $header-media-breakpoint: 800px;
   border-radius: $border-radius;
   margin-right: 0px;
 
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+  }
+
   @include media-breakpoint-down($header-media-breakpoint) {
     width: 32px;
     height: 32px;
@@ -190,13 +195,17 @@ $header-media-breakpoint: 800px;
 }
 
 .arrowDown {
-  width: 10px;
-  height: 6px;
-  margin-left: 1rem;
+  width: 12px;
+  height: 7px;
+  margin-left: .875rem;
   display: inherit;
 
   &.dark svg path {
     fill: #3c3c3c;
+  }
+
+  &.light svg path {
+    fill: #FFFFFF;
   }
 }
 
