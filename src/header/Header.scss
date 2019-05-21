@@ -176,10 +176,10 @@ $header-media-breakpoint: 800px;
   border-radius: 4px;
 
   @include button((
-    color: #3c3c3c,
+    color: #263238,
     bg: $white,
     border-color: $white,
-    color-hover: #3c3c3c,
+    color-hover: #263238,
     border-color-hover: $whitish,
     bg-hover: $whitish
   ));
@@ -221,7 +221,7 @@ $header-media-breakpoint: 800px;
   display: inherit;
 
   &.dark svg path {
-    fill: #3c3c3c;
+    fill: #263238;
   }
 
   &.light svg path {
