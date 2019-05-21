@@ -148,6 +148,7 @@ class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
                   <Button color="white"
                           size="sm"
                           onClick={this._open}
+                          data-test-id="new-connection"
                           className={classnames(styles.login, styles.connectWallet)}>
                     <MediaQuery minWidth={800}>
                       {(matches) => {
@@ -201,10 +202,11 @@ class Status extends React.Component<StatusProps> {
 
         return (
           <div title={account}
+               data-test-id="status"
                className={classnames(navElement, styles.account)}
           >
             <Jazzicon diameter={25} seed={jsNumberForAddress(account)}/>
-            <span style={{ marginLeft: '1em' }}>{label}</span>
+            <span data-test-id="account" style={{ marginLeft: '1em' }}>{label}</span>
           </div>
         );
       }}

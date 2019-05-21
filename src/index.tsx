@@ -2,7 +2,7 @@ import { isEqual } from 'lodash';
 import 'normalize.css';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { combineLatest, interval, Observable, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { distinctUntilChanged, startWith, switchMap, tap } from 'rxjs/internal/operators';
 import { map } from 'rxjs/operators';
 import { networks } from './blockchain/config';
@@ -50,11 +50,6 @@ class App extends React.Component<Props> {
     }
   }
 }
-
-export const accepted$: Observable<boolean> = interval(500).pipe(
-  startWith(false),
-  map(() => localStorage.getItem('tosAccepted') === 'true')
-);
 
 const web3StatusResolve$: Observable<Props> = web3Status$.pipe(
   switchMap(status =>

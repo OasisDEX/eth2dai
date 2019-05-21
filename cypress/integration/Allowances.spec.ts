@@ -1,5 +1,4 @@
 import { Allowance, ALLOWANCE_STATE } from '../pages/Allowance';
-import { ApplicationState } from '../pages/Application';
 import { Tab } from '../pages/Tab';
 import { cypressVisitWithWeb3 } from '../utils/index';
 
@@ -7,7 +6,6 @@ describe('Setting allowances', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    ApplicationState.acceptToS();
     Tab.balances();
   });
 

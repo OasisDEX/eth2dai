@@ -1,4 +1,3 @@
-import { ApplicationState } from '../../pages/Application';
 import { Order } from '../../pages/Order';
 import { Orderbook, OrderType } from '../../pages/Orderbook';
 import { Tab } from '../../pages/Tab';
@@ -18,7 +17,6 @@ describe('New trade', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    ApplicationState.acceptToS();
     Tab.instant();
     waitForBalancesToLoad();
   });

@@ -1,6 +1,5 @@
-import { cypressVisitWithWeb3, multiply } from '../utils/index';
+import { cypressVisitWithWeb3, multiply } from '../utils';
 
-import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
 import { Order } from '../pages/Order';
 import { Orderbook, OrderType } from '../pages/Orderbook';
@@ -11,7 +10,6 @@ import { makeScreenshots } from '../utils/makeScreenshots';
 describe('Sell Order', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
-    ApplicationState.acceptToS();
   });
 
   it('should place a new order', () => {

@@ -34,8 +34,8 @@ const {
   buttonPlaceholder,
 } = styles;
 
-const ListItem = (props: Provider & { className?: string, isSelected?: boolean, onSelect?: () => void }) => {
-  const { supported, isSelected, className, name: fullName, icon: walletIcon, onSelect } = props;
+const ListItem = (props: Provider & { className?: string, isSelected?: boolean, onSelect?: () => void, tid?: string }) => {
+  const { supported, isSelected, className, name: fullName, icon: walletIcon, onSelect, tid } = props;
   return (
     <li className={
       classnames(
@@ -45,6 +45,7 @@ const ListItem = (props: Provider & { className?: string, isSelected?: boolean, 
       )
     }
         onClick={onSelect}
+        data-test-id={tid}
     >
       <div className={icon}>{walletIcon}</div>
       <span>{fullName}</span>
@@ -52,12 +53,22 @@ const ListItem = (props: Provider & { className?: string, isSelected?: boolean, 
   );
 };
 
+const Panel = (props: { heading?: string | React.ReactNode, children?: any }) => {
+  return (
+    <section data-test-id="wallet-connection-panel" className={section}>
+      <h4 data-test-id="heading" className={heading}>{props.heading}</h4>
+      {
+        props.children
+      }
+    </section>
+  );
+};
+
 class SuggestedClients extends React.Component<any> {
   public render() {
     return (
-      <section className={section}>
-        <h4 className={heading}>Get a Wallet</h4>
-        <ul className={list}>
+      <Panel heading="Get a Wallet">
+        <ul className={list} data-test-id="suggested-clients">
           {
             [Metamask, Parity, Status, Trust].map((provider) => {
               return (
@@ -76,13 +87,13 @@ class SuggestedClients extends React.Component<any> {
           <Button size="lg"
                   color="white"
                   className={classnames(item, button)}
-                  data-test-id="continue-with-app"
+                  data-test-id="go-back"
                   onClick={this._goBack}
           >
             Back
           </Button>
         </div>
-      </section>
+      </Panel>
     );
   }
 
@@ -103,14 +114,15 @@ class NotConnected extends React.Component<any, { isChecked: boolean, selectedWa
   public render() {
     const provider = getCurrentProviderName();
     return (
-      <section className={section}>
-        <h4 className={heading}> Connect Wallet </h4>
+      <Panel heading="Connect Wallet">
         <ul className={list}>
           <ListItem icon={provider.icon}
                     name={provider.name}
                     supported={provider.supported}
                     isSelected={this.state.selectedWallet.id === provider.id}
-                    onSelect={() => this._selectWallet(provider)}/>
+                    onSelect={() => this._selectWallet(provider)}
+                    tid="web-wallet"
+          />
         </ul>
         <ul className={list}>
           {
@@ -136,12 +148,12 @@ class NotConnected extends React.Component<any, { isChecked: boolean, selectedWa
                   className={classnames(item, button)}
                   disabled={!this._canConnect()}
                   onClick={this._connect}
-                  data-test-id="continue-with-app"
+                  data-test-id="connect-wallet"
           >
             Connect
           </Button>
         </div>
-      </section>
+      </Panel>
     );
   }
 
@@ -181,14 +193,15 @@ class NoClient extends React.Component<any, { isChecked: boolean, selectedWallet
 
   public render() {
     return (
-      <section className={section}>
-        <h4 className={heading}> Connect Wallet </h4>
+      <Panel heading="Connect Wallet">
         <ul className={list}>
           <ListItem icon={WebWallet.icon}
                     name={WebWallet.name}
                     supported={WebWallet.supported}
                     isSelected={this.state.selectedWallet.id === WebWallet.id}
-                    onSelect={this._suggestClients}/>
+                    onSelect={this._suggestClients}
+                    tid="web-wallet"
+          />
         </ul>
         <ul className={list}>
           {
@@ -214,12 +227,12 @@ class NoClient extends React.Component<any, { isChecked: boolean, selectedWallet
                   className={classnames(item, button)}
                   disabled={!this._canConnect()}
                   onClick={this._connect}
-                  data-test-id="continue-with-app"
+                  data-test-id="connect-wallet"
           >
             Connect
           </Button>
         </div>
-      </section>
+      </Panel>
     );
   }
 
@@ -251,9 +264,8 @@ class NoClient extends React.Component<any, { isChecked: boolean, selectedWallet
 
 class Connected extends React.Component<any> {
   public render() {
-    return <>
-      <section className={section}>
-        <h4 className={heading}> {getCurrentProviderName().name} Connected </h4>
+    return (
+      <Panel heading={`${getCurrentProviderName().name} Connected`}>
         <ul className={classnames(list, single)}>
           {
             hwWallets.map((hwWallet) =>
@@ -265,9 +277,8 @@ class Connected extends React.Component<any> {
             )
           }
         </ul>
-      </section>
-    </>
-      ;
+      </Panel>
+    );
   }
 }
 

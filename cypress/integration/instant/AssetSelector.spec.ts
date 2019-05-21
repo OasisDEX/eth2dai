@@ -1,4 +1,3 @@
-import { ApplicationState } from '../../pages/Application';
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
 import { cypressVisitWithWeb3 } from '../../utils';
@@ -7,7 +6,6 @@ describe('Selecting an asset', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    ApplicationState.acceptToS();
     Tab.instant();
   });
 

@@ -17,7 +17,7 @@ import { Web3Window } from './web3';
 
 export type WalletStatus = 'disconnected' | 'connecting' | 'connected' | 'denied' | 'missing';
 
-const accepted$ = interval(500).pipe(
+export const accepted$ = interval(500).pipe(
   map(() => JSON.parse(localStorage.getItem('tos') || 'false')),
   startWith(JSON.parse(localStorage.getItem('tos') || 'false')),
   distinctUntilChanged(isEqual)
@@ -40,6 +40,7 @@ export const walletStatus$: Observable<WalletStatus> = merge(
   connectToWallet$.pipe(
     switchMap(() => {
       const win = window as Web3Window;
+      window.localStorage.setItem('tos', 'true');
       if (win.ethereum) {
         win.web3 = new Web3(win.ethereum);
         return from(win.ethereum.enable()).pipe(
@@ -47,7 +48,6 @@ export const walletStatus$: Observable<WalletStatus> = merge(
             filter(account => account === enabled),
             first(),
             map(() => {
-              window.localStorage.setItem('tos', 'true');
               return 'connected';
             }),
           )),
