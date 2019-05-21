@@ -1,5 +1,6 @@
 @import '../utils/Variables';
 @import '../utils/Mixins';
+@import '../utils/forms/Buttons';
 
 .section {
   border-color: $white;
@@ -16,6 +17,7 @@
   text-align: center;
   font-weight: 500;
   margin: 1.25rem 0;
+  letter-spacing: .4px;
 }
 
 .list {
@@ -53,7 +55,7 @@
   align-items: center;
   @include fontMontserratMedium();
   font-size: 0.875rem;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.4px;
 
   .icon {
     display: inline-block;
@@ -66,8 +68,12 @@
     }
   }
 
-  &.selected, &:hover {
-    background-color: $grey-light;
+  &.selected {
+    background-color: #373740;
+  }
+
+  &:hover {
+    background-color: #33333C;
   }
 
   &.inactive {
@@ -85,9 +91,11 @@
 
   font-size: .75rem;
   padding: 1rem 1.5rem;
-  color: $grey-lighter;
+  color: #ACACAF;
 
   border-bottom: 1px solid rgba(88, 88, 95, .2);
+
+  letter-spacing: .4px;
 
   a {
     color: white;
@@ -101,6 +109,19 @@
 
 .button {
   width: 100%;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.8px;
+
+  @include button((
+    color: $very-pale-blue,
+    bg: $vivid-blue,
+    border-color: $vivid-blue,
+    color-hover: $very-pale-blue,
+    border-color-hover: $vivid-blue,
+    bg-hover: $vivid-blue
+  ));
 
   &:disabled {
     color: $grey-light;
