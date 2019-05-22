@@ -114,11 +114,12 @@
 .btn {
   width: 100%;
   border-radius: 4px;
-  font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.8px;
 
   &.connect {
+    font-weight: 600;
+
     @include button((
       color: $very-pale-blue,
       bg: $vivid-blue,
