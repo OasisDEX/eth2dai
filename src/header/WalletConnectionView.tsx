@@ -32,7 +32,6 @@ const {
   termsAndConditions,
   btn,
   connect,
-  back,
   buttonPlaceholder,
 } = styles;
 
