@@ -30,7 +30,9 @@ const {
   inactive,
   selected,
   termsAndConditions,
-  button,
+  btn,
+  connect,
+  back,
   buttonPlaceholder,
 } = styles;
 
@@ -85,8 +87,8 @@ class SuggestedClients extends React.Component<any> {
         </ul>
         <div className={buttonPlaceholder}>
           <Button size="lg"
-                  color="white"
-                  className={classnames(item, button)}
+                  color="grey"
+                  className={classnames(btn, item)}
                   data-test-id="go-back"
                   onClick={this._goBack}
           >
@@ -144,8 +146,7 @@ class NotConnected extends React.Component<any, { isChecked: boolean, selectedWa
         </Checkbox>
         <div className={buttonPlaceholder}>
           <Button size="lg"
-                  color="white"
-                  className={classnames(item, button)}
+                  className={classnames(item, btn, connect)}
                   disabled={!this._canConnect()}
                   onClick={this._connect}
                   data-test-id="connect-wallet"
@@ -223,8 +224,7 @@ class NoClient extends React.Component<any, { isChecked: boolean, selectedWallet
         </Checkbox>
         <div className={buttonPlaceholder}>
           <Button size="lg"
-                  color="white"
-                  className={classnames(item, button)}
+                  className={classnames(item, btn, connect)}
                   disabled={!this._canConnect()}
                   onClick={this._connect}
                   data-test-id="connect-wallet"

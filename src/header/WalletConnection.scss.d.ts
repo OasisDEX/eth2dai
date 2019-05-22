@@ -28,3 +28,5 @@ export const selected: string;
 export const inactive: string;
 export const termsAndConditions: string;
 export const buttonPlaceholder: string;
+export const btn: string;
+export const connect: string;
