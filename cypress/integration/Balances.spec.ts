@@ -1,11 +1,15 @@
 import { Balance } from '../pages/Balance';
 import { Tab } from '../pages/Tab';
+import { WalletConnection } from '../pages/WalletConnection';
 import { cypressVisitWithWeb3 } from '../utils/index';
 import { makeScreenshots } from '../utils/makeScreenshots';
 
 describe('Balances', () => {
 
-  beforeEach(() => cypressVisitWithWeb3());
+  beforeEach(() => {
+    cypressVisitWithWeb3();
+    WalletConnection.open().web().acceptToS().connect();
+  });
 
   it('should display all token balances', () => {
     Tab.balances();

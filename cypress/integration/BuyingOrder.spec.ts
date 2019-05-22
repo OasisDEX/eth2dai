@@ -5,12 +5,13 @@ import { Order } from '../pages/Order';
 import { Orderbook, OrderType } from '../pages/Orderbook';
 import { Tab } from '../pages/Tab';
 import { Trades } from '../pages/Trades';
+import { WalletConnection } from '../pages/WalletConnection';
 
 describe('Buy Order', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-
+    WalletConnection.open().web().acceptToS().connect();
     // Doing this because I don't have have enough funds on this account :)
     Trades
         .first()

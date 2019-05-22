@@ -1,5 +1,6 @@
 import { Balance } from '../pages/Balance';
 import { Tab } from '../pages/Tab';
+import { WalletConnection } from '../pages/WalletConnection';
 import { unwrapping, wrapping } from '../pages/WrapUnwrap';
 import { cypressVisitWithWeb3 } from '../utils/index';
 
@@ -7,6 +8,7 @@ describe('Wrapping ETH', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
+    WalletConnection.open().web().acceptToS().connect();
     Tab.balances();
   });
 

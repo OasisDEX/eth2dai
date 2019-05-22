@@ -1,11 +1,13 @@
 import { Allowance, ALLOWANCE_STATE } from '../pages/Allowance';
 import { Tab } from '../pages/Tab';
-import { cypressVisitWithWeb3 } from '../utils/index';
+import { WalletConnection } from '../pages/WalletConnection';
+import { cypressVisitWithWeb3 } from '../utils';
 
 describe('Setting allowances', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
+    WalletConnection.open().web().acceptToS().connect();
     Tab.balances();
   });
 

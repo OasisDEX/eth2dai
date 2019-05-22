@@ -5,11 +5,13 @@ import { Order } from '../pages/Order';
 import { Orderbook, OrderType } from '../pages/Orderbook';
 import { Tab } from '../pages/Tab';
 import { Trades } from '../pages/Trades';
+import { WalletConnection } from '../pages/WalletConnection';
 import { makeScreenshots } from '../utils/makeScreenshots';
 
 describe('Sell Order', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
+    WalletConnection.open().web().acceptToS().connect();
   });
 
   it('should place a new order', () => {

@@ -3,6 +3,7 @@ import { Orderbook, OrderType } from '../../pages/Orderbook';
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
 import { TradeData } from '../../pages/TradeData';
+import { WalletConnection } from '../../pages/WalletConnection';
 import { cypressVisitWithWeb3, multiply, tid, timeout } from '../../utils';
 import { makeScreenshots } from '../../utils/makeScreenshots';
 
@@ -17,6 +18,7 @@ describe('New trade', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
+    WalletConnection.open().web().acceptToS().connect();
     Tab.instant();
     waitForBalancesToLoad();
   });
