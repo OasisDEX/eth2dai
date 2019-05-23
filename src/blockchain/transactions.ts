@@ -1,9 +1,21 @@
 import * as _ from 'lodash';
 import { fromPairs } from 'ramda';
-import { bindNodeCallback, combineLatest, Observable, of, Subject } from 'rxjs';
+import {bindNodeCallback, combineLatest, interval, Observable, of, Subject, timer} from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
 import { ajax } from 'rxjs/ajax';
-import { catchError, filter, first, map, mergeMap, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import {
+  catchError, distinctUntilChanged,
+  filter,
+  first,
+  map,
+  mergeMap,
+  repeatWhen,
+  scan,
+  shareReplay, skipUntil, skipWhile,
+  startWith,
+  switchMap, take, takeWhile,
+  tap
+} from 'rxjs/operators';
 
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import { account$, context$, onEveryBlock$ } from './network';
@@ -12,6 +24,7 @@ import { web3 } from './web3';
 export enum TxStatus {
   WaitingForApproval = 'WaitingForApproval',
   CancelledByTheUser = 'CancelledByTheUser',
+  Propagating = 'Propagating',
   WaitingForConfirmation = 'WaitingForConfirmation',
   Success = 'Success',
   Error = 'Error',
@@ -60,6 +73,9 @@ export type TxState = {
 } & (
   | {
     status: TxStatus.WaitingForApproval;
+  }
+  | {
+    status: TxStatus.Propagating;
   }
   | {
     status: TxStatus.CancelledByTheUser;
@@ -150,8 +166,25 @@ export function send(
   }
 
   const result: Observable<TxState> = bindNodeCallback(method)(...args).pipe(
-    mergeMap(txHash => bindNodeCallback(web3.eth.getTransaction)(txHash)),
-    mergeMap((transaction: { hash: string, nonce: number, input: string }) => {
+    mergeMap(txHash =>
+      timer(0, 1000).pipe(
+        switchMap(() => bindNodeCallback(web3.eth.getTransaction)(txHash)),
+        takeWhileInclusive(transaction => !transaction),
+        distinctUntilChanged(),
+        tap(transaction => {
+          if (!transaction) {
+            console.log(`Transaction ${txHash} not found in mempool yet!`);
+          }
+        }),
+      )
+    ),
+    mergeMap((transaction: { hash: string, nonce: number, input: string } | null) => {
+      if (!transaction) {
+        return of({
+          ...common,
+          status: TxStatus.Propagating,
+        } as TxState);
+      }
       return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
         map(([externalNonce2tx]) =>
           externalNonce2tx[transaction.nonce] ? [
@@ -207,6 +240,7 @@ export function send(
       ...common,
       status: TxStatus.WaitingForApproval,
     }),
+    shareReplay(1),
   );
 
   result.subscribe(state => transactionObserver.next({  state, kind: 'newTx' }));

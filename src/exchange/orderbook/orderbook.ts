@@ -155,7 +155,7 @@ export function loadOrderbook$(
       sell: sell.length > 0 || sell.length === 0 && prevSell.length === 0 ? sell : prevSell,
     })),
     map(({ blockNumber, buy, sell }) => {
-      console.log('corrected orderbook length for block:', blockNumber, buy.length, sell.length);
+      // console.log('corrected orderbook length for block:', blockNumber, buy.length, sell.length);
       const spread =
         !isEmpty(sell) && !isEmpty(buy)
           ? sell[0].price.minus(buy[0].price)

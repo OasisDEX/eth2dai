@@ -59,6 +59,6 @@ export function createMyTrades$(
       etherscan: context.etherscan,
       changeKind: (k: MyTradesKindKeys) => myTradesKind$.next(MyTradesKind[k]),
     })),
-    tap(result => console.log(result))
+    // tap(result => console.log(result))
   );
 }

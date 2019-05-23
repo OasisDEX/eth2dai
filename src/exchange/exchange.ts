@@ -20,7 +20,7 @@ export function createYesterdayPrice$(
 ): Observable<BigNumber | undefined> {
   return tradeHistory$.pipe(
     map(trades => !trades[0] ? undefined : trades[0].price),
-    tap(price => console.log(price && price.valueOf()))
+    // tap(price => console.log(price && price.valueOf()))
   );
 }
 
