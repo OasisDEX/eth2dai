@@ -80,7 +80,11 @@ export function describeTxStatus(tx: TxState) {
     case TxStatus.WaitingForApproval:
       return 'Signing Transaction';
     case TxStatus.Propagating:
-      return 'Propagating Transaction';
+      return (
+        <>
+          Propagating <Timer start={tx.broadcastedAt} />
+        </>
+      );
     case TxStatus.WaitingForConfirmation:
       return (
         <>
