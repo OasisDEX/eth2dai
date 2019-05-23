@@ -69,6 +69,9 @@ $header-media-breakpoint: 800px;
   .item + .item {
     margin-left: -1px;
 
+    &:hover {
+
+    }
     .navLink {
       border-left-color: transparent;
     }
@@ -104,11 +107,13 @@ $header-media-breakpoint: 800px;
 
 .navLink {
   @extend .navElement;
+  border-color: $darker-greyish-blue;
   text-decoration: none;
   width: 108px;
   color: $grey-lightest;
 
   &:hover {
+    background-clip: padding-box;
     background-color: rgba($white, 0.1);
     cursor: pointer;
   }
@@ -122,7 +127,7 @@ $header-media-breakpoint: 800px;
   &,
   &:hover {
     color: white;
-    border: 1px solid $grey-lightest !important;
+    border: 1px solid $lighter-dark-gray-blue !important;
     background: initial;
   }
 }
