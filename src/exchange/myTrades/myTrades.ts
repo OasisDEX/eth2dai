@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { BehaviorSubject, combineLatest, noop, Observable } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, startWith, switchMap } from 'rxjs/operators';
 
 import { Calls$ } from '../../blockchain/calls/calls';
 import { CancelData } from '../../blockchain/calls/offerMake';

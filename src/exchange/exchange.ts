@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import * as moment from 'moment';
 import { combineLatest, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 import { Trade } from './trades';
 

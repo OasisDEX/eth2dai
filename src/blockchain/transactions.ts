@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { fromPairs } from 'ramda';
-import {bindNodeCallback, combineLatest, interval, Observable, of, Subject, timer} from 'rxjs';
+import { bindNodeCallback, combineLatest, Observable, of, Subject, timer } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
 import { ajax } from 'rxjs/ajax';
 import {
@@ -9,12 +9,9 @@ import {
   first,
   map,
   mergeMap,
-  repeatWhen,
   scan,
-  shareReplay, skipUntil, skipWhile,
-  startWith,
-  switchMap, take, takeWhile,
-  tap
+  shareReplay, startWith,
+  switchMap, tap
 } from 'rxjs/operators';
 
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
