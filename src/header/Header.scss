@@ -126,6 +126,7 @@ $header-media-breakpoint: 800px;
 .activeNavLink {
   &,
   &:hover {
+    z-index: 2;
     color: white;
     border: 1px solid $lighter-dark-gray-blue !important;
     background: initial;

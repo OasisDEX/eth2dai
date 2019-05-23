@@ -88,13 +88,13 @@ class Header extends React.Component<HeaderProps> {
             </section>
             <section className={classnames(section, sectionNavigation)}>
               <nav className={nav}>
-                <ul className={list}>
+                <div className={list}>
                   <HeaderNavLink to={`${rootUrl}exchange`} name="Exchange"/>
                   {process.env.REACT_APP_INSTANT_ENABLED === '1' &&
                   <HeaderNavLink to={`${rootUrl}instant`} name="Instant"/>}
                   {this.props.walletStatus === 'connected' &&
                   <HeaderNavLink to={`${rootUrl}account`} name="Account"/>}
-                </ul>
+                </div>
               </nav>
             </section>
             <section className={classnames(section, sectionStatus)}>
@@ -235,13 +235,11 @@ const loadableAccount$: Observable<Loadable<Account>> = combineLatest(walletStat
 export const StatusTxRx = connect(Status, loadableAccount$);
 
 export const HeaderNavLink = ({ to, name }: { to: string, name: string }) => (
-  <li className={item}>
-    <NavLink
-      data-test-id={name}
-      to={to}
-      className={navLink}
-      activeClassName={activeNavLink}>
-      {name}
-    </NavLink>
-  </li>
+  <NavLink
+    data-test-id={name}
+    to={to}
+    className={classnames(item, navLink)}
+    activeClassName={activeNavLink}>
+    {name}
+  </NavLink>
 );
