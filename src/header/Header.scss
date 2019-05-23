@@ -201,6 +201,11 @@ $header-media-breakpoint: 800px;
   & :global(.Popover-tip) {
     fill: none;
   }
+
+  padding-right: 28px;
+  @include media-breakpoint-down(lg) {
+    padding-right: 10px;
+  }
 }
 
 .networkIndicator {
