@@ -110,7 +110,7 @@ const protoMain = {
     return load(proxyCreationAndExecute, '0x793ebbe21607e4f04788f89c7a9b97320773ec59');
   },
   oasisDataService: {
-    url: 'https://oasisvulcan0x.makerfoundation.com/v1'
+    url: 'http://localhost:3001/v1'
   },
   etherscan: {
     url: 'https://etherscan.io',
@@ -152,7 +152,7 @@ const kovan: NetworkConfig = {
     return load(proxyCreationAndExecute, '0xee419971e63734fed782cfe49110b1544ae8a773');
   },
   oasisDataService: {
-    url: 'https://kovan-oasisvulcan0x.makerfoundation.com/v1'
+    url: 'http://localhost:3001/v1'
   },
   etherscan: {
     url: 'https://kovan.etherscan.io',
@@ -190,7 +190,7 @@ const localnet: NetworkConfig =   {
     return load(proxyCreationAndExecute, '0x99C7F543e310A4143D22ce840a348b4EcDbBA8Ce');
   },
   oasisDataService: {
-    url: 'http://localhost:4000/v1'
+    url: 'http://localhost:3001/v1'
   },
   etherscan: {
     url: 'https://kovan.etherscan.io',

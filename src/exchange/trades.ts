@@ -4,7 +4,6 @@ import { map } from 'rxjs/operators';
 
 import { NetworkConfig } from '../blockchain/config';
 import { Placeholder, vulcan0x } from '../blockchain/vulcan0x';
-import { web3 } from '../blockchain/web3';
 
 export type TradeAct = 'buy' | 'sell';
 export type TradeRole = 'taker' | 'maker';
@@ -21,7 +20,6 @@ export interface Trade {
   quoteAmount: BigNumber;
   quoteToken: string;
   price: BigNumber; // Market price (quote)
-  block: number; // Block height
   time: Date; // Block timestamp
   tx?: string; // Transaction hash
   idx?: number; // Transaction number within block
@@ -29,47 +27,35 @@ export interface Trade {
 
 // TODO: move to all trades?
 const parseTrade = (
-  account: string,
-  buyToken: string,
+  account: string | undefined,
   baseToken: string,
   quoteToken: string,
 ) => {
   return ({
     offerId,
     maker,
-    lotAmt,
-    bidAmt,
-    bidTkn,
-    block,
-    time,
+    baseAmt,
+    quoteAmt,
+    price,
+    type,
+    timestamp,
     tx,
-    idx,
+    logIndex,
   }: any): Trade => {
-    const sellAmount = new BigNumber(lotAmt);
-    const buyAmount = new BigNumber(bidAmt);
-    return {...buyToken === bidTkn ?
-    {
-      price: buyAmount.div(sellAmount),
-      baseAmount: sellAmount,
-      quoteAmount: buyAmount,
-      act: account && maker === account ? 'sell' : 'buy',
-      kind: 'sell',
-    } : {
-      price: sellAmount.div(buyAmount),
-      baseAmount: buyAmount,
-      quoteAmount: sellAmount,
-      act: account && maker === account ? 'buy' : 'sell',
-      kind: 'buy',
-    }, ...{
+    return {
       baseToken,
       quoteToken,
-      block,
       tx,
-      idx,
+      kind: type,
+      act: account && maker === account ? (type === 'buy' ? 'sell' : 'buy') : type,
+      price: new BigNumber(price),
+      baseAmount: new BigNumber(baseAmt),
+      quoteAmount: new BigNumber(quoteAmt),
       offerId: new BigNumber(offerId),
-      time: new Date(time),
+      idx: logIndex,
+      time: new Date(timestamp),
       role: account && (maker === account ? 'maker' : 'taker'),
-    }} as Trade;
+    } as Trade;
   };
 };
 
@@ -80,49 +66,37 @@ export const getTrades = (
   operation: string,
   filters: {account?: string, from?: Date, to?: Date, offset?: number, limit?: number},
 ): Observable<Trade[]> => {
-  const owner = filters.account ? (web3 as any).toChecksumAddress(filters.account) : null;
+  const owner = filters.account && filters.account.toLowerCase();
 
-  const fields = ['offerId', 'maker', 'bidAmt', 'bidTkn', 'lotAmt', 'block', 'time', 'tx', 'idx'];
-  const order = `[TIME_DESC, IDX_DESC]`;
+  const fields = ['offerId', 'maker', 'baseAmt', 'quoteAmt', 'price', 'type', 'timestamp', 'tx', 'logIndex'];
+  const order = `[TIMESTAMP_DESC, LOG_INDEX_DESC]`;
   const filter = {
-    or: [
-      {
-        and: [
-          { lotTkn: { equalTo: new Placeholder('baseToken', 'String', baseToken) } },
-          { bidTkn: { equalTo: new Placeholder('quoteToken', 'String', quoteToken) } },
-        ],
-      },
-      {
-        and: [
-          { lotTkn: { equalTo: new Placeholder('quoteToken', 'String', quoteToken) } },
-          { bidTkn: { equalTo: new Placeholder('baseToken', 'String', baseToken) } },
-        ],
-      },
+    and: [
+      { baseGem: { equalTo: new Placeholder('baseGem', 'String', baseToken) } },
+      { quoteGem: { equalTo: new Placeholder('quoteGem', 'String', quoteToken) } },
     ],
     ...owner ? {
-      and: [{
-        or: [
-          { maker: { equalTo: new Placeholder('owner', 'String', owner) } },
-          { taker: { equalTo: new Placeholder('owner', 'String', owner) } },
-        ]
-      }]
+      or: [
+        { maker: { equalTo: new Placeholder('owner', 'String', owner) } },
+        { taker: { equalTo: new Placeholder('owner', 'String', owner) } },
+      ]
     } : {},
     ...(filters.from || filters.to) ? {
-      time: {
-        ...filters.from ? { greaterThan: new Placeholder('timeFrom', 'Datetime', filters.from.toISOString()) } : {},
-        ...filters.to ? { lessThan: new Placeholder('timeTo', 'Datetime', filters.to.toISOString()) } : {},
+      timestamp: {
+        ...filters.from ? { greaterThan: new Placeholder('timestampFrom', 'Datetime', filters.from.toISOString()) } : {},
+        ...filters.to ? { lessThan: new Placeholder('timestampTo', 'Datetime', filters.to.toISOString()) } : {},
       }
     } : {},
   };
 
   const { limit, offset } = filters;
-  return vulcan0x(context.oasisDataService.url, operation, 'allOasisSimpleTrades', fields, {
+  return vulcan0x(context.oasisDataService.url, operation, 'allOasisTradeGuis', fields, {
     filter,
     order,
     limit,
     offset,
   }).pipe(
-    map(trades => trades.map(parseTrade(owner, quoteToken, baseToken, quoteToken)))
+    map(trades => trades.map(parseTrade(owner, baseToken, quoteToken)))
   );
 };
 
