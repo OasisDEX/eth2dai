@@ -82,97 +82,103 @@ export class OrderbookView extends React.Component<Props> {
 
     return (
       <>
-      <PanelHeader>
-        <span>Order book</span>
-        <div style={{ marginLeft: 'auto', display: 'flex' }}>
-          <MediaQuery maxWidth={992}>
-            {(matches) => {
-              let isDisabled = false;
+        <PanelHeader>
+          <span>Order book</span>
+          <div style={{ marginLeft: 'auto', display: 'flex' }}>
+            <MediaQuery maxWidth={992}>
+              {(matches) => {
+                let isDisabled = false;
 
-              if (matches) {
-                isDisabled = true;
-              }
-
-              return <Button
-                disabled={isDisabled}
-                className={styles.switchBtn}
-                onClick={this.changeChartListView}
-                data-test-id="orderbook-type-list"
-              >
-                <SvgImage image={depthChartSvg} />
-              </Button>;
-            }}
-          </MediaQuery>
-        </div>
-      </PanelHeader>
-        <WithLoadingIndicator loadable={this.props} size="lg">
-        {(orderbook: Orderbook) => (
-          <>
-          <Table align="right" className={styles.orderbookTable}>
-            <thead>
-            <tr>
-              <th>
-                <InfoLabel>Price</InfoLabel> <Currency theme="semi-bold" value={this.props.tradingPair.quote}/>
-              </th>
-              <th>
-                <InfoLabel>Amount</InfoLabel> <Currency theme="semi-bold" value={this.props.tradingPair.base}/>
-              </th>
-              <th>
-                <InfoLabel>Total</InfoLabel> <Currency theme="semi-bold" value={this.props.tradingPair.quote}/>
-              </th>
-            </tr>
-            </thead>
-          </Table>
-          <Scrollbar ref={el => this.scrollbar = el || undefined} onScroll={this.scrolled}>
-            <Table align="right" className={styles.orderbookTable}>
-              <TransitionGroup
-                component="tbody"
-              >
-                {orderbook.sell.slice().reverse().map((offer: Offer) => (
-                  <CSSTransition
-                    key={offer.offerId.toString()}
-                    classNames="order"
-                    timeout={1000}
-                    onEntering={this.enter}
-                    onExited={this.exit}
-                  >
-                    <this.OfferRow offer={offer} kind="sell" parent={this}/>
-                  </CSSTransition>
-                ))
+                if (matches) {
+                  isDisabled = true;
                 }
 
-                {/* better don't remove me! */}
-                <CSSTransition key="0" classNames="order" timeout={1000}>
-                  <RowHighlighted>
-                    <td ref={el => this.centerRow = this.centerRow || el || undefined }>
-                      {orderbook.spread
-                        ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote}/>
-                        : '-'}
-                    </td>
-                    <td/>
-                    <td>
-                      <Muted>{this.props.tradingPair.quote} Spread</Muted>
-                    </td>
-                  </RowHighlighted>
-                </CSSTransition>
-
-                {orderbook.buy.map((offer: Offer) => (
-                  <CSSTransition
-                    key={offer.offerId.toString()}
-                    classNames="order"
-                    timeout={1000}
-                    onEntering={this.enter}
-                    onExited={this.exit}
+                return <Button
+                  disabled={isDisabled}
+                  className={styles.switchBtn}
+                  onClick={this.changeChartListView}
+                  data-test-id="orderbook-type-list"
+                >
+                  <SvgImage image={depthChartSvg}/>
+                </Button>;
+              }}
+            </MediaQuery>
+          </div>
+        </PanelHeader>
+        <Table align="right" className={styles.orderbookTable}>
+          <thead>
+          <tr>
+            <th>
+              <InfoLabel>Price </InfoLabel>
+              <Currency theme="semi-bold"
+                        value={this.props.tradingPair && this.props.tradingPair.quote}/>
+            </th>
+            <th>
+              <InfoLabel>Amount </InfoLabel>
+              <Currency theme="semi-bold"
+                        value={this.props.tradingPair && this.props.tradingPair.base}/>
+            </th>
+            <th>
+              <InfoLabel>Total </InfoLabel>
+              <Currency theme="semi-bold"
+                        value={this.props.tradingPair && this.props.tradingPair.quote}/>
+            </th>
+          </tr>
+          </thead>
+        </Table>
+        <WithLoadingIndicator loadable={this.props} size="lg">
+          {(orderbook: Orderbook) => (
+            <>
+              <Scrollbar ref={el => this.scrollbar = el || undefined} onScroll={this.scrolled}>
+                <Table align="right" className={styles.orderbookTable}>
+                  <TransitionGroup
+                    component="tbody"
                   >
-                    <this.OfferRow offer={offer} kind="buy" parent={this}/>
-                  </CSSTransition>
-                ))}
-              </TransitionGroup>
-            </Table>
-          </Scrollbar>
-          </>
-        )}
-      </WithLoadingIndicator>
+                    {orderbook.sell.slice().reverse().map((offer: Offer) => (
+                      <CSSTransition
+                        key={offer.offerId.toString()}
+                        classNames="order"
+                        timeout={1000}
+                        onEntering={this.enter}
+                        onExited={this.exit}
+                      >
+                        <this.OfferRow offer={offer} kind="sell" parent={this}/>
+                      </CSSTransition>
+                    ))
+                    }
+
+                    {/* better don't remove me! */}
+                    <CSSTransition key="0" classNames="order" timeout={1000}>
+                      <RowHighlighted>
+                        <td ref={el => this.centerRow = this.centerRow || el || undefined}>
+                          {orderbook.spread
+                            ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote}/>
+                            : '-'}
+                        </td>
+                        <td/>
+                        <td>
+                          <Muted>{this.props.tradingPair.quote} Spread</Muted>
+                        </td>
+                      </RowHighlighted>
+                    </CSSTransition>
+
+                    {orderbook.buy.map((offer: Offer) => (
+                      <CSSTransition
+                        key={offer.offerId.toString()}
+                        classNames="order"
+                        timeout={1000}
+                        onEntering={this.enter}
+                        onExited={this.exit}
+                      >
+                        <this.OfferRow offer={offer} kind="buy" parent={this}/>
+                      </CSSTransition>
+                    ))}
+                  </TransitionGroup>
+                </Table>
+              </Scrollbar>
+            </>
+          )}
+        </WithLoadingIndicator>
       </>
     );
   }
