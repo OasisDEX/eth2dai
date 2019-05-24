@@ -77,8 +77,6 @@ function priceAmountToOffer({ price, amount }: { price: number, amount: number }
 
 export const createFakeOrderbook = (buys: any, sells: any): EnhancedOrderbook => {
   return {
-    account: '...',
-    change: () => null,
     sell: sells.map(priceAmountToOffer),
     spread: buys.length > 0 && sells.length > 0 ?
       new BigNumber(sells[0].price - buys[buys.length - 1].price) : undefined,
