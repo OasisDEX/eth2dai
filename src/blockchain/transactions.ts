@@ -1,9 +1,18 @@
 import * as _ from 'lodash';
 import { fromPairs } from 'ramda';
-import { bindNodeCallback, combineLatest, Observable, of, Subject } from 'rxjs';
+import { bindNodeCallback, combineLatest, Observable, of, Subject, timer } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
 import { ajax } from 'rxjs/ajax';
-import { catchError, filter, first, map, mergeMap, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import {
+  catchError, distinctUntilChanged,
+  filter,
+  first,
+  map,
+  mergeMap,
+  scan,
+  shareReplay, startWith,
+  switchMap, tap
+} from 'rxjs/operators';
 
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
 import { account$, context$, onEveryBlock$ } from './network';
@@ -12,6 +21,7 @@ import { web3 } from './web3';
 export enum TxStatus {
   WaitingForApproval = 'WaitingForApproval',
   CancelledByTheUser = 'CancelledByTheUser',
+  Propagating = 'Propagating',
   WaitingForConfirmation = 'WaitingForConfirmation',
   Success = 'Success',
   Error = 'Error',
@@ -66,7 +76,7 @@ export type TxState = {
     error: any;
   }
   | {
-    status: TxStatus.WaitingForConfirmation;
+    status: TxStatus.WaitingForConfirmation | TxStatus.Propagating;
     txHash: string;
     broadcastedAt: Date;
   }
@@ -149,52 +159,77 @@ export function send(
     );
   }
 
+  const broadcastedAt = new Date();
+
   const result: Observable<TxState> = bindNodeCallback(method)(...args).pipe(
-    mergeMap(txHash => bindNodeCallback(web3.eth.getTransaction)(txHash)),
-    mergeMap((transaction: { hash: string, nonce: number, input: string }) => {
-      return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
-        map(([externalNonce2tx]) =>
-          externalNonce2tx[transaction.nonce] ? [
-            externalNonce2tx[transaction.nonce].hash,
-            transaction.input === externalNonce2tx[transaction.nonce].callData ?
-              TxRebroadcastStatus.speedup :
-              TxRebroadcastStatus.cancel
-          ] : [
-            transaction.hash,
-            undefined
-          ]
-        ),
-        mergeMap(([txHash, rebroadcast]) =>
-          bindNodeCallback(web3.eth.getTransactionReceipt)(txHash).pipe(
-            map(receipt => [receipt, rebroadcast])
-          )
-        ),
-        filter(([receipt]: [any, TxRebroadcastStatus]) => receipt && receipt.blockNumber),
-        first(),
-        mergeMap(([receipt, rebroadcast]) => successOrFailure(receipt.transactionHash, receipt, rebroadcast)),
-        catchError(error => {
-          return of({
-            ...common,
-            error,
-            txHash: transaction.hash,
-            end: new Date(),
-            lastChange: new Date(),
-            status: TxStatus.Error,
-          } as TxState);
+    mergeMap((txHash: string) =>
+      timer(0, 1000).pipe(
+        switchMap(() => bindNodeCallback(web3.eth.getTransaction)(txHash)),
+        takeWhileInclusive(transaction => !transaction),
+        distinctUntilChanged(),
+        tap(transaction => {
+          if (!transaction) {
+            console.log(`Transaction ${txHash} not found in mempool yet!`);
+          }
         }),
-        startWith({
-          ...common,
-          txHash: transaction.hash,
-          broadcastedAt: new Date(),
-          status: TxStatus.WaitingForConfirmation,
-        } as TxState),
-      ) as any as Observable<TxState>;
+        mergeMap((transaction: { hash: string, nonce: number, input: string } | null) => {
+          if (!transaction) {
+            return of({
+              ...common,
+              broadcastedAt,
+              txHash,
+              status: TxStatus.Propagating,
+            } as TxState);
+          }
+          return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
+            map(([externalNonce2tx]) =>
+              externalNonce2tx[transaction.nonce] ? [
+                externalNonce2tx[transaction.nonce].hash,
+                transaction.input === externalNonce2tx[transaction.nonce].callData ?
+                  TxRebroadcastStatus.speedup :
+                  TxRebroadcastStatus.cancel
+              ] : [
+                transaction.hash,
+                undefined
+              ]
+            ),
+            mergeMap(([hash, rebroadcast]) =>
+              bindNodeCallback(web3.eth.getTransactionReceipt)(hash).pipe(
+                map(receipt => [receipt, rebroadcast])
+              )
+            ),
+            filter(([receipt]: [any, TxRebroadcastStatus]) => receipt && receipt.blockNumber),
+            first(),
+            mergeMap(([receipt, rebroadcast]) => successOrFailure(receipt.transactionHash, receipt, rebroadcast)),
+            catchError(error => {
+              return of({
+                ...common,
+                error,
+                txHash: transaction.hash,
+                end: new Date(),
+                lastChange: new Date(),
+                status: TxStatus.Error,
+              } as TxState);
+            }),
+            startWith({
+              ...common,
+              broadcastedAt,
+              txHash: transaction.hash,
+              status: TxStatus.WaitingForConfirmation,
+            } as TxState),
+          ) as any as Observable<TxState>;
+        }),
+      )
+    ),
+    startWith({
+      ...common,
+      status: TxStatus.WaitingForApproval,
     }),
+    shareReplay(1),
     catchError(error => {
       if ((error.message as string).indexOf('User denied transaction signature') === -1) {
         console.error(error);
       }
-
       return of({
         ...common,
         error,
@@ -203,12 +238,8 @@ export function send(
         status: TxStatus.CancelledByTheUser,
       });
     }),
-    startWith({
-      ...common,
-      status: TxStatus.WaitingForApproval,
-    }),
-  );
 
+  );
   result.subscribe(state => transactionObserver.next({  state, kind: 'newTx' }));
 
   return result;
