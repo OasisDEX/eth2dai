@@ -54,7 +54,7 @@
     "react-icons": "^3.5.0",
     "react-jazzicon": "^0.1.2",
     "react-modal": "^3.6.1",
-    "react-popover": "^0.5.10",
+    "react-popover": "kkostalkowicz/react-popover#build",
     "react-responsive": "^6.1.1",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",

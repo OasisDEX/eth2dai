@@ -11354,10 +11354,9 @@ react-modal@^3.6.1:
     react-lifecycles-compat "^3.0.0"
     warning "^3.0.0"
 
-react-popover@^0.5.10:
+react-popover@kkostalkowicz/react-popover#build:
   version "0.5.10"
-  resolved "https://registry.yarnpkg.com/react-popover/-/react-popover-0.5.10.tgz#40d5e854300a96722ffc1620e49d840cb1ad5db6"
-  integrity sha512-5SYDTfncywSH00I70oHd4gFRUR8V0rJ4sRADSI/P6G0RVXp9jUgaWloJ0Bk+SFnjpLPuipTKuzQNNd2CTs5Hrw==
+  resolved "https://codeload.github.com/kkostalkowicz/react-popover/tar.gz/f1debedb4ee3e9a558f8668cab7f011eaa2790cc"
   dependencies:
     css-vendor "^0.3.1"
     debug "^2.6.8"

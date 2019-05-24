@@ -126,6 +126,7 @@ class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
     return (
       <ReactPopover isOpen={this.state.isOpen}
                     place="below"
+                    crossAlign="center-end"
                     onOuterAction={this._close}
                     className="noWallet"
                     body={<View/>}
