@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import { isEmpty, uniqBy, unzip } from 'lodash';
 import { bindNodeCallback, combineLatest, Observable, of, zip } from 'rxjs';
-import { expand, map, reduce, retryWhen, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import { expand, map, reduce, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
 import { NetworkConfig } from '../../blockchain/config';
 import { amountFromWei } from '../../blockchain/utils';
 import { TradingPair } from '../tradingPair/tradingPair';
