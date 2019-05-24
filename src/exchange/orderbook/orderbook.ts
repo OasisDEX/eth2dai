@@ -1,14 +1,14 @@
 import { BigNumber } from 'bignumber.js';
 import { isEmpty, uniqBy, unzip } from 'lodash';
 import { bindNodeCallback, combineLatest, Observable, of, zip } from 'rxjs';
-import { expand, map, reduce, retryWhen, scan, shareReplay, switchMap } from 'rxjs/operators';
+import { expand, map, reduce, retryWhen, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { NetworkConfig } from '../../blockchain/config';
 import { amountFromWei } from '../../blockchain/utils';
 import { PickOfferChange } from '../../utils/form';
-import { LoadableWithTradingPair } from '../../utils/loadable';
+import { Loadable } from '../../utils/loadable';
 import { OfferFormState } from '../offerMake/offerMake';
 import { OrderbookViewKind } from '../OrderbookPanel';
-import { TradingPair } from '../tradingPair/tradingPair';
+import { currentTradingPair$, TradingPair } from '../tradingPair/tradingPair';
 
 export enum OfferType {
   buy = 'buy',
@@ -34,7 +34,8 @@ export interface Orderbook {
   buy: Offer[];
 }
 
-class InconsistentLoadingError extends Error {}
+class InconsistentLoadingError extends Error {
+}
 
 function parseOffers(sellToken: string, buyToken: string, type: OfferType, firstPage: boolean) {
   return (data: any[][]): { lastOfferId: BigNumber, offers: Offer[] } => {
@@ -48,26 +49,28 @@ function parseOffers(sellToken: string, buyToken: string, type: OfferType, first
         .map(([offerId, sellAmt, buyAmt, ownerId, timestamp]) => {
           const sellAmount = amountFromWei(sellAmt as BigNumber, sellToken);
           const buyAmount = amountFromWei(buyAmt as BigNumber, buyToken);
-          return {...type === 'sell' ?
-            {
-              price: buyAmount.div(sellAmount),
-              baseAmount: sellAmount,
-              baseToken: sellToken,
-              quoteAmount: buyAmount,
-              quoteToken: buyToken,
-            } :
-            {
-              price: sellAmount.div(buyAmount),
-              baseAmount: buyAmount,
-              baseToken: buyToken,
-              quoteAmount: sellAmount,
-              quoteToken: sellToken,
-            }, ...{
+          return {
+            ...type === 'sell' ?
+              {
+                price: buyAmount.div(sellAmount),
+                baseAmount: sellAmount,
+                baseToken: sellToken,
+                quoteAmount: buyAmount,
+                quoteToken: buyToken,
+              } :
+              {
+                price: sellAmount.div(buyAmount),
+                baseAmount: buyAmount,
+                baseToken: buyToken,
+                quoteAmount: sellAmount,
+                quoteToken: sellToken,
+              }, ...{
               type,
               offerId: offerId as BigNumber,
               ownerId: ownerId as string,
               timestamp: new Date(1000 * (timestamp as BigNumber).toNumber())
-            }} as Offer;
+            }
+          } as Offer;
         })
     };
   };
@@ -123,7 +126,7 @@ function loadOffersAllAtOnce(
 }
 
 export function loadOrderbook$(
-  context$:  Observable<NetworkConfig>,
+  context$: Observable<NetworkConfig>,
   onEveryBlock$: Observable<number>,
   { base, quote }: TradingPair
 ): Observable<Orderbook> {
@@ -173,22 +176,28 @@ export function loadOrderbook$(
 }
 
 export function createPickableOrderBookFromOfferMake$(
-  currentOrderBook$: Observable<LoadableWithTradingPair<Orderbook>>,
+  tradingPair$: Observable<TradingPair>,
+  currentOrderBook$: Observable<Loadable<Orderbook>>,
   account$: Observable<string | undefined>,
   currentOfferForm$: Observable<OfferFormState>,
   kindChange: (kind: OrderbookViewKind) => void
 ) {
   return combineLatest(
+    tradingPair$,
     currentOrderBook$,
     account$,
     currentOfferForm$,
   ).pipe(
-    map(([currentOrderBook, account, { change }]) => ({
+    map(([tradingPair, currentOrderBook, account, { change }]) => ({
+      tradingPair,
       ...currentOrderBook,
       account,
       kindChange,
       change: (ch: PickOfferChange) => change(ch)
-    }))
+    })),
+    startWith({
+      tradingPair: currentTradingPair$.getValue(),
+    })
   );
 }
 

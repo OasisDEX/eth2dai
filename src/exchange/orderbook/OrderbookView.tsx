@@ -7,7 +7,7 @@ import { FormChangeKind, PickOfferChange } from '../../utils/form';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { SvgImage } from '../../utils/icons/utils';
-import { LoadableStatus, LoadableWithTradingPair } from '../../utils/loadable';
+import { Loadable, LoadableStatus } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
@@ -20,10 +20,11 @@ import depthChartSvg from './depth-chart.svg';
 import { Offer, Orderbook } from './orderbook';
 import * as styles from './OrderbookView.scss';
 
-export interface Props extends LoadableWithTradingPair<Orderbook> {
-  account: string | undefined;
+export interface Props extends Loadable<Orderbook> {
+  account?: string;
   change: (change: PickOfferChange) => void;
   kindChange: (kind: OrderbookViewKind) => void;
+  tradingPair: TradingPair;
 }
 
 export class OrderbookView extends React.Component<Props> {

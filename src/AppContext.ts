@@ -302,12 +302,13 @@ function offerMake(
   const DepthChartWithLoadingTxRx = connect(DepthChartWithLoading, depthChartWithLoading$);
 
   const pickableOrderbook$ = createPickableOrderBookFromOfferMake$(
+    currentTradingPair$,
     orderbookWithTradingPair$,
     account$,
     offerMake$,
     kindChange
   );
-  const OrderbookViewTxRx = connect(OrderbookView, pickableOrderbook$);
+  const OrderbookViewTxRx = connect<any, any>(OrderbookView, pickableOrderbook$);
 
   const OrderbookPanelTxRx = connect(
     inject<OrderbookPanelProps, SubViewsProps>(
