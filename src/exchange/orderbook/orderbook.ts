@@ -65,11 +65,11 @@ function parseOffers(sellToken: string, buyToken: string, type: OfferType, first
                 quoteAmount: sellAmount,
                 quoteToken: sellToken,
               }, ...{
-              type,
-              offerId: offerId as BigNumber,
-              ownerId: ownerId as string,
-              timestamp: new Date(1000 * (timestamp as BigNumber).toNumber())
-            }
+                type,
+                offerId: offerId as BigNumber,
+                ownerId: ownerId as string,
+                timestamp: new Date(1000 * (timestamp as BigNumber).toNumber())
+              }
           } as Offer;
         })
     };
