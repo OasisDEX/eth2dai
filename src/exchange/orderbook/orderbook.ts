@@ -4,11 +4,7 @@ import { bindNodeCallback, combineLatest, Observable, of, zip } from 'rxjs';
 import { expand, map, reduce, retryWhen, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { NetworkConfig } from '../../blockchain/config';
 import { amountFromWei } from '../../blockchain/utils';
-import { PickOfferChange } from '../../utils/form';
-import { Loadable } from '../../utils/loadable';
-import { OfferFormState } from '../offerMake/offerMake';
-import { OrderbookViewKind } from '../OrderbookPanel';
-import { currentTradingPair$, TradingPair } from '../tradingPair/tradingPair';
+import { TradingPair } from '../tradingPair/tradingPair';
 
 export enum OfferType {
   buy = 'buy',
@@ -172,52 +168,6 @@ export function loadOrderbook$(
       };
     }),
     shareReplay(1),
-  );
-}
-
-export type EnhancedOrderbook = {
-  account: string | undefined;
-  change: any;
-} & Orderbook;
-
-export function loadOrderBook$(
-  currentOrderBook$: Observable<Orderbook>,
-  account$: Observable<string | undefined>,
-  currentOfferForm$: Observable<OfferFormState>,
-): Observable<EnhancedOrderbook> {
-  return combineLatest(
-    currentOrderBook$,
-    account$,
-    currentOfferForm$,
-  ).pipe(
-    map(([currentOrderBook, account, { change }]) => ({
-      ...currentOrderBook,
-      account,
-      change: (ch: PickOfferChange) => change(ch)
-    })),
-  );
-}
-
-export function createPickableOrderBookFromOfferMake$(
-  tradingPair$: Observable<TradingPair>,
-  listening$: Observable<Loadable<EnhancedOrderbook>>,
-  kindChange: (kind: OrderbookViewKind) => void,
-):
-  Observable<TradingPair & Loadable<EnhancedOrderbook>> {
-  return combineLatest(
-    tradingPair$,
-    listening$
-  ).pipe(
-    map(([tradingPair, orderBookStuff]) => {
-      return {
-        ...tradingPair,
-        ...orderBookStuff,
-        kindChange,
-      };
-    }),
-    startWith({
-      tradingPair: currentTradingPair$.getValue(),
-    })
   );
 }
 

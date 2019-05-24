@@ -380,7 +380,7 @@ stories.add('Width of Create order and Order book panels', () => {
           kindChange={() => null}
           status="loaded"
           tradingPair={{ quote: 'DAI', base: 'WETH' } as TradingPair }
-          value={ orderbook }
+          value={{ ...orderbook, change: () => null }}
         />
       </Panel>
     </FlexLayoutRow>

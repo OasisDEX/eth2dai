@@ -30,12 +30,7 @@ import {
   onEveryBlock$
 } from './blockchain/network';
 import { user$ } from './blockchain/user';
-import {
-  createPickableOrderBookFromOfferMake$,
-  loadOrderbook$,
-  loadOrderBook$,
-  Orderbook
-} from './exchange/orderbook/orderbook';
+import { loadOrderbook$, Orderbook } from './exchange/orderbook/orderbook';
 import {
   createTradingPair$,
   currentTradingPair$,
@@ -65,7 +60,11 @@ import { MyTrades } from './exchange/myTrades/MyTradesView';
 import { createMyOpenTrades$ } from './exchange/myTrades/openTrades';
 import { createFormController$, OfferFormState } from './exchange/offerMake/offerMake';
 import { OfferMakePanel } from './exchange/offerMake/OfferMakePanel';
-import { OrderbookView } from './exchange/orderbook/OrderbookView';
+import {
+  createOrderbookForTradingPair,
+  createPickableOrderBook,
+  OrderbookView
+} from './exchange/orderbook/OrderbookView';
 import { createOrderbookPanel$, OrderbookPanel, OrderbookPanelProps, SubViewsProps } from './exchange/OrderbookPanel';
 import { GroupMode, loadAggregatedTrades, PriceChartDataPoint } from './exchange/priceChart/pricechart';
 import { createPriceChartLoadable$, PriceChartWithLoading } from './exchange/priceChart/PriceChartWithLoading';
@@ -306,11 +305,10 @@ function offerMake(
   );
   const DepthChartWithLoadingTxRx = connect(DepthChartWithLoading, depthChartWithLoading$);
 
-  const pickableOrderbook$ = createPickableOrderBookFromOfferMake$(
+  const pickableOrderbook$ = createOrderbookForTradingPair(
     currentTradingPair$,
-    loadablifyLight(loadOrderBook$(
+    loadablifyLight(createPickableOrderBook(
       orderbook$,
-      account$,
       offerMake$)
     ),
     kindChange

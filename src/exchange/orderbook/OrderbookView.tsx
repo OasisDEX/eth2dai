@@ -2,7 +2,9 @@
 import * as React from 'react';
 import { default as MediaQuery } from 'react-responsive';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { FormChangeKind } from '../../utils/form';
+import { combineLatest, Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { FormChangeKind, PickOfferChange } from '../../utils/form';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { SvgImage } from '../../utils/icons/utils';
@@ -13,13 +15,56 @@ import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
 import { RowClickable, RowHighlighted, Table } from '../../utils/table/Table';
 import * as tableStyles from '../../utils/table/Table.scss';
 import { Currency, InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
+import { OfferFormState } from '../offerMake/offerMake';
 import { OrderbookViewKind } from '../OrderbookPanel';
-import { TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
+import { currentTradingPair$, TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
 import depthChartSvg from './depth-chart.svg';
-import { EnhancedOrderbook, Offer } from './orderbook';
+import { Offer, Orderbook } from './orderbook';
 import * as styles from './OrderbookView.scss';
 
-export interface Props extends Loadable<EnhancedOrderbook> {
+export type PickableOrderbook = {
+  change: (ch: PickOfferChange) => void;
+} & Orderbook;
+
+export function createPickableOrderBook(
+  currentOrderBook$: Observable<Orderbook>,
+  currentOfferForm$: Observable<OfferFormState>,
+): Observable<PickableOrderbook> {
+  return combineLatest(
+    currentOrderBook$,
+    currentOfferForm$,
+  ).pipe(
+    map(([currentOrderBook, { change }]) => ({
+      ...currentOrderBook,
+      change: (ch: PickOfferChange) => change(ch)
+    })),
+  );
+}
+
+export function createOrderbookForTradingPair(
+  tradingPair$: Observable<TradingPair>,
+  pickableOrderbook$: Observable<Loadable<PickableOrderbook>>,
+  kindChange: (kind: OrderbookViewKind) => void,
+):
+  Observable<TradingPair & Loadable<PickableOrderbook>> {
+  return combineLatest(
+    tradingPair$,
+    pickableOrderbook$
+  ).pipe(
+    map(([tradingPair, orderBookStuff]) => {
+      return {
+        ...tradingPair,
+        ...orderBookStuff,
+        kindChange,
+      };
+    }),
+    startWith({
+      tradingPair: currentTradingPair$.getValue(),
+    })
+  );
+}
+
+export interface Props extends Loadable<PickableOrderbook> {
   kindChange: (kind: OrderbookViewKind) => void;
   tradingPair: TradingPair;
 }
@@ -127,7 +172,7 @@ export class OrderbookView extends React.Component<Props> {
           </thead>
         </Table>
         <WithLoadingIndicator loadable={this.props} size="lg">
-          {(orderbook: EnhancedOrderbook) => {
+          {(orderbook: PickableOrderbook) => {
 
             console.log(orderbook.change);
 
