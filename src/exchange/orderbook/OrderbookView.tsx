@@ -2,8 +2,7 @@
 import * as React from 'react';
 import { default as MediaQuery } from 'react-responsive';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-
-import { FormChangeKind, PickOfferChange } from '../../utils/form';
+import { FormChangeKind } from '../../utils/form';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { SvgImage } from '../../utils/icons/utils';
@@ -17,12 +16,10 @@ import { Currency, InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { OrderbookViewKind } from '../OrderbookPanel';
 import { TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
 import depthChartSvg from './depth-chart.svg';
-import { Offer, Orderbook } from './orderbook';
+import { EnhancedOrderbook, Offer } from './orderbook';
 import * as styles from './OrderbookView.scss';
 
-export interface Props extends Loadable<Orderbook> {
-  account?: string;
-  change: (change: PickOfferChange) => void;
+export interface Props extends Loadable<EnhancedOrderbook> {
   kindChange: (kind: OrderbookViewKind) => void;
   tradingPair: TradingPair;
 }
@@ -66,6 +63,8 @@ export class OrderbookView extends React.Component<Props> {
   }
 
   public render() {
+
+    console.log(this.props);
 
     const tradingPairChanged = this.lastTradingPair &&
       tradingPairResolver(this.lastTradingPair) !== tradingPairResolver(this.props.tradingPair);
@@ -128,68 +127,82 @@ export class OrderbookView extends React.Component<Props> {
           </thead>
         </Table>
         <WithLoadingIndicator loadable={this.props} size="lg">
-          {(orderbook: Orderbook) => (
-            <>
-              <Scrollbar ref={el => this.scrollbar = el || undefined} onScroll={this.scrolled}>
-                <Table align="right" className={styles.orderbookTable}>
-                  <TransitionGroup
-                    component="tbody"
-                  >
-                    {orderbook.sell.slice().reverse().map((offer: Offer) => (
-                      <CSSTransition
-                        key={offer.offerId.toString()}
-                        classNames="order"
-                        timeout={1000}
-                        onEntering={this.enter}
-                        onExited={this.exit}
-                      >
-                        <this.OfferRow offer={offer} kind="sell" parent={this}/>
-                      </CSSTransition>
-                    ))
-                    }
+          {(orderbook: EnhancedOrderbook) => {
 
-                    {/* better don't remove me! */}
-                    <CSSTransition key="0" classNames="order" timeout={1000}>
-                      <RowHighlighted>
-                        <td ref={el => this.centerRow = this.centerRow || el || undefined}>
-                          {orderbook.spread
-                            ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote}/>
-                            : '-'}
-                        </td>
-                        <td/>
-                        <td>
-                          <Muted>{this.props.tradingPair.quote} Spread</Muted>
-                        </td>
-                      </RowHighlighted>
-                    </CSSTransition>
+            console.log(orderbook.change);
 
-                    {orderbook.buy.map((offer: Offer) => (
-                      <CSSTransition
-                        key={offer.offerId.toString()}
-                        classNames="order"
-                        timeout={1000}
-                        onEntering={this.enter}
-                        onExited={this.exit}
-                      >
-                        <this.OfferRow offer={offer} kind="buy" parent={this}/>
+            const takeOffer = (offer: Offer) => {
+              return (): void => {
+                orderbook.change({
+                  offer,
+                  kind: FormChangeKind.pickOfferChange,
+                });
+              };
+            };
+
+            return (
+              <>
+                <Scrollbar ref={el => this.scrollbar = el || undefined} onScroll={this.scrolled}>
+                  <Table align="right" className={styles.orderbookTable}>
+                    <TransitionGroup
+                      component="tbody"
+                    >
+                      {orderbook.sell.slice().reverse().map((offer: Offer) => (
+                        <CSSTransition
+                          key={offer.offerId.toString()}
+                          classNames="order"
+                          timeout={1000}
+                          onEntering={this.enter}
+                          onExited={this.exit}
+                        >
+                          <this.OfferRow offer={offer} kind="sell" onClick={takeOffer}/>
+                        </CSSTransition>
+                      ))
+                      }
+
+                      {/* better don't remove me! */}
+                      <CSSTransition key="0" classNames="order" timeout={1000}>
+                        <RowHighlighted>
+                          <td ref={el => this.centerRow = this.centerRow || el || undefined}>
+                            {orderbook.spread
+                              ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote}/>
+                              : '-'}
+                          </td>
+                          <td/>
+                          <td>
+                            <Muted>{this.props.tradingPair.quote} Spread</Muted>
+                          </td>
+                        </RowHighlighted>
                       </CSSTransition>
-                    ))}
-                  </TransitionGroup>
-                </Table>
-              </Scrollbar>
-            </>
-          )}
+
+                      {orderbook.buy.map((offer: Offer) => (
+                        <CSSTransition
+                          key={offer.offerId.toString()}
+                          classNames="order"
+                          timeout={1000}
+                          onEntering={this.enter}
+                          onExited={this.exit}
+                        >
+                          <this.OfferRow offer={offer} kind="buy" onClick={takeOffer}/>
+                        </CSSTransition>
+                      ))}
+                    </TransitionGroup>
+                  </Table>
+                </Scrollbar>
+              </>
+            );
+          }}
         </WithLoadingIndicator>
       </>
     );
   }
 
-  public OfferRow({ offer, kind, parent }: { offer: Offer, kind: string, parent: any }) {
+  public OfferRow({ offer, kind, onClick }: { offer: Offer, kind: string, onClick: (attr: any) => any }) {
     return (
       <RowClickable
         data-test-id={kind}
         clickable={true}
-        onClick={parent.takeOffer(offer)}>
+        onClick={onClick(offer)}>
         <td data-test-id="price">
           <SellBuySpan type={kind}>
             <FormatPriceOrder value={offer.price} token={offer.quoteToken} kind={kind}/>
@@ -203,15 +216,6 @@ export class OrderbookView extends React.Component<Props> {
         </td>
       </RowClickable>
     );
-  }
-
-  public takeOffer = (offer: Offer) => {
-    return (): void => {
-      this.props.change({
-        offer,
-        kind: FormChangeKind.pickOfferChange,
-      });
-    };
   }
 
   private changeChartListView = () => {

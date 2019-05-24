@@ -1,5 +1,5 @@
 import { concat, Observable, of } from 'rxjs';
-import { catchError, first, map, skip, startWith } from 'rxjs/operators';
+import { catchError, first, map, skip, startWith, tap } from 'rxjs/operators';
 
 import { onEveryBlock$ } from '../blockchain/network';
 import { TradingPair } from '../exchange/tradingPair/tradingPair';

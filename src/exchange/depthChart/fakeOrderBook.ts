@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { of } from 'rxjs/index';
-import { Offer, OfferType, Orderbook } from '../orderbook/orderbook';
+import { EnhancedOrderbook, Offer, OfferType, Orderbook } from '../orderbook/orderbook';
 import { currentTradingPair$, loadablifyPlusTradingPair } from '../tradingPair/tradingPair';
 
 const buy = [
@@ -61,7 +61,7 @@ const sell = [
   // { price: 0.001, amount: 1.80740079125783 }
 ];
 
-function priceAmountToOffer({ price, amount }: {price: number, amount: number}): Offer {
+function priceAmountToOffer({ price, amount }: { price: number, amount: number }): Offer {
   return {
     offerId: new BigNumber(0),
     baseAmount: new BigNumber(amount),
@@ -75,17 +75,19 @@ function priceAmountToOffer({ price, amount }: {price: number, amount: number}):
   };
 }
 
-export const createFakeOrderbook = (buys: any, sells: any): Orderbook => {
+export const createFakeOrderbook = (buys: any, sells: any): EnhancedOrderbook => {
   return {
+    account: '...',
+    change: () => null,
     sell: sells.map(priceAmountToOffer),
     spread: buys.length > 0 && sells.length > 0 ?
       new BigNumber(sells[0].price - buys[buys.length - 1].price) : undefined,
     buy: buys.map(priceAmountToOffer),
     blockNumber: 1
-  } as Orderbook;
+  } as EnhancedOrderbook;
 };
 
-export const fakeOrderBook: Orderbook = createFakeOrderbook(buy, sell);
+export const fakeOrderBook: EnhancedOrderbook = createFakeOrderbook(buy, sell);
 export const emptyOrderBook: Orderbook = createFakeOrderbook([], []);
 
 export const fakeOrderbookWithOutliers = createFakeOrderbook(

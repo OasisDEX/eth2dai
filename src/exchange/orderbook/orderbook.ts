@@ -175,26 +175,46 @@ export function loadOrderbook$(
   );
 }
 
-export function createPickableOrderBookFromOfferMake$(
-  tradingPair$: Observable<TradingPair>,
-  currentOrderBook$: Observable<Loadable<Orderbook>>,
+export type EnhancedOrderbook = {
+  account: string | undefined;
+  change: any;
+} & Orderbook;
+
+export function loadOrderBook$(
+  currentOrderBook$: Observable<Orderbook>,
   account$: Observable<string | undefined>,
   currentOfferForm$: Observable<OfferFormState>,
-  kindChange: (kind: OrderbookViewKind) => void
-) {
+): Observable<EnhancedOrderbook> {
   return combineLatest(
-    tradingPair$,
     currentOrderBook$,
     account$,
     currentOfferForm$,
   ).pipe(
-    map(([tradingPair, currentOrderBook, account, { change }]) => ({
-      tradingPair,
+    map(([currentOrderBook, account, { change }]) => ({
       ...currentOrderBook,
       account,
-      kindChange,
       change: (ch: PickOfferChange) => change(ch)
     })),
+  );
+}
+
+export function createPickableOrderBookFromOfferMake$(
+  tradingPair$: Observable<TradingPair>,
+  listening$: Observable<Loadable<EnhancedOrderbook>>,
+  kindChange: (kind: OrderbookViewKind) => void,
+):
+  Observable<TradingPair & Loadable<EnhancedOrderbook>> {
+  return combineLatest(
+    tradingPair$,
+    listening$
+  ).pipe(
+    map(([tradingPair, orderBookStuff]) => {
+      return {
+        ...tradingPair,
+        ...orderBookStuff,
+        kindChange,
+      };
+    }),
     startWith({
       tradingPair: currentTradingPair$.getValue(),
     })

@@ -12,11 +12,7 @@ import { fakeOrderBook } from '../depthChart/fakeOrderBook';
 import { OfferType } from '../orderbook/orderbook';
 import { OrderbookView } from '../orderbook/OrderbookView';
 import { TradingPair } from '../tradingPair/tradingPair';
-import {
-  FormStage,
-  Message,
-  MessageKind, OfferFormState,
-} from './offerMake';
+import { FormStage, Message, MessageKind, OfferFormState, } from './offerMake';
 import { OfferMakePanel } from './OfferMakePanel';
 
 const stories = storiesOf('Offer Make Form', module);
@@ -381,8 +377,6 @@ stories.add('Width of Create order and Order book panels', () => {
           <span>Order book - list</span>
         </PanelHeader>
         <OrderbookView
-          account="..."
-          change={() => null}
           kindChange={() => null}
           status="loaded"
           tradingPair={{ quote: 'DAI', base: 'WETH' } as TradingPair }

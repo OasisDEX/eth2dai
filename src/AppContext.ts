@@ -30,7 +30,12 @@ import {
   onEveryBlock$
 } from './blockchain/network';
 import { user$ } from './blockchain/user';
-import { createPickableOrderBookFromOfferMake$, loadOrderbook$, Orderbook } from './exchange/orderbook/orderbook';
+import {
+  createPickableOrderBookFromOfferMake$,
+  loadOrderbook$,
+  loadOrderBook$,
+  Orderbook
+} from './exchange/orderbook/orderbook';
 import {
   createTradingPair$,
   currentTradingPair$,
@@ -303,9 +308,11 @@ function offerMake(
 
   const pickableOrderbook$ = createPickableOrderBookFromOfferMake$(
     currentTradingPair$,
-    orderbookWithTradingPair$,
-    account$,
-    offerMake$,
+    loadablifyLight(loadOrderBook$(
+      orderbook$,
+      account$,
+      offerMake$)
+    ),
     kindChange
   );
   const OrderbookViewTxRx = connect<any, any>(OrderbookView, pickableOrderbook$);
