@@ -194,6 +194,19 @@ function prepareProceed(calls$: Calls$): [
   ];
 }
 
+function freezeIfInProgress(
+  previous: WrapUnwrapFormState,
+  state: WrapUnwrapFormState
+): WrapUnwrapFormState {
+  if (state.progress) {
+    return {
+      ...previous,
+      progress: state.progress,
+    };
+  }
+  return state;
+}
+
 export function createWrapUnwrapForm$(
   gasPrice$: Observable<BigNumber>,
   etherPriceUSD$: Observable<BigNumber>,
@@ -253,6 +266,7 @@ export function createWrapUnwrapForm$(
   map(validate),
   switchMap(curry(estimateGasPrice)(calls$)),
   map(checkIfIsReadyToProceed),
+  scan(freezeIfInProgress),
   firstOfOrTrue(s => s.gasEstimationStatus === GasEstimationStatus.calculating)
   );
 }
