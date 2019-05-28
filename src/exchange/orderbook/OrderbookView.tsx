@@ -109,7 +109,7 @@ export class OrderbookView extends React.Component<Props> {
 
   public render() {
 
-    console.log(this.props);
+    // console.log(this.props);
 
     const tradingPairChanged = this.lastTradingPair &&
       tradingPairResolver(this.lastTradingPair) !== tradingPairResolver(this.props.tradingPair);

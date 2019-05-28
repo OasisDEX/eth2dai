@@ -197,11 +197,11 @@ $header-media-breakpoint: 800px;
 }
 
 :global(.Popover.noWallet) {
-
-  & :global(.Popover-tip) {
-    fill: none;
-  }
   z-index: 5;
+  padding-top: 8px;
+  & :global(.Popover-tip) {
+    display: none;
+  }
 }
 
 .networkIndicator {
