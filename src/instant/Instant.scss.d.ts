@@ -17,3 +17,4 @@ export const inputWrapper: string;
 export const inputApprox: string;
 export const button: string;
 export const tradingAsset: string;
+export const closeButton: string;

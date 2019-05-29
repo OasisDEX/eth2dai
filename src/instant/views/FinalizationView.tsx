@@ -9,7 +9,7 @@ import { Approximate } from '../../utils/Approximate';
 import { formatAmountInstant } from '../../utils/formatters/format';
 import { Money } from '../../utils/formatters/Formatters';
 import { SvgImage } from '../../utils/icons/utils';
-import { Tooltip } from '../../utils/tooltip/Tooltip';
+import { WarningTooltipType } from '../../utils/tooltip/Tooltip';
 import { CurrentPrice } from '../CurrentPrice';
 import { TradeData } from '../details/TradeData';
 import { TxStatusRow } from '../details/TxStatusRow';
@@ -34,12 +34,12 @@ const proxyTooltip = {
   id: 'proxy-tooltip',
   text: 'Proxy is a supporting contract owned by you that groups different actions as one Ethereum transaction.',
   iconColor: 'white'
-} as Tooltip;
+} as WarningTooltipType;
 const allowanceTooltip = {
   id: 'allowance-tooltip',
   text: 'Enabling token trading allows your Proxy to take tokens from you and trade them on the exchange.',
   iconColor: 'white'
-} as Tooltip;
+} as WarningTooltipType;
 
 export class FinalizationView extends React.Component<ViewProps> {
 

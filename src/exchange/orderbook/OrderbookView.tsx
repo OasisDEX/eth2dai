@@ -109,7 +109,7 @@ export class OrderbookView extends React.Component<Props> {
 
   public render() {
 
-    console.log(this.props);
+    // console.log(this.props);
 
     const tradingPairChanged = this.lastTradingPair &&
       tradingPairResolver(this.lastTradingPair) !== tradingPairResolver(this.props.tradingPair);
@@ -173,9 +173,6 @@ export class OrderbookView extends React.Component<Props> {
         </Table>
         <WithLoadingIndicator loadable={this.props} size="lg">
           {(orderbook: PickableOrderbook) => {
-
-            console.log(orderbook.change);
-
             const takeOffer = (offer: Offer) => {
               return (): void => {
                 orderbook.change({

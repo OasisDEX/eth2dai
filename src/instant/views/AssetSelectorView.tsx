@@ -28,7 +28,7 @@ class AssetSelectorView extends React.Component<ViewProps> {
     return (
       <section className={classnames(instantStyles.panel, panelStyling.panel)}>
         <TopRightCorner>
-          <CloseButton theme="instant" onClick={this.hideAssets}/>
+          <CloseButton theme="danger" className={instantStyles.closeButton} onClick={this.hideAssets}/>
         </TopRightCorner>
         <ul className={styles.list}>
           {

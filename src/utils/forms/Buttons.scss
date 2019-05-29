@@ -145,6 +145,11 @@
   padding: 0;
 }
 
+.full {
+  width: 100%;
+  height: 100%;
+}
+
 .block {
   display: block;
   width: 100%;
@@ -183,18 +188,10 @@
   border-radius: 100%;
 }
 
-.instantClose {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 100%;
-  border: 1px solid $brown-reddish;
-  padding: 5px;
-
-  &:hover {
-    border: 1px solid $brown-reddish-highlight !important;
-  }
-
-  svg {
-    fill: $errors;
-  }
+.darkRed {
+  @include button((
+    color: $errors,
+    border-color: $brown-reddish,
+    border-color-hover: darken($brown-reddish-highlight, 5%),
+  ));
 }

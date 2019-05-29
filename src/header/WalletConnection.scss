@@ -1,0 +1,139 @@
+@import '../utils/Variables';
+@import '../utils/Mixins';
+@import '../utils/forms/Buttons';
+
+.section {
+  border-color: $white;
+  color: $white;
+  width: 16rem;
+  height: 100%;
+  background: $grey-darkest;
+  box-shadow: 0 0 .75rem rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.heading {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  font-weight: 500;
+  margin: 1.25rem 0;
+  letter-spacing: .4px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+
+  @include fontMontserratMedium();
+  font-size: 0.875rem;
+  list-style-type: none;
+
+  margin: 0;
+  padding: .75rem 0;
+
+  border-bottom: 1px solid rgba(88, 88, 95, .2);
+
+  .item {
+    padding: 0 1.5rem;
+    border-radius: 0;
+    cursor: pointer;
+  }
+
+  &:first-of-type {
+    padding-top: 0;
+  }
+
+  &.single {
+    padding-top: .75rem;
+    border-top: 1px solid rgba(88, 88, 95, .2);
+  }
+}
+
+.wallet {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  @include fontMontserratMedium();
+  font-size: 0.875rem;
+  letter-spacing: 0.4px;
+
+  .icon {
+    display: inline-block;
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-right: 1.175rem;
+
+    :global(.provider-icon) {
+      fill: $white;
+    }
+  }
+
+  &.selected {
+    background-color: #373740;
+  }
+
+  &:hover {
+    background-color: #33333C;
+  }
+
+  &.inactive {
+    pointer-events: none;
+    color: $dark-gray-blue;
+
+    :global(.provider-icon) {
+      fill: $dark-gray-blue;
+    }
+  }
+}
+
+.termsAndConditions {
+  width: 100%;
+
+  font-size: .75rem;
+  padding: 1rem 1.5rem;
+  color: #ACACAF;
+
+  border-bottom: 1px solid rgba(88, 88, 95, .2);
+
+  letter-spacing: .4px;
+
+  input[type=checkbox] + span:before {
+    margin-left: 4px;
+  }
+
+  a {
+    color: white;
+    text-decoration: underline;
+  }
+}
+
+.buttonPlaceholder {
+  padding: 0.75rem 1rem;
+}
+
+.btn {
+  width: 100%;
+  border-radius: 4px;
+  font-size: 14px;
+  letter-spacing: 0.8px;
+
+  &.connect {
+    font-weight: 600;
+
+    @include button((
+      color: $very-pale-blue,
+      bg: $vivid-blue,
+      border-color: $vivid-blue,
+      color-hover: $very-pale-blue,
+      border-color-hover: $vivid-blue-hover,
+      bg-hover: $vivid-blue-hover
+    ));
+
+    &:disabled {
+      color: $grey-light;
+      background-color: transparent;
+      border-color: $button-border-disabled;
+    }
+  }
+}

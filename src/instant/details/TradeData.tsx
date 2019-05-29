@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import * as React from 'react';
-import { Tooltip } from '../../utils/tooltip/Tooltip';
+import { WarningTooltip, WarningTooltipType } from '../../utils/tooltip/Tooltip';
 import * as styles from './TradeData.scss';
 
 interface EntryProps {
@@ -9,7 +9,7 @@ interface EntryProps {
   value?: string | React.ReactNode;
   info?: string;
   theme?: 'reversed';
-  tooltip?: Tooltip;
+  tooltip?: WarningTooltipType;
 }
 
 const skin = (theme: string) => {
@@ -30,7 +30,7 @@ export class TradeData extends React.Component<EntryProps> {
           {label}
         </span>&nbsp;
         {
-          tooltip && <Tooltip {...tooltip}/>
+          tooltip && <WarningTooltip {...tooltip}/>
         }
         <span data-test-id="value"
               className={styles.value}>

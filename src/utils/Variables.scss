@@ -2,7 +2,7 @@
 $body-bg: #424250;
 
 $white: #fff; // text colors
-$whitish: #fbfbfb;
+$whitish: #f5f5f5;
 $grey-lightest: #87878C; // muted text colors
 $grey-lighter: #97979B;
 $grey-light: #58585F;
@@ -11,12 +11,15 @@ $grey-darkest: #2F2F38; // components bg
 $grey-darken-darkest: #2B2B33; // panel border
 $very-dark-greyish-blue: #263238;
 $dark-greyish-blue: #555561;
+$darker-greyish-blue: #676773;
 $dark-gray-blue: #828287;
+$lighter-dark-gray-blue: #8D8D96;
 $input-number-color: #ABABAF; //
 $button-border-hover: #707076;
 $button-border-disabled: #3F3F47;
 
-$soft-cyan: #69F0AE; // main network indicator
+$soft-cyan: #69F0AE;
+$lime-green: #1AAD77; // main network indicator
 $cyan: #55AC85; //bars in the price impact warning view
 $green: #1CBA80 ; // button bg, buy color
 $green-dark: #22906A; // depth chart buy dark color
@@ -27,13 +30,16 @@ $errors: #EF5350;
 $red-dark: #C15849; // depth chart sell dark color
 $orange: #f7a600; //
 
-
+$very-pale-blue: #EEF4FF;
 $very-light-blue: #80D8FF; // used for tx status in instant
 $etherColor: #4f6cb1;
 $makerColor: #3ab493;
 $daiColor: #f7a600;
 $dgxColor: #be9e57;
-$moderate-violet: #B388FF; // kovan network indicator
+$moderate-violet: #B388FF;
+$light-violet: #7C4DFF; // kovan network indicator
+$vivid-blue: #2979FF; // used on connect button
+$vivid-blue-hover: #2962FF; // used on connect button
 
 $font-color-base: $white;
 
