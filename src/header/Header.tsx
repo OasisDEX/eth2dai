@@ -81,7 +81,7 @@ const popup$ = combineLatest(walletStatus$, popup, walletConnectionView$).pipe(
       popup.next(false);
       setTimeout(() => {
         walletConnectionViewManual$.next('');
-      }, 500);
+      },         500);
     },
     isConnected: status === 'connected',
     isConnecting: status === 'connecting',
