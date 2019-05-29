@@ -144,6 +144,7 @@ class WalletConnectionStatus extends React.Component<WalletConnectionStatusProps
                     crossAlign="center-end"
                     onOuterAction={close}
                     className="noWallet"
+                    enterExitTransitionDistancePx={-10}
                     body={<View close={close}/>}>
         <div className={walletConnection}>
           <theAppContext.Consumer>
