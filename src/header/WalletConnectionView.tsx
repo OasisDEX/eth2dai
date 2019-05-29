@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { connectToWallet$ } from '../blockchain/wallet';
 import { Button } from '../utils/forms/Buttons';
 import { Checkbox } from '../utils/forms/Checkbox';
+import { LoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
 import {
   getCurrentProviderName,
   Ledger,
@@ -65,7 +66,7 @@ const Panel = (props: { heading?: string | React.ReactNode, children?: any }) =>
   );
 };
 
-class SuggestedClients extends React.Component<any> {
+class SuggestedClients extends React.Component {
   public render() {
     return (
       <Panel heading="Get a Wallet">
@@ -103,7 +104,7 @@ class SuggestedClients extends React.Component<any> {
   }
 }
 
-class NotConnected extends React.Component<any, { isChecked: boolean, selectedWallet: Provider }> {
+class NotConnected extends React.Component<{}, { isChecked: boolean, selectedWallet: Provider }> {
   public constructor(props: any) {
     super(props);
     this.state = {
@@ -182,7 +183,7 @@ class NotConnected extends React.Component<any, { isChecked: boolean, selectedWa
   }
 }
 
-class NoClient extends React.Component<any, { isChecked: boolean, selectedWallet: Provider }> {
+class NoClient extends React.Component<{}, { isChecked: boolean, selectedWallet: Provider }> {
   public constructor(props: any) {
     super(props);
     this.state = {
@@ -261,7 +262,7 @@ class NoClient extends React.Component<any, { isChecked: boolean, selectedWallet
   }
 }
 
-class Connected extends React.Component<any> {
+class Connected extends React.Component {
   public render() {
     return (
       <Panel heading={`${getCurrentProviderName().name} Connected`}>
@@ -281,20 +282,61 @@ class Connected extends React.Component<any> {
   }
 }
 
+const Connecting = (props: any) => {
+  const _connectingContainerStyles = () => ({
+    fontSize: '14px',
+    letterSpacing: '.4px',
+    lineHeight: '24px',
+    height: '216px',
+    color: '#828288',
+    width: '100%',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTop: '1px solid rgba(88, 88, 95, 0.2)',
+    borderBottom: '1px solid rgba(88, 88, 95, 0.2)',
+    flexDirection: 'column',
+    textAlign: 'center'
+  } as React.CSSProperties);
+
+  return (
+    <Panel heading="Connecting...">
+      <div style={_connectingContainerStyles()}>
+        <div>
+          <LoadingIndicator size="lg"/>
+          Waiting for Approval
+          <br/>
+          on {getCurrentProviderName().name}
+        </div>
+      </div>
+      <div className={buttonPlaceholder}>
+        <Button size="lg"
+                className={classnames(item, btn)}
+                onClick={props.close}
+                data-test-id="connect-wallet"
+        >
+          Cancel
+        </Button>
+      </div>
+    </Panel>
+  );
+};
+
 export enum WalletConnectionViewKind {
   suggest = 'suggest',
   connected = 'connected',
+  connecting = 'connecting',
   notConnected = 'notConnected',
   noClient = 'noClient',
 }
 
 export const walletConnectionViewManual$ = new BehaviorSubject('');
-walletConnectionViewManual$.subscribe();
 
-export const WalletConnectionViews = new Map<WalletConnectionViewKind, any>(
+export const WalletConnectionViews = new Map<WalletConnectionViewKind>(
   [
     [WalletConnectionViewKind.connected, Connected],
     [WalletConnectionViewKind.notConnected, NotConnected],
     [WalletConnectionViewKind.noClient, NoClient],
     [WalletConnectionViewKind.suggest, SuggestedClients],
+    [WalletConnectionViewKind.connecting, Connecting],
   ]);

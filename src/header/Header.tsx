@@ -6,8 +6,8 @@ import * as React from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 // @ts-ignore
 import * as ReactPopover from 'react-popover';
-import { combineLatest, Observable } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 
 import { IoIosWifi } from 'react-icons/io';
 import MediaQuery from 'react-responsive';
@@ -15,7 +15,7 @@ import { NavLink } from 'react-router-dom';
 import { theAppContext } from '../AppContext';
 import { account$ } from '../blockchain/network';
 import { WalletStatus, walletStatus$ } from '../blockchain/wallet';
-import { Web3Status, web3Status$ } from '../blockchain/web3';
+import { web3Status$ } from '../blockchain/web3';
 import chevronDownSvg from '../icons/chevron-down.svg';
 import { routerContext } from '../Main';
 import { connect } from '../utils/connect';
@@ -46,10 +46,7 @@ const {
 } = styles;
 
 interface HeaderProps {
-  account: string | undefined;
   walletStatus: WalletStatus;
-  web3status: Web3Status;
-  view: WalletConnectionViewKind;
 }
 
 const walletConnectionView$: Observable<WalletConnectionViewKind> =
@@ -73,7 +70,22 @@ const walletConnectionView$: Observable<WalletConnectionViewKind> =
       distinctUntilChanged(isEqual)
     );
 
-walletConnectionView$.subscribe();
+const popup = new BehaviorSubject(false);
+
+const popup$ = combineLatest(walletStatus$, popup, walletConnectionView$).pipe(
+  map(([status, isOpen, view]) => ({
+    view,
+    isOpen,
+    open: () => popup.next(true),
+    close: () => popup.next(false),
+    isConnected: status === 'connected',
+    isConnecting: status === 'connecting',
+  }))
+);
+
+popup$.pipe(
+  filter(({ isConnected, isOpen }) => (isOpen && isConnected))
+).subscribe(() => popup.next(false));
 
 class Header extends React.Component<HeaderProps> {
   public render() {
@@ -98,7 +110,7 @@ class Header extends React.Component<HeaderProps> {
               </nav>
             </section>
             <section className={classnames(section, sectionStatus)}>
-              <WalletConnectionStatus connected={this.props.walletStatus === 'connected'} {...this.props}/>
+              <WalletConnectionStatusRx/>
             </section>
           </header>
         }
@@ -107,30 +119,32 @@ class Header extends React.Component<HeaderProps> {
   }
 }
 
-export const HeaderTxRx = connect(Header, combineLatest(account$, walletStatus$, web3Status$, walletConnectionView$).pipe(
-  map(([account, walletStatus, web3status, view]) => ({ account, walletStatus, web3status, view })),
+export const HeaderTxRx = connect(Header, combineLatest(walletStatus$).pipe(
+  map(([walletStatus]) => ({ walletStatus })),
 ));
 
-class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
+interface WalletConnectionStatusProps {
+  open: () => void;
+  close: () => void;
+  isOpen: boolean;
+  isConnected: boolean;
+  isConnecting: boolean;
+  view: any;
+}
 
-  public constructor(props: any) {
-    super(props);
-    this.state = {
-      isOpen: false,
-    };
-  }
+class WalletConnectionStatus extends React.Component<WalletConnectionStatusProps> {
 
   public render(): JSX.Element {
-    const View = WalletConnectionViews.get(this.props.view);
+    const { open, close, view, isConnected, isConnecting, isOpen } = this.props;
+    const View = WalletConnectionViews.get(isConnecting ? WalletConnectionViewKind.connecting : view);
 
     return (
-      <ReactPopover isOpen={this.state.isOpen}
+      <ReactPopover isOpen={isOpen}
                     place="below"
                     crossAlign="center-end"
-                    onOuterAction={this._close}
+                    onOuterAction={close}
                     className="noWallet"
-                    body={<View/>}
-      >
+                    body={<View close={close}/>}>
         <div className={walletConnection}>
           <theAppContext.Consumer>
             {({ NetworkTxRx }) =>
@@ -139,9 +153,9 @@ class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
             }
           </theAppContext.Consumer>
           {
-            this.props.connected
+            isConnected
               ? (
-                <div onClick={this._open}>
+                <div onClick={open}>
                   <StatusTxRx/>
                 </div>
               )
@@ -149,7 +163,7 @@ class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
 
                 <Button color="white"
                         size="sm"
-                        onClick={this._open}
+                        onClick={open}
                         data-test-id="new-connection"
                         className={classnames(styles.login, styles.connectWalletButton)}>
                   <MediaQuery minWidth={800}>
@@ -172,24 +186,12 @@ class WalletConnectionStatus extends React.Component<any, { isOpen: boolean }> {
       </ReactPopover>
     );
   }
-
-  private _open = () => {
-    this.setState({ isOpen: true });
-  }
-
-  private _close = () => {
-    this.setState({ isOpen: false });
-    /* We need to update the view with a small delay.
-    * The dropdown contains animation when showing/hiding.
-    */
-    setTimeout(
-      () => walletConnectionViewManual$.next(''),
-      500
-    );
-  }
 }
 
-interface StatusProps extends Loadable<Account> {
+const WalletConnectionStatusRx = connect(WalletConnectionStatus, popup$);
+
+interface StatusProps extends Loadable
+  <Account> {
 }
 
 class Status extends React.Component<StatusProps> {
