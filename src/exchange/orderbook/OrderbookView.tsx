@@ -173,9 +173,6 @@ export class OrderbookView extends React.Component<Props> {
         </Table>
         <WithLoadingIndicator loadable={this.props} size="lg">
           {(orderbook: PickableOrderbook) => {
-
-            console.log(orderbook.change);
-
             const takeOffer = (offer: Offer) => {
               return (): void => {
                 orderbook.change({
