@@ -26,6 +26,10 @@ export class WalletConnection {
     return new Wallet();
   }
 
+  public static status() {
+    cy.get(tid('wallet-status'), { timeout }).click();
+  }
+
   public static headingIs(text: string | RegExp) {
     cy.get(tid('wallet-connection-panel', tid('heading'))).contains(text);
   }

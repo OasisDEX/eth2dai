@@ -142,6 +142,8 @@ describe('Wallet', () => {
 
       cy.wait(1000);
 
+      WalletConnection.status();
+
       WalletConnection.headingIs('Web Wallet Connected');
     });
   });

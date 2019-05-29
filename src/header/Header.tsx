@@ -161,7 +161,7 @@ class WalletConnectionStatus extends React.Component<WalletConnectionStatusProps
           {
             isConnected
               ? (
-                <div onClick={open}>
+                <div onClick={open} data-test-id="wallet-status">
                   <StatusTxRx/>
                 </div>
               )
