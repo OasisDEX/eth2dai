@@ -77,7 +77,12 @@ const popup$ = combineLatest(walletStatus$, popup, walletConnectionView$).pipe(
     view,
     isOpen,
     open: () => popup.next(true),
-    close: () => popup.next(false),
+    close: () => {
+      popup.next(false);
+      setTimeout(() => {
+        walletConnectionViewManual$.next('');
+      }, 500);
+    },
     isConnected: status === 'connected',
     isConnecting: status === 'connecting',
   }))
