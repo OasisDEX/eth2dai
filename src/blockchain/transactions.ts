@@ -182,7 +182,7 @@ export function send(
             } as TxState);
           }
           return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
-            map(([externalNonce2tx]) =>
+            map<[ExternalNonce2tx], [string, TxRebroadcastStatus|undefined]>(([externalNonce2tx]) =>
               externalNonce2tx[transaction.nonce] ? [
                 externalNonce2tx[transaction.nonce].hash,
                 transaction.input === externalNonce2tx[transaction.nonce].callData ?
@@ -193,14 +193,14 @@ export function send(
                 undefined
               ]
             ),
-            mergeMap(([hash, rebroadcast]) =>
-              bindNodeCallback(web3.eth.getTransactionReceipt)(hash).pipe(
-                map(receipt => [receipt, rebroadcast])
-              )
-            ),
-            filter(([receipt]: [any, TxRebroadcastStatus]) => receipt && receipt.blockNumber),
+            mergeMap(([hash, rebroadcast]) => of(hash).pipe(
+              mergeMap<string, { blockNumber: number, transactionHash: string }>(() =>
+                bindNodeCallback(web3.eth.getTransactionReceipt)(hash)
+              ),
+              filter(receipt => receipt && !!receipt.blockNumber),
+              mergeMap(receipt => successOrFailure(receipt.transactionHash, receipt, rebroadcast)),
+            )),
             first(),
-            mergeMap(([receipt, rebroadcast]) => successOrFailure(receipt.transactionHash, receipt, rebroadcast)),
             catchError(error => {
               return of({
                 ...common,
