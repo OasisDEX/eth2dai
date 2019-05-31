@@ -1,4 +1,4 @@
-import { combineLatest, from, interval, merge, Observable, Subject } from 'rxjs';
+import { combineLatest, from, interval, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
   distinctUntilChanged,
@@ -7,7 +7,7 @@ import {
   map,
   shareReplay,
   startWith,
-  switchMap
+  switchMap, tap
 } from 'rxjs/operators';
 import * as Web3 from 'web3';
 
@@ -23,43 +23,50 @@ export const accepted$ = interval(500).pipe(
   distinctUntilChanged(isEqual)
 );
 
-export const connectToWallet$: Subject<number> = new Subject();
-export const walletStatus$: Observable<WalletStatus> = merge(
-  combineLatest(
-    account$,
-    accepted$
-  ).pipe(
-    map(([account, hasAcceptedToS]) =>
+const connectToWallet$: Subject<number> = new Subject();
+
+export function connectToWallet() {
+  connectToWallet$.next(1);
+}
+
+const connecting$ = connectToWallet$.pipe(
+  switchMap(() => {
+    const win = window as Web3Window;
+    window.localStorage.setItem('tos', 'true');
+    if (win.ethereum) {
+      win.web3 = new Web3(win.ethereum);
+      return from(win.ethereum.enable()).pipe(
+        switchMap(([enabled]) => account$.pipe(
+          filter(account => account === enabled),
+          first(),
+          map(() => {
+            return undefined;
+          }),
+        )),
+        startWith('connecting'),
+        catchError(() => of('denied')),
+      );
+    }
+    return of();
+  }),
+  startWith(undefined)
+);
+
+export const walletStatus$: Observable<WalletStatus> = combineLatest(
+  account$,
+  accepted$,
+  connecting$
+).pipe(
+  map(([account, hasAcceptedToS, connecting]) =>
+    connecting ? connecting :
       account && hasAcceptedToS ?
         'connected' :
         (window as Web3Window).ethereum ?
           'disconnected' :
           'missing'
-    ),
   ),
-  connectToWallet$.pipe(
-    switchMap(() => {
-      const win = window as Web3Window;
-      window.localStorage.setItem('tos', 'true');
-      if (win.ethereum) {
-        win.web3 = new Web3(win.ethereum);
-        return from(win.ethereum.enable()).pipe(
-          switchMap(([enabled]) => account$.pipe(
-            filter(account => account === enabled),
-            first(),
-            map(() => {
-              return 'connected';
-            }),
-          )),
-          startWith('connecting' as WalletStatus),
-          catchError(() => from(['denied'])),
-        );
-      }
-      return from(['missing' as WalletStatus]);
-    }),
-  ),
-).pipe(
+  tap(console.log),
   shareReplay(1),
 );
 
-walletStatus$.subscribe();
+// walletStatus$.subscribe(console.log);

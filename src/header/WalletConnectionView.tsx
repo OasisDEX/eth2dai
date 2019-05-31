@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import * as React from 'react';
 import { BehaviorSubject } from 'rxjs';
-import { connectToWallet$ } from '../blockchain/wallet';
+import { connectToWallet } from '../blockchain/wallet';
 import { Button } from '../utils/forms/Buttons';
 import { Checkbox } from '../utils/forms/Checkbox';
 import { LoadingIndicator } from '../utils/loadingIndicator/LoadingIndicator';
@@ -170,7 +170,7 @@ class NotConnected extends React.Component<{}, { isChecked: boolean, selectedWal
   }
 
   private _connect = () => {
-    connectToWallet$.next();
+    connectToWallet();
   }
 
   private _canConnect = () => {
@@ -244,7 +244,7 @@ class NoClient extends React.Component<{}, { isChecked: boolean, selectedWallet:
   }
 
   private _connect = () => {
-    connectToWallet$.next();
+    connectToWallet();
   }
 
   private _canConnect = () => {
