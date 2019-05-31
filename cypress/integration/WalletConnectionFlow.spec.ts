@@ -146,5 +146,18 @@ describe('Wallet', () => {
 
       WalletConnection.headingIs('Web Wallet Connected');
     });
+
+    it('should ask to connect the wallet if ToS acceptance is removed', () => {
+      WalletConnection.open().web().acceptToS().connect();
+
+      cy.wait(1000);
+
+      cy.clearLocalStorage();
+
+      WalletConnection.open();
+      WalletConnection.headingIs('Connect Wallet');
+      WalletConnection.hasAcceptedToS(false);
+      WalletConnection.isWebWalletSelected(false);
+    });
   });
 });

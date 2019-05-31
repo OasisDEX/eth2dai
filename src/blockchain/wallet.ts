@@ -7,7 +7,8 @@ import {
   map,
   shareReplay,
   startWith,
-  switchMap, tap
+  switchMap,
+  tap
 } from 'rxjs/operators';
 import * as Web3 from 'web3';
 
