@@ -43,7 +43,7 @@ export const tradePayWithETHWithProxy: TransactionDef<InstantOrderData> = {
     context: NetworkConfig
   ) => {
     const fixedBuyAmount = kind === OfferType.sell ?
-      buyAmount.times(one.minus(slippageLimit)) :
+      fixBuyAmount(buyAmount, slippageLimit) :
       buyAmount;
 
     const method = kind === OfferType.sell ?
@@ -80,7 +80,7 @@ export const tradePayWithETHWithProxy: TransactionDef<InstantOrderData> = {
     value: amountToWei(
       kind === OfferType.sell ?
         sellAmount :
-        sellAmount.times(one.plus(one.plus(slippageLimit))),
+        fixSellAmount(sellAmount, slippageLimit),
       sellToken).toFixed(0)
   }),
   kind: TxMetaKind.tradePayWithETHWithProxy,
