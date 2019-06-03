@@ -7,7 +7,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 // @ts-ignore
 import * as ReactPopover from 'react-popover';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { IoIosWifi } from 'react-icons/io';
 import MediaQuery from 'react-responsive';
@@ -88,9 +88,13 @@ const popup$ = combineLatest(walletStatus$, popup, walletConnectionView$).pipe(
   }))
 );
 
-popup$.pipe(
-  filter(({ isConnected, isOpen }) => (isOpen && isConnected))
-).subscribe(() => popup.next(false));
+walletStatus$.pipe().subscribe(
+  status => {
+    if (status === 'connected' || status === 'disconnected') {
+      popup.next(false);
+    }
+  }
+);
 
 class Header extends React.Component<HeaderProps> {
   public render() {
