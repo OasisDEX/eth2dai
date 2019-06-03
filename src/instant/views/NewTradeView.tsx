@@ -85,6 +85,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
       quotation,
       user,
       kind,
+      slippageLimit
     } = this.props;
 
     return (
@@ -136,7 +137,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
               <TradeData label="Slippage Limit"
                          data-test-id="trade-slippage-limit"
                          tooltip={slippageLimitTooltip}
-                         value={<FormatPercent value={new BigNumber(2.5)} precision={1}/>}
+                         value={<FormatPercent value={new BigNumber(slippageLimit.times(100))} precision={1}/>}
                          style={{ marginBottom: '2px' }}
               />
               <TradeData label="Gas cost"
