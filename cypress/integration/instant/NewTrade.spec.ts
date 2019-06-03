@@ -29,7 +29,7 @@ describe('New trade', () => {
     trade.expectToReceive('555.00');
 
     TradeData.expectPriceOf(/(277\.50)/);
-    TradeData.expectSlippageLimit(/2\.5%/);
+    TradeData.expectSlippageLimit(/5\.0%/);
     TradeData.expectPriceImpact(/0\.89%/);
 
     makeScreenshots('instant-trade');
@@ -41,7 +41,7 @@ describe('New trade', () => {
     trade.expectToPay('1.145');
 
     TradeData.expectPriceOf(/(279\.37)/);
-    TradeData.expectSlippageLimit(/2\.5%/);
+    TradeData.expectSlippageLimit(/5\.0%/);
     TradeData.expectPriceImpact(/0\.22%/);
   });
 
