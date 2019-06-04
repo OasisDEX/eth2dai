@@ -1,11 +1,13 @@
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
 import { WalletConnection } from '../../pages/WalletConnection';
-import { cypressVisitWithWeb3, tid } from '../../utils';
+import { cypressVisitWithWeb3, tid, verifySendTxs, ACCOUNT_3_PUBLIC, toHex } from '../../utils';
 
 const nextTrade = () => {
   cy.get(tid('new-trade')).click();
 };
+
+const INSTANT_PROXY_CREATE_AND_EXECUTE_ADDRESS = "0x99C7F543e310A4143D22ce840a348b4EcDbBA8Ce"
 
 describe('Buying', () => {
   beforeEach(() => {
@@ -15,7 +17,7 @@ describe('Buying', () => {
   });
 
   context('ETH for ERC20', () => {
-    it('without proxy', () => {
+    it.only('without proxy', () => {
       const from = 'ETH';
       const to = 'DAI';
       const willPay = '0.357';
@@ -36,7 +38,13 @@ describe('Buying', () => {
       summary.expectProxyBeingCreated();
       summary.expectBought(willReceive, to);
       summary.expectSold(willPay, from);
-      summary.expectPriceOf(price);
+      summary.expectPriceOf(price).then(() => {
+        verifySendTxs([ {
+          from: ACCOUNT_3_PUBLIC,
+          to: INSTANT_PROXY_CREATE_AND_EXECUTE_ADDRESS,
+          value: toHex("374999999999999999"),
+        }]);
+      });
     });
 
     it('with proxy', () => {
