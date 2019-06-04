@@ -1,9 +1,11 @@
 // tslint:disable:no-console
+import { equals } from 'ramda';
 import * as React from 'react';
 import { default as MediaQuery } from 'react-responsive';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
@@ -36,7 +38,7 @@ export function createPickableOrderBook(
   ).pipe(
     map(([currentOrderBook, { change }]) => ({
       ...currentOrderBook,
-      change: (ch: PickOfferChange) => change(ch)
+      change,
     })),
   );
 }
@@ -45,22 +47,21 @@ export function createOrderbookForTradingPair(
   tradingPair$: Observable<TradingPair>,
   pickableOrderbook$: Observable<Loadable<PickableOrderbook>>,
   kindChange: (kind: OrderbookViewKind) => void,
-):
-  Observable<TradingPair & Loadable<PickableOrderbook>> {
+): Observable<Props> {
   return combineLatest(
     tradingPair$,
-    pickableOrderbook$
+    pickableOrderbook$,
   ).pipe(
     map(([tradingPair, orderBookStuff]) => {
       return {
-        ...tradingPair,
+        tradingPair,
         ...orderBookStuff,
         kindChange,
       };
     }),
     startWith({
       tradingPair: currentTradingPair$.getValue(),
-    })
+    } as Props),
   );
 }
 
@@ -107,10 +108,17 @@ export class OrderbookView extends React.Component<Props> {
     this.autoScroll = false;
   }
 
+  public shouldComponentUpdate(nextProps: any): boolean {
+    if (nextProps.value && (
+      (nextProps.value.buy[0] && !equals(nextProps.tradingPair, { base: nextProps.value.buy[0].baseToken, quote: nextProps.value.buy[0].quoteToken })) ||
+      (nextProps.value.sell[0] && !equals(nextProps.tradingPair, { base: nextProps.value.sell[0].baseToken, quote: nextProps.value.sell[0].quoteToken }))
+    )) {
+      return false;
+    }
+    return !equals(nextProps, this.props);
+  }
+
   public render() {
-
-    // console.log(this.props);
-
     const tradingPairChanged = this.lastTradingPair &&
       tradingPairResolver(this.lastTradingPair) !== tradingPairResolver(this.props.tradingPair);
     this.lastTradingPair = this.props.tradingPair;
@@ -124,6 +132,7 @@ export class OrderbookView extends React.Component<Props> {
         this.center();
       });
     }
+    const skipTransition = justLoaded || tradingPairChanged;
 
     return (
       <>
@@ -188,6 +197,8 @@ export class OrderbookView extends React.Component<Props> {
                   <Table align="right" className={styles.orderbookTable}>
                     <TransitionGroup
                       component="tbody"
+                      exit={!skipTransition}
+                      enter={!skipTransition}
                     >
                       {orderbook.sell.slice().reverse().map((offer: Offer) => (
                         <CSSTransition

@@ -93,7 +93,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
         <div className={styles.dropdown}>
           <div tabIndex={dropdownDisabled ? undefined : -1}
                data-test-id="select-pair"
-               onClick={() => dropdownDisabled ? null : this.showMenu}
+               onClick={dropdownDisabled ? undefined : this.showMenu}
                className={classnames(styles.dropdownBtn, {
                  [styles.dropdownBtnDisabled]: dropdownDisabled,
                  [styles.dropdownBtnActive]: this.state.showMenu

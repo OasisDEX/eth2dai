@@ -1,27 +1,43 @@
+import { equals } from 'ramda';
 import * as React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Subject } from 'rxjs';
-import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
 
 import { etherscan } from '../../blockchain/etherscan';
 import { formatDateTime } from '../../utils/formatters/format';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
+import { LoadableStatus } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { ServerUnreachable } from '../../utils/loadingIndicator/ServerUnreachable';
 import { PanelHeader } from '../../utils/panel/Panel';
+import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
 import { RowClickable, Table } from '../../utils/table/Table';
 import * as tableStyles from '../../utils/table/Table.scss';
 import { InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { Trade } from '../trades';
+import { TradingPair } from '../tradingPair/tradingPair';
 import { AllTradesProps } from './allTrades';
 import * as styles from './AllTradesView.scss';
 
 export class AllTrades extends React.Component<AllTradesProps> {
+  private lastTradingPair?: TradingPair;
+  private lastLoadingStatus?: LoadableStatus;
+
+  public shouldComponentUpdate(nextProps: AllTradesProps): boolean {
+    return !equals(nextProps, this.props);
+  }
+
   public render() {
     const showMore = (more$: Subject<any>) => () => {
       more$.next(true);
     };
+
+    const skipTransition = !equals(this.props.tradingPair, this.lastTradingPair) ||
+      (this.lastLoadingStatus === 'loading' && this.props.status === 'loaded');
+    this.lastTradingPair = this.props.tradingPair;
+    this.lastLoadingStatus = this.props.status;
+
     return (
       <>
         <PanelHeader bordered={this.props.status === 'error'}>
@@ -45,7 +61,7 @@ export class AllTrades extends React.Component<AllTradesProps> {
             <>
               <Scrollbar>
                 <Table align="right" className={styles.allTradesTable}>
-                  <TransitionGroup component="tbody">
+                  <TransitionGroup component="tbody" exit={!skipTransition} enter={!skipTransition}>
                     {trades.map(trade => (
                       <CSSTransition
                         key={`${trade.tx}_${trade.idx}`}

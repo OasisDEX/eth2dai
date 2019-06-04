@@ -276,7 +276,7 @@ function offerMake(
   balances$: Observable<Balances>
 ) {
   const offerMake$: Observable<OfferFormState> = currentTradingPair$.pipe(
-    flatMap(tp => createFormController$(
+    switchMap(tp => createFormController$(
       {
         gasPrice$,
         allowance$,

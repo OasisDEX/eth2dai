@@ -48,6 +48,7 @@
 
     cursor: pointer;
     background: url("../../icons/chevron-down.svg") no-repeat ($width - 34px) center;
+    background-size: 16px;
 
     @include media-breakpoint-down(md){
       border-right: none;
