@@ -1,4 +1,4 @@
-import { ApplicationState } from '../pages/Application';
+import { WalletConnection } from '../pages/WalletConnection';
 import { cypressVisitWithWeb3, tid } from '../utils';
 import { makeScreenshots } from '../utils/makeScreenshots';
 
@@ -6,7 +6,7 @@ describe('Orderbook view ', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    ApplicationState.acceptToS();
+    WalletConnection.open().web().acceptToS().connect();
   });
 
   it('should render depth chart in the panel', () => {

@@ -61,7 +61,7 @@ const sell = [
   // { price: 0.001, amount: 1.80740079125783 }
 ];
 
-function priceAmountToOffer({ price, amount }: {price: number, amount: number}): Offer {
+function priceAmountToOffer({ price, amount }: { price: number, amount: number }): Offer {
   return {
     offerId: new BigNumber(0),
     baseAmount: new BigNumber(amount),

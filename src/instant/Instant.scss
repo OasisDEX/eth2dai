@@ -228,3 +228,14 @@
   max-width: 7.75rem;
   margin: auto auto 1rem;
 }
+
+.closeButton {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 100%;
+  padding: 5px;
+
+  svg {
+    fill: $errors;
+  }
+}

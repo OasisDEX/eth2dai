@@ -13,6 +13,13 @@ export function createWeb3Provider(privKey, providerUrl) {
   return new Web3(provider);
 }
 
+export function cypressVisitWithoutProvider(path = "") {
+  return cy
+    .then(() => {
+      return cy.visit(path);
+    })
+}
+
 export function cypressVisitWithWeb3(path = "") {
   web3 = createWeb3Provider(ACCOUNT_3_PRIV, Cypress.env("ETH_PROVIDER"));
 

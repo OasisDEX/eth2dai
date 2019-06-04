@@ -1,6 +1,6 @@
-import { ApplicationState } from '../../pages/Application';
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
+import { WalletConnection } from '../../pages/WalletConnection';
 import { cypressVisitWithWeb3, tid } from '../../utils';
 
 const nextTrade = () => {
@@ -10,7 +10,7 @@ const nextTrade = () => {
 describe('Buying', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
-    ApplicationState.acceptToS();
+    WalletConnection.open().web().acceptToS().connect();
     Tab.instant();
   });
 

@@ -1,13 +1,13 @@
-import { ApplicationState } from '../../pages/Application';
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
+import { WalletConnection } from '../../pages/WalletConnection';
 import { cypressVisitWithWeb3 } from '../../utils';
 
 describe('Selecting an asset', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    ApplicationState.acceptToS();
+    WalletConnection.open().web().acceptToS().connect();
     Tab.instant();
   });
 

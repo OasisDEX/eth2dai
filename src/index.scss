@@ -23,6 +23,7 @@ body {
 .container {
   width: 932px;
   margin: 0 auto;
+  position: relative;
 
   @include media-breakpoint-down(lg) {
     width: auto;
@@ -65,4 +66,9 @@ body {
 :global(.ReactModal__Content--before-close) {
   opacity: 0;
   transition: opacity 250ms ease-out;
+}
+
+:global(a) {
+  color: inherit;
+  text-decoration: none;
 }

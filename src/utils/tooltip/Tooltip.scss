@@ -6,18 +6,20 @@
   border: 1px solid hsla(240, 1%, 72%, .05);
   background-color: #ffffff;
   font-size: 12px;
-  padding: 0px 16px;
-  color: #616161;
+  padding: 6px 10px;
+  color: #263238;
 
   max-width: 200px;
+  border-radius: 2px;
 }
 
 :global(.instantTooltip.show p) {
   font-family: Montserrat, sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 12px;
   line-height: 18px;
   letter-spacing: 1.1px;
+  margin: 0;
 }
 
 :global(.instantTooltip.show:after) {
