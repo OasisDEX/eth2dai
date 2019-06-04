@@ -1,7 +1,7 @@
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
 import { WalletConnection } from '../../pages/WalletConnection';
-import { cypressVisitWithWeb3, tid } from '../../utils';
+import { ACCOUNT_3_PUBLIC, cypressVisitWithWeb3, INSTANT_PROXY_CREATE_AND_EXECUTE_ADDRESS, tid, toHex, verifySendTxs } from '../../utils';
 
 const nextTrade = () => {
   cy.get(tid('new-trade')).click();
@@ -36,7 +36,13 @@ describe('Buying', () => {
       summary.expectProxyBeingCreated();
       summary.expectBought(willReceive, to);
       summary.expectSold(willPay, from);
-      summary.expectPriceOf(price);
+      summary.expectPriceOf(price).then(() => {
+        verifySendTxs([{
+          from: ACCOUNT_3_PUBLIC,
+          to: INSTANT_PROXY_CREATE_AND_EXECUTE_ADDRESS,
+          value: toHex('374999999999999999'),
+        }]);
+      });
     });
 
     it('with proxy', () => {
