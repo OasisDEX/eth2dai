@@ -73,7 +73,11 @@ export function describeTxStatus(tx: TxState) {
         speedup: 'gas price increased',
         cancel: 'cancelled',
       };
-      return 'Confirmed' + (tx.rebroadcast ? ` (${rebroadcast[tx.rebroadcast]})` : '');
+      return (
+        <span className={styles.hilight}>
+          Confirmed {tx.rebroadcast ? ` (${rebroadcast[tx.rebroadcast]})` : ''}
+        </span>
+      );
     case TxStatus.Error:
     case TxStatus.Failure:
       return 'Failed';
@@ -82,14 +86,14 @@ export function describeTxStatus(tx: TxState) {
     case TxStatus.Propagating:
       return (
         <>
-          Propagating <Timer start={tx.broadcastedAt} />
+          Unconfirmed <Timer start={tx.broadcastedAt} />
         </>
       );
     case TxStatus.WaitingForConfirmation:
       return (
-        <>
+        <span className={styles.hilight}>
           Unconfirmed <Timer start={tx.broadcastedAt} />
-        </>
+        </span>
       );
     case TxStatus.CancelledByTheUser:
       return 'Rejected';
