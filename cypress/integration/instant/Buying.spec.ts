@@ -17,7 +17,7 @@ describe('Buying', () => {
   });
 
   context('ETH for ERC20', () => {
-    it.only('without proxy', () => {
+    it('without proxy', () => {
       const from = 'ETH';
       const to = 'DAI';
       const willPay = '0.357';
