@@ -2,6 +2,10 @@ import { from, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import * as Web3 from 'web3';
 
+const ethereum = {
+  url: 'https://mainnet.infura.io/v3/04ba2b5a3e094defa7e9467975e9777a',
+};
+
 export let web3 : Web3;
 
 export type Web3Status = 'ready' | 'readonly' | 'missing' | 'initializing';
@@ -18,7 +22,7 @@ export const web3Status$: Observable<Web3Status> = from(['initializing']).pipe(
       web3 = new Web3(win.web3.currentProvider);
       return 'ready';
     }
-    web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/04ba2b5a3e094defa7e9467975e9777a'));
+    web3 = new Web3(new Web3.providers.HttpProvider(ethereum.url));
     return 'readonly';
   }),
   shareReplay(1),
