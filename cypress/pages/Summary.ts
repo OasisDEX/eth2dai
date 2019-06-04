@@ -22,6 +22,6 @@ export class Summary {
   }
 
   public expectPriceOf = (price: string | RegExp) =>
-    cy.get(tid('final-price')).contains(price);
+    cy.get(tid('final-price')).contains(price)
 
 }
