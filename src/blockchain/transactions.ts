@@ -1,4 +1,3 @@
-import {BigNumber} from 'bignumber.js';
 import * as _ from 'lodash';
 import { fromPairs } from 'ramda';
 import { bindNodeCallback, combineLatest, Observable, of, Subject, timer } from 'rxjs';
@@ -121,18 +120,19 @@ type GetTransaction = NodeCallback<string, TransactionLike | null>;
 
 function txRebroadcastStatus(
   { hash, nonce, input }: TransactionLike
-): Observable<[string, undefined | TxRebroadcastStatus]> {
+) {
   return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
     map(([externalNonce2tx]) => {
       if (externalNonce2tx[nonce]) {
         return [
           externalNonce2tx[nonce].hash,
-          input === externalNonce2tx[nonce].callData ? TxRebroadcastStatus.speedup : TxRebroadcastStatus.cancel
-        ] as [string, TxRebroadcastStatus];
+          input === externalNonce2tx[nonce].callData ?
+            TxRebroadcastStatus.speedup : TxRebroadcastStatus.cancel
+        ];
       }
-      return [hash, undefined] as [string, undefined];
+      return [hash, undefined];
     })
-  );
+  ) as Observable<[string, undefined | TxRebroadcastStatus]>;
 }
 
 export function send(
