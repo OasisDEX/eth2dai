@@ -1,13 +1,11 @@
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
 import { WalletConnection } from '../../pages/WalletConnection';
-import { ACCOUNT_3_PUBLIC, cypressVisitWithWeb3, tid, toHex, verifySendTxs } from '../../utils';
+import { ACCOUNT_3_PUBLIC, cypressVisitWithWeb3, INSTANT_PROXY_CREATE_AND_EXECUTE_ADDRESS, tid, toHex, verifySendTxs } from '../../utils';
 
 const nextTrade = () => {
   cy.get(tid('new-trade')).click();
 };
-
-const INSTANT_PROXY_CREATE_AND_EXECUTE_ADDRESS = '0x99C7F543e310A4143D22ce840a348b4EcDbBA8Ce';
 
 describe('Buying', () => {
   beforeEach(() => {

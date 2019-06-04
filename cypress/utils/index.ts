@@ -8,6 +8,8 @@ import Web3 from 'web3';
 export const ACCOUNT_3_PRIV = '0x1ff8271bf14ac9bef0b641cced40dc2a7ebd2e37d8e16d25b4aa1911364219af';
 export const ACCOUNT_3_PUBLIC = '0x79d7176ae8f93a04bc73b9bc710d4b44f9e362ce';
 
+export const INSTANT_PROXY_CREATE_AND_EXECUTE_ADDRESS = '0x99C7F543e310A4143D22ce840a348b4EcDbBA8Ce';
+
 export let web3: any;
 export let lastSnapshotId = 1;
 
