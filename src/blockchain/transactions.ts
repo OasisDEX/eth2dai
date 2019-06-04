@@ -159,11 +159,10 @@ export function send(
     );
   }
 
-  const broadcastedAt = new Date();
-
   const result: Observable<TxState> = bindNodeCallback(method)(...args).pipe(
-    mergeMap((txHash: string) =>
-      timer(0, 1000).pipe(
+    mergeMap((txHash: string) => {
+      const broadcastedAt = new Date();
+      return timer(0, 1000).pipe(
         switchMap(() => bindNodeCallback(web3.eth.getTransaction)(txHash)),
         takeWhileInclusive(transaction => !transaction),
         distinctUntilChanged(),
@@ -219,8 +218,8 @@ export function send(
             } as TxState),
           ) as any as Observable<TxState>;
         }),
-      )
-    ),
+      );
+    }),
     startWith({
       ...common,
       status: TxStatus.WaitingForApproval,
