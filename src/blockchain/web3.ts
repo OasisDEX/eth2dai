@@ -2,8 +2,10 @@ import { from, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import * as Web3 from 'web3';
 
+const infuraProjectId = '04ba2b5a3e094defa7e9467975e9777a';
+const infuraUrl = `https://mainnet.infura.io/v3/${infuraProjectId}`;
 const ethereum = {
-  url: 'https://mainnet.infura.io/v3/04ba2b5a3e094defa7e9467975e9777a',
+  url: infuraUrl,
 };
 
 export let web3 : Web3;
