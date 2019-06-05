@@ -4,7 +4,7 @@ import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { tokens, tradingPairs } from '../../blockchain/config';
-import { FormatAmount, FormatPercent, FormatPrice } from '../../utils/formatters/Formatters';
+import { FormatAmount, FormatPercent, FormatPrice, FormatQuoteToken } from '../../utils/formatters/Formatters';
 import { WithLoadingIndicatorInline } from '../../utils/loadingIndicator/LoadingIndicator';
 import { ServerUnreachableInline } from '../../utils/loadingIndicator/ServerUnreachable';
 import { BoundarySpan, InfoLabel } from '../../utils/text/Text';
@@ -41,7 +41,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
       <div className={styles.pairView}>
         <div className={styles.pairViewIcon}>{tokens[base].iconCircle}</div>
         <div className={styles.pairViewCurrency}>{base}</div>
-        <div className={styles.pairViewCurrency}>{quote}</div>
+        <div className={styles.pairViewCurrency}><FormatQuoteToken token={quote} /></div>
       </div>
     );
   }
@@ -101,17 +101,15 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
             <TradingPairView.PairView base={base} quote={quote} />
           </div>
           {
-            this.state.showMenu
-              ? (
+            this.state.showMenu && (
+              <div className={styles.dropdownListWrapper}>
                 <ul className={styles.dropdownList}>
                   {tradingPairs.map((pair, i) => (
                     <TradingPairView.PairVP parentMatch={parentMatch} key={i} pair={pair} />
                   ))}
                 </ul>
-              )
-              : (
-                null
-              )
+              </div>
+            )
           }
         </div>
 

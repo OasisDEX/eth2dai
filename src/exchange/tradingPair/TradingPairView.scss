@@ -38,7 +38,7 @@
     $width: 220px;
     height: 48px;
     width: $width;
-    border-right: 1px solid rgba(white, 0.1);
+    border-right: 1px solid $grey-darken-darkest;
     border-top-left-radius: $border-radius;
     border-bottom-left-radius: $border-radius;
 
@@ -53,6 +53,12 @@
     @include media-breakpoint-down(md){
       border-right: none;
     }
+    .pairView, .pairView:hover {
+      background: none;
+    }
+    &:focus {
+      outline: none;
+    }
 }
 
 .dropdownBtnDisabled {
@@ -61,32 +67,33 @@
 }
 
 .dropdownBtnActive {
-    box-shadow: inset 1px 1px 7px 2px rgba(0, 0, 0, 0.3);
+    background-color: #35353E;
+    border-bottom-left-radius: unset;
+}
+
+.dropdownListWrapper {
+    position: absolute;
+    z-index: 10;
+    top: 48px;
+    overflow: hidden;
+    margin: 0 -2px -2px -3px;
 }
 
 .dropdownList {
-    position: absolute;
-    z-index: 10;
-    width: 100%;
-    top: 48px;
     list-style: none;
-    padding: 0;
-    margin: 0;
+    padding: 10px 0 0 0;
+    margin: 0 2px 2px 2px;
 
-    background-color: $grey-darkest;
+    background-color: #35353E;
     border: 1px solid $grey-darken-darkest;
     border-top: none;
-    box-shadow: 0 0 4px 1px rgba(black, 0.20);
+    box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.2);
     border-bottom-left-radius: $border-radius;
     border-bottom-right-radius: $border-radius;
 }
 
 .dropdownItem {
     display: block;
-}
-
-.dropdownItem:not(:last-child) {
-    border-bottom: 1px solid $grey-darken-darkest;
 }
 
 .dropdownItemLink {
@@ -113,6 +120,11 @@
     align-items: center;
     padding: 12px 26px 12px 12px;
     width: 100%;
+    min-width: 219px;
+    background-color: #35353E;
+    &:hover {
+      background-color: #393942;
+    }
 }
 
 .pairViewCurrency {
@@ -132,10 +144,9 @@
 
 
 .active {
-    font-weight: bold;
-}
-.passive {
-    font-weight: normal;
+    .pairView {
+      background-color: #3D3D46;
+    }
 }
 
 
