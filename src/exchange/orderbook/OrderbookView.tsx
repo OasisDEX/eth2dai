@@ -127,12 +127,14 @@ export class OrderbookView extends React.Component<Props> {
       this.props.status === 'loaded';
     this.lastStatus = this.props.status;
 
-    if (justLoaded || tradingPairChanged) {
+    const skipTransition = justLoaded || tradingPairChanged;
+    if (skipTransition) {
       setTimeout(() => {
-        this.center();
+        this.forceUpdate(() => {
+          this.center();
+        });
       });
     }
-    const skipTransition = justLoaded || tradingPairChanged;
 
     return (
       <>
@@ -190,15 +192,14 @@ export class OrderbookView extends React.Component<Props> {
                 });
               };
             };
-
-            return (
+            return skipTransition ? <></> : (
               <>
                 <Scrollbar ref={el => this.scrollbar = el || undefined} onScroll={this.scrolled}>
                   <Table align="right" className={styles.orderbookTable}>
                     <TransitionGroup
                       component="tbody"
-                      exit={!skipTransition}
-                      enter={!skipTransition}
+                      exit={true}
+                      enter={true}
                     >
                       {orderbook.sell.slice().reverse().map((offer: Offer) => (
                         <CSSTransition
@@ -216,7 +217,7 @@ export class OrderbookView extends React.Component<Props> {
                       {/* better don't remove me! */}
                       <CSSTransition key="0" classNames="order" timeout={1000}>
                         <RowHighlighted>
-                          <td ref={el => this.centerRow = this.centerRow || el || undefined}>
+                          <td ref={el => this.centerRow = el || undefined}>
                             {orderbook.spread
                               ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote}/>
                               : '-'}
