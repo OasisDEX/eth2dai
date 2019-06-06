@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { Simulate } from 'react-dom/test-utils';
 import { Observable, Subscription } from 'rxjs';
-import load = Simulate.load;
 
 export function connect<R, E = {}>(
   WrappedComponent: React.ComponentType<R & E>,
