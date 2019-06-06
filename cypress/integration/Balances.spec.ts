@@ -1,16 +1,17 @@
-import { cypressVisitWithWeb3 } from '../utils/index';
-
-import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
 import { Tab } from '../pages/Tab';
+import { WalletConnection } from '../pages/WalletConnection';
+import { cypressVisitWithWeb3 } from '../utils/index';
 import { makeScreenshots } from '../utils/makeScreenshots';
 
 describe('Balances', () => {
 
-  beforeEach(() => cypressVisitWithWeb3());
+  beforeEach(() => {
+    cypressVisitWithWeb3();
+    WalletConnection.open().web().acceptToS().connect();
+  });
 
   it('should display all token balances', () => {
-    ApplicationState.acceptToS();
     Tab.balances();
 
     Balance.of('ETH').shouldBe(/8,999.../);

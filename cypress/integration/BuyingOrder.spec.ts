@@ -1,18 +1,17 @@
 import { cypressVisitWithWeb3, multiply } from '../utils/index';
 
-import { ApplicationState } from '../pages/Application';
 import { Balance } from '../pages/Balance';
 import { Order } from '../pages/Order';
 import { Orderbook, OrderType } from '../pages/Orderbook';
 import { Tab } from '../pages/Tab';
 import { Trades } from '../pages/Trades';
+import { WalletConnection } from '../pages/WalletConnection';
 
 describe('Buy Order', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    ApplicationState.acceptToS();
-
+    WalletConnection.open().web().acceptToS().connect();
     // Doing this because I don't have have enough funds on this account :)
     Trades
         .first()

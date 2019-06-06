@@ -7,8 +7,9 @@ import * as styles from './Buttons.scss';
 
 export type ButtonProps =
   React.ButtonHTMLAttributes<HTMLButtonElement> &
-  {  color?: 'green' | 'red' | 'grey' | 'white' | 'greyWhite' | 'whiteOutlined',
-    size?: 'xs' | 'md' | 'sm' | 'lg' | 'unsized',
+  {
+    color?: 'green' | 'red' | 'grey' | 'white' | 'greyWhite' | 'whiteOutlined' | 'darkRed',
+    size?: 'xs' | 'md' | 'sm' | 'lg' | 'unsized' | 'full',
     block?: boolean,
     dataTestId?: string
   };
@@ -61,9 +62,9 @@ export const CloseButton = (props: any) => {
   const { className, theme, ...otherProps } = props;
 
   switch (theme) {
-    case 'instant':
+    case 'danger':
       return (
-        <Button className={classnames(styles.instantClose, className)}
+        <Button className={classnames(styles.darkRed, className)}
                 {...otherProps}
         >
           <SvgImage image={closeSvg}/>
