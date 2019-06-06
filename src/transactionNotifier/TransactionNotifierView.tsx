@@ -14,9 +14,6 @@ export class TransactionNotifierView extends React.Component<{
   transactions: TxState[];
 }> {
   public render() {
-    if (!this.props.transactions) {
-      return null;
-    }
     const now = new Date().getTime();
     return (
       <TransitionGroup className={styles.main}>
