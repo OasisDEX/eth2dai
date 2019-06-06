@@ -1,4 +1,4 @@
-import { tid } from '../utils';
+import { tid, timeout } from '../utils';
 import { Finalization } from './Finalization';
 
 const input = (side: 'sellInput' | 'buyInput') => ({
@@ -51,14 +51,14 @@ export class Trade {
     if (token) {
       cy.get(tid('selling-token', tid('balance')));
 
-      cy.get(tid('selling-token'))
+      cy.get(tid('selling-token'), timeout(2000))
         .click();
 
-      cy.get(tid(token.toLowerCase()))
+      cy.get(tid(token.toLowerCase()), timeout(2000))
         .click();
     }
 
-    cy.get(tid('selling-token', tid('amount'))).as('sellInput');
+    cy.get(tid('selling-token', tid('amount')), timeout(2000)).as('sellInput');
 
     return input('sellInput');
   }
@@ -67,14 +67,14 @@ export class Trade {
     if (token) {
       cy.get(tid('buying-token', tid('balance')));
 
-      cy.get(tid('buying-token'))
+      cy.get(tid('buying-token'), timeout(2000))
         .click();
 
-      cy.get(tid(token.toLowerCase()))
+      cy.get(tid(token.toLowerCase()), timeout(2000))
         .click();
     }
 
-    cy.get(tid('buying-token', tid('amount'))).as('buyInput');
+    cy.get(tid('buying-token', tid('amount')), timeout(2000)).as('buyInput');
 
     return input('buyInput');
   }
