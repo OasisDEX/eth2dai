@@ -110,7 +110,7 @@ const protoMain = {
     return load(proxyCreationAndExecute, '0x793ebbe21607e4f04788f89c7a9b97320773ec59');
   },
   oasisDataService: {
-    url: 'http://localhost:3001/v1'
+    url: 'https://vulcan2x.mainnet.eth2dai.com/v1'
   },
   etherscan: {
     url: 'https://etherscan.io',
