@@ -21,7 +21,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
   public static PairVP({ pair, parentMatch }: { pair: TradingPair; parentMatch?: string }) {
 
     const pathname = `${parentMatch}/${pair.base}/${pair.quote}`;
-    const price = ({ WETHDAI: '1', MKRDAI: '10', MKRWETH: '100' } as any)[pair.base + pair.quote];
+    const price = ({ WETHDAI: '1.00', MKRDAI: '10.00', MKRWETH: '100.00' } as any)[pair.base + pair.quote];
     const priceDiff = ({ WETHDAI: '+1%', MKRDAI: '+10%', MKRWETH: '+100%' } as any)[pair.base + pair.quote];
 
     return (
@@ -30,7 +30,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
           exact={true}
           to={{ pathname, state: { pair } }}
           activeClassName={styles.active}
-          className={styles.dropdownItemLink}
+          className={classnames(styles.dropdownItemLink, styles.pairView)}
         >
           <TradingPairView.PairView base={pair.base} quote={pair.quote} price={price} priceDiff={priceDiff} />
         </NavLink>
@@ -40,14 +40,14 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
 
   public static PairView({ base, quote, price, priceDiff }: any) {
     return (
-      <div className={styles.pairView}>
+      <>
         <div className={styles.pairViewIcon}>{tokens[base].icon}</div>
         <div className={styles.pairViewCurrency}>{base}</div>
         <div className={styles.pairViewCurrency}><FormatQuoteToken token={quote} /></div>
         <div className={styles.pairViewIconQuote}>{tokens[quote].icon}</div>
         <div className={styles.pairViewPrice}>{price}</div>
         <div className={styles.pairViewPriceDiff}>{priceDiff}</div>
-      </div>
+      </>
     );
   }
 
