@@ -53,9 +53,6 @@
     @include media-breakpoint-down(md){
       border-right: none;
     }
-    .pairView, .pairView:hover {
-      background: none;
-    }
     &:focus {
       outline: none;
     }
@@ -112,32 +109,72 @@
 
 
 
+// ------------ Active pair view -----------------
+
+.activePairView {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 26px 12px 12px;
+    width: 100%;
+}
+
+.activePairViewIcon {
+    height: 26px;
+    width: 26px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.activePairViewCurrency {
+    flex-basis: 50px;
+    flex-grow: 1;
+}
+
 // ------------ Pair view -----------------
 
 .pairView {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 26px 12px 12px;
+    padding: 4px 26px 4px 10px;
     width: 100%;
-    min-width: 219px;
     background-color: #35353E;
     &:hover {
-      background-color: #393942;
+        background-color: #393942;
     }
+    font-size: 14px;
+}
+
+.pairViewIcon, .pairViewIconQuote {
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
 }
 
 .pairViewCurrency {
     flex-basis: 50px;
-    flex-grow: 1;
+    flex-grow: 0;
+    & + .pairViewCurrency {
+        margin-left: 20px;
+        margin-right: 40px;
+    }
 }
 
-.pairViewIcon {
-  height: 26px;
-  width: 26px;
-  margin-right: 20px;
-  display: flex;
-  align-items: center;
+.pairViewPrice {
+    flex-basis: 50px;
+    flex-grow: 0;
+    text-align: right;
+}
+
+.pairViewPriceDiff {
+    flex-basis: 50px;
+    flex-grow: 0;
+    margin-left: 40px;
+    text-align: right;
+    color: #36EFBA;
 }
 
 // ---------------------
@@ -145,7 +182,7 @@
 
 .active {
     .pairView {
-      background-color: #3D3D46;
+        background-color: #3D3D46;
     }
 }
 

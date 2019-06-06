@@ -21,6 +21,8 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
   public static PairVP({ pair, parentMatch }: { pair: TradingPair; parentMatch?: string }) {
 
     const pathname = `${parentMatch}/${pair.base}/${pair.quote}`;
+    const price = ({ WETHDAI: '1', MKRDAI: '10', MKRWETH: '100' } as any)[pair.base + pair.quote];
+    const priceDiff = ({ WETHDAI: '+1%', MKRDAI: '+10%', MKRWETH: '+100%' } as any)[pair.base + pair.quote];
 
     return (
       <li data-test-id={`${pair.base}-${pair.quote}`} className={styles.dropdownItem}>
@@ -30,18 +32,31 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
           activeClassName={styles.active}
           className={styles.dropdownItemLink}
         >
-          <TradingPairView.PairView base={pair.base} quote={pair.quote} />
+          <TradingPairView.PairView base={pair.base} quote={pair.quote} price={price} priceDiff={priceDiff} />
         </NavLink>
       </li>
     );
   }
 
-  public static PairView({ base, quote }: any) {
+  public static PairView({ base, quote, price, priceDiff }: any) {
     return (
       <div className={styles.pairView}>
-        <div className={styles.pairViewIcon}>{tokens[base].iconCircle}</div>
+        <div className={styles.pairViewIcon}>{tokens[base].icon}</div>
         <div className={styles.pairViewCurrency}>{base}</div>
         <div className={styles.pairViewCurrency}><FormatQuoteToken token={quote} /></div>
+        <div className={styles.pairViewIconQuote}>{tokens[quote].icon}</div>
+        <div className={styles.pairViewPrice}>{price}</div>
+        <div className={styles.pairViewPriceDiff}>{priceDiff}</div>
+      </div>
+    );
+  }
+
+  public static ActivePairView({ base, quote }: any) {
+    return (
+      <div className={styles.activePairView}>
+        <div className={styles.activePairViewIcon}>{tokens[base].iconCircle}</div>
+        <div className={styles.activePairViewCurrency}>{base}</div>
+        <div className={styles.activePairViewCurrency}><FormatQuoteToken token={quote} /></div>
       </div>
     );
   }
@@ -98,7 +113,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
                  [styles.dropdownBtnDisabled]: dropdownDisabled,
                  [styles.dropdownBtnActive]: this.state.showMenu
                })}>
-            <TradingPairView.PairView base={base} quote={quote} />
+            <TradingPairView.ActivePairView base={base} quote={quote} />
           </div>
           {
             this.state.showMenu && (
