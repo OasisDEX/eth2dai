@@ -21,8 +21,7 @@ export class Summary {
     cy.get(tid('bought-token', tid('currency'))).contains(`${token}`);
   }
 
-  public expectPriceOf = (price: string | RegExp) => {
-    cy.get(tid('final-price')).contains(price);
-  }
+  public expectPriceOf = (price: string | RegExp) =>
+    cy.get(tid('final-price')).contains(price)
 
 }
