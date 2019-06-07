@@ -103,6 +103,38 @@ export type TxState = {
 
 let txCounter: number = 1;
 
+type NodeCallback<I, R> = (
+  i: I,
+  callback: (err: any, r: R) => any,
+) => any;
+
+type GetTransactionReceipt = NodeCallback<string, { blockNumber: number, transactionHash: string }>;
+
+interface TransactionLike {
+  hash: string;
+  nonce: number;
+  input: string;
+}
+
+type GetTransaction = NodeCallback<string, TransactionLike | null>;
+
+function txRebroadcastStatus(
+  { hash, nonce, input }: TransactionLike
+) {
+  return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
+    map(([externalNonce2tx]) => {
+      if (externalNonce2tx[nonce]) {
+        return [
+          externalNonce2tx[nonce].hash,
+          input === externalNonce2tx[nonce].callData ?
+            TxRebroadcastStatus.speedup : TxRebroadcastStatus.cancel
+        ];
+      }
+      return [hash, undefined];
+    })
+  ) as Observable<[string, undefined | TxRebroadcastStatus]>;
+}
+
 export function send(
   account: string,
   networkId: string,
@@ -163,7 +195,7 @@ export function send(
     mergeMap((txHash: string) => {
       const broadcastedAt = new Date();
       return timer(0, 1000).pipe(
-        switchMap(() => bindNodeCallback(web3.eth.getTransaction)(txHash)),
+        switchMap(() => bindNodeCallback(web3.eth.getTransaction as GetTransaction)(txHash)),
         takeWhileInclusive(transaction => !transaction),
         distinctUntilChanged(),
         tap(transaction => {
@@ -171,7 +203,7 @@ export function send(
             console.log(`Transaction ${txHash} not found in mempool yet!`);
           }
         }),
-        mergeMap((transaction: { hash: string, nonce: number, input: string } | null) => {
+        mergeMap((transaction) => {
           if (!transaction) {
             return of({
               ...common,
@@ -180,26 +212,16 @@ export function send(
               status: TxStatus.Propagating,
             } as TxState);
           }
-          return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
-            map(([externalNonce2tx]) =>
-              externalNonce2tx[transaction.nonce] ? [
-                externalNonce2tx[transaction.nonce].hash,
-                transaction.input === externalNonce2tx[transaction.nonce].callData ?
-                  TxRebroadcastStatus.speedup :
-                  TxRebroadcastStatus.cancel
-              ] : [
-                transaction.hash,
-                undefined
-              ]
-            ),
+          return txRebroadcastStatus(transaction).pipe(
             mergeMap(([hash, rebroadcast]) =>
-              bindNodeCallback(web3.eth.getTransactionReceipt)(hash).pipe(
-                map(receipt => [receipt, rebroadcast])
+              bindNodeCallback(web3.eth.getTransactionReceipt as GetTransactionReceipt)(hash).pipe(
+                filter(receipt => receipt && !!receipt.blockNumber),
+                mergeMap(receipt =>
+                  successOrFailure(hash, receipt, rebroadcast)
+                ),
               )
             ),
-            filter(([receipt]: [any, TxRebroadcastStatus]) => receipt && receipt.blockNumber),
             first(),
-            mergeMap(([receipt, rebroadcast]) => successOrFailure(receipt.transactionHash, receipt, rebroadcast)),
             catchError(error => {
               return of({
                 ...common,
@@ -210,14 +232,14 @@ export function send(
                 status: TxStatus.Error,
               } as TxState);
             }),
-            startWith({
-              ...common,
-              broadcastedAt,
-              txHash: transaction.hash,
-              status: TxStatus.WaitingForConfirmation,
-            } as TxState),
           ) as any as Observable<TxState>;
         }),
+        startWith({
+          ...common,
+          broadcastedAt,
+          txHash,
+          status: TxStatus.WaitingForConfirmation,
+        } as TxState),
       );
     }),
     startWith({
@@ -237,7 +259,6 @@ export function send(
         status: TxStatus.CancelledByTheUser,
       });
     }),
-
   );
   result.subscribe(state => transactionObserver.next({  state, kind: 'newTx' }));
 
