@@ -123,7 +123,7 @@ function txRebroadcastStatus(
 ) {
   return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
     map(([externalNonce2tx]) => {
-      if (externalNonce2tx[nonce]) {
+      if (externalNonce2tx[nonce] && externalNonce2tx[nonce].hash !== hash) {
         return [
           externalNonce2tx[nonce].hash,
           input === externalNonce2tx[nonce].callData ?
@@ -213,7 +213,7 @@ export function send(
             } as TxState);
           }
           return txRebroadcastStatus(transaction).pipe(
-            mergeMap(([hash, rebroadcast]) =>
+            switchMap(([hash, rebroadcast]) =>
               bindNodeCallback(web3.eth.getTransactionReceipt as GetTransactionReceipt)(hash).pipe(
                 filter(receipt => receipt && !!receipt.blockNumber),
                 mergeMap(receipt =>
