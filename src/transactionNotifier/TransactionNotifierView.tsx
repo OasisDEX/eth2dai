@@ -12,6 +12,7 @@ const VISIBILITY_TIMEOUT: number = 5;
 
 export class TransactionNotifierView extends React.Component<{
   transactions: TxState[];
+  etherscan: { url: string, apiUrl: string, apiKey: string };
 }> {
   public render() {
     if (!this.props.transactions) {
@@ -33,6 +34,7 @@ export class TransactionNotifierView extends React.Component<{
               <CSSTransition key={transaction.txNo} classNames="transaction" timeout={1000}>
                 <Notification
                   {...transaction}
+                  etherscan={this.props.etherscan}
                   onDismiss={ () => transactionObserver.next({ kind: 'dismissed', txNo: transaction.txNo }) }
                   />
               </CSSTransition>
@@ -43,9 +45,9 @@ export class TransactionNotifierView extends React.Component<{
   }
 }
 
-export type NotificationProps = TxState & {onDismiss: () => void};
+export type NotificationProps = TxState & {etherscan: { url: string }, onDismiss: () => void};
 
-export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...transaction }) => {
+export const Notification: React.SFC<NotificationProps> = ({ onDismiss, etherscan, ...transaction }) => {
   const description = transaction.meta.description(transaction.meta.args);
   const icon =
     transaction.meta.descriptionIcon && transaction.meta.descriptionIcon(transaction.meta.args);
@@ -58,7 +60,7 @@ export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...trans
         </div>
       )}
       <div className={styles.title}>{description}</div>
-      <div className={styles.description}>{describeTxStatus(transaction)}</div>
+      <div className={styles.description}>{describeTxStatus(transaction, etherscan)}</div>
       <a tabIndex={0} onClick={onDismiss} className={styles.cross} data-test-id="notification-cross">
         <SvgImage image={crossSvg} />
       </a>
@@ -66,7 +68,7 @@ export const Notification: React.SFC<NotificationProps> = ({ onDismiss, ...trans
   );
 };
 
-export function describeTxStatus(tx: TxState) {
+export function describeTxStatus(tx: TxState, etherscan: { url: string }) {
   switch (tx.status) {
     case TxStatus.Success:
       const rebroadcast: {[key in TxRebroadcastStatus]: string} = {
@@ -74,9 +76,9 @@ export function describeTxStatus(tx: TxState) {
         cancel: 'cancelled',
       };
       return (
-        <span className={styles.hilight}>
+        <a href={`${etherscan.url}/tx/${tx.txHash}`} target="_blank" rel="noopener noreferrer" className={styles.link}>
           Confirmed {tx.rebroadcast ? ` (${rebroadcast[tx.rebroadcast]})` : ''}
-        </span>
+        </a>
       );
     case TxStatus.Error:
     case TxStatus.Failure:
@@ -91,9 +93,9 @@ export function describeTxStatus(tx: TxState) {
       );
     case TxStatus.WaitingForConfirmation:
       return (
-        <span className={styles.hilight}>
+        <a href={`${etherscan.url}/tx/${tx.txHash}`} target="_blank" rel="noopener noreferrer" className={styles.link}>
           Unconfirmed <Timer start={tx.broadcastedAt} />
-        </span>
+        </a>
       );
     case TxStatus.CancelledByTheUser:
       return 'Rejected';
