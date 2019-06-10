@@ -43,7 +43,7 @@ import {
   createAllTrades$,
   createTradesBrowser$,
   loadAllTrades,
-  loadPriceOneDayAgo,
+  loadPriceDaysAgo,
   loadVolumeForThePastDay
 } from './exchange/allTrades/allTrades';
 import { AllTrades } from './exchange/allTrades/AllTradesView';
@@ -51,6 +51,7 @@ import { createDepthChartWithLoading$, DepthChartWithLoading } from './exchange/
 import {
   createCurrentPrice$,
   createDailyVolume$,
+  createMarketDetails$,
   createYesterdayPrice$,
   createYesterdayPriceChange$,
 } from './exchange/exchange';
@@ -129,6 +130,12 @@ export function setupAppContext() {
     switchMap(pair => loadOrderbook(pair))
   );
 
+  const marketDetails$ = createMarketDetails$(
+    memoizeTradingPair(curry(loadPriceDaysAgo)(0, context$, onEveryBlock$)),
+    memoizeTradingPair(curry(loadPriceDaysAgo)(1, context$, onEveryBlock$)),
+    onEveryBlock$,
+  );
+
   const tradeHistory = memoizeTradingPair(
     curry(loadAllTrades)(context$, onEveryBlock$)
   );
@@ -145,7 +152,7 @@ export function setupAppContext() {
 
   const lastDayPriceHistory$ = currentTradingPair$.pipe(
     switchMap(memoizeTradingPair(
-      curry(loadPriceOneDayAgo)(context$, onEveryBlock$)
+      curry(loadPriceDaysAgo)(1, context$, onEveryBlock$)
     )),
   );
 
@@ -217,7 +224,9 @@ export function setupAppContext() {
     currentTradingPair$,
     currentPrice$,
     yesterdayPriceChange$,
-    dailyVolume$);
+    dailyVolume$,
+    marketDetails$,
+  );
   const TradingPairsTxRx = connect(TradingPairView, tradingPairView$);
 
   const transactionNotifier$ =

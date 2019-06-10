@@ -5,10 +5,12 @@ import { NavLink } from 'react-router-dom';
 
 import { tokens, tradingPairs } from '../../blockchain/config';
 import { FormatAmount, FormatPercent, FormatPrice, FormatQuoteToken } from '../../utils/formatters/Formatters';
+import { Loadable } from '../../utils/loadable';
 import { WithLoadingIndicatorInline } from '../../utils/loadingIndicator/LoadingIndicator';
 import { ServerUnreachableInline } from '../../utils/loadingIndicator/ServerUnreachable';
 import { BoundarySpan, InfoLabel } from '../../utils/text/Text';
-import { TradingPair, TradingPairsProps } from './tradingPair';
+import { MarketsDetails } from '../exchange';
+import { TradingPair, tradingPairResolver, TradingPairsProps } from './tradingPair';
 import * as styles from './TradingPairView.scss';
 
 interface PairInfoVP {
@@ -18,11 +20,9 @@ interface PairInfoVP {
 
 export class TradingPairView extends React.Component<TradingPairsProps, { showMenu: boolean }> {
 
-  public static PairVP({ pair, parentMatch }: { pair: TradingPair; parentMatch?: string }) {
+  public static PairVP({ pair, parentMatch, marketsDetailsLoadable }: { pair: TradingPair; parentMatch?: string, marketsDetailsLoadable: Loadable<MarketsDetails> }) {
 
     const pathname = `${parentMatch}/${pair.base}/${pair.quote}`;
-    const price = ({ WETHDAI: '1.00', MKRDAI: '10.00', MKRWETH: '100.00' } as any)[pair.base + pair.quote];
-    const priceDiff = ({ WETHDAI: '+1%', MKRDAI: '+10%', MKRWETH: '+100%' } as any)[pair.base + pair.quote];
 
     return (
       <li data-test-id={`${pair.base}-${pair.quote}`} className={styles.dropdownItem}>
@@ -32,21 +32,35 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
           activeClassName={styles.active}
           className={classnames(styles.dropdownItemLink, styles.pairView)}
         >
-          <TradingPairView.PairView base={pair.base} quote={pair.quote} price={price} priceDiff={priceDiff} />
+          <TradingPairView.PairView { ...{ pair, marketsDetailsLoadable } } />
         </NavLink>
       </li>
     );
   }
 
-  public static PairView({ base, quote, price, priceDiff }: any) {
+  public static PairView({ pair, marketsDetailsLoadable }: { pair: TradingPair, marketsDetailsLoadable: Loadable<MarketsDetails> }) {
+    const { base, quote } = pair;
     return (
       <>
         <div className={styles.pairViewIcon}>{tokens[base].icon}</div>
         <div className={styles.pairViewCurrency}>{base}</div>
         <div className={styles.pairViewCurrency}><FormatQuoteToken token={quote} /></div>
-        <div className={styles.pairViewIconQuote}>{tokens[quote].icon}</div>
-        <div className={styles.pairViewPrice}>{price}</div>
-        <div className={styles.pairViewPriceDiff}>{priceDiff}</div>
+        <WithLoadingIndicatorInline loadable={marketsDetailsLoadable}>
+          {(marketsDetails) => {
+            const { price, priceDiff } = marketsDetails[tradingPairResolver(pair)];
+            return (<>
+              <div className={styles.pairViewIconQuote}>{tokens[quote].icon}</div>
+              <div className={styles.pairViewPrice}>{price &&
+                <FormatPrice value={price} token={quote} />
+              }</div>
+              <div className={styles.pairViewPriceDiff}>{priceDiff &&
+                <BoundarySpan value={priceDiff}>
+                  <FormatPercent value={priceDiff} />
+                </BoundarySpan>
+              }</div>
+            </>);
+          }}
+        </WithLoadingIndicatorInline>
       </>
     );
   }
@@ -120,7 +134,12 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
               <div className={styles.dropdownListWrapper}>
                 <ul className={styles.dropdownList}>
                   {tradingPairs.map((pair, i) => (
-                    <TradingPairView.PairVP parentMatch={parentMatch} key={i} pair={pair} />
+                    <TradingPairView.PairVP
+                      key={i}
+                      parentMatch={parentMatch}
+                      pair={pair}
+                      marketsDetailsLoadable={this.props.marketsDetails}
+                    />
                   ))}
                 </ul>
               </div>
