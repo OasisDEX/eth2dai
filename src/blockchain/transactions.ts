@@ -123,7 +123,7 @@ function txRebroadcastStatus(
 ) {
   return combineLatest(externalNonce2tx$, onEveryBlock$).pipe(
     map(([externalNonce2tx]) => {
-      if (externalNonce2tx[nonce]) {
+      if (externalNonce2tx[nonce] && externalNonce2tx[nonce].hash !== hash) {
         return [
           externalNonce2tx[nonce].hash,
           input === externalNonce2tx[nonce].callData ?
@@ -191,11 +191,10 @@ export function send(
     );
   }
 
-  const broadcastedAt = new Date();
-
   const result: Observable<TxState> = bindNodeCallback(method)(...args).pipe(
-    mergeMap((txHash: string) =>
-      timer(0, 1000).pipe(
+    mergeMap((txHash: string) => {
+      const broadcastedAt = new Date();
+      return timer(0, 1000).pipe(
         switchMap(() => bindNodeCallback(web3.eth.getTransaction as GetTransaction)(txHash)),
         takeWhileInclusive(transaction => !transaction),
         distinctUntilChanged(),
@@ -241,8 +240,8 @@ export function send(
           txHash,
           status: TxStatus.WaitingForConfirmation,
         } as TxState),
-      )
-    ),
+      );
+    }),
     startWith({
       ...common,
       status: TxStatus.WaitingForApproval,
@@ -260,7 +259,6 @@ export function send(
         status: TxStatus.CancelledByTheUser,
       });
     }),
-
   );
   result.subscribe(state => transactionObserver.next({  state, kind: 'newTx' }));
 
