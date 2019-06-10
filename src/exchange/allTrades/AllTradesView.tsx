@@ -37,6 +37,11 @@ export class AllTrades extends React.Component<AllTradesProps> {
       (this.lastLoadingStatus === 'loading' && this.props.status === 'loaded');
     this.lastTradingPair = this.props.tradingPair;
     this.lastLoadingStatus = this.props.status;
+    if (skipTransition) {
+      setTimeout(() => {
+        this.forceUpdate();
+      });
+    }
 
     return (
       <>
@@ -57,11 +62,11 @@ export class AllTrades extends React.Component<AllTradesProps> {
           size="lg"
           error={<ServerUnreachable/>}
         >
-          {({ trades, loading, more$ }) => (
-            <>
+          {({ trades, loading, more$ }) => {
+            return skipTransition ? <></> : <>
               <Scrollbar>
                 <Table align="right" className={styles.allTradesTable}>
-                  <TransitionGroup component="tbody" exit={!skipTransition} enter={!skipTransition}>
+                  <TransitionGroup component="tbody">
                     {trades.map(trade => (
                       <CSSTransition
                         key={`${trade.tx}_${trade.idx}`}
@@ -101,8 +106,8 @@ export class AllTrades extends React.Component<AllTradesProps> {
                   </TransitionGroup>
                 </Table>
               </Scrollbar>
-            </>
-          )}
+            </>;
+          }}
         </WithLoadingIndicator>
       </>
     );
