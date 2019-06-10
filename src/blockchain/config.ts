@@ -10,6 +10,8 @@ import ethColorInverseSvg from '../icons/coins/eth-color-inverse.svg';
 import ethColorSvg from '../icons/coins/eth-color.svg';
 import ethInverseSvg from '../icons/coins/eth-inverse.svg';
 import ethSvg from '../icons/coins/eth.svg';
+import mkrInverseSvg from '../icons/coins/mkr-inverse.svg';
+import mkrSvg from '../icons/coins/mkr.svg';
 import { SvgImageSimple } from '../utils/icons/utils';
 import * as eth from './abi/ds-eth-token.abi.json';
 import * as dsProxyFactory from './abi/ds-proxy-factory.abi.json';
@@ -23,6 +25,10 @@ import { web3 } from './web3';
 
 export const tradingPairs: TradingPair[] = [
   { base: 'WETH', quote: 'DAI' },
+  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [
+    { base: 'MKR', quote: 'DAI' },
+    { base: 'MKR', quote: 'WETH' },
+  ]
 ];
 
 function asMap<D>(key: string, data: D[]): { [key: string]: D } {
@@ -41,6 +47,18 @@ export const tokens = asMap('symbol', [
     iconInverse: SvgImageSimple(ethInverseSvg),
     iconCircle: SvgImageSimple(ethCircleSvg),
     iconColor: SvgImageSimple(ethColorSvg),
+  },
+  {
+    symbol: 'MKR',
+    precision: 18,
+    digits: 5,
+    digitsInstant: 3,
+    maxSell: '10000000',
+    name: 'Maker',
+    icon: SvgImageSimple(mkrSvg),
+    iconInverse: SvgImageSimple(mkrInverseSvg),
+    iconCircle: SvgImageSimple(mkrSvg),
+    iconColor: SvgImageSimple(mkrInverseSvg),
   },
   {
     symbol: 'WETH',
@@ -95,6 +113,7 @@ const protoMain = {
     return asMap('token', [
       loadToken('WETH', eth, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
       loadToken('DAI', erc20, '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'),
+      loadToken('MKR', erc20, '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'),
     ]);
   },
   get otcSupportMethods() {
@@ -137,6 +156,7 @@ const kovan: NetworkConfig = {
     return asMap('token', [
       loadToken('WETH', eth, '0xd0a1e359811322d97991e03f863a0c30c2cf029c'),
       loadToken('DAI', erc20, '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'),
+      loadToken('MKR', erc20, '0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd'),
     ]);
   },
   get otcSupportMethods() {
