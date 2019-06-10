@@ -202,6 +202,7 @@ export enum InstantFormChangeKind {
   proxyChange = 'proxyChange',
   dustLimitsChange = 'dustLimitsChange',
   allowancesChange = 'allowancesChange',
+  slippageLimitChange = 'slippageLimitChange',
   contextChange = 'contextChange',
 }
 
@@ -258,13 +259,19 @@ export interface ContextChange {
   context: NetworkConfig;
 }
 
+export interface SlippageLimitChange {
+  kind: InstantFormChangeKind.slippageLimitChange;
+  value: BigNumber;
+}
+
 export type ManualChange =
   BuyAmountChange |
   SellAmountChange |
   PairChange |
   TokenChange |
   FormResetChange |
-  ViewChange;
+  ViewChange |
+  SlippageLimitChange;
 
 export type EnvironmentChange =
   GasPriceChange |
@@ -413,6 +420,11 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         user: change.user
+      };
+    case InstantFormChangeKind.slippageLimitChange:
+      return {
+        ...state,
+        slippageLimit: change.value
       };
   }
 

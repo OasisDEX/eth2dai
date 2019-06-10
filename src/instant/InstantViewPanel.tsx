@@ -12,6 +12,7 @@ import { BuyAssetSelectorView, SellAssetSelectorView } from './views/AssetSelect
 import { FinalizationView } from './views/FinalizationView';
 import { NewTradeView } from './views/NewTradeView';
 import { PriceImpactWarningView } from './views/PriceImpactWarningView';
+import { TradeSettingsView } from './views/TradeSettingsView';
 import { TradeSummaryView } from './views/TradeSummaryView';
 
 const views = new Map<ViewKind, any>([
@@ -23,6 +24,7 @@ const views = new Map<ViewKind, any>([
   [ViewKind.finalization, FinalizationView],
   [ViewKind.new, NewTradeView],
   [ViewKind.summary, TradeSummaryView],
+  [ViewKind.settings, TradeSettingsView],
 ]);
 
 export class InstantViewPanel extends React.Component<Loadable<InstantFormState>> {
