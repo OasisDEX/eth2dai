@@ -42,18 +42,18 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
     const { base, quote } = pair;
     return (
       <>
-        <div className={styles.pairViewIcon}>{tokens[base].icon}</div>
-        <div className={styles.pairViewCurrency}>{base}</div>
-        <div className={styles.pairViewCurrency}><FormatQuoteToken token={quote} /></div>
+        <div className={styles.iconBase}>{tokens[base].icon}</div>
+        <div className={styles.tokenBase}>{base}</div>
+        <div className={styles.tokenQuote}><FormatQuoteToken token={quote} /></div>
         <WithLoadingIndicatorInline loadable={marketsDetailsLoadable}>
           {(marketsDetails) => {
             const { price, priceDiff } = marketsDetails[tradingPairResolver(pair)];
             return (<>
-              <div className={styles.pairViewIconQuote}>{tokens[quote].icon}</div>
-              <div className={styles.pairViewPrice}>{price &&
+              <div className={styles.iconQuote}>{tokens[quote].icon}</div>
+              <div className={styles.price}>{price &&
                 <FormatPrice value={price} token={quote} />
               }</div>
-              <div className={styles.pairViewPriceDiff}>{priceDiff &&
+              <div className={styles.priceDiff}>{priceDiff &&
                 <BoundarySpan value={priceDiff}>
                   <FormatPercent value={priceDiff} />
                 </BoundarySpan>

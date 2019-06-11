@@ -1,5 +1,5 @@
 // tslint:disable:no-console
-import { equals } from 'ramda';
+import { equals, props } from 'ramda';
 import * as React from 'react';
 import { default as MediaQuery } from 'react-responsive';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
@@ -108,10 +108,16 @@ export class OrderbookView extends React.Component<Props> {
     this.autoScroll = false;
   }
 
-  public shouldComponentUpdate(nextProps: any): boolean {
+  public shouldComponentUpdate(nextProps: Props): boolean {
     if (nextProps.value && (
-      (nextProps.value.buy[0] && !equals(nextProps.tradingPair, { base: nextProps.value.buy[0].baseToken, quote: nextProps.value.buy[0].quoteToken })) ||
-      (nextProps.value.sell[0] && !equals(nextProps.tradingPair, { base: nextProps.value.sell[0].baseToken, quote: nextProps.value.sell[0].quoteToken }))
+      (nextProps.value.buy[0] && !equals(
+        props(['base', 'quote'], nextProps.tradingPair),
+        props(['baseToken', 'quoteToken'], nextProps.value.buy[0]),
+      )) ||
+      (nextProps.value.sell[0] && !equals(
+        props(['base', 'quote'], nextProps.tradingPair),
+        props(['baseToken', 'quoteToken'], nextProps.value.sell[0]),
+      ))
     )) {
       return false;
     }

@@ -48,7 +48,7 @@ export const tokens = asMap('symbol', [
     iconCircle: SvgImageSimple(ethCircleSvg),
     iconColor: SvgImageSimple(ethColorSvg),
   },
-  {
+  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [{
     symbol: 'MKR',
     precision: 18,
     digits: 5,
@@ -59,7 +59,7 @@ export const tokens = asMap('symbol', [
     iconInverse: SvgImageSimple(mkrInverseSvg),
     iconCircle: SvgImageSimple(mkrSvg),
     iconColor: SvgImageSimple(mkrInverseSvg),
-  },
+  }],
   {
     symbol: 'WETH',
     precision: 18,

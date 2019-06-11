@@ -64,7 +64,7 @@
 }
 
 .dropdownBtnActive {
-    background-color: #35353E;
+    background-color: $grey-mid;
     border-bottom-left-radius: unset;
 }
 
@@ -82,7 +82,7 @@
     padding: 10px 0 0 0;
     margin: 0 2px 2px 2px;
 
-    background-color: #35353E;
+    background-color: $grey-mid;
     border: 1px solid $grey-darken-darkest;
     border-top: none;
     box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.2);
@@ -136,45 +136,45 @@
 
 .pairView {
     display: table-row;
-    background-color: #35353E;
+    background-color: $grey-mid;
     &:hover {
-        background-color: #393942;
+        background-color: $grey-mid-hover;
     }
     font-size: 14px;
+
     & > * {
       display: table-cell;
       vertical-align: middle;
     }
-}
 
-.pairViewIcon, .pairViewIconQuote {
-    padding: 5px 0 5px 5px;
-}
+    .iconBase, .iconQuote {
+      padding: 5px 0 5px 5px;
+    }
 
-.pairViewCurrency {
-    padding: 8px;
-    & + .pairViewCurrency {
-        padding-right: 40px;
+    .tokenBase {
+      padding: 8px;
+    }
+
+    .tokenQuote {
+      padding: 8px 40px 8px 8px;
+    }
+
+    .price {
+      text-align: right;
+      padding-right: 40px;
+    }
+
+    .priceDiff {
+      text-align: right;
+      padding-right: 20px;
     }
 }
 
-.pairViewPrice {
-    text-align: right;
-    padding-right: 40px;
-}
-
-.pairViewPriceDiff {
-    text-align: right;
-    padding-right: 20px;
+.active, .active:hover {
+  background-color: $grey-mid-active;
 }
 
 // ---------------------
-
-
-.active, .active:hover {
-    background-color: #3D3D46;
-}
-
 
 // style of box with info like current or yesterday price
 .pairInfo {
