@@ -230,7 +230,7 @@ export function setupAppContext() {
   const TradingPairsTxRx = connect(TradingPairView, tradingPairView$);
 
   const transactionNotifier$ =
-    createTransactionNotifier$(transactions$, interval(5 * 1000));
+    createTransactionNotifier$(transactions$, interval(5 * 1000), context$);
   const TransactionNotifierTxRx = connect(TransactionNotifierView, transactionNotifier$);
 
   const proxyAddress$ = onEveryBlock$.pipe(

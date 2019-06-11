@@ -134,8 +134,8 @@ export const etherPriceUsd$: Observable<BigNumber> = concat(
         Accept: 'application/json',
       },
     })),
-    retryWhen(errors => errors.pipe(delayWhen(() => onEveryBlock$.pipe(skip(1))))),
     map(({ response }) => new BigNumber(response[0].price_usd)),
+    retryWhen(errors => errors.pipe(delayWhen(() => onEveryBlock$.pipe(skip(1))))),
   ),
 ).pipe(
   distinctUntilChanged((x: BigNumber, y: BigNumber) => x.eq(y)),
