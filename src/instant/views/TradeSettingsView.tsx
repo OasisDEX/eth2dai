@@ -44,12 +44,11 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
                   : ''
               }
               mask={createNumberMask({
-                integerLimit: 3,
                 allowDecimal: true,
                 prefix: ''
               })}
               pipe={
-                lessThan(100)
+                lessThanOrEqual(100)
               }
               guide={true}
               placeholder={this.props.slippageLimit.times(100).valueOf()}
@@ -84,7 +83,7 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
 
   private _updateSlippageLimit = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = new BigNumber(e.target.value.replace(/,/g, ''));
-    if (!value.isNaN() && value.isLessThan(new BigNumber(100))) {
+    if (!value.isNaN()) {
       this.props.change({
         value: value.div(100),
         kind: InstantFormChangeKind.slippageLimitChange,
@@ -108,6 +107,6 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
   }
 }
 
-const lessThan = (max: number) => {
+const lessThanOrEqual = (max: number) => {
   return (value: number) => value <= max ? value : false;
 };
