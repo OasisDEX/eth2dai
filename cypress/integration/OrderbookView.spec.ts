@@ -6,7 +6,7 @@ describe('Orderbook view ', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
   });
 
   it('should render depth chart in the panel', () => {

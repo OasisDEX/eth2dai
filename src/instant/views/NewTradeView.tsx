@@ -87,7 +87,9 @@ export class NewTradeView extends React.Component<InstantFormState> {
             className={classnames(styles.cornerIcon, styles.settingsIcon)}
             disabled={!price}
             onClick={this.showTradeSettings}
-            image={cogWheelSvg}/>
+            image={cogWheelSvg}
+            data-test-id="trade-settings"
+          />
         </TopLeftCorner>
         {
           /*

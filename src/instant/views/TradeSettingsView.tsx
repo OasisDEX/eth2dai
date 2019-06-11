@@ -24,7 +24,9 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
           <ButtonIcon
             className={classnames(instantStyles.cornerIcon, instantStyles.backIcon)}
             onClick={this._hideTradeSettings}
-            image={backSvg}/>
+            image={backSvg}
+            data-test-id="back"
+          />
         </TopLeftCorner>
         <TradeDetails {...this.props}/>
         <section className={styles.settings}>
@@ -32,7 +34,7 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
             <span className={styles.name}>Slippage limit</span>
             <span className={instantStyles.inputWrapper}>
             <BigNumberInput
-              data-test-id={'slippage'}
+              data-test-id={'slippage-limit'}
               type="text"
               className={classnames(instantStyles.input, styles.value)}
               onChange={this._updateSlippageLimit}
@@ -57,7 +59,7 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
           </div>
           <div className={styles.warning}>
             <SvgImage className={styles.icon} image={warningSvg}/>
-            <p data-test-id="slippage-warning" className={styles.text}>
+            <p className={styles.text}>
               The transaction will fail (and gas will be spent), if the price of 1
               <strong> {this._quotation().base}</strong> is
               {
