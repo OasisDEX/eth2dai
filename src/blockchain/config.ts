@@ -195,6 +195,7 @@ const localnet: NetworkConfig =   {
     return asMap('token', [
       loadToken('WETH', eth, '0x28085cefa9103d3a55fb5afccf07ed2038d31cd4'),
       loadToken('DAI', erc20, '0xff500c51399a282f4563f2713ffcbe9e53cfb6fa'),
+      loadToken('MKR', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
     ]);
   },
   get otcSupportMethods() {
