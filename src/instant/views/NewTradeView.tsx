@@ -6,7 +6,7 @@ import swapArrowsSvg from '../../icons/swap-arrows.svg';
 import { formatAmount } from '../../utils/formatters/format';
 import { ButtonIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
-import { TopLeftCorner } from '../../utils/panel/TopRightCorner';
+import { TopRightCorner } from '../../utils/panel/TopRightCorner';
 import { TradeDetails } from '../details/TradeDetails';
 import * as styles from '../Instant.scss';
 import {
@@ -82,7 +82,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
                           btnDisabled={!this.props.readyToProceed}
                           btnDataTestId="initiate-trade"
       >
-        <TopLeftCorner>
+        <TopRightCorner>
           <ButtonIcon
             className={classnames(styles.cornerIcon, styles.settingsIcon)}
             disabled={!price}
@@ -90,7 +90,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
             image={cogWheelSvg}
             data-test-id="trade-settings"
           />
-        </TopLeftCorner>
+        </TopRightCorner>
         {
           /*
           We plan to release basic instant version so people can trade with a single click
