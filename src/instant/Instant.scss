@@ -152,7 +152,7 @@
     fill: $white;
   }
 
-  &:hover {
+  &:hover:enabled {
     border-color: $button-border-hover;
   }
 
@@ -197,21 +197,23 @@
   color: $white;
 }
 
-.inputApprox {
+%inputSuffixPrefix {
   position: absolute;
-  left: 1em;
-  top: 0.5em;
-  font-weight: 900;
+  font-weight: 700;
+  top: 50%;
+  transform: translateY(-50%);
   color: $button-border-hover;
 }
 
+.inputApprox {
+  @extend %inputSuffixPrefix;
+  left: 1rem;
+}
+
 .inputPercentage {
-  position: absolute;
-  right: 1em;
-  top: 0.75em;
+  @extend %inputSuffixPrefix;
   font-size: 12px;
-  font-weight: 900;
-  color: $button-border-hover;
+  right: 1rem;
 }
 
 .button {
