@@ -246,6 +246,7 @@ export function transactionToX<X>(
           case TxStatus.Failure:
           case TxStatus.Error:
             return of(fiascoX);
+          case TxStatus.Propagating:
           case TxStatus.WaitingForConfirmation:
             return of(waitingForConfirmationX);
           case TxStatus.Success:
