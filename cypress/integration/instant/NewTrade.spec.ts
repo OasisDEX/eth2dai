@@ -13,8 +13,6 @@ const waitForBalancesToLoad = () => {
   cy.get(tid('buying-token', tid('balance')), timeout()).contains(/170.../);
 };
 
-const swap = () => cy.get(tid('swap'), timeout(1000)).click();
-
 describe('New trade', () => {
 
   beforeEach(() => {
@@ -71,7 +69,7 @@ describe('New trade', () => {
   });
 
   it('should swap tokens', () => {
-    swap();
+    Trade.swapTokens();
 
     cy.get(tid('selling-token', tid('balance')), timeout()).contains(/170.../);
     cy.get(tid('buying-token', tid('balance')), timeout()).contains(/8,999.../);
@@ -82,7 +80,7 @@ describe('New trade', () => {
     trade.sell('ETH').amount('280.00');
     trade.buy('DAI');
 
-    swap();
+    Trade.swapTokens();
 
     cy.get(tid('selling-token', tid('balance')), timeout()).contains(/170.../);
     cy.get(tid('buying-token', tid('balance')), timeout()).contains(/8,999.../);
@@ -124,7 +122,7 @@ describe('New trade', () => {
   });
 
   it('should display error if balance is too low', () => {
-    swap();
+    Trade.swapTokens();
 
     const trade = new Trade();
     trade.sell().amount('200');

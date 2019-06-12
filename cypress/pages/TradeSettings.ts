@@ -1,7 +1,7 @@
 import { tid, timeout } from '../utils';
 
 export class TradeSettings {
-  public static button = () => cy.get(tid('trade-settings'));
+  public static button = () => cy.get(tid('trade-settings'), timeout(3000));
 
   public static back = () => cy.get(tid('back')).click();
 

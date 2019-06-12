@@ -3,7 +3,7 @@ import { Trade } from '../../pages/Trade';
 import { TradeData } from '../../pages/TradeData';
 import { TradeSettings } from '../../pages/TradeSettings';
 import { WalletConnection } from '../../pages/WalletConnection';
-import { cypressVisitWithWeb3 } from '../../utils';
+import { cypressVisitWithWeb3, tid, timeout } from '../../utils';
 
 const initiateTrade = () => {
   const trade = new Trade();
@@ -60,6 +60,56 @@ describe('Trade Settings', () => {
       TradeSettings.back();
 
       TradeData.expectSlippageLimit('3.00');
+    });
+
+    it('should reset the slippage limit if new token is selected for deposit token', () => {
+      initiateTrade();
+
+      TradeSettings.button().click();
+
+      TradeSettings.slippageLimit('3');
+
+      TradeSettings.back();
+
+      TradeData.expectSlippageLimit('3.00');
+
+      new Trade().sell('WETH').amount('1');
+
+      TradeData.expectSlippageLimit('5.00');
+    });
+
+    it('should reset the slippage limit if new token is selected for receive token', () => {
+      initiateTrade();
+
+      TradeSettings.button().click();
+
+      TradeSettings.slippageLimit('3');
+
+      TradeSettings.back();
+
+      TradeData.expectSlippageLimit('3.00');
+
+      new Trade().buy('WETH').amount('1');
+
+      TradeData.expectSlippageLimit('5.00');
+    });
+
+    it('should reset the slippage limit if tokens in the pair are just swapped', () => {
+      initiateTrade();
+
+      TradeSettings.button().click();
+
+      TradeSettings.slippageLimit('3');
+
+      TradeSettings.back();
+
+      TradeData.expectSlippageLimit('3.00');
+
+      Trade.swapTokens();
+
+      cy.get(tid('buying-token', tid('amount')), timeout(2000)).type('1');
+
+      TradeData.expectSlippageLimit('5.00');
     });
   });
 });

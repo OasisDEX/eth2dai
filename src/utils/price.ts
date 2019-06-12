@@ -8,3 +8,9 @@ export const calculateTradePrice = (sellToken: string, sellAmount: BigNumber, bu
     :
     { price: new BigNumber(formatPrice(buyAmount.div(sellAmount), buyToken)), quotation: `${sellToken}/${buyToken}` };
 };
+
+export const getQuote = (sellToken: string, buyToken: string) => {
+  return (sellToken.toLowerCase() === 'dai' || (sellToken.toLowerCase() === 'eth' && buyToken.toLowerCase() !== 'dai'))
+    ? `${buyToken}/${sellToken}`
+    : `${sellToken}/${buyToken}`;
+};
