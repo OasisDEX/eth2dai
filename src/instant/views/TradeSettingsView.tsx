@@ -5,6 +5,7 @@ import { createNumberMask } from 'text-mask-addons/dist/textMaskAddons';
 import backSvg from '../../icons/back.svg';
 import warningSvg from '../../icons/warning.svg';
 import { BigNumberInput } from '../../utils/bigNumberInput/BigNumberInput';
+import { formatPrice } from '../../utils/formatters/format';
 import { ButtonIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
 import { TopLeftCorner } from '../../utils/panel/TopRightCorner';
@@ -17,7 +18,9 @@ import * as styles from './TradeSettingsView.scss';
 export class TradeSettingsView extends React.Component<InstantFormState, { slippage: BigNumber | undefined }> {
 
   public render() {
-
+    const { slippageLimit, price, sellToken } = this.props;
+    const slippageLimitInPercentage = slippageLimit.times(100).valueOf();
+    const { base, quote } = this._quotation();
     return (
       <InstantFormWrapper heading="Advanced Settings">
         <TopLeftCorner>
@@ -39,8 +42,8 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
               className={classnames(instantStyles.input, styles.value)}
               onChange={this._updateSlippageLimit}
               value={
-                this.props.slippageLimit
-                  ? this.props.slippageLimit.times(100).valueOf()
+                slippageLimit
+                  ? slippageLimitInPercentage
                   : ''
               }
               mask={createNumberMask({
@@ -51,7 +54,7 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
                 lessThanOrEqual(100)
               }
               guide={true}
-              placeholder={this.props.slippageLimit.times(100).valueOf()}
+              placeholder={slippageLimitInPercentage}
             />
             <span className={instantStyles.inputPercentage}>%</span>
             </span>
@@ -59,13 +62,21 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
           <div className={styles.warning}>
             <SvgImage className={styles.icon} image={warningSvg}/>
             <p className={styles.text}>
-              The transaction will fail (and gas will be spent), if the price of 1
-              <strong> {this._quotation().base}</strong> is
+              The transaction will fail (and gas will be spent), if the price of
+              <span className={styles.highlight}>&nbsp;1 {base}</span> is
               {
-                this._quotation().base === this.props.sellToken ? ' lower' : ' higher'
+                base === sellToken ? ' lower' : ' higher'
               } than
-              ~{this.props.price && this._calculateSlippage(this.props.price, this.props.slippageLimit).valueOf()}
-              <strong> {this._quotation().quote}</strong>
+              <span className={styles.highlight}>
+                &nbsp;
+                {
+                  price && formatPrice(
+                    this._calculateSlippage(price, slippageLimit),
+                    quote
+                  )
+                }
+                &nbsp;{quote}
+              </span>
             </p>
           </div>
         </section>
@@ -96,7 +107,7 @@ export class TradeSettingsView extends React.Component<InstantFormState, { slipp
       const [base, quote] = this.props.quotation.split('/');
       return { base, quote };
     }
-    return {};
+    return { quote: '', base: '' };
   }
 
   private _calculateSlippage = (price: BigNumber, slippageLimit: BigNumber) => {

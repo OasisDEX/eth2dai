@@ -46,13 +46,18 @@
   }
 
   .text {
-    font-weight: 400;
+    font-weight: 500;
     font-size: 12px;
     width: fit-content;
-    color: rgba(255, 255, 255, 0.9);
+    color: $grey-lighter;
     text-align: left;
     letter-spacing: .7px;
     line-height: 16px;
     margin: 0;
+  }
+
+  .highlight {
+    font-weight: 600;
+    color: white;
   }
 }
