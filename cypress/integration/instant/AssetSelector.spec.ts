@@ -7,7 +7,7 @@ describe('Selecting an asset', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
     Tab.instant();
   });
 

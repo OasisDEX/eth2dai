@@ -16,7 +16,7 @@ import {
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';
 import { Calls, calls$, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/calls/calls';
-import { eth2weth } from '../blockchain/calls/instant';
+import { eth2weth, weth2eth } from '../blockchain/calls/instant';
 import { NetworkConfig, tokens } from '../blockchain/config';
 import { isDone, TxStatus } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
@@ -38,7 +38,8 @@ import {
   toUserChange,
   UserChange,
 } from '../utils/form';
-import { calculateTradePrice } from '../utils/price';
+import { calculateTradePrice, getQuote } from '../utils/price';
+import { getSlippageLimit } from '../utils/slippage';
 import { switchSpread } from '../utils/switchSpread';
 import { pluginDevModeHelpers } from './instantDevModeHelpers';
 import {
@@ -202,6 +203,7 @@ export enum InstantFormChangeKind {
   proxyChange = 'proxyChange',
   dustLimitsChange = 'dustLimitsChange',
   allowancesChange = 'allowancesChange',
+  slippageLimitChange = 'slippageLimitChange',
   contextChange = 'contextChange',
 }
 
@@ -258,13 +260,19 @@ export interface ContextChange {
   context: NetworkConfig;
 }
 
+export interface SlippageLimitChange {
+  kind: InstantFormChangeKind.slippageLimitChange;
+  value: BigNumber;
+}
+
 export type ManualChange =
   BuyAmountChange |
   SellAmountChange |
   PairChange |
   TokenChange |
   FormResetChange |
-  ViewChange;
+  ViewChange |
+  SlippageLimitChange;
 
 export type EnvironmentChange =
   GasPriceChange |
@@ -292,6 +300,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         kind: undefined,
         buyAmount: undefined,
         sellAmount: undefined,
+        slippageLimit: state.context
+          ? getSlippageLimit(state.context, getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken)))
+          : state.slippageLimit,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
     case InstantFormChangeKind.tokenChange:
@@ -330,6 +341,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         sellToken,
         buyAmount: shouldClearInputs ? undefined : state.buyAmount,
         sellAmount: shouldClearInputs ? undefined : state.sellAmount,
+        slippageLimit: state.context
+          ? getSlippageLimit(state.context, getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken)))
+          : state.slippageLimit,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
     case InstantFormChangeKind.sellAmountFieldChange:
@@ -407,12 +421,18 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
     case InstantFormChangeKind.contextChange:
       return {
         ...state,
-        context: change.context
+        context: change.context,
+        slippageLimit: getSlippageLimit(change.context, getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken)))
       };
     case FormChangeKind.userChange:
       return {
         ...state,
         user: change.user
+      };
+    case InstantFormChangeKind.slippageLimitChange:
+      return {
+        ...state,
+        slippageLimit: change.value
       };
   }
 

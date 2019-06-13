@@ -11,7 +11,7 @@ describe('Buy Order', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
     // Doing this because I don't have have enough funds on this account :)
     Trades
         .first()

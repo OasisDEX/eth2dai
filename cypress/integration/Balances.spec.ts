@@ -8,7 +8,7 @@ describe('Balances', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
   });
 
   it('should display all token balances', () => {

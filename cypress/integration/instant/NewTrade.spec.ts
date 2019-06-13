@@ -13,13 +13,11 @@ const waitForBalancesToLoad = () => {
   cy.get(tid('buying-token', tid('balance')), timeout()).contains(/170.../);
 };
 
-const swap = () => cy.get(tid('swap'), timeout(1000)).click();
-
 describe('New trade', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
     Tab.instant();
     waitForBalancesToLoad();
   });
@@ -30,7 +28,7 @@ describe('New trade', () => {
     trade.expectToReceive('555.00');
 
     TradeData.expectPriceOf(/(277\.50)/);
-    TradeData.expectSlippageLimit(/5\.0%/);
+    TradeData.expectSlippageLimit(/5\.00%/);
     TradeData.expectPriceImpact(/0\.89%/);
 
     makeScreenshots('instant-trade');
@@ -42,7 +40,7 @@ describe('New trade', () => {
     trade.expectToPay('1.145');
 
     TradeData.expectPriceOf(/(279\.37)/);
-    TradeData.expectSlippageLimit(/5\.0%/);
+    TradeData.expectSlippageLimit(/5\.00%/);
     TradeData.expectPriceImpact(/0\.22%/);
   });
 
@@ -71,7 +69,7 @@ describe('New trade', () => {
   });
 
   it('should swap tokens', () => {
-    swap();
+    Trade.swapTokens();
 
     cy.get(tid('selling-token', tid('balance')), timeout()).contains(/170.../);
     cy.get(tid('buying-token', tid('balance')), timeout()).contains(/8,999.../);
@@ -82,7 +80,7 @@ describe('New trade', () => {
     trade.sell('ETH').amount('280.00');
     trade.buy('DAI');
 
-    swap();
+    Trade.swapTokens();
 
     cy.get(tid('selling-token', tid('balance')), timeout()).contains(/170.../);
     cy.get(tid('buying-token', tid('balance')), timeout()).contains(/8,999.../);
@@ -124,7 +122,7 @@ describe('New trade', () => {
   });
 
   it('should display error if balance is too low', () => {
-    swap();
+    Trade.swapTokens();
 
     const trade = new Trade();
     trade.sell().amount('200');
