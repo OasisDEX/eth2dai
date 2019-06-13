@@ -30,6 +30,10 @@ export function eth2weth(token: string): string {
   return token.replace(/^ETH/, 'WETH');
 }
 
+export function weth2eth(token: string): string {
+  return token.replace(/^WETH/, 'ETH');
+}
+
 export const tradePayWithETHWithProxy: TransactionDef<InstantOrderData> = {
   call: ({ proxyAddress }: InstantOrderData) => {
     return web3.eth.contract(dsProxy as any).at(proxyAddress!).execute['address,bytes'];

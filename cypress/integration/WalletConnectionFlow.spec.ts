@@ -100,7 +100,7 @@ describe('Wallet', () => {
     });
 
     it('should select web wallet and connect', () => {
-      WalletConnection.open().web().acceptToS().connect();
+      WalletConnection.connect();
 
       WalletConnection.isConnected();
     });
@@ -138,7 +138,7 @@ describe('Wallet', () => {
     });
 
     it('should display which provider is connected', () => {
-      WalletConnection.open().web().acceptToS().connect();
+      WalletConnection.connect();
 
       cy.wait(1000);
 
@@ -148,7 +148,7 @@ describe('Wallet', () => {
     });
 
     it('should ask to connect the wallet if ToS acceptance is removed', () => {
-      WalletConnection.open().web().acceptToS().connect();
+      WalletConnection.connect();
 
       cy.wait(1000);
 

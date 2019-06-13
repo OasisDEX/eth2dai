@@ -21,6 +21,10 @@ class Wallet {
 
 export class WalletConnection {
 
+  public static connect() {
+    WalletConnection.open().web().acceptToS().connect();
+  }
+
   public static open() {
     cy.get(tid('new-connection'), { timeout }).click();
     return new Wallet();

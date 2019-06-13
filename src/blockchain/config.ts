@@ -104,6 +104,11 @@ const protoMain = {
   id: '1',
   name: 'main',
   label: 'Mainnet',
+  thresholds: {
+    ethdai: 0.02,
+    mkrdai: 0.01,
+    mkreth: 0.01
+  },
   safeConfirmations: 0,
   avgBlocksPerDay: 5760 * 1.05,
   startingBlock: 4751582,
@@ -147,6 +152,11 @@ const kovan: NetworkConfig = {
   id: '42',
   name: 'kovan',
   label: 'Kovan',
+  thresholds: {
+    ethdai: 0.025,
+    mkrdai: 0.015,
+    mkreth: 0.015
+  },
   safeConfirmations: 0,
   avgBlocksPerDay: 21600 * 0.55,
   startingBlock: 5216718,
@@ -186,6 +196,11 @@ const localnet: NetworkConfig =   {
   id: '420',
   name: 'localnet',
   label: 'Localnet',
+  thresholds: {
+    ethdai: 0.05,
+    mkrdai: 0.05,
+    mkreth: 0.05
+  },
   safeConfirmations: 0,
   avgBlocksPerDay: 1000,
   startingBlock: 1,

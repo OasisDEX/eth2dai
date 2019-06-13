@@ -10,7 +10,7 @@ const nextTrade = () => {
 describe('Selling', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
     Tab.instant();
   });
 
