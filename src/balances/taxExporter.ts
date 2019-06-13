@@ -32,8 +32,21 @@ function queryTrades(context: NetworkConfig, addresses: string[]) {
     ]
   };
   const order = '[TIME_DESC]';
-  const fields = ['offerId', 'act', 'maker', 'taker', 'bidAmt', 'bidTkn', 'lotAmt', 'lotTkn', 'time', 'tx',
-    'proxyAddress', 'proxyName', 'tag'];
+  const fields = [
+    'offerId',
+    'act',
+    'maker',
+    'taker',
+    'bidAmt',
+    'bidTkn',
+    'lotAmt',
+    'lotTkn',
+    'time',
+    'tx',
+    'proxyAddress',
+    'proxyName',
+    'tag'
+  ];
 
   return vulcan0x<any>(
     context.oasisDataService.url,
@@ -60,7 +73,11 @@ function getContractName(networkId: string, address: string) {
   return contracts_names[address];
 }
 
-function getExchangeNameByProxy(context: NetworkConfig, proxyName: string | null, tx: string): Observable<string> {
+function getExchangeNameByProxy(
+  context: NetworkConfig,
+  proxyName: string | null,
+  tx: string
+): Observable<string> {
   if (proxyName === '' || proxyName === null) {
     return of('oasisdex.com');
   }

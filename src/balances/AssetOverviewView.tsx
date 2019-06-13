@@ -71,7 +71,9 @@ export class AssetsOverviewViewInternal
           <th style={{ width: '20%' }} className={styles.center}>Unlock</th>
           <th style={{ width: '15%' }} className={styles.center}/>
           <th style={{ width: '15%' }} className={styles.amount}>Wallet</th>
-          <th className={classnames(styles.amount, 'hide-md')} style={{ width: '20%' }}>Value (USD)</th>
+          <th className={classnames(styles.amount, 'hide-md')} style={{ width: '20%' }}>
+            Value (USD)
+          </th>
         </tr>
         </thead>
         <tbody>
@@ -140,7 +142,10 @@ export class AssetsOverviewViewInternal
               </Button>
               }
             </td>
-            <td data-test-id={`${combinedBalance.name}-balance`} className={styles.amount} data-vis-reg-mask={true}>
+            <td data-test-id={`${combinedBalance.name}-balance`}
+                className={styles.amount}
+                data-vis-reg-mask={true}
+            >
               <FormatAmount value={combinedBalance.balance} token={combinedBalance.name} />
             </td>
             <td className={classnames(styles.amount, 'hide-md')} data-vis-reg-mask={true}>

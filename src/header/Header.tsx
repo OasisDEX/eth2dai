@@ -25,7 +25,11 @@ import { Loadable } from '../utils/loadable';
 import { WithLoadingIndicatorInline } from '../utils/loadingIndicator/LoadingIndicator';
 import * as styles from './Header.scss';
 import Logo from './Logo.svg';
-import { WalletConnectionViewKind, walletConnectionViewManual$, WalletConnectionViews } from './WalletConnectionView';
+import {
+  WalletConnectionViewKind,
+  walletConnectionViewManual$,
+  WalletConnectionViews
+} from './WalletConnectionView';
 
 const {
   header,
@@ -145,7 +149,11 @@ class WalletConnectionStatus extends React.Component<WalletConnectionStatusProps
 
   public render(): JSX.Element {
     const { open, close, view, isConnected, isConnecting, isOpen } = this.props;
-    const View = WalletConnectionViews.get(isConnecting ? WalletConnectionViewKind.connecting : view);
+    const View = WalletConnectionViews.get(
+      isConnecting
+        ? WalletConnectionViewKind.connecting
+        : view
+    );
 
     return (
       <ReactPopover isOpen={isOpen}
@@ -219,7 +227,11 @@ class Status extends React.Component<StatusProps> {
                className={classnames(navElement, styles.account)}
           >
             <Jazzicon diameter={20} seed={jsNumberForAddress(account)}/>
-            <span data-test-id="account" style={{ marginLeft: '.625rem', letterSpacing: '.2px' }}>{label}</span>
+            <span data-test-id="account"
+                  style={{ marginLeft: '.625rem', letterSpacing: '.2px' }}
+            >
+              {label}
+            </span>
             <SvgImage image={chevronDownSvg}
                       className={classnames(arrowDown, light)}/>
           </div>
@@ -241,7 +253,10 @@ const loadableAccount$: Observable<Loadable<Account>> = combineLatest(walletStat
     if (walletStatus === 'connecting') {
       return { status: 'loading' } as Loadable<Account>;
     }
-    return { status: 'loaded', value: { account, available: walletStatus !== 'missing' } } as Loadable<Account>;
+    return {
+      status: 'loaded',
+      value: { account, available: walletStatus !== 'missing' }
+    } as Loadable<Account>;
   }),
 );
 

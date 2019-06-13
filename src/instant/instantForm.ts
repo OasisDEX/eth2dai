@@ -301,7 +301,10 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         buyAmount: undefined,
         sellAmount: undefined,
         slippageLimit: state.context
-          ? getSlippageLimit(state.context, getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken)))
+          ? getSlippageLimit(
+            state.context,
+            getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken))
+          )
           : state.slippageLimit,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
@@ -342,7 +345,10 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         buyAmount: shouldClearInputs ? undefined : state.buyAmount,
         sellAmount: shouldClearInputs ? undefined : state.sellAmount,
         slippageLimit: state.context
-          ? getSlippageLimit(state.context, getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken)))
+          ? getSlippageLimit(
+            state.context,
+            getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken))
+          )
           : state.slippageLimit,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
@@ -389,7 +395,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         return {
           ...state,
           progress: change.progress,
-          view: change.progress.tradeTxStatus === TxStatus.Success ? ViewKind.summary : ViewKind.finalization
+          view: change.progress.tradeTxStatus === TxStatus.Success
+            ? ViewKind.summary
+            : ViewKind.finalization
         };
       }
 
@@ -422,7 +430,10 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         context: change.context,
-        slippageLimit: getSlippageLimit(change.context, getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken)))
+        slippageLimit: getSlippageLimit(
+          change.context,
+          getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken))
+        )
       };
     case FormChangeKind.userChange:
       return {
@@ -497,7 +508,11 @@ function evaluateSell(calls: ReadCalls, state: InstantFormState) {
   );
 }
 
-function getBestPrice(calls: ReadCalls, sellToken: string, buyToken: string): Observable<BigNumber> {
+function getBestPrice(
+  calls: ReadCalls,
+  sellToken: string,
+  buyToken: string
+): Observable<BigNumber> {
   return calls.otcGetBestOffer({ sellToken, buyToken }).pipe(
     flatMap(offerId =>
       calls.otcOffers(offerId).pipe(
@@ -514,18 +529,28 @@ function estimateGas(calls$_: Calls$, readCalls$: ReadCalls$, state: InstantForm
   return state.user && state.user.account ?
     doGasEstimation(calls$_, readCalls$, state, gasEstimation) :
     doGasEstimation(undefined, readCalls$, state, (_calls, readCalls, state_) =>
-      state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
-        undefined :
-        estimateTradeReadonly(readCalls, state_)
+      state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated
+      || !state.buyAmount
+      || !state.sellAmount
+        ? undefined
+        : estimateTradeReadonly(readCalls, state_)
     );
 }
 
-function gasEstimation(calls: Calls, readCalls: ReadCalls, state: InstantFormState): Observable<number> | undefined {
-  return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
-    undefined :
-    calls.proxyAddress().pipe(
+function gasEstimation(
+  calls: Calls,
+  readCalls: ReadCalls,
+  state: InstantFormState
+): Observable<number> | undefined {
+  return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated
+  || !state.buyAmount
+  || !state.sellAmount
+    ? undefined
+    : calls.proxyAddress().pipe(
       switchMap(proxyAddress => {
-        const sell = state.sellToken === 'ETH' ? estimateTradePayWithETH : estimateTradePayWithERC20;
+        const sell = state.sellToken === 'ETH'
+          ? estimateTradePayWithETH
+          : estimateTradePayWithERC20;
         return sell(calls, readCalls, proxyAddress, state);
       })
     );
@@ -566,6 +591,7 @@ function evaluateTrade(
     switchMap(calls =>
       combineLatest(
         state.kind === OfferType.buy ? evaluateBuy(calls, state) : evaluateSell(calls, state),
+        // tslint:disable-next-line:max-line-length
         // This is some suspicious case. This way it works like we had on OD but needs in-depth investigation.
         getBestPrice(calls, state.buyToken, state.sellToken)
       )
@@ -634,7 +660,12 @@ function validate(state: InstantFormState): InstantFormState {
     });
   }
 
-  if (spendAmount && dustLimits && dustLimits[eth2weth(spendToken)] && dustLimits[eth2weth(spendToken)].gt(spendAmount)) {
+  if (
+    spendAmount
+    && dustLimits
+    && dustLimits[eth2weth(spendToken)]
+    && dustLimits[eth2weth(spendToken)].gt(spendAmount)
+  ) {
     message = prioritize(message, {
       kind: MessageKind.dustAmount,
       amount: dustLimits[eth2weth(spendToken)],
@@ -645,7 +676,12 @@ function validate(state: InstantFormState): InstantFormState {
     });
   }
 
-  if (receiveAmount && dustLimits && dustLimits[eth2weth(receiveToken)] && dustLimits[eth2weth(receiveToken)].gt(receiveAmount)) {
+  if (
+    receiveAmount
+    && dustLimits
+    && dustLimits[eth2weth(receiveToken)]
+    && dustLimits[eth2weth(receiveToken)].gt(receiveAmount)
+  ) {
     message = prioritize(message, {
       kind: MessageKind.dustAmount,
       amount: dustLimits[eth2weth(receiveToken)],

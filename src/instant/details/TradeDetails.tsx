@@ -8,6 +8,7 @@ import { ProgressIcon } from '../../utils/icons/Icons';
 import { TradeData } from './TradeData';
 import * as styles from './TradeDetails.scss';
 
+// tslint:disable
 const priceImpactTooltip = {
   id: 'price-impact',
   text: 'The difference between the best current price on the Eth2Dai order book and the estimated price of your order.'
@@ -16,6 +17,7 @@ const slippageLimitTooltip = {
   id: 'slippage-limit',
   text: 'The maximum allowed difference between the estimated price of the order and the actual price. The two may differ if the order book changes before your trade executes.'
 };
+// tslint:enable
 
 interface TradeDetailsProps {
   price?: BigNumber;
@@ -52,7 +54,11 @@ export class TradeDetails extends React.Component<TradeDetailsProps> {
         <TradeData label="Slippage Limit"
                    data-test-id="trade-slippage-limit"
                    tooltip={slippageLimitTooltip}
-                   value={<FormatPercent value={new BigNumber(slippageLimit.times(100))} precision={2}/>}
+                   value={
+                     <FormatPercent value={new BigNumber(slippageLimit.times(100))}
+                                    precision={2}
+                     />
+                   }
                    style={{ marginBottom: '2px' }}
         />
         <TradeData label="Gas cost"

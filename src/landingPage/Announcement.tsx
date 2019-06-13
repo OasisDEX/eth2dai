@@ -18,12 +18,14 @@ interface AnnouncementViewProps {
 interface AnnouncementProps extends AnnouncementViewProps {
   id: string;
   nextView: React.ReactNode;
+  /* tslint:disable */
   /* Visibility property defines when the announcement content will be visible
   *  - 'none' - It won't display any announcement and instead it will proceed with the next view
   *  - 'once' - The announcement is displayed once. Once the use clicks continue it will set a flag in localStorage that the
   *  announcement has been seen so it should be rendered anymore and instead to proceed with next view.
   *  - 'always' - it will display the announcement every time no matter if we have localStorage flag on.
   * */
+  /* tslint:enable */
   visibility: 'none' | 'once' | 'always';
 }
 
@@ -58,7 +60,7 @@ class AnnouncementView extends React.Component<AnnouncementViewProps & {
   }
 }
 
-export class Announcement extends React.Component<AnnouncementProps & AnnouncementViewProps, { shouldViewNext: boolean }> {
+export class Announcement extends React.Component<AnnouncementProps, { shouldViewNext: boolean }> {
 
   constructor(props: AnnouncementProps & AnnouncementViewProps) {
     super(props);

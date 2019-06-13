@@ -194,6 +194,7 @@ describe('New trade', () => {
     finalization.shouldCreateProxy();
   });
 
+  // tslint:disable-next-line:max-line-length
   it('should keep trade date and not continue with transaction if price impact warning is dismissed', () => {
     Tab.exchange();
 

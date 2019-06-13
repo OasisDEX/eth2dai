@@ -1,5 +1,5 @@
 import { BigNumber }from 'bignumber.js';
-import { Observable, of, throwError } from 'rxjs/index';
+import { Observable, of, throwError } from 'rxjs';
 import { shareReplay } from 'rxjs/internal/operators';
 
 import { setupFakeWeb3ForTesting } from '../blockchain/web3';
@@ -54,7 +54,8 @@ describe('Wrapping' , () => {
 
     expect(unpack(controller).readyToProceed).toBeFalsy();
     expect(unpack(controller).messages.length).toBe(1);
-    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount, token: 'ETH' });
+    expect(unpack(controller).messages[0])
+      .toEqual({ kind: MessageKind.insufficientAmount, token: 'ETH' });
   });
 
   test('negative amount', () => {
@@ -126,7 +127,8 @@ describe('Unwrapping', () => {
 
     expect(unpack(controller).readyToProceed).toBeFalsy();
     expect(unpack(controller).messages.length).toBe(1);
-    expect(unpack(controller).messages[0]).toEqual({ kind: MessageKind.insufficientAmount, token: 'WETH' });
+    expect(unpack(controller).messages[0])
+      .toEqual({ kind: MessageKind.insufficientAmount, token: 'WETH' });
   });
 
   test('negative amount', () => {

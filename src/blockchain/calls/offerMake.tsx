@@ -12,7 +12,7 @@ import { TransactionDef } from './callsHelpers';
 import { TxMetaKind } from './txMeta';
 
 export interface CancelData {
-  offerId:BigNumber;
+  offerId: BigNumber;
   type: TradeAct;
   amount: BigNumber;
   token: string;
@@ -29,7 +29,11 @@ export const cancelOffer: TransactionDef<CancelData> = {
   kind: TxMetaKind.cancel,
   description: ({ type, amount, token }: CancelData) =>
     <React.Fragment>
-      Cancel <span style={{ textTransform: 'capitalize' }}>{type}</span> Order <Money value={amount} token={token}/>
+      Cancel
+      <span style={{ textTransform: 'capitalize' }}>
+        {type}
+      </span>
+      Order <Money value={amount} token={token}/>
     </React.Fragment>,
 };
 
@@ -49,7 +53,9 @@ export const offerMake: TransactionDef<OfferMakeData> = {
   call: (data: OfferMakeData, context: NetworkConfig) => ({
     [OfferMatchType.limitOrder]: context.otc.contract.offer
       ['uint256,address,uint256,address,uint256,bool'],
-    [OfferMatchType.direct]: () => { throw new Error('should not be here'); },
+    [OfferMatchType.direct]: () => {
+      throw new Error('should not be here');
+    },
   }[data.matchType]),
   prepareArgs: (
     { buyAmount, buyToken, sellAmount, sellToken, matchType, position }: OfferMakeData,
@@ -67,12 +73,12 @@ export const offerMake: TransactionDef<OfferMakeData> = {
   kind: TxMetaKind.offerMake,
   description: ({ buyAmount, buyToken, sellAmount, sellToken, kind }: OfferMakeData) => (
     kind === OfferType.sell ?
-    <>
-      Create Sell Order <Money value={sellAmount} token={sellToken}/>
-    </> :
-    <>
-      Create Buy Order <Money value={buyAmount} token={buyToken}/>
-    </>
+      <>
+        Create Sell Order <Money value={sellAmount} token={sellToken}/>
+      </> :
+      <>
+        Create Buy Order <Money value={buyAmount} token={buyToken}/>
+      </>
   )
 
 };
@@ -108,11 +114,11 @@ export const offerMakeDirect: TransactionDef<OfferMakeDirectData> = {
   }),
   kind: TxMetaKind.offerMake,
   description: ({ baseAmount, baseToken, quoteAmount, quoteToken, kind }: OfferMakeDirectData) =>
-  kind === OfferType.sell ?
-  <>
-    Create Sell Order <Money value={baseAmount} token={baseToken}/>
-  </> :
-  <>
-    Create Buy Order <Money value={quoteAmount} token={quoteToken}/>
-  </>,
+    kind === OfferType.sell ?
+      <>
+        Create Sell Order <Money value={baseAmount} token={baseToken}/>
+      </> :
+      <>
+        Create Buy Order <Money value={quoteAmount} token={quoteToken}/>
+      </>,
 };

@@ -81,7 +81,10 @@ export class OrderbookView extends React.Component<Props> {
   public center() {
     this.autoScroll = true;
     if (this.scrollbar && this.centerRow) {
-      this.scrollbar.center(this.centerRow.offsetTop - this.centerRowOffset, this.centerRow.clientHeight);
+      this.scrollbar.center(
+        this.centerRow.offsetTop - this.centerRowOffset,
+        this.centerRow.clientHeight
+      );
     }
   }
 
@@ -102,7 +105,8 @@ export class OrderbookView extends React.Component<Props> {
   public scrolled = () => {
     if (!this.autoScroll && this.scrollbar && this.centerRow) {
       const { scrollTop, clientHeight } = this.scrollbar.scrollState();
-      this.centerRowOffset = this.centerRow.offsetTop - scrollTop - (clientHeight - this.centerRow.clientHeight) / 2;
+      this.centerRowOffset =
+        this.centerRow.offsetTop - scrollTop - (clientHeight - this.centerRow.clientHeight) / 2;
     }
     this.autoScroll = false;
   }
@@ -207,7 +211,9 @@ export class OrderbookView extends React.Component<Props> {
                         <RowHighlighted>
                           <td ref={el => this.centerRow = this.centerRow || el || undefined}>
                             {orderbook.spread
-                              ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote}/>
+                              ? <FormatAmount value={orderbook.spread}
+                                              token={this.props.tradingPair.quote}
+                              />
                               : '-'}
                           </td>
                           <td/>
@@ -239,7 +245,11 @@ export class OrderbookView extends React.Component<Props> {
     );
   }
 
-  public OfferRow({ offer, kind, onClick }: { offer: Offer, kind: string, onClick: (attr: any) => any }) {
+  public OfferRow({ offer, kind, onClick }: {
+    offer: Offer,
+    kind: string,
+    onClick: (attr: any) => any
+  }) {
     return (
       <RowClickable
         data-test-id={kind}

@@ -171,7 +171,17 @@ export type StageChange =
 export type OfferFormChange = ManualChange | EnvironmentChange | StageChange;
 
 function offerMakeData(state: OfferFormState): OfferMakeData {
-  const { amount, total, baseToken, quoteToken, position, kind, matchType, gasPrice, gasEstimation } = state;
+  const {
+    amount,
+    total,
+    baseToken,
+    quoteToken,
+    position,
+    kind,
+    matchType,
+    gasPrice,
+    gasEstimation
+  } = state;
   const buySell = kind === OfferType.buy ? {
     buyAmount: amount as BigNumber, buyToken: baseToken,
     sellAmount: total as BigNumber, sellToken: quoteToken
@@ -256,7 +266,11 @@ function applyChange(state: OfferFormState,
         return directMatchState(state, {}, state.orderbook);
       }
 
-      if (change.matchType === OfferMatchType.limitOrder && state.orderbook && state.orderbook.sell[0]) {
+      if (
+        change.matchType === OfferMatchType.limitOrder
+        && state.orderbook
+        && state.orderbook.sell[0]
+      ) {
         const updatedPrice = applyChange(state, {
           kind: FormChangeKind.priceFieldChange,
           value: new BigNumber(state.orderbook.sell[0].price)
@@ -332,7 +346,11 @@ function applyChange(state: OfferFormState,
       if (state.matchType === OfferMatchType.direct && state.orderbook) {
         switch (state.kind) {
           case OfferType.sell:
-            return directMatchState(state, { amount: state.balances[state.baseToken] }, state.orderbook);
+            return directMatchState(
+              state,
+              { amount: state.balances[state.baseToken] },
+              state.orderbook
+            );
           case OfferType.buy:
             return state;
         }
@@ -350,7 +368,8 @@ function applyChange(state: OfferFormState,
 
           return applyChange(
             state,
-            { kind: FormChangeKind.amountFieldChange, value:state.balances[state.baseToken]
+            {
+              kind: FormChangeKind.amountFieldChange, value: state.balances[state.baseToken]
             }
           );
         case OfferType.buy:
@@ -456,11 +475,25 @@ function validate(state: OfferFormState): OfferFormState {
   if (state.price && state.amount && state.total) {
     const [spendAmount, spendToken, spendField, dustLimit,
       receiveAmount, receiveToken, receiveField] =
-      state.kind === OfferType.sell ?
-      [state.amount, state.baseToken, 'amount', state.dustLimitBase,
-        state.total, state.quoteToken, 'total'] :
-      [state.total, state.quoteToken, 'total', state.dustLimitQuote,
-        state.amount, state.baseToken, 'amount'];
+      state.kind === OfferType.sell
+        ? [
+          state.amount,
+          state.baseToken,
+          'amount',
+          state.dustLimitBase,
+          state.total,
+          state.quoteToken,
+          'total'
+        ]
+        : [
+          state.total,
+          state.quoteToken,
+          'total',
+          state.dustLimitQuote,
+          state.amount,
+          state.baseToken,
+          'amount'
+        ];
     if (!state.user || !state.user.account) {
       messages.push({
         kind: MessageKind.notConnected,
@@ -511,7 +544,11 @@ function validate(state: OfferFormState): OfferFormState {
     }
   }
 
-  if (state.matchType === OfferMatchType.direct && !state.price && state.amount && !state.amount.isZero()) {
+  if (
+    state.matchType === OfferMatchType.direct
+    && !state.price && state.amount
+    && !state.amount.isZero()
+  ) {
     messages.push({
       kind: MessageKind.orderbookTotalExceeded,
       field: 'amount',
