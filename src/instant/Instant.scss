@@ -40,6 +40,16 @@
 
 // Particular view ( Step 1 )
 .details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  border: 1px solid $button-border-disabled;
+  border-radius: .25rem;
+
+  margin-top: 1.25rem;
+  margin-bottom: 1rem;
+
   &.finalization {
     font-size: 0.75rem;
     min-height: 2rem;
