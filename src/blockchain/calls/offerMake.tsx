@@ -31,7 +31,7 @@ export const cancelOffer: TransactionDef<CancelData> = {
     <React.Fragment>
       Cancel
       <span style={{ textTransform: 'capitalize' }}>
-        {type}
+        &nbsp;{type}&nbsp;
       </span>
       Order <Money value={amount} token={token}/>
     </React.Fragment>,
