@@ -36,8 +36,20 @@ const {
   buttonPlaceholder,
 } = styles;
 
-const ListItem = (props: Provider & { className?: string, isSelected?: boolean, onSelect?: () => void, tid?: string }) => {
-  const { supported, isSelected, className, name: fullName, icon: walletIcon, onSelect, tid } = props;
+const ListItem = (props: Provider & {
+  className?: string,
+  isSelected?: boolean,
+  onSelect?: () => void, tid?: string
+}) => {
+  const {
+    supported,
+    isSelected,
+    className,
+    name: fullName,
+    icon: walletIcon,
+    onSelect,
+    tid
+  } = props;
   return (
     <li className={
       classnames(
@@ -74,7 +86,11 @@ class SuggestedClients extends React.Component {
           {
             [Metamask, Parity, Status, Trust].map((provider) => {
               return (
-                <a key={provider.id} href={provider.website} rel="noreferrer noopener" target="_blank">
+                <a key={provider.id}
+                   href={provider.website}
+                   rel="noreferrer noopener"
+                   target="_blank"
+                >
                   <ListItem id={provider.id}
                             icon={provider.iconWhite}
                             name={provider.name}
@@ -142,7 +158,12 @@ class NotConnected extends React.Component<{}, { isChecked: boolean, selectedWal
                   onChange={this._toggle}
                   className={termsAndConditions}
         >
-          I accept&nbsp;<a target="_blank" rel="noopener noreferrer" href="/tos.pdf"> Terms of Service</a>
+          I accept&nbsp;<a target="_blank"
+                           rel="noopener noreferrer"
+                           href="/tos.pdf"
+        >
+          Terms of Service
+        </a>
         </Checkbox>
         <div className={buttonPlaceholder}>
           <Button size="lg"
@@ -220,7 +241,12 @@ class NoClient extends React.Component<{}, { isChecked: boolean, selectedWallet:
                   onChange={this._toggle}
                   className={termsAndConditions}
         >
-          I accept&nbsp;<a target="_blank" rel="noopener noreferrer" href="/tos.pdf"> Terms of Service</a>
+          I accept&nbsp;<a target="_blank"
+                           rel="noopener noreferrer"
+                           href="/tos.pdf"
+        >
+          Terms of Service
+        </a>
         </Checkbox>
         <div className={buttonPlaceholder}>
           <Button size="lg"

@@ -277,11 +277,13 @@ function simulateEstimateDoTradePayWithERC20(
   calls: ReadCalls,
   { kind, buyAmount, buyToken, sellAmount, sellToken }: InstantFormState,
 ): Observable<number> {
-  return calls.otcGetOffersAmount({ kind, buyAmount, buyToken, sellAmount, sellToken } as GetOffersAmountData).pipe(
-    map(([offersCount, partial]) =>
-      141100 + offersCount.toNumber() * 136500 + (partial ? 70000 : 0)
-    )
-  );
+  return calls.otcGetOffersAmount(
+    { kind, buyAmount, buyToken, sellAmount, sellToken } as GetOffersAmountData)
+    .pipe(
+      map(([offersCount, partial]) =>
+        141100 + offersCount.toNumber() * 136500 + (partial ? 70000 : 0)
+      )
+    );
 }
 
 function estimateDoApprove(
@@ -363,7 +365,11 @@ export function estimateTradeReadonly(
   readCalls: ReadCalls,
   state: InstantFormState,
 ): Observable<number> {
-  return combineLatest(simulateEstimateDoSetupProxy(state), simulateEstimateDoApprove(state), simulateEstimateDoTradePayWithERC20(readCalls, state)).pipe(
+  return combineLatest(
+    simulateEstimateDoSetupProxy(state),
+    simulateEstimateDoApprove(state),
+    simulateEstimateDoTradePayWithERC20(readCalls, state)
+  ).pipe(
     map(([createProxy, approve, trade]) => createProxy + approve + trade),
   );
 }

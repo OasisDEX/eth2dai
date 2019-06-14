@@ -37,12 +37,19 @@ class App extends React.Component<Props> {
         /*
         * The way to present announcement before loading the app is:
         * <Announcement
-        *     id="<unique_id">  - shouldn't change with each component rendering
+        *     // shouldn't change with each component rendering
+        *     id="<unique_id">
+        *     // how many times it will be displayed
         *     visibility="always | once"
-        *     headline="string" - heading of the announcement
-        *     buttonLabel="string" - the label of the button that user clicks to continue to next view
-        *     content={ string | React.ReactNode } - this is the announcement itself
-        *     nextView={<Main/>}/>
+        *     //heading of the announcement
+        *     headline="string"
+        *     //the label of the button that user clicks to continue to next view
+        *     buttonLabel="string"
+        *     //this is the announcement itself
+        *     content={ string | React.ReactNode }
+        *     //what will be rendered after announcement being dismissed
+        *     nextView={<Main/>}
+        *     />
         * */
         return <Main/>;
       default:

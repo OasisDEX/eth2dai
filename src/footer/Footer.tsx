@@ -27,7 +27,15 @@ export class TheFooter extends React.Component<FooterProps> {
             <div className={styles.links}>
               <span>
               Market Closing Time - <WithLoadingIndicatorInline loadable={expirationDate}>
-                {(expDate) => <span data-vis-reg-hide={true}>{moment(expDate).format('DD.MM.YYYY')}</span>}
+                {
+                  (expDate) => (
+                    <span data-vis-reg-hide={true}>
+                      {
+                        moment(expDate).format('DD.MM.YYYY')
+                      }
+                    </span>
+                  )
+                }
               </WithLoadingIndicatorInline>
             </span>
               <a target="_blank" rel="noopener noreferrer"
@@ -73,7 +81,15 @@ export class TheFooter extends React.Component<FooterProps> {
           <MediaQuery maxWidth={768}>
             <div>
               Market Closing Time - <WithLoadingIndicatorInline loadable={expirationDate}>
-                {(expDate) => <span data-vis-reg-hide={true}>{moment(expDate).format('DD.MM.YYYY')}</span>}
+                {
+                  (expDate) => (
+                    <span data-vis-reg-hide={true}>
+                      {
+                        moment(expDate).format('DD.MM.YYYY')
+                      }
+                    </span>
+                  )
+                }
               </WithLoadingIndicatorInline>
             </div>
             <div className={styles.links}>

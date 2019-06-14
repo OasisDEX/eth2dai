@@ -15,7 +15,7 @@ import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantFor
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './TradeSettingsView.scss';
 
-export class TradeSettingsView extends React.Component<InstantFormState, { slippage: BigNumber | undefined }> {
+export class TradeSettingsView extends React.Component<InstantFormState> {
 
   public render() {
     const { slippageLimit, price, sellToken } = this.props;

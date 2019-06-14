@@ -14,7 +14,13 @@ import { CurrentPrice } from '../CurrentPrice';
 import { TradeData } from '../details/TradeData';
 import { TxStatusRow } from '../details/TxStatusRow';
 import * as styles from '../Instant.scss';
-import { InstantFormChangeKind, ManualChange, Progress, ProgressKind, ViewKind } from '../instantForm';
+import {
+  InstantFormChangeKind,
+  ManualChange,
+  Progress,
+  ProgressKind,
+  ViewKind
+} from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import { ProgressReport } from '../progress/ProgressReport';
 
@@ -30,16 +36,19 @@ interface ViewProps {
   context: NetworkConfig;
 }
 
+// tslint:disable
 const proxyTooltip = {
   id: 'proxy-tooltip',
   text: 'Proxy is a supporting contract owned by you that groups different actions as one Ethereum transaction.',
   iconColor: 'white'
 } as WarningTooltipType;
+
 const allowanceTooltip = {
   id: 'allowance-tooltip',
   text: 'Enabling token trading allows your Proxy to take tokens from you and trade them on the exchange.',
   iconColor: 'white'
 } as WarningTooltipType;
+// tslint:enable
 
 export class FinalizationView extends React.Component<ViewProps> {
 

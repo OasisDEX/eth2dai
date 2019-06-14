@@ -87,7 +87,9 @@ export function vulcan0x<R>(
       '}',
       variables: {
         ...fromPairs(variables.map(({ name, value }) => [name, value])),
-        ...process.env.REACT_APP_GRAPHQL_DEVMODE ? { devMode: process.env.REACT_APP_GRAPHQL_DEVMODE } : {},
+        ...process.env.REACT_APP_GRAPHQL_DEVMODE
+          ? { devMode: process.env.REACT_APP_GRAPHQL_DEVMODE }
+          : {},
       },
       operationName: id,
     }

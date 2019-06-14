@@ -25,7 +25,7 @@ function error(msg: Message | undefined) {
   if (!msg) {
     return <></>;
   }
-
+  // tslint:disable
   switch (msg.kind) {
     case MessageKind.insufficientAmount:
       return (
@@ -57,6 +57,7 @@ function error(msg: Message | undefined) {
         </>
       );
   }
+// tslint:enable
 }
 
 export class NewTradeView extends React.Component<InstantFormState> {
@@ -142,8 +143,12 @@ export class NewTradeView extends React.Component<InstantFormState> {
         </div>
         <div data-test-id="error"
              className={classnames(
-               message && message.kind === MessageKind.notConnected ? styles.warnings : styles.errors,
-               message && message.placement === Position.BOTTOM ? '' : styles.hidden,
+               message && message.kind === MessageKind.notConnected
+                 ? styles.warnings
+                 : styles.errors,
+               message && message.placement === Position.BOTTOM
+                 ? ''
+                 : styles.hidden,
              )}>
           {error(message)}
         </div>

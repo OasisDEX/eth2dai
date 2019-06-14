@@ -40,7 +40,10 @@ export const FormatAmount = (props: FormatAmountProps) => {
     return <span {...spanProps} >{fallback}</span>;
   }
   if (greyed) {
-    return <FormatNumber formatter={formatter || formatAmount} value={value as BigNumber} {...props} />;
+    return <FormatNumber formatter={formatter || formatAmount}
+                         value={value as BigNumber}
+                         {...props}
+    />;
   }
   return <span title={value && value.toString()} {...spanProps}>{
     formatter

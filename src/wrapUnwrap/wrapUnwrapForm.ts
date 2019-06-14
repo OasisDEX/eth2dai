@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { curry } from 'ramda';
-import { merge, Observable, of, Subject } from 'rxjs/index';
+import { merge, Observable, of, Subject } from 'rxjs';
 import { first, map, scan, switchMap, takeUntil } from 'rxjs/operators';
 import { Calls, Calls$ } from '../blockchain/calls/calls';
 import { combineAndMerge } from '../utils/combineAndMerge';
@@ -94,7 +94,9 @@ function applyChange(
 function validate(state: WrapUnwrapFormState) {
   const messages: Message[] = [];
   const balance = state.kind === WrapUnwrapFormKind.wrap ? state.ethBalance : state.wethBalance;
-  const insufficientTest = state.amount && (state.kind === WrapUnwrapFormKind.wrap ? state.amount.gte : state.amount.gt).bind(state.amount);
+  const insufficientTest = state.amount && (state.kind === WrapUnwrapFormKind.wrap
+    ? state.amount.gte
+    : state.amount.gt).bind(state.amount);
 
   if (state.amount && state.amount.lte(zero)) {
     messages.push({

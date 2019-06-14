@@ -44,7 +44,7 @@ export class LoadingState {
           <div className={styles.containerBottomHalf}>
             <h4 style={{ color: '#8D8D96' }}>Please connect to the Ethereum Main Network</h4>
           </div>
-          <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={styles.unsupported as React.CSSProperties}>
             <SvgImage image={networkSvg} />
           </div>
         </div>

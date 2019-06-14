@@ -35,7 +35,6 @@ export enum FormChangeKind {
   formResetChange = 'reset',
   orderbookChange = 'orderbook',
   balancesChange = 'balancesChange',
-  tokenChange = 'tokenChange',
   dustLimitChange = 'dustLimitChange',
   userChange = 'userChange',
   matchTypeChange = 'matchType',
@@ -66,11 +65,6 @@ export interface PriceFieldChange {
 export interface AmountFieldChange {
   kind: FormChangeKind.amountFieldChange;
   value?: BigNumber;
-}
-
-export interface TokenChange {
-  kind: FormChangeKind.tokenChange;
-  token: string;
 }
 
 export interface SetMaxChange {
@@ -284,7 +278,11 @@ export function doGasEstimation<S extends HasGasEstimation>(
   calls$: Calls$,
   readCalls$: ReadCalls$ | undefined,
   state: S,
-  call: (calls: Calls, readCalls: ReadCalls | undefined, state: S) => Observable<number> | undefined,
+  call: (
+    calls: Calls,
+    readCalls: ReadCalls | undefined,
+    state: S
+  ) => Observable<number> | undefined,
 ): Observable<S>;
 
 export function doGasEstimation<S extends HasGasEstimation>(
@@ -298,7 +296,11 @@ export function doGasEstimation<S extends HasGasEstimation>(
   calls$: Calls$ | undefined,
   readCalls$: ReadCalls$,
   state: S,
-  call: (calls: Calls | undefined, readCalls: ReadCalls, state: S) => Observable<number> | undefined,
+  call: (
+    calls: Calls | undefined,
+    readCalls: ReadCalls,
+    state: S
+  ) => Observable<number> | undefined,
 ): Observable<S>;
 
 export function doGasEstimation<S extends HasGasEstimation>(
@@ -306,8 +308,18 @@ export function doGasEstimation<S extends HasGasEstimation>(
   readCalls$: ReadCalls$ | undefined,
   state: S,
   call:
-    ((calls: Calls | undefined, readCalls: ReadCalls | undefined, state: S) => Observable<number> | undefined) |
-    ((calls: Calls, readCalls: ReadCalls, state: S) => Observable<number> | undefined),
+    (
+      (
+        calls: Calls | undefined,
+        readCalls: ReadCalls | undefined,
+        state: S) => Observable<number> | undefined
+      ) |
+    (
+      (
+        calls: Calls,
+        readCalls: ReadCalls,
+        state: S
+      ) => Observable<number> | undefined),
 ): Observable<S> {
   return combineLatest(calls$ || of(undefined), readCalls$ || of(undefined)).pipe(
     first(),
@@ -362,7 +374,10 @@ export function doGasEstimation<S extends HasGasEstimation>(
   );
 }
 
-export function calculateTotal(amount: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
+export function calculateTotal(
+  amount: BigNumber | undefined,
+  orders: Offer[]
+): BigNumber | undefined {
   if (!amount) return undefined;
   let base = amount;
   let quote = new BigNumber(0);
@@ -381,25 +396,4 @@ export function calculateTotal(amount: BigNumber | undefined, orders: Offer[]): 
     }
   }
   return !base.isZero() ? undefined : quote;
-}
-
-export function calculateAmount(total: BigNumber | undefined, orders: Offer[]): BigNumber | undefined {
-  if (!total) return undefined;
-  let base = new BigNumber(0);
-  let quote = total;
-  for (const offer of orders) {
-    if (quote.lte(new BigNumber(0))) {
-      break;
-    }
-    if (quote.gte(offer.quoteAmount)) {
-      quote = quote.minus(offer.quoteAmount);
-      base = base.plus(offer.baseAmount);
-    } else {
-      base = base.plus(
-        offer.baseAmount.times(quote).dividedBy(offer.quoteAmount)
-      );
-      quote = new BigNumber(0);
-    }
-  }
-  return !quote.isZero() ? undefined : base;
 }
