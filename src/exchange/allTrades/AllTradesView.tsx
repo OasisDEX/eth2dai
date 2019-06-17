@@ -58,12 +58,12 @@ export class AllTrades extends React.Component<AllTradesProps> {
           </thead>
         </Table>
         <WithLoadingIndicator
-          loadable={this.props}
+          loadable={skipTransition ? { status: 'loading' } : this.props}
           size="lg"
           error={<ServerUnreachable/>}
         >
           {({ trades, loading, more$ }) => {
-            return skipTransition ? <></> : <>
+            return <>
               <Scrollbar>
                 <Table align="right" className={styles.allTradesTable}>
                   <TransitionGroup component="tbody">

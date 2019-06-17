@@ -4,7 +4,7 @@ import * as React from 'react';
 import { default as MediaQuery } from 'react-responsive';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { combineLatest, Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { distinctUntilKeyChanged, map, startWith } from 'rxjs/operators';
 
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
@@ -34,7 +34,9 @@ export function createPickableOrderBook(
 ): Observable<PickableOrderbook> {
   return combineLatest(
     currentOrderBook$,
-    currentOfferForm$,
+    currentOfferForm$.pipe(
+      distinctUntilKeyChanged('change'),
+    ),
   ).pipe(
     map(([currentOrderBook, { change }]) => ({
       ...currentOrderBook,
@@ -53,9 +55,19 @@ export function createOrderbookForTradingPair(
     pickableOrderbook$,
   ).pipe(
     map(([tradingPair, orderBookStuff]) => {
+      const loading = orderBookStuff.value && (
+        (orderBookStuff.value.buy[0] && !equals(
+          props(['base', 'quote'], tradingPair),
+          props(['baseToken', 'quoteToken'], orderBookStuff.value.buy[0]),
+        )) ||
+        (orderBookStuff.value.sell[0] && !equals(
+          props(['base', 'quote'], tradingPair),
+          props(['baseToken', 'quoteToken'], orderBookStuff.value.sell[0]),
+        ))
+      );
       return {
         tradingPair,
-        ...orderBookStuff,
+        ...loading ? { status: 'loading' } : orderBookStuff,
         kindChange,
       };
     }),
@@ -109,18 +121,6 @@ export class OrderbookView extends React.Component<Props> {
   }
 
   public shouldComponentUpdate(nextProps: Props): boolean {
-    if (nextProps.value && (
-      (nextProps.value.buy[0] && !equals(
-        props(['base', 'quote'], nextProps.tradingPair),
-        props(['baseToken', 'quoteToken'], nextProps.value.buy[0]),
-      )) ||
-      (nextProps.value.sell[0] && !equals(
-        props(['base', 'quote'], nextProps.tradingPair),
-        props(['baseToken', 'quoteToken'], nextProps.value.sell[0]),
-      ))
-    )) {
-      return false;
-    }
     return !equals(nextProps, this.props);
   }
 
@@ -188,7 +188,7 @@ export class OrderbookView extends React.Component<Props> {
           </tr>
           </thead>
         </Table>
-        <WithLoadingIndicator loadable={this.props} size="lg">
+        <WithLoadingIndicator loadable={skipTransition ? { status: 'loading' } : this.props} size="lg">
           {(orderbook: PickableOrderbook) => {
             const takeOffer = (offer: Offer) => {
               return (): void => {
@@ -198,7 +198,7 @@ export class OrderbookView extends React.Component<Props> {
                 });
               };
             };
-            return skipTransition ? <></> : (
+            return (
               <>
                 <Scrollbar ref={el => this.scrollbar = el || undefined} onScroll={this.scrolled}>
                   <Table align="right" className={styles.orderbookTable}>
