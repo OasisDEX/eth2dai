@@ -114,7 +114,7 @@ class Header extends React.Component<HeaderProps> {
             <section className={classnames(section, sectionNavigation)}>
               <nav className={nav}>
                 <div className={list}>
-                  <HeaderNavLink to={`${rootUrl}exchange`} name="Exchange"/>
+                  <HeaderNavLink to={`${rootUrl}trade`} name="Trade"/>
                   {process.env.REACT_APP_INSTANT_ENABLED === '1' &&
                   <HeaderNavLink to={`${rootUrl}instant`} name="Instant"/>}
                   {this.props.walletStatus === 'connected' &&
