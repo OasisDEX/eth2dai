@@ -1,6 +1,14 @@
 import * as React from 'react';
 import { BehaviorSubject, combineLatest, interval, Observable } from 'rxjs';
-import { distinctUntilChanged, first, flatMap, map, shareReplay, switchMap } from 'rxjs/operators';
+import {
+  distinctUntilChanged,
+  filter,
+  first,
+  flatMap,
+  map,
+  shareReplay,
+  switchMap
+} from 'rxjs/operators';
 
 import { isEqual } from 'lodash';
 import { curry } from 'ramda';
@@ -12,10 +20,9 @@ import {
 import {
   Balances,
   CombinedBalances,
-  createAllowances$,
   createBalances$,
   createCombinedBalances$,
-  createDustLimits$,
+  createDustLimits$, createProxyAllowances$,
   createWalletApprove,
   createWalletDisapprove,
   createWethBalances$,
@@ -273,7 +280,14 @@ export function setupAppContext() {
       context$,
       balances$: balancesWithEth$,
       dustLimits$: createDustLimits$(context$),
-      allowances$: createAllowances$(context$, initializedAccount$, onEveryBlock$),
+      allowances$: createProxyAllowances$(
+        context$,
+        initializedAccount$,
+        proxyAddress$.pipe(
+          filter(address => !!address)
+        ),
+        onEveryBlock$
+      ),
     }
   );
 

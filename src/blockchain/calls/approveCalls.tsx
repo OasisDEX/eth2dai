@@ -21,7 +21,7 @@ export const approveWallet: TransactionDef<ApproveWalletData> = {
   description: ({ token }: ApproveWalletData) => {
     return (
       <React.Fragment>
-        Unlock <Currency value={token} /> for Trading
+        Unlock <Currency value={token}/> for Trading
       </React.Fragment>
     );
   },
@@ -37,7 +37,7 @@ export const disapproveWallet: TransactionDef<ApproveWalletData> = {
   description: ({ token }: ApproveWalletData) => {
     return (
       <React.Fragment>
-        Lock <Currency value={token} /> for Trading
+        Lock <Currency value={token}/> for Trading
       </React.Fragment>
     );
   },
@@ -71,7 +71,7 @@ export const disapproveProxy: TransactionDef<ApproveProxyData> = {
   description: ({ token }: ApproveProxyData) => {
     return (
       <React.Fragment>
-        Lock <Currency value={token} /> for trading by proxy
+        Lock <Currency value={token}/> for trading by proxy
       </React.Fragment>
     );
   },

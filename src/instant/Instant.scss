@@ -18,6 +18,10 @@
     font-size: 1em;
     margin: 0 0;
   }
+
+  @include media-breakpoint-down(sm){
+    padding: 1.5rem .5rem;
+  }
 }
 
 .header {
@@ -27,6 +31,10 @@
 
   h1, h2, h3, h4, h5, h6 {
     text-align: center;
+  }
+
+  @include media-breakpoint-down(sm) {
+    font-size: 14px;
   }
 }
 
@@ -49,6 +57,10 @@
 
   margin-top: 1.25rem;
   margin-bottom: 1rem;
+
+  &.account {
+    padding: 1rem;
+  }
 
   &.finalization {
     font-size: 0.75rem;

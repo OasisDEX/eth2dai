@@ -397,7 +397,7 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
           progress: change.progress,
           view: change.progress.tradeTxStatus === TxStatus.Success
             ? ViewKind.summary
-            : ViewKind.finalization
+            : state.view
         };
       }
 
@@ -837,7 +837,7 @@ function isReadyToProceed(state: InstantFormState): InstantFormState {
 }
 
 function freezeIfInProgress(previous: InstantFormState, state: InstantFormState): InstantFormState {
-  if (state.progress || previous.view !== state.view) {
+  if (state.view === ViewKind.finalization) {
     return {
       ...previous,
       progress: state.progress,

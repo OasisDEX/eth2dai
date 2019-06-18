@@ -39,7 +39,7 @@ export class AccountView extends React.Component<ViewProps> {
             image={backSvg}
           />
         </TopLeftCorner>
-        <div className={instantStyles.details}>
+        <div className={classnames(instantStyles.details, instantStyles.account)}>
           {
             proxyAddress
               ? this.onHavingProxy()
@@ -75,7 +75,7 @@ export class AccountView extends React.Component<ViewProps> {
 
   private onMissingProxy = () => {
     const progress = this.props.progress;
-    const isInProgress = progress && !progress.done;
+    const isInProgress = progress && !progress.done && !this.props.proxyAddress;
     return (
     <>
       <div className={classnames(styles.row, styles.proxyMissing)}>
@@ -125,7 +125,7 @@ export class AccountView extends React.Component<ViewProps> {
 
   private allowedTokens = () => {
     return Object
-      .values(this.props.allowances)
+      .values(this.props.allowances || [])
       .reduce((allowedTokensCount: number, isAllowed: boolean) => {
         return isAllowed ? allowedTokensCount + 1 : allowedTokensCount;
       },      0);

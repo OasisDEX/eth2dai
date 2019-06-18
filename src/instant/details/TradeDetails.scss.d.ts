@@ -3,6 +3,7 @@ export const header: string;
 export const footer: string;
 export const tradeDetails: string;
 export const details: string;
+export const account: string;
 export const finalization: string;
 export const transaction: string;
 export const assets: string;
