@@ -62,8 +62,7 @@ import { createMyOpenTrades$ } from './exchange/myTrades/openTrades';
 import { createFormController$, OfferFormState } from './exchange/offerMake/offerMake';
 import { OfferMakePanel } from './exchange/offerMake/OfferMakePanel';
 import {
-  createOrderbookForTradingPair,
-  createPickableOrderBook,
+  createOrderbookForView,
   OrderbookView
 } from './exchange/orderbook/OrderbookView';
 import { createOrderbookPanel$, OrderbookPanel, OrderbookPanelProps, SubViewsProps } from './exchange/OrderbookPanel';
@@ -314,15 +313,13 @@ function offerMake(
   );
   const DepthChartWithLoadingTxRx = connect(DepthChartWithLoading, depthChartWithLoading$);
 
-  const pickableOrderbook$ = createOrderbookForTradingPair(
+  const orderbookForView$ = createOrderbookForView(
     currentTradingPair$,
-    loadablifyLight(createPickableOrderBook(
-      orderbook$,
-      offerMake$)
-    ),
-    kindChange
+    orderbookWithTradingPair$,
+    offerMake$,
+    kindChange,
   );
-  const OrderbookViewTxRx = connect<any, any>(OrderbookView, pickableOrderbook$);
+  const OrderbookViewTxRx = connect(OrderbookView, orderbookForView$);
 
   const OrderbookPanelTxRx = connect(
     inject<OrderbookPanelProps, SubViewsProps>(

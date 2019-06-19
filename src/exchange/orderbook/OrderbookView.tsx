@@ -1,5 +1,5 @@
 // tslint:disable:no-console
-import { equals, props } from 'ramda';
+import { equals } from 'ramda';
 import * as React from 'react';
 import { default as MediaQuery } from 'react-responsive';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
@@ -10,7 +10,7 @@ import { FormChangeKind, PickOfferChange } from '../../utils/form';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { SvgImage } from '../../utils/icons/utils';
-import { Loadable, LoadableStatus } from '../../utils/loadable';
+import { Loadable, LoadableStatus, LoadableWithTradingPair } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
@@ -19,7 +19,7 @@ import * as tableStyles from '../../utils/table/Table.scss';
 import { Currency, InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { OfferFormState } from '../offerMake/offerMake';
 import { OrderbookViewKind } from '../OrderbookPanel';
-import { currentTradingPair$, TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
+import { TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
 import depthChartSvg from './depth-chart.svg';
 import { Offer, Orderbook } from './orderbook';
 import * as styles from './OrderbookView.scss';
@@ -28,56 +28,31 @@ export type PickableOrderbook = {
   change: (ch: PickOfferChange) => void;
 } & Orderbook;
 
-export function createPickableOrderBook(
-  currentOrderBook$: Observable<Orderbook>,
-  currentOfferForm$: Observable<OfferFormState>,
-): Observable<PickableOrderbook> {
-  return combineLatest(
-    currentOrderBook$,
-    currentOfferForm$.pipe(
-      distinctUntilKeyChanged('change'),
-    ),
-  ).pipe(
-    map(([currentOrderBook, { change }]) => ({
-      ...currentOrderBook,
-      change,
-    })),
-  );
-}
-
-export function createOrderbookForTradingPair(
+export function createOrderbookForView(
   tradingPair$: Observable<TradingPair>,
-  pickableOrderbook$: Observable<Loadable<PickableOrderbook>>,
+  currentOrderBook$: Observable<LoadableWithTradingPair<Orderbook>>,
+  currentOfferForm$: Observable<OfferFormState>,
   kindChange: (kind: OrderbookViewKind) => void,
 ): Observable<Props> {
   return combineLatest(
     tradingPair$,
-    pickableOrderbook$,
+    currentOrderBook$,
+    currentOfferForm$.pipe(
+      distinctUntilKeyChanged('change'),
+      startWith({ change: () => null } as any),
+    ),
   ).pipe(
-    map(([tradingPair, orderBookStuff]) => {
-      const loading = orderBookStuff.value && (
-        (orderBookStuff.value.buy[0] && !equals(
-          props(['base', 'quote'], tradingPair),
-          props(['baseToken', 'quoteToken'], orderBookStuff.value.buy[0]),
-        )) ||
-        (orderBookStuff.value.sell[0] && !equals(
-          props(['base', 'quote'], tradingPair),
-          props(['baseToken', 'quoteToken'], orderBookStuff.value.sell[0]),
-        ))
-      );
-      return {
-        tradingPair,
-        ...loading ? { status: 'loading' } : orderBookStuff,
-        kindChange,
-      };
-    }),
-    startWith({
-      tradingPair: currentTradingPair$.getValue(),
-    } as Props),
+    map(([tradingPair, currentOrderBook, { change }]) => ({
+      tradingPair,
+      ...currentOrderBook,
+      change,
+      kindChange,
+    })),
   );
 }
 
-export interface Props extends Loadable<PickableOrderbook> {
+export interface Props extends Loadable<Orderbook> {
+  change: (ch: PickOfferChange) => void;
   kindChange: (kind: OrderbookViewKind) => void;
   tradingPair: TradingPair;
 }
@@ -189,10 +164,10 @@ export class OrderbookView extends React.Component<Props> {
           </thead>
         </Table>
         <WithLoadingIndicator loadable={skipTransition ? { status: 'loading' } : this.props} size="lg">
-          {(orderbook: PickableOrderbook) => {
+          {(orderbook: Orderbook) => {
             const takeOffer = (offer: Offer) => {
               return (): void => {
-                orderbook.change({
+                this.props.change({
                   offer,
                   kind: FormChangeKind.pickOfferChange,
                 });
