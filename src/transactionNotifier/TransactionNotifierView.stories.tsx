@@ -75,7 +75,15 @@ stories.add('Cancel offer', () => (
   <Notification
     {...{
       ...cancelledByTheUserTx,
-      meta: { ...cancelOffer, args: { offerId: zero, type: 'buy', amount: new BigNumber('1.2345'), token: 'WETH' } as CancelData },
+      meta: {
+        ...cancelOffer,
+        args: {
+          offerId: zero,
+          type: 'buy',
+          amount: new BigNumber('1.2345'),
+          token: 'WETH'
+        } as CancelData
+      },
     }}
   />
 ));

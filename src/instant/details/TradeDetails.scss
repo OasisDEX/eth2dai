@@ -1,0 +1,28 @@
+@import "../../utils/Mixins";
+@import "../../utils/Variables";
+@import "../Instant";
+
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 4.25rem;
+  border: 1px solid $button-border-disabled;
+  border-radius: .25rem;
+
+  margin-top: 1.25rem;
+  margin-bottom: 1rem;
+
+  padding: .75rem 1rem;
+
+  @include media-breakpoint-down(md) {
+    min-height: 98px;
+  }
+
+  &.errors {
+    @extend %errors-base;
+    color: $errors;
+    justify-content: center;
+  }
+}

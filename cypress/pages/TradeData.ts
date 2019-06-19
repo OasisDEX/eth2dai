@@ -5,10 +5,6 @@ export class TradeData {
     cy.get(tid('trade-price', tid('value')), timeout()).contains(expected);
   }
 
-  public static expectGasCost(expected: string | RegExp) {
-    cy.get(tid('trade-gas-cost', tid('value')), timeout()).contains(expected);
-  }
-
   public static expectPriceImpact(expected: string | RegExp) {
     cy.get(tid('trade-price-impact', tid('value')), timeout()).contains(expected);
   }

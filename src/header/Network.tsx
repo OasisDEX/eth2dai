@@ -15,7 +15,10 @@ export class Network extends React.Component<NetworkConfig, any> {
     const id = 'status';
     return (
       <Tooltip id={id} text={`${Networks[network]} Network`}>
-        <span data-tip={true} data-for={id} className={`${styles.networkIndicator} ${styles[network]}`}/>
+        <span data-tip={true}
+              data-for={id}
+              className={`${styles.networkIndicator} ${styles[network]}`}
+        />
       </Tooltip>
     );
   }

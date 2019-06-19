@@ -11,7 +11,7 @@ import { makeScreenshots } from '../utils/makeScreenshots';
 describe('Sell Order', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
   });
 
   it('should place a new order', () => {

@@ -178,11 +178,21 @@ jestEach([
     change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(0.001) });
   }],
   ['incredible amount base', (change: any) => {
-    change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(1000000000000001) });
+    change({
+      kind: InstantFormChangeKind.sellAmountFieldChange,
+      value: new BigNumber(1000000000000001)
+    });
   }],
   ['incredible amount quote', (change: any) => {
-    change({ kind: InstantFormChangeKind.pairChange, buyToken: 'WETH', sellToken: 'DAI' });
-    change({ kind: InstantFormChangeKind.sellAmountFieldChange, value: new BigNumber(1000000000000001) });
+    change({
+      kind: InstantFormChangeKind.pairChange,
+      buyToken: 'WETH',
+      sellToken: 'DAI'
+    });
+    change({
+      kind: InstantFormChangeKind.sellAmountFieldChange,
+      value: new BigNumber(1000000000000001)
+    });
   }],
   ['orderbook exceeded quote', (change: any) => {
     change({ kind: InstantFormChangeKind.buyAmountFieldChange, value: new BigNumber(2001) });

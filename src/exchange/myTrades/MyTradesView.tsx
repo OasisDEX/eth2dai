@@ -59,7 +59,11 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
             <th className={styles.right}>
               <InfoLabel>Total</InfoLabel> {tradingPair.quote}
             </th>
-            <th className={classnames(this.props.kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>Time</th>
+            <th className={
+              classnames(this.props.kind === MyTradesKind.open ? 'hide-md' : '', styles.right)
+            }>
+              Time
+            </th>
             {this.props.kind === MyTradesKind.open &&
             <th className={styles.right}>Status</th>
             }
@@ -90,7 +94,9 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                               <SellBuySpan type={trade.act}>{trade.act}</SellBuySpan>
                             </td>
                             <td data-test-id="price" className={styles.right}>
-                              <FormatPriceOrder value={trade.price} token={trade.quoteToken} kind={trade.kind}/>
+                              <FormatPriceOrder value={trade.price} token={trade.quoteToken}
+                                                kind={trade.kind}
+                              />
                             </td>
                             <td data-test-id="amount" className={styles.right}>
                               <FormatAmount value={trade.baseAmount} token={trade.baseToken}/>
@@ -98,8 +104,9 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                             <td data-test-id="total" className={styles.right}>
                               <FormatAmount value={trade.quoteAmount} token={trade.quoteToken}/>
                             </td>
-                            <td
-                              className={classnames(kind === MyTradesKind.open ? 'hide-md' : '', styles.right)}>
+                            <td className={
+                              classnames(kind === MyTradesKind.open ? 'hide-md' : '', styles.right)
+                            }>
                               <Muted data-vis-reg-mask={true}>{formatDateTime(trade.time)}</Muted>
                             </td>
                             {kind === MyTradesKind.open &&
@@ -109,7 +116,14 @@ export class MyTrades extends React.Component<MyTradesPropsLoadable> {
                             Open
                           </span>
                               <CloseButton data-test-id="cancel"
-                                           onClick={this.cancelOffer(trade.offerId, trade.act, trade.baseAmount, trade.baseToken)}
+                                           onClick={
+                                             this.cancelOffer(
+                                               trade.offerId,
+                                               trade.act,
+                                               trade.baseAmount,
+                                               trade.baseToken
+                                             )
+                                           }
                               />
                             </td>
                             }

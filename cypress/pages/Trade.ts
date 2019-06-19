@@ -18,6 +18,9 @@ const input = (side: 'sellInput' | 'buyInput') => ({
 });
 
 export class Trade {
+
+  public static swapTokens = () => cy.get(tid('swap'), timeout(1000)).click();
+
   public expectPriceImpact = (priceImpact: string | RegExp, aboveThreshold: boolean) => {
     cy.get(tid('trade-price-impact', tid('value')))
       .contains(`${priceImpact}`);

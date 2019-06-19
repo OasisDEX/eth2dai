@@ -34,38 +34,21 @@
   margin-top: auto;
 }
 
+.tradeDetails {
+  min-height: 6.5rem;
+}
+
 // Particular view ( Step 1 )
 .details {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   width: 100%;
-  min-height: 4.25rem;
   border: 1px solid $button-border-disabled;
   border-radius: .25rem;
 
   margin-top: 1.25rem;
   margin-bottom: 1rem;
-
-  padding: .75rem 1rem;
-
-  @include media-breakpoint-down(md) {
-    min-height: 98px;
-  }
-
-  &.hidden {
-    visibility: hidden;
-  }
-
-  &.errors {
-    align-items: center;
-    justify-content: center;
-
-    @include media-breakpoint-down(sm) {
-      text-align: center;
-    }
-  }
-
 
   &.finalization {
     font-size: 0.75rem;
@@ -168,9 +151,25 @@
   width: 28px;
   border: 1px solid $button-border-disabled;
   border-radius: 100%;
+}
 
-  &.settingsIcon {
-    padding: .25rem;
+.settingsIcon, .backIcon {
+  padding: .25rem;
+
+  border-color: $grey-light;
+
+  :global(.cog-wheel-icon), :global(.back-icon) {
+    fill: $white;
+  }
+
+  &:hover:enabled {
+    border-color: $button-border-hover;
+  }
+
+  &:disabled {
+    :global(.cog-wheel-icon), :global(.back-icon) {
+      fill: $grey-light;
+    }
   }
 }
 
@@ -208,11 +207,23 @@
   color: $white;
 }
 
-.inputApprox {
+%inputSuffixPrefix {
   position: absolute;
-  left: 1em;
-  top: 0.5em;
-  color: $grey-light;
+  font-weight: 700;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $button-border-hover;
+}
+
+.inputApprox {
+  @extend %inputSuffixPrefix;
+  left: 1rem;
+}
+
+.inputPercentage {
+  @extend %inputSuffixPrefix;
+  font-size: 12px;
+  right: 1rem;
 }
 
 .button {

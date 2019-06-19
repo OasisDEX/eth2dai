@@ -7,7 +7,7 @@ describe('Setting allowances', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
     Tab.balances();
   });
 

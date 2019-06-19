@@ -55,7 +55,10 @@ export class AllTrades extends React.Component<AllTradesProps> {
                         <RowClickable clickable={!!trade.tx} onClick={this.tradeDetails(trade)}>
                           <td className={tableStyles.numerical}>
                             <SellBuySpan type={trade.act}>
-                              <FormatPriceOrder value={trade.price} token={trade.quoteToken} kind={trade.kind}/>
+                              <FormatPriceOrder value={trade.price}
+                                                token={trade.quoteToken}
+                                                kind={trade.kind}
+                              />
                             </SellBuySpan>
                           </td>
                           <td className={tableStyles.numerical}>

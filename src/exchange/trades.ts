@@ -109,8 +109,20 @@ export const getTrades = (
     } : {},
     ...(filters.from || filters.to) ? {
       time: {
-        ...filters.from ? { greaterThan: new Placeholder('timeFrom', 'Datetime', filters.from.toISOString()) } : {},
-        ...filters.to ? { lessThan: new Placeholder('timeTo', 'Datetime', filters.to.toISOString()) } : {},
+        ...filters.from
+          ? { greaterThan: new Placeholder(
+            'timeFrom',
+            'Datetime',
+            filters.from.toISOString())
+          }
+          : {},
+        ...filters.to
+          ? { lessThan: new Placeholder(
+            'timeTo',
+            'Datetime',
+            filters.to.toISOString())
+          }
+        : {},
       }
     } : {},
   };
@@ -126,7 +138,10 @@ export const getTrades = (
   );
 };
 
-export function compareTrades({ act: type1, price: price1, time: t1 }: Trade, { act: type2, price: price2, time: t2 }: Trade) {
+export function compareTrades(
+  { act: type1, price: price1, time: t1 }: Trade,
+  { act: type2, price: price2, time: t2 }: Trade
+) {
   /* Sorting the trades in the following order:
   * - Sell orders are before buy orders
   * - For each order type we sort by price (DESC)

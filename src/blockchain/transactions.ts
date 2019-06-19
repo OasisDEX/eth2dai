@@ -321,12 +321,22 @@ const externalNonce2tx$: Observable<ExternalNonce2tx> = combineLatest(
   context$, account$, onEveryBlock$.pipe(first()), onEveryBlock$
 ).pipe(
   switchMap(([context, account, firstBlock]) =>
-    ajax({ url: `${context.etherscan.apiUrl}?module=account&action=txlist&address=${account}&startblock=${firstBlock}&sort=desc&apikey=${context.etherscan.apiKey}` })
+    ajax({
+      url: `${context.etherscan.apiUrl}?module=account
+      &action=txlist
+      &address=${account}
+      &startblock=${firstBlock}
+      &sort=desc
+      &apikey=${context.etherscan.apiKey}`
+    })
   ),
   map(({ response }) => response.result),
   map((transactions: Array<{ hash: string, nonce: string, input: string }>) =>
     fromPairs(_.map(transactions, tx =>
-      [tx.nonce, { hash: tx.hash, callData: tx.input }] as [string, { hash: string, callData: string }]
+      [
+        tx.nonce,
+        { hash: tx.hash, callData: tx.input }] as [string, { hash: string, callData: string }
+      ]
     ))
   ),
   catchError(error => {
