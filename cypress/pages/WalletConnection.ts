@@ -40,7 +40,7 @@ export class WalletConnection {
   }
 
   public static close() {
-    Tab.trade();
+    Tab.market();
   }
 
   public static isConnectButtonEnabled(isEnabled: boolean) {
