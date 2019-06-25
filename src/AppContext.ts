@@ -121,10 +121,6 @@ export function setupAppContext() {
     );
 
   const loadOrderbook = memoizeTradingPair(curry(loadOrderbook$)(context$, onEveryBlock$));
-  const currentOrderBookWithTradingPair$ = loadablifyPlusTradingPair(
-    currentTradingPair$,
-    loadOrderbook
-  );
   const currentOrderbook$ = currentTradingPair$.pipe(
     switchMap(pair => loadOrderbook(pair))
   );
@@ -197,7 +193,7 @@ export function setupAppContext() {
   const PriceChartWithLoadingTxRx = connect(PriceChartWithLoading, priceChartLoadable);
 
   const { OfferMakePanelTxRx, OrderbookPanelTxRx } =
-    offerMake(currentOrderbook$, currentOrderBookWithTradingPair$, balances$);
+    offerMake(currentOrderbook$, balances$);
 
   const myTradesKind$ = createMyTradesKind$();
   const myOpenTrades$ = loadablifyPlusTradingPair(
@@ -280,7 +276,6 @@ export function setupAppContext() {
 
 function offerMake(
   orderbook$: Observable<Orderbook>,
-  orderbookWithTradingPair$: Observable<LoadableWithTradingPair<Orderbook>>,
   balances$: Observable<Balances>
 ) {
   const offerMake$: Observable<OfferFormState> = currentTradingPair$.pipe(
@@ -307,15 +302,13 @@ function offerMake(
 
   const depthChartWithLoading$ = createDepthChartWithLoading$(
     offerMake$,
-    orderbookWithTradingPair$,
-    currentTradingPair$,
+    orderbook$,
     kindChange
   );
   const DepthChartWithLoadingTxRx = connect(DepthChartWithLoading, depthChartWithLoading$);
 
   const orderbookForView$ = createOrderbookForView(
-    currentTradingPair$,
-    orderbookWithTradingPair$,
+    orderbook$,
     offerMake$,
     kindChange,
   );

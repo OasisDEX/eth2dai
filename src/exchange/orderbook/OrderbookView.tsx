@@ -10,7 +10,7 @@ import { FormChangeKind, PickOfferChange } from '../../utils/form';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { SvgImage } from '../../utils/icons/utils';
-import { Loadable, LoadableStatus, LoadableWithTradingPair } from '../../utils/loadable';
+import { Loadable, LoadableStatus, loadablifyLight } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
@@ -24,26 +24,20 @@ import depthChartSvg from './depth-chart.svg';
 import { Offer, Orderbook } from './orderbook';
 import * as styles from './OrderbookView.scss';
 
-export type PickableOrderbook = {
-  change: (ch: PickOfferChange) => void;
-} & Orderbook;
-
 export function createOrderbookForView(
-  tradingPair$: Observable<TradingPair>,
-  currentOrderBook$: Observable<LoadableWithTradingPair<Orderbook>>,
+  currentOrderBook$: Observable<Orderbook>,
   currentOfferForm$: Observable<OfferFormState>,
   kindChange: (kind: OrderbookViewKind) => void,
 ): Observable<Props> {
   return combineLatest(
-    tradingPair$,
-    currentOrderBook$,
+    loadablifyLight(currentOrderBook$),
     currentOfferForm$.pipe(
       distinctUntilKeyChanged('change'),
       startWith({ change: () => null } as any),
     ),
   ).pipe(
-    map(([tradingPair, currentOrderBook, { change }]) => ({
-      tradingPair,
+    map(([currentOrderBook, { change }]) => ({
+      tradingPair: (currentOrderBook.value && currentOrderBook.value.tradingPair) as TradingPair,
       ...currentOrderBook,
       change,
       kindChange,
