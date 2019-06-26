@@ -60,7 +60,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
             return (<>
               <div className={styles.iconQuote}>{tokens[quote].icon}</div>
               <div className={styles.price}>{price &&
-                <FormatPrice value={price} token={quote} />
+                <FormatPrice value={price} token={quote} dontGroup={true} />
               }</div>
               <div className={styles.priceDiff}>{priceDiff &&
                 <BoundarySpan value={priceDiff}>

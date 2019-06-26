@@ -52,6 +52,9 @@
 
     @include media-breakpoint-down(md){
       border-right: none;
+      width: calc(100% - 2px);
+      background-position: calc(100% - 17px);
+      margin-left: 1px;
     }
     &:focus {
       outline: none;
@@ -65,29 +68,37 @@
 
 .dropdownBtnActive {
     background-color: $grey-mid;
+    background-image: url("../../icons/chevron-up.svg");
     border-bottom-left-radius: unset;
 }
 
 .dropdownListWrapper {
     position: absolute;
     z-index: 10;
-    top: 48px;
     overflow: hidden;
     margin: 0 -2px -2px -3px;
+    @include media-breakpoint-down(md){
+      width: 100%;
+      margin: 0 -1px -1px -1px;
+    }
 }
 
 .dropdownList {
     display: table;
     list-style: none;
-    padding: 10px 0 0 0;
+    padding: 10px 0 $border-radius 0;
     margin: 0 2px 2px 2px;
 
     background-color: $grey-mid;
     border: 1px solid $grey-darken-darkest;
     border-top: none;
-    box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 4px rgba(0,0,0,.25);
     border-bottom-left-radius: $border-radius;
     border-bottom-right-radius: $border-radius;
+    @include media-breakpoint-down(md){
+      width: 100%;
+      margin: 0 1px 1px 1px;
+    }
 }
 
 .dropdownItem {
@@ -148,15 +159,15 @@
     }
 
     .iconBase, .iconQuote {
-      padding: 5px 0 5px 5px;
+      padding: 7px 0 6px 5px;
     }
 
     .tokenBase {
-      padding: 8px;
+      padding: 13px;
     }
 
     .tokenQuote {
-      padding: 8px 40px 8px 8px;
+      padding: 13px 40px 13px 8px;
     }
 
     .price {

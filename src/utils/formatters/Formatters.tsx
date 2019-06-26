@@ -10,14 +10,19 @@ export type FormatNumberProps = React.HTMLAttributes<HTMLSpanElement> & {
   value: BigNumber;
   token: string;
   formatter?: (v: BigNumber, t: string) => string;
+  dontGroup?: boolean;
 };
 const FormatNumber = (props: FormatNumberProps)  => {
-  const { value, token, formatter, ...spanProps } = props;
+  const { value, token, formatter, dontGroup, ...spanProps } = props;
   const formatted: string = formatter ? formatter(value, token) : value.toString();
   const match = formatted.match(/^-?([\d,]+)((\.)(\d+?\d+?)(0*))?$/);
-  const groups = match ?
-    (match[2] ? [`${match[1]}${match[3]}${match[4]}`, match[5]] : [`${match[1]}.0`]) :
-    [];
+  const groups = dontGroup ?
+    [formatted] :
+    !match ?
+      [] :
+      match[2] ?
+        [`${match[1]}${match[3]}${match[4]}`, match[5]] :
+        [`${match[1]}.0`];
   return (
     <span title={value.toString()} {...spanProps}>
       {value.lt(zero) ? '-' : ''}
