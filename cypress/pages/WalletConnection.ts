@@ -1,4 +1,5 @@
 import { tid } from '../utils/index';
+import { Tab } from './Tab';
 
 const timeout = 5000;
 
@@ -39,7 +40,7 @@ export class WalletConnection {
   }
 
   public static close() {
-    cy.get(tid('Exchange')).click();
+    Tab.market();
   }
 
   public static isConnectButtonEnabled(isEnabled: boolean) {

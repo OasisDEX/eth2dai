@@ -61,6 +61,7 @@ describe('Wallet', () => {
       WalletConnection.hasAcceptedToS(false);
     });
 
+    // tslint:disable-next-line:max-line-length
     it('should start with connect wallet view even when last visited view was something else', () => {
       WalletConnection.open().web();
 
@@ -105,12 +106,15 @@ describe('Wallet', () => {
       WalletConnection.isConnected();
     });
 
+    // tslint:disable-next-line:max-line-length
     it('should clear selected wallet and accepted tos if dropdown is closed and wallet not connected', () => {
       WalletConnection.open().web().acceptToS();
 
       WalletConnection.close();
 
-      cy.wait(1000); // because of the animation the state is not cleared. We have to wait for the component to completely unmount
+      // tslint:disable-next-line:max-line-length
+      // because of the animation the state is not cleared. We have to wait for the component to completely unmount
+      cy.wait(1000);
 
       WalletConnection.open();
 

@@ -17,7 +17,6 @@
     "ter-arrow-parens": false,
     "no-default-export": true,
     "no-var-requires": false,
-    "prefer-array-literal": [true, { "allow-type-parameters": true }],
-    "max-line-length": [true, {"limit": 100, "ignore-pattern": "^[\t\\s]*(.+)$"}]
+    "prefer-array-literal": [true, { "allow-type-parameters": true }]
   }
 }

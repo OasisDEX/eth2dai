@@ -53,7 +53,8 @@ export function estimateGasCurried(context: NetworkConfig, account: string) {
   };
 }
 
-// we accommodate for the fact that blockchain state can be different when tx execute and it can take more gas
+// we accommodate for the fact that blockchain state
+// can be different when tx execute and it can take more gas
 const GAS_ESTIMATION_MULTIPLIER = 1.3;
 
 export function sendTransactionCurried(context: NetworkConfig, account: string) {

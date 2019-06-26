@@ -47,6 +47,7 @@ describe('Selecting an asset', () => {
       trade.expectReceiveToken(receiveIn);
     });
 
+    // tslint:disable-next-line:max-line-length
     it('should swap pay and receive token when receive token (WETH) is the same as pay token (ETH) ', () => {
       const payIn = 'DAI';
       const receiveIn = 'WETH';
@@ -96,6 +97,7 @@ describe('Selecting an asset', () => {
       trade.expectReceiveToken(receiveIn);
     });
 
+    // tslint:disable-next-line:max-line-length
     it('should swap pay and receive token when receive token (ETH) is the same as pay token (WETH) ', () => {
       const payIn = 'WETH';
       const receiveIn = 'DAI';

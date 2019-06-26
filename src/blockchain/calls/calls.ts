@@ -25,7 +25,8 @@ import { unwrap, wrap } from './wrapUnwrapCalls';
 function calls([context, account]: [NetworkConfig, string]) {
   const estimateGas = estimateGasCurried(context, account);
   const sendTransaction = sendTransactionCurried(context, account);
-  const sendTransactionWithGasConstraints = sendTransactionWithGasConstraintsCurried(context, account);
+  const sendTransactionWithGasConstraints =
+    sendTransactionWithGasConstraintsCurried(context, account);
 
   return {
     cancelOffer: sendTransactionWithGasConstraints(cancelOffer),

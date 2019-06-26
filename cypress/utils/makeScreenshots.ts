@@ -10,7 +10,10 @@ const blackoutStyle = `
     </style>`;
 const commonScreenshotOptions = { capture: 'fullPage' };
 
-export function makeScreenshots(name: string, viewports: string[] = ['macbook-15', 'iphone-6+', 'iphone-6', 'iphone-5']): void {
+export function makeScreenshots(
+  name: string,
+  viewports: string[] = ['macbook-15', 'iphone-6+', 'iphone-6', 'iphone-5']
+): void {
   cy.get('html > head').then(e => e.append(blackoutStyle));
 
   // if we are in interactive mode just do one screenshot to speed up development cycle
@@ -19,10 +22,12 @@ export function makeScreenshots(name: string, viewports: string[] = ['macbook-15
   } else {
     // see: https://docs.cypress.io/api/commands/viewport.html#Argumentsvalues
 
-    cy.get('body').then(e => e.append('<textarea style="position: absolute; top: 0; opacity: 0" />'));
+    cy.get('body')
+      .then(e => e.append('<textarea style="position: absolute; top: 0; opacity: 0" />'));
     for (const viewport of viewports) {
       cy.viewport(viewport as any);
       cy.get('textarea').last().focus().blur();
+      // tslint:disable-next-line:max-line-length
       cy.wait(100); // this is needed to give some type to browser to redraw after viewport changing :shrug:
       cy.screenshot(`${name}-${normalizeViewportName(viewport)}`, commonScreenshotOptions as any);
     }
@@ -32,6 +37,7 @@ export function makeScreenshots(name: string, viewports: string[] = ['macbook-15
   cy.get('#cypress-blackout').then(e => e.remove());
 }
 
+// tslint:disable-next-line:max-line-length
 // we need to get rid of special characters that can be part of viewport names but are not valid as filenames
 function normalizeViewportName(viewport: string): string {
   return viewport.replace('+', 'plus');

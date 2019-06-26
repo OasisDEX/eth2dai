@@ -4,7 +4,11 @@ import { distinctUntilChanged, first, flatMap, map, shareReplay, switchMap } fro
 
 import { isEqual } from 'lodash';
 import { curry } from 'ramda';
-import { AssetOverviewView, AssetsOverviewActionProps, AssetsOverviewExtraProps } from './balances/AssetOverviewView';
+import {
+  AssetOverviewView,
+  AssetsOverviewActionProps,
+  AssetsOverviewExtraProps,
+} from './balances/AssetOverviewView';
 import {
   Balances,
   CombinedBalances,
@@ -47,7 +51,10 @@ import {
   loadVolumeForThePastDay
 } from './exchange/allTrades/allTrades';
 import { AllTrades } from './exchange/allTrades/AllTradesView';
-import { createDepthChartWithLoading$, DepthChartWithLoading } from './exchange/depthChart/DepthChartWithLoading';
+import {
+  createDepthChartWithLoading$,
+  DepthChartWithLoading,
+} from './exchange/depthChart/DepthChartWithLoading';
 import {
   createCurrentPrice$,
   createDailyVolume$,
@@ -56,7 +63,11 @@ import {
   createYesterdayPriceChange$,
 } from './exchange/exchange';
 import { createMyClosedTrades$ } from './exchange/myTrades/closedTrades';
-import { createMyCurrentTrades$, createMyTrades$, createMyTradesKind$ } from './exchange/myTrades/myTrades';
+import {
+  createMyCurrentTrades$,
+  createMyTrades$,
+  createMyTradesKind$,
+} from './exchange/myTrades/myTrades';
 import { MyTrades } from './exchange/myTrades/MyTradesView';
 import { createMyOpenTrades$ } from './exchange/myTrades/openTrades';
 import { createFormController$, OfferFormState } from './exchange/offerMake/offerMake';
@@ -65,9 +76,21 @@ import {
   createOrderbookForView,
   OrderbookView
 } from './exchange/orderbook/OrderbookView';
-import { createOrderbookPanel$, OrderbookPanel, OrderbookPanelProps, SubViewsProps } from './exchange/OrderbookPanel';
-import { GroupMode, loadAggregatedTrades, PriceChartDataPoint } from './exchange/priceChart/pricechart';
-import { createPriceChartLoadable$, PriceChartWithLoading } from './exchange/priceChart/PriceChartWithLoading';
+import {
+  createOrderbookPanel$,
+  OrderbookPanel,
+  OrderbookPanelProps,
+  SubViewsProps
+} from './exchange/OrderbookPanel';
+import {
+  GroupMode,
+  loadAggregatedTrades,
+  PriceChartDataPoint
+} from './exchange/priceChart/pricechart';
+import {
+  createPriceChartLoadable$,
+  PriceChartWithLoading
+} from './exchange/priceChart/PriceChartWithLoading';
 import { TradingPairView } from './exchange/tradingPair/TradingPairView';
 import { createFooter$, TheFooter } from './footer/Footer';
 import { Network } from './header/Network';
@@ -207,7 +230,13 @@ export function setupAppContext() {
   );
 
   const myCurrentTrades$ = createMyCurrentTrades$(myTradesKind$, myOpenTrades$, myClosedTrades$);
-  const myTrades$ = createMyTrades$(myTradesKind$, myCurrentTrades$, calls$, context$, gasPrice$, currentTradingPair$);
+  const myTrades$ = createMyTrades$(
+    myTradesKind$,
+    myCurrentTrades$,
+    calls$, context$,
+    gasPrice$,
+    currentTradingPair$
+  );
   const MyTradesTxRx = connect(MyTrades, myTrades$);
 
   const currentPrice$ = createCurrentPrice$(currentTradeHistory$);

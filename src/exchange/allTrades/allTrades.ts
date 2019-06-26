@@ -85,13 +85,22 @@ export function loadVolumeForThePastDay(
 ): Observable<Trade[]> {
   return context$$.pipe(
     switchMap((context) => onEveryBlock$$.pipe(
-      exhaustMap(() => getTrades(context, base, quote, 'allTradesCurrent', {
-        to: moment().toDate(),
-        from: moment().subtract(1, 'days').toDate()
-      })))
+      exhaustMap(() =>
+        getTrades(
+          context,
+          base,
+          quote,
+          'allTradesCurrent', {
+            to: moment().toDate(),
+            from: moment().subtract(1, 'days').toDate()
+          }
+          )
+      ))
     ),
     map((
-      trades: Trade[]) => trades.sort((current, next) => next.time.getTime() - current.time.getTime())
+      trades: Trade[]) => trades.sort(
+        (current, next) => next.time.getTime() - current.time.getTime()
+      )
     ),
     distinctUntilChanged((x, y) => equals(x, y)),
     shareReplay(1),

@@ -251,13 +251,22 @@ export function tradePayWithERC20(
 
 export function estimateTradePayWithETH(
   calls: Calls,
-  _readCalls: ReadCalls,
+  readCalls: ReadCalls,
   proxyAddress: string | undefined,
   state: InstantFormState
 ): Observable<number> {
+  if (state.message) {
+    return combineLatest(
+      simulateEstimateDoTradePayWithERC20(readCalls, state),
+      proxyAddress ? of(0) : simulateEstimateDoSetupProxy(state),
+    ).pipe(
+      map(([trade, proxy]) => trade + proxy),
+    );
+  }
+
   return proxyAddress ?
     calls.tradePayWithETHWithProxyEstimateGas({ ...state, proxyAddress } as InstantOrderData) :
-    calls.tradePayWithETHNoProxyEstimateGas({ ...state, } as InstantOrderData);
+    calls.tradePayWithETHNoProxyEstimateGas({ ...state } as InstantOrderData);
 }
 
 function estimateDoTradePayWithERC20(
@@ -277,11 +286,13 @@ function simulateEstimateDoTradePayWithERC20(
   calls: ReadCalls,
   { kind, buyAmount, buyToken, sellAmount, sellToken }: InstantFormState,
 ): Observable<number> {
-  return calls.otcGetOffersAmount({ kind, buyAmount, buyToken, sellAmount, sellToken } as GetOffersAmountData).pipe(
-    map(([offersCount, partial]) =>
-      141100 + offersCount.toNumber() * 136500 + (partial ? 70000 : 0)
-    )
-  );
+  return calls.otcGetOffersAmount(
+    { kind, buyAmount, buyToken, sellAmount, sellToken } as GetOffersAmountData)
+    .pipe(
+      map(([offersCount, partial]) =>
+        141100 + offersCount.toNumber() * 136500 + (partial ? 70000 : 0)
+      )
+    );
 }
 
 function estimateDoApprove(
@@ -363,7 +374,11 @@ export function estimateTradeReadonly(
   readCalls: ReadCalls,
   state: InstantFormState,
 ): Observable<number> {
-  return combineLatest(simulateEstimateDoSetupProxy(state), simulateEstimateDoApprove(state), simulateEstimateDoTradePayWithERC20(readCalls, state)).pipe(
+  return combineLatest(
+    simulateEstimateDoSetupProxy(state),
+    simulateEstimateDoApprove(state),
+    simulateEstimateDoTradePayWithERC20(readCalls, state)
+  ).pipe(
     map(([createProxy, approve, trade]) => createProxy + approve + trade),
   );
 }

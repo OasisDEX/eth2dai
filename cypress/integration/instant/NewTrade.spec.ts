@@ -131,7 +131,7 @@ describe('New trade', () => {
   });
 
   it('should highlight the price impact in the trade details', () => {
-    Tab.exchange();
+    Tab.market();
 
     const price = '50';
     const amount = '1';
@@ -161,7 +161,7 @@ describe('New trade', () => {
   });
 
   it('should display warning message if the price impact is higher than threshold', () => {
-    Tab.exchange();
+    Tab.market();
 
     const price = '50';
     const amount = '1';
@@ -194,8 +194,9 @@ describe('New trade', () => {
     finalization.shouldCreateProxy();
   });
 
+  // tslint:disable-next-line:max-line-length
   it('should keep trade date and not continue with transaction if price impact warning is dismissed', () => {
-    Tab.exchange();
+    Tab.market();
 
     const price = '50';
     const amount = '1';
