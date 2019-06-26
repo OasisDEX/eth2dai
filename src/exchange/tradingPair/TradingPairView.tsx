@@ -4,7 +4,9 @@ import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { tokens, tradingPairs } from '../../blockchain/config';
-import { FormatAmount, FormatPercent, FormatPrice, FormatQuoteToken } from '../../utils/formatters/Formatters';
+import {
+  FormatAmount, FormatPercent, FormatPrice, FormatQuoteToken
+} from '../../utils/formatters/Formatters';
 import { Loadable } from '../../utils/loadable';
 import { WithLoadingIndicatorInline } from '../../utils/loadingIndicator/LoadingIndicator';
 import { ServerUnreachableInline } from '../../utils/loadingIndicator/ServerUnreachable';
@@ -20,7 +22,11 @@ interface PairInfoVP {
 
 export class TradingPairView extends React.Component<TradingPairsProps, { showMenu: boolean }> {
 
-  public static PairVP({ pair, parentMatch, marketsDetailsLoadable }: { pair: TradingPair; parentMatch?: string, marketsDetailsLoadable: Loadable<MarketsDetails> }) {
+  public static PairVP({ pair, parentMatch, marketsDetailsLoadable }: {
+    pair: TradingPair,
+    parentMatch?: string,
+    marketsDetailsLoadable: Loadable<MarketsDetails>,
+  }) {
 
     const pathname = `${parentMatch}/${pair.base}/${pair.quote}`;
 
@@ -38,7 +44,10 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
     );
   }
 
-  public static PairView({ pair, marketsDetailsLoadable }: { pair: TradingPair, marketsDetailsLoadable: Loadable<MarketsDetails> }) {
+  public static PairView({ pair, marketsDetailsLoadable }: {
+    pair: TradingPair,
+    marketsDetailsLoadable: Loadable<MarketsDetails>,
+  }) {
     const { base, quote } = pair;
     return (
       <>

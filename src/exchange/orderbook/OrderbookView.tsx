@@ -161,7 +161,10 @@ export class OrderbookView extends React.Component<Props> {
           </tr>
           </thead>
         </Table>
-        <WithLoadingIndicator loadable={skipTransition ? { status: 'loading' } : this.props} size="lg">
+        <WithLoadingIndicator
+          loadable={skipTransition ? { status: 'loading' } : this.props}
+          size="lg"
+        >
           {(orderbook: Orderbook) => {
             const takeOffer = (offer: Offer) => {
               return (): void => {

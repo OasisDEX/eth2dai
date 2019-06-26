@@ -77,13 +77,15 @@ export function createTradingPair$(
     loadablifyLight(weeklyVolume$),
     loadablifyLight(marketsDetails$),
   ).pipe(
-    map(([currentTradingPair, currentPrice, yesterdayPriceChange, weeklyVolume, marketsDetails]) => ({
-      ...currentTradingPair,
-      currentPrice,
-      yesterdayPriceChange,
-      weeklyVolume,
-      marketsDetails,
-      select: currentTradingPair$$.next.bind(currentTradingPair$$),
-    }))
+    map(
+      ([currentTradingPair, currentPrice, yesterdayPriceChange, weeklyVolume, marketsDetails]) => ({
+        ...currentTradingPair,
+        currentPrice,
+        yesterdayPriceChange,
+        weeklyVolume,
+        marketsDetails,
+        select: currentTradingPair$$.next.bind(currentTradingPair$$),
+      })
+    ),
   );
 }
