@@ -68,7 +68,8 @@ export const getTrades = (
 ): Observable<Trade[]> => {
   const owner = filters.account && filters.account.toLowerCase();
 
-  const fields = ['offerId', 'maker', 'baseAmt', 'quoteAmt', 'price', 'type', 'timestamp', 'tx', 'logIndex'];
+  const fields = ['offerId', 'maker', 'baseAmt', 'quoteAmt', 'price', 'type', 'timestamp',
+    'tx', 'logIndex'];
   const order = `[TIMESTAMP_DESC, LOG_INDEX_DESC]`;
   const filter = {
     and: [
