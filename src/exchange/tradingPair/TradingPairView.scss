@@ -128,19 +128,22 @@
     align-items: center;
     padding: 12px 26px 12px 12px;
     width: 100%;
+    letter-spacing: 1px;
 }
 
 .activePairViewIcon {
-    height: 26px;
-    width: 26px;
-    margin-right: 20px;
+    height: 24px;
+    width: 24px;
+    margin-right: 12px;
     display: flex;
     align-items: center;
+    margin-bottom: -4px;
 }
 
 .activePairViewCurrency {
     flex-basis: 50px;
     flex-grow: 1;
+    margin-bottom: -2px;
 }
 
 // ------------ Pair view -----------------
@@ -159,15 +162,17 @@
     }
 
     .iconBase, .iconQuote {
-      padding: 7px 0 6px 5px;
+      padding: 8px 0 5px 5px;
     }
 
     .tokenBase {
       padding: 13px;
+      letter-spacing: 0.5px;
     }
 
     .tokenQuote {
       padding: 13px 40px 13px 8px;
+      letter-spacing: 0.5px;
     }
 
     .price {
