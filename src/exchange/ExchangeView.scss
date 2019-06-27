@@ -2,6 +2,9 @@
 
 .tradingPairPanel {
   flex-grow: 1;
+  &.pairPickerOpen {
+    border-bottom-left-radius: 0;
+  }
 }
 
 $historyPanelsHeight: 342px;
