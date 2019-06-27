@@ -20,7 +20,11 @@ interface PairInfoVP {
   label: string;
 }
 
-export class TradingPairView extends React.Component<TradingPairsProps, { showMenu: boolean }> {
+interface TradingPairViewState {
+  showMenu: boolean;
+}
+
+export class TradingPairView extends React.Component<TradingPairsProps, TradingPairViewState> {
 
   public static PairVP({ pair, parentMatch, marketsDetailsLoadable }: {
     pair: TradingPair,
@@ -107,13 +111,9 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
 
   public constructor(props: TradingPairsProps) {
     super(props);
-
     this.state = {
       showMenu: false,
     };
-
-    this.showMenu = this.showMenu.bind(this);
-    this.closeMenu = this.closeMenu.bind(this);
   }
 
   public render() {
@@ -199,22 +199,29 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
     );
   }
 
-  private showMenu(event: any) {
+  private showMenu = (event: any) => {
     event.preventDefault();
 
     this.setState({ showMenu: true }, () => {
       document.addEventListener('click', this.closeMenu);
     });
+
+    if (this.props.setPairPickerOpen) {
+      this.props.setPairPickerOpen(true);
+    }
   }
 
-  private closeMenu(_event: any) {
+  private closeMenu = (_event: any) => {
 
     // if (!this.dropdownMenu.contains(event.target)) {
     this.setState({ showMenu: false }, () => {
       document.removeEventListener('click', this.closeMenu);
     });
-
     // }
+
+    if (this.props.setPairPickerOpen) {
+      this.props.setPairPickerOpen(false);
+    }
   }
 
 }

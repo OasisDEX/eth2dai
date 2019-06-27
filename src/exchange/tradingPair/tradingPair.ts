@@ -61,6 +61,7 @@ export interface TradingPairsProps {
   yesterdayPriceChange: Loadable<BigNumber | undefined>;
   weeklyVolume: Loadable<BigNumber>;
   marketsDetails: Loadable<MarketsDetails>;
+  setPairPickerOpen?: (open: boolean) => void;
 }
 
 export function createTradingPair$(
