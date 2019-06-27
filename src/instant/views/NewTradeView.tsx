@@ -1,13 +1,13 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
+import cogWheelSvg from '../../icons/cog-wheel.svg';
 import swapArrowsSvg from '../../icons/swap-arrows.svg';
-import { Approximate } from '../../utils/Approximate';
 import { formatAmount } from '../../utils/formatters/format';
-import { FormatPercent, Money } from '../../utils/formatters/Formatters';
-import { ProgressIcon } from '../../utils/icons/Icons';
+import { ButtonIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
-import { TradeData } from '../details/TradeData';
+import { TopRightCorner } from '../../utils/panel/TopRightCorner';
+import { TradeDetails } from '../details/TradeDetails';
 import * as styles from '../Instant.scss';
 import {
   InstantFormChangeKind,
@@ -25,7 +25,7 @@ function error(msg: Message | undefined) {
   if (!msg) {
     return <></>;
   }
-
+  // tslint:disable
   switch (msg.kind) {
     case MessageKind.insufficientAmount:
       return (
@@ -57,16 +57,8 @@ function error(msg: Message | undefined) {
         </>
       );
   }
+// tslint:enable
 }
-
-const priceImpactTooltip = {
-  id: 'price-impact',
-  text: 'The difference between the best current price on the Eth2Dai order book and the estimated price of your order.'
-};
-const slippageLimitTooltip = {
-  id: 'slippage-limit',
-  text: 'The maximum allowed difference between the estimated price of the order and the actual price. The two may differ if the order book changes before your trade executes.'
-};
 
 export class NewTradeView extends React.Component<InstantFormState> {
 
@@ -80,12 +72,8 @@ export class NewTradeView extends React.Component<InstantFormState> {
       etherBalance,
       message,
       price,
-      priceImpact,
-      gasEstimationUsd,
-      quotation,
       user,
       kind,
-      slippageLimit
     } = this.props;
 
     return (
@@ -95,18 +83,20 @@ export class NewTradeView extends React.Component<InstantFormState> {
                           btnDisabled={!this.props.readyToProceed}
                           btnDataTestId="initiate-trade"
       >
+        <TopRightCorner>
+          <ButtonIcon
+            className={classnames(styles.cornerIcon, styles.settingsIcon)}
+            disabled={!price}
+            onClick={this.showTradeSettings}
+            image={cogWheelSvg}
+            data-test-id="trade-settings"
+          />
+        </TopRightCorner>
         {
           /*
           We plan to release basic instant version so people can trade with a single click
           There are some design concerns that must be discussed so those two options are postponed
 
-          <TopRightCorner>
-            <ButtonIcon
-              className={classnames(styles.cornerIcon, styles.settingsIcon)}
-              disabled={!price}
-              onClick={this.showTradeSettings}
-              image={cogWheelSvg}/>
-          </TopRightCorner>
           <TopLeftCorner>
             <ButtonIcon
               className={styles.cornerIcon}
@@ -115,62 +105,15 @@ export class NewTradeView extends React.Component<InstantFormState> {
           </TopLeftCorner>
           */
         }
-
-        <div
-          className={classnames(
-            styles.details,
-            price || message && message.placement === Position.TOP ? '' : styles.hidden,
-            message && message.placement === Position.TOP ? styles.errors : ''
-          )}>
+        <div className={styles.tradeDetails}>
           {
-            price &&
-            <>
-              <TradeData label="Price"
-                         data-test-id="trade-price"
-                         value={
-                           <Approximate>
-                             {formatAmount(price, 'USD')} {quotation || ''}
-                           </Approximate>
-                         }
-                         style={{ marginBottom: '2px' }}
-              />
-              <TradeData label="Slippage Limit"
-                         data-test-id="trade-slippage-limit"
-                         tooltip={slippageLimitTooltip}
-                         value={<FormatPercent value={new BigNumber(slippageLimit.times(100))} precision={1}/>}
-                         style={{ marginBottom: '2px' }}
-              />
-              <TradeData label="Gas cost"
-                         data-test-id="trade-gas-cost"
-                         value={
-                           gasEstimationUsd
-                             ? (
-                               <Approximate data-vis-reg-hide={true}>
-                                 <Money value={gasEstimationUsd} token="USD"/>
-                               </Approximate>
-                             )
-                             : <ProgressIcon data-vis-reg-hide={true} size="sm"/>
-                         }/>
-              <TradeData label="Price Impact"
-                         data-test-id="trade-price-impact"
-                         tooltip={priceImpactTooltip}
-                         value={
-                           <FormatPercent
-                             className={priceImpact && priceImpact.gt(new BigNumber(5)) ? 'danger' : ''}
-                             fallback={'N/A'}
-                             value={priceImpact}
-                             precision={2}
-                           />
-                         }
-              />
-            </>
-          }
-
-          {
-            message && message.placement === Position.TOP &&
-            <>
-              {error(message)}
-            </>
+            message && message.placement === Position.TOP
+              ? <TradeDetails.Error message={error(message)}/>
+              : (
+                price
+                  ? <TradeDetails {...this.props}/>
+                  : null
+              )
           }
         </div>
         <div className={styles.assets}>
@@ -200,8 +143,12 @@ export class NewTradeView extends React.Component<InstantFormState> {
         </div>
         <div data-test-id="error"
              className={classnames(
-               message && message.kind === MessageKind.notConnected ? styles.warnings : styles.errors,
-               message && message.placement === Position.BOTTOM ? '' : styles.hidden,
+               message && message.kind === MessageKind.notConnected
+                 ? styles.warnings
+                 : styles.errors,
+               message && message.placement === Position.BOTTOM
+                 ? ''
+                 : styles.hidden,
              )}>
           {error(message)}
         </div>

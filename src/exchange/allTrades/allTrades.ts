@@ -59,7 +59,8 @@ export function loadAllTrades(
   );
 }
 
-export function loadPriceOneDayAgo(
+export function loadPriceDaysAgo(
+  days: number,
   context$$: Observable<NetworkConfig>,
   onEveryBlock$$: Observable<number>,
   { base, quote }: TradingPair,
@@ -67,8 +68,8 @@ export function loadPriceOneDayAgo(
   return context$$.pipe(
     switchMap((context) => onEveryBlock$$.pipe(
       exhaustMap(() => getTrades(context, base, quote, 'allTradesCurrent', {
-        to: moment().subtract(1, 'days').toDate(),
-        from: moment().subtract(2, 'days').toDate(),
+        to: moment().subtract(days, 'days').toDate(),
+        from: moment().subtract(days + 1, 'days').toDate(),
         limit: 1,
       })))
     ),
@@ -84,13 +85,22 @@ export function loadVolumeForThePastDay(
 ): Observable<Trade[]> {
   return context$$.pipe(
     switchMap((context) => onEveryBlock$$.pipe(
-      exhaustMap(() => getTrades(context, base, quote, 'allTradesCurrent', {
-        to: moment().toDate(),
-        from: moment().subtract(1, 'days').toDate()
-      })))
+      exhaustMap(() =>
+        getTrades(
+          context,
+          base,
+          quote,
+          'allTradesCurrent', {
+            to: moment().toDate(),
+            from: moment().subtract(1, 'days').toDate()
+          }
+          )
+      ))
     ),
     map((
-      trades: Trade[]) => trades.sort((current, next) => next.time.getTime() - current.time.getTime())
+      trades: Trade[]) => trades.sort(
+        (current, next) => next.time.getTime() - current.time.getTime()
+      )
     ),
     distinctUntilChanged((x, y) => equals(x, y)),
     shareReplay(1),

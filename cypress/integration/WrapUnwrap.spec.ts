@@ -8,7 +8,7 @@ describe('Wrapping ETH', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
     Tab.balances();
   });
 
@@ -55,7 +55,7 @@ describe('Unwrapping ETH', () => {
 
   beforeEach(() => {
     cypressVisitWithWeb3();
-    WalletConnection.open().web().acceptToS().connect();
+    WalletConnection.connect();
     Tab.balances();
   });
 

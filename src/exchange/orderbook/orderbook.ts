@@ -24,6 +24,7 @@ export interface Offer {
 }
 
 export interface Orderbook {
+  tradingPair: TradingPair;
   blockNumber: number;
   sell: Offer[];
   spread?: BigNumber;
@@ -124,13 +125,13 @@ function loadOffersAllAtOnce(
 export function loadOrderbook$(
   context$: Observable<NetworkConfig>,
   onEveryBlock$: Observable<number>,
-  { base, quote }: TradingPair
+  tradingPair: TradingPair
 ): Observable<Orderbook> {
   return combineLatest(context$, onEveryBlock$).pipe(
     switchMap(([context, blockNumber]) =>
       zip(
-        loadOffersAllAtOnce(context, quote, base, OfferType.buy),
-        loadOffersAllAtOnce(context, base, quote, OfferType.sell)
+        loadOffersAllAtOnce(context, tradingPair.quote, tradingPair.base, OfferType.buy),
+        loadOffersAllAtOnce(context, tradingPair.base, tradingPair.quote, OfferType.sell)
       ).pipe(
         map(hideDusts),
         map(([buy, sell]) => ({
@@ -161,6 +162,7 @@ export function loadOrderbook$(
           : undefined;
 
       return {
+        tradingPair,
         blockNumber,
         buy,
         spread,

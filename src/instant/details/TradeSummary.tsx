@@ -76,7 +76,12 @@ export class TradeSummary extends React.Component<TradeSummaryProps> {
   }
 }
 
-const summarizeSell = (sold: BigNumber, soldToken: string, bought: BigNumber, boughtToken: string) => {
+const summarizeSell = (
+  sold: BigNumber,
+  soldToken: string,
+  bought: BigNumber,
+  boughtToken: string
+) => {
   return (
     <>
       <span> sold </span>
@@ -91,7 +96,12 @@ const summarizeSell = (sold: BigNumber, soldToken: string, bought: BigNumber, bo
   );
 };
 
-const summarizeBuy = (sold: BigNumber, soldToken: string, bought: BigNumber, boughtToken: string) => {
+const summarizeBuy = (
+  sold: BigNumber,
+  soldToken: string,
+  bought: BigNumber,
+  boughtToken: string
+) => {
   return (
     <>
       <span> bought </span>

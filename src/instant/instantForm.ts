@@ -16,7 +16,7 @@ import {
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';
 import { Calls, calls$, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/calls/calls';
-import { eth2weth } from '../blockchain/calls/instant';
+import { eth2weth, weth2eth } from '../blockchain/calls/instant';
 import { NetworkConfig, tokens } from '../blockchain/config';
 import { isDone, TxStatus } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
@@ -38,7 +38,8 @@ import {
   toUserChange,
   UserChange,
 } from '../utils/form';
-import { calculateTradePrice } from '../utils/price';
+import { calculateTradePrice, getQuote } from '../utils/price';
+import { getSlippageLimit } from '../utils/slippage';
 import { switchSpread } from '../utils/switchSpread';
 import { pluginDevModeHelpers } from './instantDevModeHelpers';
 import {
@@ -202,6 +203,7 @@ export enum InstantFormChangeKind {
   proxyChange = 'proxyChange',
   dustLimitsChange = 'dustLimitsChange',
   allowancesChange = 'allowancesChange',
+  slippageLimitChange = 'slippageLimitChange',
   contextChange = 'contextChange',
 }
 
@@ -258,13 +260,19 @@ export interface ContextChange {
   context: NetworkConfig;
 }
 
+export interface SlippageLimitChange {
+  kind: InstantFormChangeKind.slippageLimitChange;
+  value: BigNumber;
+}
+
 export type ManualChange =
   BuyAmountChange |
   SellAmountChange |
   PairChange |
   TokenChange |
   FormResetChange |
-  ViewChange;
+  ViewChange |
+  SlippageLimitChange;
 
 export type EnvironmentChange =
   GasPriceChange |
@@ -292,6 +300,12 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         kind: undefined,
         buyAmount: undefined,
         sellAmount: undefined,
+        slippageLimit: state.context
+          ? getSlippageLimit(
+            state.context,
+            getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken))
+          )
+          : state.slippageLimit,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
     case InstantFormChangeKind.tokenChange:
@@ -330,6 +344,12 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         sellToken,
         buyAmount: shouldClearInputs ? undefined : state.buyAmount,
         sellAmount: shouldClearInputs ? undefined : state.sellAmount,
+        slippageLimit: state.context
+          ? getSlippageLimit(
+            state.context,
+            getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken))
+          )
+          : state.slippageLimit,
         tradeEvaluationStatus: TradeEvaluationStatus.unset,
       };
     case InstantFormChangeKind.sellAmountFieldChange:
@@ -375,7 +395,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
         return {
           ...state,
           progress: change.progress,
-          view: change.progress.tradeTxStatus === TxStatus.Success ? ViewKind.summary : ViewKind.finalization
+          view: change.progress.tradeTxStatus === TxStatus.Success
+            ? ViewKind.summary
+            : ViewKind.finalization
         };
       }
 
@@ -407,12 +429,21 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
     case InstantFormChangeKind.contextChange:
       return {
         ...state,
-        context: change.context
+        context: change.context,
+        slippageLimit: getSlippageLimit(
+          change.context,
+          getQuote(weth2eth(state.sellToken), weth2eth(state.buyToken))
+        )
       };
     case FormChangeKind.userChange:
       return {
         ...state,
         user: change.user
+      };
+    case InstantFormChangeKind.slippageLimitChange:
+      return {
+        ...state,
+        slippageLimit: change.value
       };
   }
 
@@ -427,24 +458,26 @@ function evaluateBuy(calls: ReadCalls, state: InstantFormState) {
     return of(state);
   }
 
+  const errorItem = (error?: Error) => ({
+    sellAmount: undefined,
+    message: {
+      error,
+      kind: MessageKind.orderbookTotalExceeded,
+      amount: buyAmount,
+      side: 'buy',
+      token: buyToken,
+      placement: Position.TOP,
+      priority: 3
+    }
+  });
+
   return calls.otcGetPayAmount({
     sellToken,
     buyToken,
     amount: buyAmount,
   }).pipe(
-    map(sellAmount => ({ sellAmount })),
-    catchError(error => of({
-      sellAmount: undefined,
-      message: {
-        error,
-        kind: MessageKind.orderbookTotalExceeded,
-        amount: buyAmount,
-        side: 'buy',
-        token: buyToken,
-        placement: Position.TOP,
-        priority: 3
-      }
-    }))
+    switchMap(sellAmount => of(sellAmount.isZero() ? errorItem() : { sellAmount })),
+    catchError(error => of(errorItem(error))),
   );
 }
 
@@ -456,28 +489,34 @@ function evaluateSell(calls: ReadCalls, state: InstantFormState) {
     return of(state);
   }
 
+  const errorItem = (error?: Error) => ({
+    buyAmount: undefined,
+    message: {
+      error,
+      kind: MessageKind.orderbookTotalExceeded,
+      amount: sellAmount,
+      side: 'sell',
+      token: sellToken,
+      placement: Position.TOP,
+      priority: 3
+    }
+  });
+
   return calls.otcGetBuyAmount({
     sellToken,
     buyToken,
     amount: sellAmount,
   }).pipe(
-    map(buyAmount => ({ buyAmount })),
-    catchError(error => of({
-      buyAmount: undefined,
-      message: {
-        error,
-        kind: MessageKind.orderbookTotalExceeded,
-        amount: sellAmount,
-        side: 'sell',
-        token: sellToken,
-        placement: Position.TOP,
-        priority: 3
-      }
-    }))
+    switchMap(buyAmount => of(buyAmount.isZero() ? errorItem() : { buyAmount })),
+    catchError(error => of(errorItem(error))),
   );
 }
 
-function getBestPrice(calls: ReadCalls, sellToken: string, buyToken: string): Observable<BigNumber> {
+function getBestPrice(
+  calls: ReadCalls,
+  sellToken: string,
+  buyToken: string
+): Observable<BigNumber> {
   return calls.otcGetBestOffer({ sellToken, buyToken }).pipe(
     flatMap(offerId =>
       calls.otcOffers(offerId).pipe(
@@ -494,18 +533,28 @@ function estimateGas(calls$_: Calls$, readCalls$: ReadCalls$, state: InstantForm
   return state.user && state.user.account ?
     doGasEstimation(calls$_, readCalls$, state, gasEstimation) :
     doGasEstimation(undefined, readCalls$, state, (_calls, readCalls, state_) =>
-      state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
-        undefined :
-        estimateTradeReadonly(readCalls, state_)
+      state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated
+      || !state.buyAmount
+      || !state.sellAmount
+        ? undefined
+        : estimateTradeReadonly(readCalls, state_)
     );
 }
 
-function gasEstimation(calls: Calls, readCalls: ReadCalls, state: InstantFormState): Observable<number> | undefined {
-  return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated || !state.buyAmount || !state.sellAmount ?
-    undefined :
-    calls.proxyAddress().pipe(
+function gasEstimation(
+  calls: Calls,
+  readCalls: ReadCalls,
+  state: InstantFormState
+): Observable<number> | undefined {
+  return state.tradeEvaluationStatus !== TradeEvaluationStatus.calculated
+  || !state.buyAmount
+  || !state.sellAmount
+    ? undefined
+    : calls.proxyAddress().pipe(
       switchMap(proxyAddress => {
-        const sell = state.sellToken === 'ETH' ? estimateTradePayWithETH : estimateTradePayWithERC20;
+        const sell = state.sellToken === 'ETH'
+          ? estimateTradePayWithETH
+          : estimateTradePayWithERC20;
         return sell(calls, readCalls, proxyAddress, state);
       })
     );
@@ -546,6 +595,7 @@ function evaluateTrade(
     switchMap(calls =>
       combineLatest(
         state.kind === OfferType.buy ? evaluateBuy(calls, state) : evaluateSell(calls, state),
+        // tslint:disable-next-line:max-line-length
         // This is some suspicious case. This way it works like we had on OD but needs in-depth investigation.
         getBestPrice(calls, state.buyToken, state.sellToken)
       )
@@ -614,7 +664,12 @@ function validate(state: InstantFormState): InstantFormState {
     });
   }
 
-  if (spendAmount && dustLimits && dustLimits[eth2weth(spendToken)] && dustLimits[eth2weth(spendToken)].gt(spendAmount)) {
+  if (
+    spendAmount
+    && dustLimits
+    && dustLimits[eth2weth(spendToken)]
+    && dustLimits[eth2weth(spendToken)].gt(spendAmount)
+  ) {
     message = prioritize(message, {
       kind: MessageKind.dustAmount,
       amount: dustLimits[eth2weth(spendToken)],
@@ -625,7 +680,12 @@ function validate(state: InstantFormState): InstantFormState {
     });
   }
 
-  if (receiveAmount && dustLimits && dustLimits[eth2weth(receiveToken)] && dustLimits[eth2weth(receiveToken)].gt(receiveAmount)) {
+  if (
+    receiveAmount
+    && dustLimits
+    && dustLimits[eth2weth(receiveToken)]
+    && dustLimits[eth2weth(receiveToken)].gt(receiveAmount)
+  ) {
     message = prioritize(message, {
       kind: MessageKind.dustAmount,
       amount: dustLimits[eth2weth(receiveToken)],

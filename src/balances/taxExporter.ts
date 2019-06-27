@@ -25,8 +25,8 @@ function queryTrades(context: NetworkConfig, addresses: string[]) {
     ]
   };
   const order = '[TIME_DESC]';
-  const fields = ['offerId', 'maker', 'taker', 'quoteTkn', 'baseTkn', 'quoteAmt', 'baseAmt', 'proxyName',
-    'proxyExecName', 'tx', 'time', 'type'];
+  const fields = ['offerId', 'maker', 'taker', 'quoteTkn', 'baseTkn', 'quoteAmt', 'baseAmt',
+    'proxyName', 'proxyExecName', 'tx', 'time', 'type'];
 
   return vulcan0x<any>(
     context.oasisDataService.url,

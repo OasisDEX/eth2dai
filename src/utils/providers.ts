@@ -110,7 +110,11 @@ export const Ledger = {
   supported: false
 };
 
-export const getCurrentProviderName = (provider = ((window as Web3Window).web3 ? (window as Web3Window).web3.currentProvider : null)): Provider => {
+export const getCurrentProviderName = (provider = (
+  (window as Web3Window).web3
+    ? (window as Web3Window).web3.currentProvider
+    : null)
+): Provider => {
   if (!provider) {
     return WebWallet;
   }

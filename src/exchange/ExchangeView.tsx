@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router';
 import { map } from 'rxjs/operators';
@@ -16,72 +17,94 @@ export interface ExchangeViewOwnProps {
 
 type ExchangeViewProps = RouteComponentProps<any> & ExchangeViewOwnProps;
 
-const Content = (props: any | { parentMatch: string }) => {
-  const {
-    match: { params },
-    parentMatch,
-  } = props;
-  if (props.tp.base !== params.base || props.tp.quote !== params.quote) {
-    props.setTradingPair(params);
+interface ContentProps extends RouteComponentProps<any> {
+  tp: TradingPair;
+  parentMatch: string;
+  setTradingPair: (tp: TradingPair) => void;
+}
+
+class Content extends React.Component<ContentProps, { pairPickerOpen: boolean }> {
+  constructor(props: ContentProps) {
+    super(props);
+    this.state = { pairPickerOpen: false };
   }
 
-  return (
-    <div>
-      <FlexLayoutRow>
-        <Panel className={styles.tradingPairPanel}>
-          <theAppContext.Consumer>
-            { ({ TradingPairsTxRx }) =>
-              // @ts-ignore
-              <TradingPairsTxRx parentMatch={parentMatch} />
-            }
-          </theAppContext.Consumer>
-        </Panel>
-      </FlexLayoutRow>
-      <FlexLayoutRow>
-        <Panel className={styles.priceChartPanel} footerBordered={true}>
-          <theAppContext.Consumer>
-            { ({ PriceChartWithLoadingTxRx }) =>
-              <PriceChartWithLoadingTxRx />
-            }
-          </theAppContext.Consumer>
-        </Panel>
-        <Panel className={styles.allTradesPanel} footerBordered={true}>
-          <theAppContext.Consumer>
-            { ({ AllTradesTxRx }) =>
-              <AllTradesTxRx />
-            }
-          </theAppContext.Consumer>
-        </Panel>
-      </FlexLayoutRow>
-      <FlexLayoutRow>
-        <Panel className={styles.offerMakePanel}>
+  public render() {
+    const {
+      match: { params },
+      parentMatch,
+      tp,
+      setTradingPair,
+    } = this.props;
 
-          <theAppContext.Consumer>
-            { ({ OfferMakePanelTxRx }) =>
-              <OfferMakePanelTxRx />
-            }
-          </theAppContext.Consumer>
-        </Panel>
-        <Panel footerBordered={true} className={styles.orderbookPanel}>
-          <theAppContext.Consumer>
-            { ({ OrderbookPanelTxRx }) =>
-              <OrderbookPanelTxRx />
-            }
-          </theAppContext.Consumer>
-        </Panel>
-      </FlexLayoutRow>
-      <FlexLayoutRow>
-        <Panel className={styles.myOrdersPanel} footerBordered={true}>
-          <theAppContext.Consumer>
-            { ({ MyTradesTxRx }) =>
-              <MyTradesTxRx />
-            }
-          </theAppContext.Consumer>
-        </Panel>
-      </FlexLayoutRow>
-    </div>
-  );
-};
+    if (tp.base !== params.base || tp.quote !== params.quote) {
+      setTradingPair(params);
+    }
+
+    return (
+      <div>
+        <FlexLayoutRow>
+          <Panel className={classnames(
+            styles.tradingPairPanel,
+            this.state.pairPickerOpen && styles.pairPickerOpen,
+          )}>
+            <theAppContext.Consumer>
+              { ({ TradingPairsTxRx }) =>
+                // @ts-ignore
+                <TradingPairsTxRx
+                  parentMatch={parentMatch}
+                  setPairPickerOpen={(pairPickerOpen: boolean) => this.setState({ pairPickerOpen })}
+                />
+              }
+            </theAppContext.Consumer>
+          </Panel>
+        </FlexLayoutRow>
+        <FlexLayoutRow>
+          <Panel className={styles.priceChartPanel} footerBordered={true}>
+            <theAppContext.Consumer>
+              { ({ PriceChartWithLoadingTxRx }) =>
+                <PriceChartWithLoadingTxRx />
+              }
+            </theAppContext.Consumer>
+          </Panel>
+          <Panel className={styles.allTradesPanel} footerBordered={true}>
+            <theAppContext.Consumer>
+              { ({ AllTradesTxRx }) =>
+                <AllTradesTxRx />
+              }
+            </theAppContext.Consumer>
+          </Panel>
+        </FlexLayoutRow>
+        <FlexLayoutRow>
+          <Panel className={styles.offerMakePanel}>
+
+            <theAppContext.Consumer>
+              { ({ OfferMakePanelTxRx }) =>
+                <OfferMakePanelTxRx />
+              }
+            </theAppContext.Consumer>
+          </Panel>
+          <Panel footerBordered={true} className={styles.orderbookPanel}>
+            <theAppContext.Consumer>
+              { ({ OrderbookPanelTxRx }) =>
+                <OrderbookPanelTxRx />
+              }
+            </theAppContext.Consumer>
+          </Panel>
+        </FlexLayoutRow>
+        <FlexLayoutRow>
+          <Panel className={styles.myOrdersPanel} footerBordered={true}>
+            <theAppContext.Consumer>
+              { ({ MyTradesTxRx }) =>
+                <MyTradesTxRx />
+              }
+            </theAppContext.Consumer>
+          </Panel>
+        </FlexLayoutRow>
+      </div>
+    );
+  }
+}
 
 export class ExchangeView extends React.Component<ExchangeViewProps> {
   public render() {
@@ -104,7 +127,7 @@ export class ExchangeView extends React.Component<ExchangeViewProps> {
                  />
             )}
           />
-          <Redirect push={false} from={'/exchange'} to={`/exchange/${tp.base}/${tp.quote}`} />
+          <Redirect push={false} from={'/market'} to={`/market/${tp.base}/${tp.quote}`} />
         </Switch>
       </div>
     );

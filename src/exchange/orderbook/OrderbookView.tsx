@@ -1,14 +1,16 @@
 // tslint:disable:no-console
+import { equals } from 'ramda';
 import * as React from 'react';
 import { default as MediaQuery } from 'react-responsive';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { combineLatest, Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { distinctUntilKeyChanged, map, startWith } from 'rxjs/operators';
+
 import { FormChangeKind, PickOfferChange } from '../../utils/form';
 import { FormatAmount, FormatPriceOrder } from '../../utils/formatters/Formatters';
 import { Button } from '../../utils/forms/Buttons';
 import { SvgImage } from '../../utils/icons/utils';
-import { Loadable, LoadableStatus } from '../../utils/loadable';
+import { Loadable, LoadableStatus, loadablifyLight } from '../../utils/loadable';
 import { WithLoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { PanelHeader } from '../../utils/panel/Panel';
 import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
@@ -17,54 +19,34 @@ import * as tableStyles from '../../utils/table/Table.scss';
 import { Currency, InfoLabel, Muted, SellBuySpan } from '../../utils/text/Text';
 import { OfferFormState } from '../offerMake/offerMake';
 import { OrderbookViewKind } from '../OrderbookPanel';
-import { currentTradingPair$, TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
+import { TradingPair, tradingPairResolver } from '../tradingPair/tradingPair';
 import depthChartSvg from './depth-chart.svg';
 import { Offer, Orderbook } from './orderbook';
 import * as styles from './OrderbookView.scss';
 
-export type PickableOrderbook = {
-  change: (ch: PickOfferChange) => void;
-} & Orderbook;
-
-export function createPickableOrderBook(
+export function createOrderbookForView(
   currentOrderBook$: Observable<Orderbook>,
   currentOfferForm$: Observable<OfferFormState>,
-): Observable<PickableOrderbook> {
+  kindChange: (kind: OrderbookViewKind) => void,
+): Observable<Props> {
   return combineLatest(
-    currentOrderBook$,
-    currentOfferForm$,
+    loadablifyLight(currentOrderBook$),
+    currentOfferForm$.pipe(
+      distinctUntilKeyChanged('change'),
+      startWith({ change: () => null } as any),
+    ),
   ).pipe(
     map(([currentOrderBook, { change }]) => ({
+      tradingPair: (currentOrderBook.value && currentOrderBook.value.tradingPair) as TradingPair,
       ...currentOrderBook,
-      change: (ch: PickOfferChange) => change(ch)
+      change,
+      kindChange,
     })),
   );
 }
 
-export function createOrderbookForTradingPair(
-  tradingPair$: Observable<TradingPair>,
-  pickableOrderbook$: Observable<Loadable<PickableOrderbook>>,
-  kindChange: (kind: OrderbookViewKind) => void,
-):
-  Observable<TradingPair & Loadable<PickableOrderbook>> {
-  return combineLatest(
-    tradingPair$,
-    pickableOrderbook$
-  ).pipe(
-    map(([tradingPair, orderBookStuff]) => {
-      return {
-        ...tradingPair,
-        ...orderBookStuff,
-        kindChange,
-      };
-    }),
-    startWith({
-      tradingPair: currentTradingPair$.getValue(),
-    })
-  );
-}
-
-export interface Props extends Loadable<PickableOrderbook> {
+export interface Props extends Loadable<Orderbook> {
+  change: (ch: PickOfferChange) => void;
   kindChange: (kind: OrderbookViewKind) => void;
   tradingPair: TradingPair;
 }
@@ -81,7 +63,10 @@ export class OrderbookView extends React.Component<Props> {
   public center() {
     this.autoScroll = true;
     if (this.scrollbar && this.centerRow) {
-      this.scrollbar.center(this.centerRow.offsetTop - this.centerRowOffset, this.centerRow.clientHeight);
+      this.scrollbar.center(
+        this.centerRow.offsetTop - this.centerRowOffset,
+        this.centerRow.clientHeight
+      );
     }
   }
 
@@ -102,15 +87,17 @@ export class OrderbookView extends React.Component<Props> {
   public scrolled = () => {
     if (!this.autoScroll && this.scrollbar && this.centerRow) {
       const { scrollTop, clientHeight } = this.scrollbar.scrollState();
-      this.centerRowOffset = this.centerRow.offsetTop - scrollTop - (clientHeight - this.centerRow.clientHeight) / 2;
+      this.centerRowOffset =
+        this.centerRow.offsetTop - scrollTop - (clientHeight - this.centerRow.clientHeight) / 2;
     }
     this.autoScroll = false;
   }
 
+  public shouldComponentUpdate(nextProps: Props): boolean {
+    return !equals(nextProps, this.props);
+  }
+
   public render() {
-
-    // console.log(this.props);
-
     const tradingPairChanged = this.lastTradingPair &&
       tradingPairResolver(this.lastTradingPair) !== tradingPairResolver(this.props.tradingPair);
     this.lastTradingPair = this.props.tradingPair;
@@ -119,9 +106,12 @@ export class OrderbookView extends React.Component<Props> {
       this.props.status === 'loaded';
     this.lastStatus = this.props.status;
 
-    if (justLoaded || tradingPairChanged) {
+    const skipTransition = justLoaded || tradingPairChanged;
+    if (skipTransition) {
       setTimeout(() => {
-        this.center();
+        this.forceUpdate(() => {
+          this.center();
+        });
       });
     }
 
@@ -171,23 +161,27 @@ export class OrderbookView extends React.Component<Props> {
           </tr>
           </thead>
         </Table>
-        <WithLoadingIndicator loadable={this.props} size="lg">
-          {(orderbook: PickableOrderbook) => {
+        <WithLoadingIndicator
+          loadable={skipTransition ? { status: 'loading' } : this.props}
+          size="lg"
+        >
+          {(orderbook: Orderbook) => {
             const takeOffer = (offer: Offer) => {
               return (): void => {
-                orderbook.change({
+                this.props.change({
                   offer,
                   kind: FormChangeKind.pickOfferChange,
                 });
               };
             };
-
             return (
               <>
                 <Scrollbar ref={el => this.scrollbar = el || undefined} onScroll={this.scrolled}>
                   <Table align="right" className={styles.orderbookTable}>
                     <TransitionGroup
                       component="tbody"
+                      exit={true}
+                      enter={true}
                     >
                       {orderbook.sell.slice().reverse().map((offer: Offer) => (
                         <CSSTransition
@@ -205,9 +199,11 @@ export class OrderbookView extends React.Component<Props> {
                       {/* better don't remove me! */}
                       <CSSTransition key="0" classNames="order" timeout={1000}>
                         <RowHighlighted>
-                          <td ref={el => this.centerRow = this.centerRow || el || undefined}>
+                          <td ref={el => this.centerRow = el || undefined}>
                             {orderbook.spread
-                              ? <FormatAmount value={orderbook.spread} token={this.props.tradingPair.quote}/>
+                              ? <FormatAmount value={orderbook.spread}
+                                              token={this.props.tradingPair.quote}
+                              />
                               : '-'}
                           </td>
                           <td/>
@@ -239,7 +235,11 @@ export class OrderbookView extends React.Component<Props> {
     );
   }
 
-  public OfferRow({ offer, kind, onClick }: { offer: Offer, kind: string, onClick: (attr: any) => any }) {
+  public OfferRow({ offer, kind, onClick }: {
+    offer: Offer,
+    kind: string,
+    onClick: (attr: any) => any
+  }) {
     return (
       <RowClickable
         data-test-id={kind}

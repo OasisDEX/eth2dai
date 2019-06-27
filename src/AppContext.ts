@@ -4,7 +4,11 @@ import { distinctUntilChanged, first, flatMap, map, shareReplay, switchMap } fro
 
 import { isEqual } from 'lodash';
 import { curry } from 'ramda';
-import { AssetOverviewView, AssetsOverviewActionProps, AssetsOverviewExtraProps } from './balances/AssetOverviewView';
+import {
+  AssetOverviewView,
+  AssetsOverviewActionProps,
+  AssetsOverviewExtraProps,
+} from './balances/AssetOverviewView';
 import {
   Balances,
   CombinedBalances,
@@ -43,31 +47,50 @@ import {
   createAllTrades$,
   createTradesBrowser$,
   loadAllTrades,
-  loadPriceOneDayAgo,
+  loadPriceDaysAgo,
   loadVolumeForThePastDay
 } from './exchange/allTrades/allTrades';
 import { AllTrades } from './exchange/allTrades/AllTradesView';
-import { createDepthChartWithLoading$, DepthChartWithLoading } from './exchange/depthChart/DepthChartWithLoading';
+import {
+  createDepthChartWithLoading$,
+  DepthChartWithLoading,
+} from './exchange/depthChart/DepthChartWithLoading';
 import {
   createCurrentPrice$,
   createDailyVolume$,
+  createMarketDetails$,
   createYesterdayPrice$,
   createYesterdayPriceChange$,
 } from './exchange/exchange';
 import { createMyClosedTrades$ } from './exchange/myTrades/closedTrades';
-import { createMyCurrentTrades$, createMyTrades$, createMyTradesKind$ } from './exchange/myTrades/myTrades';
+import {
+  createMyCurrentTrades$,
+  createMyTrades$,
+  createMyTradesKind$,
+} from './exchange/myTrades/myTrades';
 import { MyTrades } from './exchange/myTrades/MyTradesView';
 import { createMyOpenTrades$ } from './exchange/myTrades/openTrades';
 import { createFormController$, OfferFormState } from './exchange/offerMake/offerMake';
 import { OfferMakePanel } from './exchange/offerMake/OfferMakePanel';
 import {
-  createOrderbookForTradingPair,
-  createPickableOrderBook,
+  createOrderbookForView,
   OrderbookView
 } from './exchange/orderbook/OrderbookView';
-import { createOrderbookPanel$, OrderbookPanel, OrderbookPanelProps, SubViewsProps } from './exchange/OrderbookPanel';
-import { GroupMode, loadAggregatedTrades, PriceChartDataPoint } from './exchange/priceChart/pricechart';
-import { createPriceChartLoadable$, PriceChartWithLoading } from './exchange/priceChart/PriceChartWithLoading';
+import {
+  createOrderbookPanel$,
+  OrderbookPanel,
+  OrderbookPanelProps,
+  SubViewsProps
+} from './exchange/OrderbookPanel';
+import {
+  GroupMode,
+  loadAggregatedTrades,
+  PriceChartDataPoint
+} from './exchange/priceChart/pricechart';
+import {
+  createPriceChartLoadable$,
+  PriceChartWithLoading
+} from './exchange/priceChart/PriceChartWithLoading';
 import { TradingPairView } from './exchange/tradingPair/TradingPairView';
 import { createFooter$, TheFooter } from './footer/Footer';
 import { Network } from './header/Network';
@@ -121,12 +144,14 @@ export function setupAppContext() {
     );
 
   const loadOrderbook = memoizeTradingPair(curry(loadOrderbook$)(context$, onEveryBlock$));
-  const currentOrderBookWithTradingPair$ = loadablifyPlusTradingPair(
-    currentTradingPair$,
-    loadOrderbook
-  );
   const currentOrderbook$ = currentTradingPair$.pipe(
     switchMap(pair => loadOrderbook(pair))
+  );
+
+  const marketDetails$ = createMarketDetails$(
+    memoizeTradingPair(curry(loadPriceDaysAgo)(0, context$, onEveryBlock$)),
+    memoizeTradingPair(curry(loadPriceDaysAgo)(1, context$, onEveryBlock$)),
+    onEveryBlock$,
   );
 
   const tradeHistory = memoizeTradingPair(
@@ -145,7 +170,7 @@ export function setupAppContext() {
 
   const lastDayPriceHistory$ = currentTradingPair$.pipe(
     switchMap(memoizeTradingPair(
-      curry(loadPriceOneDayAgo)(context$, onEveryBlock$)
+      curry(loadPriceDaysAgo)(1, context$, onEveryBlock$)
     )),
   );
 
@@ -191,7 +216,7 @@ export function setupAppContext() {
   const PriceChartWithLoadingTxRx = connect(PriceChartWithLoading, priceChartLoadable);
 
   const { OfferMakePanelTxRx, OrderbookPanelTxRx } =
-    offerMake(currentOrderbook$, currentOrderBookWithTradingPair$, balances$);
+    offerMake(currentOrderbook$, balances$);
 
   const myTradesKind$ = createMyTradesKind$();
   const myOpenTrades$ = loadablifyPlusTradingPair(
@@ -205,7 +230,13 @@ export function setupAppContext() {
   );
 
   const myCurrentTrades$ = createMyCurrentTrades$(myTradesKind$, myOpenTrades$, myClosedTrades$);
-  const myTrades$ = createMyTrades$(myTradesKind$, myCurrentTrades$, calls$, context$, gasPrice$, currentTradingPair$);
+  const myTrades$ = createMyTrades$(
+    myTradesKind$,
+    myCurrentTrades$,
+    calls$, context$,
+    gasPrice$,
+    currentTradingPair$
+  );
   const MyTradesTxRx = connect(MyTrades, myTrades$);
 
   const currentPrice$ = createCurrentPrice$(currentTradeHistory$);
@@ -217,11 +248,13 @@ export function setupAppContext() {
     currentTradingPair$,
     currentPrice$,
     yesterdayPriceChange$,
-    dailyVolume$);
+    dailyVolume$,
+    marketDetails$,
+  );
   const TradingPairsTxRx = connect(TradingPairView, tradingPairView$);
 
   const transactionNotifier$ =
-    createTransactionNotifier$(transactions$, interval(5 * 1000));
+    createTransactionNotifier$(transactions$, interval(5 * 1000), context$);
   const TransactionNotifierTxRx = connect(TransactionNotifierView, transactionNotifier$);
 
   const proxyAddress$ = onEveryBlock$.pipe(
@@ -272,11 +305,10 @@ export function setupAppContext() {
 
 function offerMake(
   orderbook$: Observable<Orderbook>,
-  orderbookWithTradingPair$: Observable<LoadableWithTradingPair<Orderbook>>,
   balances$: Observable<Balances>
 ) {
   const offerMake$: Observable<OfferFormState> = currentTradingPair$.pipe(
-    flatMap(tp => createFormController$(
+    switchMap(tp => createFormController$(
       {
         gasPrice$,
         allowance$,
@@ -299,21 +331,17 @@ function offerMake(
 
   const depthChartWithLoading$ = createDepthChartWithLoading$(
     offerMake$,
-    orderbookWithTradingPair$,
-    currentTradingPair$,
+    orderbook$,
     kindChange
   );
   const DepthChartWithLoadingTxRx = connect(DepthChartWithLoading, depthChartWithLoading$);
 
-  const pickableOrderbook$ = createOrderbookForTradingPair(
-    currentTradingPair$,
-    loadablifyLight(createPickableOrderBook(
-      orderbook$,
-      offerMake$)
-    ),
-    kindChange
+  const orderbookForView$ = createOrderbookForView(
+    orderbook$,
+    offerMake$,
+    kindChange,
   );
-  const OrderbookViewTxRx = connect<any, any>(OrderbookView, pickableOrderbook$);
+  const OrderbookViewTxRx = connect(OrderbookView, orderbookForView$);
 
   const OrderbookPanelTxRx = connect(
     inject<OrderbookPanelProps, SubViewsProps>(

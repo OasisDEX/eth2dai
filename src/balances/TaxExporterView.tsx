@@ -62,13 +62,16 @@ function toCSVRow(trade: any): string {
 }
 
 function toCSV(trades: any[]) {
-  const header = '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Address";"Tx";"Exchange"';
+  const header =
+    '"Buy amount";"Buy currency";"Sell amount";"Sell currency";"Date";"Address";"Tx";"Exchange"';
   return `${header}\r\n${trades.map(trade => `${toCSVRow(trade)}\r\n`).join('')}`;
 }
 
 function downloadCSV(url: string) {
   const currentDate = new Date();
-  const fileName = `trades-report-${currentDate.getFullYear()}-${ (currentDate.getMonth() + 1) <= 9 ? `0 ${(currentDate.getMonth() + 1)}` : (currentDate.getMonth() + 1) }-${currentDate.getDate()}`;
+  const fileName = `trades-report-${currentDate.getFullYear()}-${(currentDate.getMonth() + 1) <= 9
+    ? `0 ${(currentDate.getMonth() + 1)}`
+    : (currentDate.getMonth() + 1)}-${currentDate.getDate()}`;
 
   const link = document.createElement('a');
   link.href = url;

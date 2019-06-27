@@ -30,6 +30,7 @@ const common = {
   lastChange: new Date('2019-01-21T11:26:30.834Z'),
   end: new Date('2019-01-21T11:26:30.834Z'),
   dismissed: false,
+  etherscan: { url: 'etherscan' },
   onDismiss: () => ({}),
 };
 
@@ -74,7 +75,15 @@ stories.add('Cancel offer', () => (
   <Notification
     {...{
       ...cancelledByTheUserTx,
-      meta: { ...cancelOffer, args: { offerId: zero, type: 'buy', amount: new BigNumber('1.2345'), token: 'WETH' } as CancelData },
+      meta: {
+        ...cancelOffer,
+        args: {
+          offerId: zero,
+          type: 'buy',
+          amount: new BigNumber('1.2345'),
+          token: 'WETH'
+        } as CancelData
+      },
     }}
   />
 ));

@@ -54,7 +54,8 @@ export const approveProxy = {
   call: ({ token }: ApproveProxyData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: ({ proxyAddress }: ApproveProxyData, _context: NetworkConfig) => [proxyAddress, -1],
-  options: ({ gasPrice, gasEstimation }: ApproveProxyData) => ({ ...gasPrice ? gasPrice : {}, ...gasEstimation ? { gas: gasEstimation } : {} }),
+  options: ({ gasPrice, gasEstimation }: ApproveProxyData) =>
+    ({ ...gasPrice ? gasPrice : {}, ...gasEstimation ? { gas: gasEstimation } : {} }),
   kind: TxMetaKind.approveProxy,
   description: ({ token }: ApproveProxyData) =>
     <React.Fragment>Unlock <Currency value={token}/> on proxy</React.Fragment>

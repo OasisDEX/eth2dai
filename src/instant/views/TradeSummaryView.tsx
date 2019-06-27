@@ -6,7 +6,13 @@ import { OfferType } from '../../exchange/orderbook/orderbook';
 import { calculateTradePrice } from '../../utils/price';
 import { CurrentPrice } from '../CurrentPrice';
 import { TradeSummary } from '../details/TradeSummary';
-import { InstantFormChangeKind, ManualChange, Progress, ProgressKind, ViewKind } from '../instantForm';
+import {
+  InstantFormChangeKind,
+  ManualChange,
+  Progress,
+  ProgressKind,
+  ViewKind
+} from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 
 interface ViewProps {
@@ -57,7 +63,11 @@ export class TradeSummaryView extends React.Component<ViewProps> {
                         }
                         txHash={(progress as { tradeTxHash: string }).tradeTxHash}
                         etherscanURI={context.etherscan.url}
-                        gasCost={new BigNumber(gasUsed).times(amountFromWei(gasPrice, 'ETH')).times(etherPriceUsd)}
+                        gasCost={
+                          new BigNumber(gasUsed)
+                            .times(amountFromWei(gasPrice, 'ETH'))
+                            .times(etherPriceUsd)
+                        }
           />
         }
       </InstantFormWrapper>

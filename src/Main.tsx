@@ -57,7 +57,7 @@ class Routes extends React.Component<{ status: WalletStatus }> {
   public render() {
     return (
       <Switch>
-        <Route exact={false} path={'/exchange'} component={ExchangeViewTxRx}/>
+        <Route exact={false} path={'/market'} component={ExchangeViewTxRx}/>
         {process.env.REACT_APP_INSTANT_ENABLED === '1' &&
         <Route exact={false} path={'/instant'} component={InstantExchange}/>}
         {
@@ -65,7 +65,7 @@ class Routes extends React.Component<{ status: WalletStatus }> {
           <Route path={'/account'} component={BalancesView}/>
         }
         <Redirect from={'/balances'} to={'/account'}/>
-        <Redirect from={'/'} to={'/exchange'}/>
+        <Redirect from={'/'} to={'/market'}/>
       </Switch>
     );
   }

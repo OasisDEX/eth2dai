@@ -10,14 +10,19 @@ export type FormatNumberProps = React.HTMLAttributes<HTMLSpanElement> & {
   value: BigNumber;
   token: string;
   formatter?: (v: BigNumber, t: string) => string;
+  dontGroup?: boolean;
 };
 const FormatNumber = (props: FormatNumberProps)  => {
-  const { value, token, formatter, ...spanProps } = props;
+  const { value, token, formatter, dontGroup, ...spanProps } = props;
   const formatted: string = formatter ? formatter(value, token) : value.toString();
   const match = formatted.match(/^-?([\d,]+)((\.)(\d+?\d+?)(0*))?$/);
-  const groups = match ?
-    (match[2] ? [`${match[1]}${match[3]}${match[4]}`, match[5]] : [`${match[1]}.0`]) :
-    [];
+  const groups = dontGroup ?
+    [formatted] :
+    !match ?
+      [] :
+      match[2] ?
+        [`${match[1]}${match[3]}${match[4]}`, match[5]] :
+        [`${match[1]}.0`];
   return (
     <span title={value.toString()} {...spanProps}>
       {value.lt(zero) ? '-' : ''}
@@ -40,7 +45,10 @@ export const FormatAmount = (props: FormatAmountProps) => {
     return <span {...spanProps} >{fallback}</span>;
   }
   if (greyed) {
-    return <FormatNumber formatter={formatter || formatAmount} value={value as BigNumber} {...props} />;
+    return <FormatNumber formatter={formatter || formatAmount}
+                         value={value as BigNumber}
+                         {...props}
+    />;
   }
   return <span title={value && value.toString()} {...spanProps}>{
     formatter
@@ -91,4 +99,12 @@ export const Money = (props: FormatAmountProps) => {
     &nbsp;
     <Currency value={otherProps.token}/>
   </span>);
+};
+
+export const FormatQuoteToken = (props: { token: string }) => {
+  const colors: { [key: string]: string } = {
+    DAI: '#FFAC13',
+    WETH: '#B15DFF',
+  };
+  return <span style={{ color: colors[props.token] }}>{props.token}</span>;
 };

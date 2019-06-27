@@ -49,7 +49,13 @@ export function createMyTrades$(
   gasPrice$: Observable<BigNumber>,
   currentTradingPair$: BehaviorSubject<TradingPair>,
 ): Observable<MyTradesPropsLoadable> {
-  return combineLatest(myTradesKind$, myCurrentTrades$, context$, calls$.pipe(startWith({} as any)), currentTradingPair$).pipe(
+  return combineLatest(
+    myTradesKind$,
+    myCurrentTrades$,
+    context$,
+    calls$.pipe(startWith({} as any)),
+    currentTradingPair$
+  ).pipe(
     map(([kind, loadableTrades, context, calls, tradingPair]) => ({
       kind,
       tradingPair,
