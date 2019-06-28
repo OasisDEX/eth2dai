@@ -21,6 +21,7 @@ import { NetworkConfig, networks } from './config';
 import { amountFromWei } from './utils';
 import { web3 } from './web3';
 
+export const maxGasPerBlock = 8e6;
 export const every3Seconds$ = interval(3000).pipe(startWith(0));
 export const every5Seconds$ = interval(5000).pipe(startWith(0));
 export const every10Seconds$ = interval(10000).pipe(startWith(0));

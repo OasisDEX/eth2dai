@@ -1,9 +1,9 @@
 import { BigNumber } from 'bignumber.js';
-import { combineLatest, Observable, of } from 'rxjs';
+import { combineLatest, Observable, of, throwError } from 'rxjs';
 import { first, flatMap, map, startWith, switchMap } from 'rxjs/operators';
 import { Calls, ReadCalls } from '../blockchain/calls/calls';
 import { GetOffersAmountData, InstantOrderData } from '../blockchain/calls/instant';
-import { allowance$ } from '../blockchain/network';
+import { allowance$, maxGasPerBlock } from '../blockchain/network';
 import { getTxHash, isDone, isSuccess, TxState, TxStatus } from '../blockchain/transactions';
 import { amountFromWei } from '../blockchain/utils';
 import {
@@ -291,7 +291,11 @@ function simulateEstimateDoTradePayWithERC20(
     .pipe(
       map(([offersCount, partial]) =>
         141100 + offersCount.toNumber() * 136500 + (partial ? 70000 : 0)
-      )
+      ),
+      switchMap(gasAmount => gasAmount > maxGasPerBlock ?
+        throwError('block gas limit exceeded') :
+        of(gasAmount)
+      ),
     );
 }
 
