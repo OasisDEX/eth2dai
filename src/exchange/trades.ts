@@ -83,17 +83,17 @@ export const getTrades = (
       ]
     } : {},
     ...(filters.from || filters.to) ? {
-      time: {
+      timestamp: {
         ...filters.from
           ? { greaterThan: new Placeholder(
-            'timeFrom',
+            'timestampFrom',
             'Datetime',
             filters.from.toISOString())
           }
           : {},
         ...filters.to
           ? { lessThan: new Placeholder(
-            'timeTo',
+            'timestampTo',
             'Datetime',
             filters.to.toISOString())
           }
