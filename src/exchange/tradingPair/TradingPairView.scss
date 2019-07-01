@@ -148,7 +148,7 @@
 
 .activePairViewTokenBase {
     @include media-breakpoint-down(md){
-        flex-basis: 5em;
+        flex-basis: 4em;
         flex-grow: 0;
     }
 }
@@ -169,22 +169,28 @@
     }
 
     .iconBase, .iconQuote {
-      padding: 8px 0 5px 5px;
+      padding: 8px 0 5px 8px;
     }
 
     .tokenBase {
-      padding: 13px;
+      padding: 13px 13px 13px 4px;
       letter-spacing: 0.5px;
     }
 
     .tokenQuote {
-      padding: 13px 40px 13px 8px;
+      padding: 13px 32px 13px 4px;
       letter-spacing: 0.5px;
+      @include media-breakpoint-down(md){
+          padding-right: 16px;
+      }
     }
 
     .price {
       text-align: right;
-      padding-right: 40px;
+      padding-right: 60px;
+      @include media-breakpoint-down(md){
+          padding-right: 40px;
+      }
     }
 
     .priceDiff {
