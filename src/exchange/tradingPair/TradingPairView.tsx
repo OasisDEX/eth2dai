@@ -82,8 +82,8 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
     return (
       <div className={styles.activePairView}>
         <div className={styles.activePairViewIcon}>{tokens[base].iconCircle}</div>
-        <div className={styles.activePairViewCurrency}>{base}</div>
-        <div className={styles.activePairViewCurrency}><FormatQuoteToken token={quote} /></div>
+        <div className={styles.activePairViewTokenBase}>{base}</div>
+        <div className={styles.activePairViewTokenQuote}><FormatQuoteToken token={quote} /></div>
       </div>
     );
   }
