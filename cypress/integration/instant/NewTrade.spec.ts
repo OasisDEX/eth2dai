@@ -158,6 +158,7 @@ describe('New trade', () => {
 
     cy.get(tid('notification-cross')).click();
 
+    cy.wait(500);
     makeScreenshots('price-impact-highlight');
   });
 
