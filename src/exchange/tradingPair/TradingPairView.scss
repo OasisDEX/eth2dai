@@ -38,7 +38,7 @@
     $width: 220px;
     height: 48px;
     width: $width;
-    border-right: 1px solid rgba(white, 0.1);
+    border-right: 1px solid $grey-darken-darkest;
     border-top-left-radius: $border-radius;
     border-bottom-left-radius: $border-radius;
 
@@ -48,9 +48,16 @@
 
     cursor: pointer;
     background: url("../../icons/chevron-down.svg") no-repeat ($width - 34px) center;
+    background-size: 16px;
 
     @include media-breakpoint-down(md){
       border-right: none;
+      width: calc(100% - 2px);
+      background-position: calc(100% - 17px);
+      margin-left: 1px;
+    }
+    &:focus {
+      outline: none;
     }
 }
 
@@ -60,36 +67,45 @@
 }
 
 .dropdownBtnActive {
-    box-shadow: inset 1px 1px 7px 2px rgba(0, 0, 0, 0.3);
+    background-color: $grey-mid;
+    background-image: url("../../icons/chevron-up.svg");
+    border-bottom-left-radius: unset;
+}
+
+.dropdownListWrapper {
+    position: absolute;
+    z-index: 10;
+    overflow: hidden;
+    margin: 0 -2px -2px -3px;
+    @include media-breakpoint-down(md){
+      width: 100%;
+      margin: 0 -1px -1px -1px;
+    }
 }
 
 .dropdownList {
-    position: absolute;
-    z-index: 10;
-    width: 100%;
-    top: 48px;
+    display: table;
     list-style: none;
-    padding: 0;
-    margin: 0;
+    padding: 10px 0 $border-radius 0;
+    margin: 0 2px 2px 2px;
 
-    background-color: $grey-darkest;
+    background-color: $grey-mid;
     border: 1px solid $grey-darken-darkest;
     border-top: none;
-    box-shadow: 0 0 4px 1px rgba(black, 0.20);
+    box-shadow: 0 0 4px rgba(0,0,0,.25);
     border-bottom-left-radius: $border-radius;
     border-bottom-right-radius: $border-radius;
+    @include media-breakpoint-down(md){
+      width: 100%;
+      margin: 0 1px 1px 1px;
+    }
 }
 
 .dropdownItem {
-    display: block;
-}
-
-.dropdownItem:not(:last-child) {
-    border-bottom: 1px solid $grey-darken-darkest;
+    display: table-row-group;
 }
 
 .dropdownItemLink {
-    display: flex;
     color: white;
     text-decoration: none;
 
@@ -104,39 +120,77 @@
 
 
 
-// ------------ Pair view -----------------
+// ------------ Active pair view -----------------
 
-.pairView {
+.activePairView {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 12px 26px 12px 12px;
     width: 100%;
+    letter-spacing: 1px;
 }
 
-.pairViewCurrency {
+.activePairViewIcon {
+    height: 24px;
+    width: 24px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    margin-bottom: -4px;
+}
+
+.activePairViewCurrency {
     flex-basis: 50px;
     flex-grow: 1;
+    margin-bottom: -2px;
 }
 
-.pairViewIcon {
-  height: 26px;
-  width: 26px;
-  margin-right: 20px;
-  display: flex;
-  align-items: center;
+// ------------ Pair view -----------------
+
+.pairView {
+    display: table-row;
+    background-color: $grey-mid;
+    &:hover {
+        background-color: $grey-mid-hover;
+    }
+    font-size: 14px;
+
+    & > * {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .iconBase, .iconQuote {
+      padding: 8px 0 5px 5px;
+    }
+
+    .tokenBase {
+      padding: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    .tokenQuote {
+      padding: 13px 40px 13px 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .price {
+      text-align: right;
+      padding-right: 40px;
+    }
+
+    .priceDiff {
+      text-align: right;
+      padding-right: 20px;
+    }
+}
+
+.active, .active:hover {
+  background-color: $grey-mid-active;
 }
 
 // ---------------------
-
-
-.active {
-    font-weight: bold;
-}
-.passive {
-    font-weight: normal;
-}
-
 
 // style of box with info like current or yesterday price
 .pairInfo {

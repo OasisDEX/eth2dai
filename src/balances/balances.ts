@@ -61,7 +61,7 @@ export function createBalances$(
     switchMap(([context, account]) =>
       !account ? of({}) :
         forkJoin(
-          Object.keys(context.tokens).map((token: string) =>
+          Object.keys(tokens).filter(name => name !== 'ETH').map((token: string) =>
             balance$(context, token, account).pipe(
               map(balance => ({
                 [token]: balance
@@ -96,7 +96,7 @@ export function createDustLimits$(context$: Observable<NetworkConfig>): Observab
   return combineLatest(context$).pipe(
     switchMap(([context]) =>
       forkJoin(
-        Object.keys(context.tokens).map((token: string) =>
+        Object.keys(tokens).filter(name => name !== 'ETH').map((token: string) =>
           bindNodeCallback(context.otc.contract.getMinSell as Dust)(
             context.tokens[token].address
           ).pipe(
@@ -128,7 +128,7 @@ export function createAllowances$(
   return combineLatest(context$, initializedAccount$, onEveryBlock$).pipe(
     switchMap(([context, account]) =>
       forkJoin(
-        Object.keys(context.tokens)
+        Object.keys(tokens)
         .filter(token => token !== 'ETH')
         .map((token: string) =>
               bindNodeCallback(context.tokens[token].contract.allowance as Allowance)(

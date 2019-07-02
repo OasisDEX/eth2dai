@@ -4,11 +4,15 @@ import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { tokens, tradingPairs } from '../../blockchain/config';
-import { FormatAmount, FormatPercent, FormatPrice } from '../../utils/formatters/Formatters';
+import {
+  FormatAmount, FormatPercent, FormatPrice, FormatQuoteToken
+} from '../../utils/formatters/Formatters';
+import { Loadable } from '../../utils/loadable';
 import { WithLoadingIndicatorInline } from '../../utils/loadingIndicator/LoadingIndicator';
 import { ServerUnreachableInline } from '../../utils/loadingIndicator/ServerUnreachable';
 import { BoundarySpan, InfoLabel } from '../../utils/text/Text';
-import { TradingPair, TradingPairsProps } from './tradingPair';
+import { MarketsDetails } from '../exchange';
+import { TradingPair, tradingPairResolver, TradingPairsProps } from './tradingPair';
 import * as styles from './TradingPairView.scss';
 
 interface PairInfoVP {
@@ -16,9 +20,17 @@ interface PairInfoVP {
   label: string;
 }
 
-export class TradingPairView extends React.Component<TradingPairsProps, { showMenu: boolean }> {
+interface TradingPairViewState {
+  showMenu: boolean;
+}
 
-  public static PairVP({ pair, parentMatch }: { pair: TradingPair; parentMatch?: string }) {
+export class TradingPairView extends React.Component<TradingPairsProps, TradingPairViewState> {
+
+  public static PairVP({ pair, parentMatch, marketsDetailsLoadable }: {
+    pair: TradingPair,
+    parentMatch?: string,
+    marketsDetailsLoadable: Loadable<MarketsDetails>,
+  }) {
 
     const pathname = `${parentMatch}/${pair.base}/${pair.quote}`;
 
@@ -28,20 +40,50 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
           exact={true}
           to={{ pathname, state: { pair } }}
           activeClassName={styles.active}
-          className={styles.dropdownItemLink}
+          className={classnames(styles.dropdownItemLink, styles.pairView)}
         >
-          <TradingPairView.PairView base={pair.base} quote={pair.quote} />
+          <TradingPairView.PairView { ...{ pair, marketsDetailsLoadable } } />
         </NavLink>
       </li>
     );
   }
 
-  public static PairView({ base, quote }: any) {
+  public static PairView({ pair, marketsDetailsLoadable }: {
+    pair: TradingPair,
+    marketsDetailsLoadable: Loadable<MarketsDetails>,
+  }) {
+    const { base, quote } = pair;
     return (
-      <div className={styles.pairView}>
-        <div className={styles.pairViewIcon}>{tokens[base].iconCircle}</div>
-        <div className={styles.pairViewCurrency}>{base}</div>
-        <div className={styles.pairViewCurrency}>{quote}</div>
+      <>
+        <div className={styles.iconBase}>{tokens[base].icon}</div>
+        <div className={styles.tokenBase}>{base}</div>
+        <div className={styles.tokenQuote}><FormatQuoteToken token={quote} /></div>
+        <WithLoadingIndicatorInline loadable={marketsDetailsLoadable}>
+          {(marketsDetails) => {
+            const { price, priceDiff } = marketsDetails[tradingPairResolver(pair)];
+            return (<>
+              <div className={styles.iconQuote}>{tokens[quote].icon}</div>
+              <div className={styles.price}>{price &&
+                <FormatPrice value={price} token={quote} dontGroup={true} />
+              }</div>
+              <div className={styles.priceDiff}>{priceDiff &&
+                <BoundarySpan value={priceDiff}>
+                  <FormatPercent value={priceDiff} />
+                </BoundarySpan>
+              }</div>
+            </>);
+          }}
+        </WithLoadingIndicatorInline>
+      </>
+    );
+  }
+
+  public static ActivePairView({ base, quote }: any) {
+    return (
+      <div className={styles.activePairView}>
+        <div className={styles.activePairViewIcon}>{tokens[base].iconCircle}</div>
+        <div className={styles.activePairViewCurrency}>{base}</div>
+        <div className={styles.activePairViewCurrency}><FormatQuoteToken token={quote} /></div>
       </div>
     );
   }
@@ -69,13 +111,9 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
 
   public constructor(props: TradingPairsProps) {
     super(props);
-
     this.state = {
       showMenu: false,
     };
-
-    this.showMenu = this.showMenu.bind(this);
-    this.closeMenu = this.closeMenu.bind(this);
   }
 
   public render() {
@@ -93,25 +131,28 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
         <div className={styles.dropdown}>
           <div tabIndex={dropdownDisabled ? undefined : -1}
                data-test-id="select-pair"
-               onClick={() => dropdownDisabled ? null : this.showMenu}
+               onClick={dropdownDisabled ? undefined : this.showMenu}
                className={classnames(styles.dropdownBtn, {
                  [styles.dropdownBtnDisabled]: dropdownDisabled,
                  [styles.dropdownBtnActive]: this.state.showMenu
                })}>
-            <TradingPairView.PairView base={base} quote={quote} />
+            <TradingPairView.ActivePairView base={base} quote={quote} />
           </div>
           {
-            this.state.showMenu
-              ? (
+            this.state.showMenu && (
+              <div className={styles.dropdownListWrapper}>
                 <ul className={styles.dropdownList}>
                   {tradingPairs.map((pair, i) => (
-                    <TradingPairView.PairVP parentMatch={parentMatch} key={i} pair={pair} />
+                    <TradingPairView.PairVP
+                      key={i}
+                      parentMatch={parentMatch}
+                      pair={pair}
+                      marketsDetailsLoadable={this.props.marketsDetails}
+                    />
                   ))}
                 </ul>
-              )
-              : (
-                null
-              )
+              </div>
+            )
           }
         </div>
 
@@ -158,22 +199,29 @@ export class TradingPairView extends React.Component<TradingPairsProps, { showMe
     );
   }
 
-  private showMenu(event: any) {
+  private showMenu = (event: any) => {
     event.preventDefault();
 
     this.setState({ showMenu: true }, () => {
       document.addEventListener('click', this.closeMenu);
     });
+
+    if (this.props.setPairPickerOpen) {
+      this.props.setPairPickerOpen(true);
+    }
   }
 
-  private closeMenu(_event: any) {
+  private closeMenu = (_event: any) => {
 
     // if (!this.dropdownMenu.contains(event.target)) {
     this.setState({ showMenu: false }, () => {
       document.removeEventListener('click', this.closeMenu);
     });
-
     // }
+
+    if (this.props.setPairPickerOpen) {
+      this.props.setPairPickerOpen(false);
+    }
   }
 
 }
