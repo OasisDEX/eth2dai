@@ -8,10 +8,21 @@ import { Button } from '../../utils/forms/Buttons';
 import { ButtonIcon, ProgressIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
 import { TopLeftCorner } from '../../utils/panel/TopRightCorner';
+import { WarningTooltip, WarningTooltipType } from '../../utils/tooltip/Tooltip';
 import * as instantStyles from '../Instant.scss';
 import { InstantFormChangeKind, ManualChange, Progress, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './AccountView.scss';
+
+// tslint:disable
+const proxyToolTip = {
+  id: 'proxy-tooltip',
+  text: 'Proxy is a supporting contract owned by you that groups different actions as one Ethereum transaction.',
+  iconColor: 'white'
+} as WarningTooltipType;
+
+const activeProxyTooltip = { ...proxyToolTip, iconColor: 'soft-cyan' as 'soft-cyan'};
+// tslint:enable
 
 export interface ViewProps {
   proxyAddress: string;
@@ -56,7 +67,7 @@ export class AccountView extends React.Component<ViewProps> {
         <div style={box}>
           <SvgImage className={styles.accountIcon} image={accountSvg}/>
           <span className={styles.text}>Proxy available</span>
-          <SvgImage className={styles.warningIcon} image={warningSvg}/>
+          <WarningTooltip {...activeProxyTooltip}/>
         </div>
       </div>
       <div className={classnames(styles.row, styles.allowances)}>
@@ -77,39 +88,39 @@ export class AccountView extends React.Component<ViewProps> {
     const progress = this.props.progress;
     const isInProgress = progress && !progress.done && !this.props.proxyAddress;
     return (
-    <>
-      <div className={classnames(styles.row, styles.proxyMissing)}>
-        <div style={box}>
-          <SvgImage className={styles.accountIcon} image={accountSvg}/>
-          <span className={styles.text}>Proxy not created</span>
-          <SvgImage className={styles.warningIcon} image={warningSvg}/>
+      <>
+        <div className={classnames(styles.row, styles.proxyMissing)}>
+          <div style={box}>
+            <SvgImage className={styles.accountIcon} image={accountSvg}/>
+            <span className={styles.text}>Proxy not created</span>
+            <WarningTooltip {...proxyToolTip}/>
+          </div>
+          <div className={styles.placeholder}>
+            {
+              isInProgress
+                ? <ProgressIcon/>
+                : (
+                  <Button
+                    size="sm"
+                    color="greyWhite"
+                    className={styles.button}
+                    onClick={this.props.createProxy}
+                  >
+                    Create
+                  </Button>
+                )
+            }
+          </div>
         </div>
-        <div className={styles.placeholder}>
-          {
-            isInProgress
-              ? <ProgressIcon/>
-              : (
-                <Button
-                  size="sm"
-                  color="greyWhite"
-                  className={styles.button}
-                  onClick={this.props.createProxy}
-                >
-                  Create
-                </Button>
-              )
-          }
-        </div>
-      </div>
-      <div className={classnames(styles.row, styles.warning)}>
-        <>
-          <SvgImage className={styles.warningIcon} image={warningSvg}/>
-          <span className={styles.text}>
+        <div className={classnames(styles.row, styles.warning)}>
+          <>
+            <SvgImage className={styles.warningIcon} image={warningSvg}/>
+            <span className={styles.text}>
             You do not need to create a proxy manually. It will be automatically created for you.
           </span>
-        </>
-      </div>
-    </>
+          </>
+        </div>
+      </>
     );
   }
 

@@ -21,6 +21,13 @@
 }
 
 .proxy {
+  &Missing, &Available {
+    .text {
+      display: inline-block;
+      margin-right: 6px;
+    }
+  }
+
   &Missing {
     .text {
       color: white;

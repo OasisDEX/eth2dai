@@ -11,7 +11,7 @@ export interface TooltipType {
 }
 
 export interface WarningTooltipType extends TooltipType {
-  iconColor?: 'white' | 'grey';
+  iconColor?: 'white' | 'grey' | 'soft-cyan';
 }
 
 export class WarningTooltip extends React.Component<WarningTooltipType> {
@@ -21,6 +21,7 @@ export class WarningTooltip extends React.Component<WarningTooltipType> {
       <Tooltip id={id} text={text}>
         <SvgImage data-tip={true} data-for={id} className={classnames(styles.warningIcon, {
           [styles.white]: iconColor === 'white',
+          [styles.softCyan]: iconColor === 'soft-cyan',
           [styles.grey]: !iconColor || iconColor === 'grey'
         })} image={warningSvg}/>
       </Tooltip>
