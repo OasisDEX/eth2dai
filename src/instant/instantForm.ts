@@ -18,6 +18,7 @@ import { Allowances, Balances, DustLimits } from '../balances/balances';
 import { Calls, calls$, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/calls/calls';
 import { eth2weth, weth2eth } from '../blockchain/calls/instant';
 import { NetworkConfig, tokens } from '../blockchain/config';
+import { EtherscanConfig } from '../blockchain/etherscan';
 import { isDone, TxStatus } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
@@ -68,6 +69,7 @@ export enum MessageKind {
   dustAmount = 'dustAmount',
   orderbookTotalExceeded = 'orderbookTotalExceeded',
   notConnected = 'notConnected',
+  txInProgress = 'txInProgress',
 }
 
 export type Message = {
@@ -93,6 +95,13 @@ export type Message = {
   field: string;
   priority: number;
   placement: Placement;
+} | {
+  kind: MessageKind.txInProgress;
+  progress: Progress;
+  field: string;
+  priority: number;
+  placement: Placement;
+  etherscan?: EtherscanConfig
 // } | {
 //   kind: MessageKind.custom
 //   field: string;
@@ -157,6 +166,7 @@ export type Progress = {
 } | {
   kind: ProgressKind.onlyProxy
   proxyTxStatus: TxStatus;
+  txHash?: string;
   tradeTxStatus?: TxStatus;
 });
 
@@ -650,6 +660,17 @@ function validate(state: InstantFormState): InstantFormState {
     });
   }
 
+  if (state.progress && !state.progress.done) {
+    message = prioritize(message, {
+      kind: MessageKind.txInProgress,
+      etherscan: state.context && state.context.etherscan,
+      progress: state.progress,
+      field: spendField,
+      priority: 900,
+      placement: Position.BOTTOM,
+    });
+  }
+
   if (spendAmount && (
     spendToken === 'ETH' && state.etherBalance && state.etherBalance.lt(spendAmount) ||
     state.balances && state.balances[spendToken] && state.balances[spendToken].lt(spendAmount)
@@ -788,6 +809,7 @@ function manualProxyCreation(
         progress: {
           kind: ProgressKind.onlyProxy,
           proxyTxStatus: progress.status,
+          txHash: (progress as { txHash: string; }).txHash,
           done: isDone(progress)
         }
       });

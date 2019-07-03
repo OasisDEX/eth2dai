@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
+import { etherscan, EtherscanConfig } from '../../blockchain/etherscan';
 import accountSvg from '../../icons/account.svg';
 import cogWheelSvg from '../../icons/cog-wheel.svg';
 import swapArrowsSvg from '../../icons/swap-arrows.svg';
@@ -17,10 +18,15 @@ import {
   Message,
   MessageKind,
   Position,
+  ProgressKind,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import { Buying, Selling } from '../TradingSide';
+
+const inProgressMessages = new Map<ProgressKind, string>([
+  [ProgressKind.onlyProxy, 'Your manual proxy creation is pending...'],
+]);
 
 function error(msg: Message | undefined) {
   if (!msg) {
@@ -57,6 +63,23 @@ function error(msg: Message | undefined) {
           Connect wallet to proceed with order
         </>
       );
+    case MessageKind.txInProgress:
+      const message = inProgressMessages.get(msg.progress.kind) || 'A transaction is pending...';
+      const txHash = (msg.progress as { txHash?: string }).txHash;
+      return txHash
+        ? (
+          <a href={etherscan(msg.etherscan || {} as EtherscanConfig).transaction(txHash).url}
+             rel='noreferrer noopener'
+             target='_blank'
+             style={{
+               color: '#80D8FF'
+             }}
+          >
+            {message}
+          </a>
+        )
+        : <> {message} </>
+
   }
 // tslint:enable
 }
@@ -95,7 +118,8 @@ export class NewTradeView extends React.Component<InstantFormState> {
         </TopRightCorner>
         <TopLeftCorner>
           <ButtonIcon
-            className={styles.cornerIcon}
+            disabled={!(user && user.account)}
+            className={classnames(styles.cornerIcon, styles.accountIcon)}
             onClick={this.showAccountSettings}
             image={accountSvg}/>
         </TopLeftCorner>
@@ -137,10 +161,14 @@ export class NewTradeView extends React.Component<InstantFormState> {
         </div>
         <div data-test-id="error"
              className={classnames(
-               message && message.kind === MessageKind.notConnected
+               message && [
+                 MessageKind.txInProgress,
+                 MessageKind.notConnected
+               ].includes(message.kind)
                  ? styles.warnings
                  : styles.errors,
-               message && message.placement === Position.BOTTOM
+               message &&
+               message.placement === Position.BOTTOM
                  ? ''
                  : styles.hidden,
              )}>
