@@ -7,7 +7,7 @@ import {
   distinctUntilChanged,
   first,
   flatMap,
-  map,
+  map, mergeMap,
   scan,
   shareReplay,
   startWith,
@@ -19,6 +19,7 @@ import { Calls, calls$, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/call
 import { eth2weth, weth2eth } from '../blockchain/calls/instant';
 import { NetworkConfig, tokens } from '../blockchain/config';
 import { EtherscanConfig } from '../blockchain/etherscan';
+import { GasPrice$ } from '../blockchain/network';
 import { isDone, TxStatus } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
@@ -794,15 +795,25 @@ function prepareSubmit(
 
 function manualProxyCreation(
   theCalls$: Calls$,
+  gasPrice$: GasPrice$,
 ): [() => void, Observable<ProgressChange>] {
 
   const proxyCreationChange$ = new Subject<ProgressChange>();
 
   function createProxy() {
     theCalls$.pipe(
-      flatMap((calls) =>
-        calls.setupProxy({})
-      )
+      map(calls =>
+        combineLatest(calls.setupProxyEstimateGas({}), gasPrice$)
+          .pipe(
+            switchMap(([estimatedGas, gasPrice]) =>
+              calls.setupProxy({
+                gasPrice,
+                gasEstimation: estimatedGas
+              })
+            )
+          )
+      ),
+      switchMap(result => result)
     ).subscribe(progress => {
       proxyCreationChange$.next({
         kind: InstantFormChangeKind.progressChange,
@@ -908,7 +919,7 @@ export function createFormController$(
   );
 
   const [submit, submitChange$] = prepareSubmit(params.calls$);
-  const [createProxy, proxyCreationChange$] = manualProxyCreation(params.calls$);
+  const [createProxy, proxyCreationChange$] = manualProxyCreation(params.calls$, params.gasPrice$);
 
   const initialState: InstantFormState = {
     submit,

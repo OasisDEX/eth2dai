@@ -97,7 +97,6 @@ export class AllowancesView extends React.Component<ViewProps> {
                             : calls.approveProxy(args)
                         )
                       ).subscribe(progress => {
-                        console.log(isDone(progress));
                         observable.next({
                           ...observable.getValue(),
                           inProgress: (

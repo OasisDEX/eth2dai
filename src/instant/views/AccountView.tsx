@@ -1,6 +1,7 @@
 import classnames from 'classnames';
 import * as React from 'react';
 import { Allowances } from '../../balances/balances';
+import { TxStatus } from '../../blockchain/transactions';
 import accountSvg from '../../icons/account.svg';
 import backSvg from '../../icons/back.svg';
 import warningSvg from '../../icons/warning.svg';
@@ -21,7 +22,8 @@ const proxyToolTip = {
   iconColor: 'white'
 } as WarningTooltipType;
 
-const activeProxyTooltip = { ...proxyToolTip, iconColor: 'soft-cyan' as 'soft-cyan'};
+const activeProxyTooltip = { ...proxyToolTip, iconColor: 'soft-cyan' as 'soft-cyan' };
+
 // tslint:enable
 
 export interface ViewProps {
@@ -39,7 +41,7 @@ const box = {
 
 export class AccountView extends React.Component<ViewProps> {
   public render() {
-    const { proxyAddress } = this.props;
+    const { proxyAddress, progress } = this.props;
 
     return (
       <InstantFormWrapper heading={'Account Overview'}>
@@ -52,7 +54,11 @@ export class AccountView extends React.Component<ViewProps> {
         </TopLeftCorner>
         <div className={classnames(instantStyles.details, instantStyles.account)}>
           {
-            proxyAddress
+            proxyAddress || (
+              progress
+              && progress.done
+              && (progress as { proxyTxStatus: TxStatus}).proxyTxStatus === 'Success'
+            )
               ? this.onHavingProxy()
               : this.onMissingProxy()
           }
