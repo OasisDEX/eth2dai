@@ -55,9 +55,10 @@ export class AccountView extends React.Component<ViewProps> {
         <div className={classnames(instantStyles.details, instantStyles.account)}>
           {
             proxyAddress || (
-              progress
+              proxyAddress
+              && progress
               && progress.done
-              && (progress as { proxyTxStatus: TxStatus}).proxyTxStatus === 'Success'
+              && (progress as { proxyTxStatus: TxStatus }).proxyTxStatus === 'Success'
             )
               ? this.onHavingProxy()
               : this.onMissingProxy()
