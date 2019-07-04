@@ -11,7 +11,7 @@ import {
   scan,
   shareReplay,
   startWith,
-  switchMap,
+  switchMap, tap,
 } from 'rxjs/operators';
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';
@@ -120,6 +120,7 @@ export enum TradeEvaluationStatus {
 
 export enum ProgressKind {
   onlyProxy = 'onlyProxy',
+  onlyAllowance = 'onlyAllowance',
   proxyPayWithETH = 'proxyPayWithETH',
   noProxyPayWithETH = 'noProxyPayWithETH',
   noProxyNoAllowancePayWithERC20 = 'noProxyNoAllowancePayWithERC20',
@@ -139,12 +140,28 @@ export enum ViewKind {
   summary = 'summary'
 }
 
-export type Progress = {
-  gasUsed?: BigNumber,
-  bought?: BigNumber,
-  sold?: BigNumber
+interface GenericProgress {
+  gasUsed?: BigNumber;
+  bought?: BigNumber;
+  sold?: BigNumber;
   done: boolean;
-} & ({
+}
+
+interface ManualProxyProgress  extends GenericProgress{
+  kind: ProgressKind.onlyProxy;
+  proxyTxStatus: TxStatus;
+  txHash?: string;
+  tradeTxStatus?: TxStatus;
+}
+
+interface ManualAllowanceProgress extends GenericProgress{
+  kind: ProgressKind.onlyAllowance;
+  allowanceTxStatus: TxStatus;
+  txHash?: string;
+  tradeTxStatus?: TxStatus;
+}
+
+export type Progress = GenericProgress & ({
   kind: ProgressKind.proxyPayWithETH
     | ProgressKind.noProxyPayWithETH
     | ProgressKind.proxyAllowancePayWithERC20
@@ -164,12 +181,8 @@ export type Progress = {
   allowanceTxHash?: string
   tradeTxStatus?: TxStatus;
   tradeTxHash?: string
-} | {
-  kind: ProgressKind.onlyProxy
-  proxyTxStatus: TxStatus;
-  txHash?: string;
-  tradeTxStatus?: TxStatus;
-});
+} | ManualProxyProgress
+  | ManualAllowanceProgress);
 
 interface TradeEvaluationState {
   buyAmount?: BigNumber;
@@ -179,7 +192,14 @@ interface TradeEvaluationState {
   bestPrice?: BigNumber;
 }
 
-export interface InstantFormState extends HasGasEstimation, TradeEvaluationState {
+export interface ManualAllowanceProgressState {
+  toggleAllowance: (token: string) => void;
+  manualAllowancesProgress?: { [token: string]: ManualAllowanceProgress };
+}
+
+export interface InstantFormState extends HasGasEstimation,
+  TradeEvaluationState,
+  ManualAllowanceProgressState {
   view: ViewKind;
   readyToProceed?: boolean;
   progress?: Progress;
@@ -216,6 +236,7 @@ export enum InstantFormChangeKind {
   allowancesChange = 'allowancesChange',
   slippageLimitChange = 'slippageLimitChange',
   contextChange = 'contextChange',
+  manualAllowanceChange = 'manualAllowanceChange',
 }
 
 export interface ProgressChange {
@@ -276,6 +297,12 @@ export interface SlippageLimitChange {
   value: BigNumber;
 }
 
+export interface ManualAllowanceChange {
+  kind: InstantFormChangeKind.manualAllowanceChange;
+  token: string;
+  progress: ManualAllowanceProgress;
+}
+
 export type ManualChange =
   BuyAmountChange |
   SellAmountChange |
@@ -283,7 +310,8 @@ export type ManualChange =
   TokenChange |
   FormResetChange |
   ViewChange |
-  SlippageLimitChange;
+  SlippageLimitChange |
+  ManualAllowanceChange;
 
 export type EnvironmentChange =
   GasPriceChange |
@@ -460,6 +488,13 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
       return {
         ...state,
         slippageLimit: change.value
+      };
+    case InstantFormChangeKind.manualAllowanceChange:
+      const manualAllowancesProgress = ({ ...state.manualAllowancesProgress } || {}) as any;
+      manualAllowancesProgress[change.token] = change.progress;
+      return {
+        ...state,
+        manualAllowancesProgress
       };
   }
 
@@ -808,7 +843,7 @@ function manualProxyCreation(
   function createProxy() {
     theCalls$.pipe(
       first(),
-      map(calls =>
+      switchMap(calls =>
         combineLatest(calls.setupProxyEstimateGas({}), gasPrice$)
           .pipe(
             switchMap(([estimatedGas, gasPrice]) =>
@@ -819,7 +854,6 @@ function manualProxyCreation(
             )
           )
       ),
-      switchMap(result => result)
     ).subscribe(progress => {
       proxyCreationChange$.next({
         kind: InstantFormChangeKind.progressChange,
@@ -834,6 +868,52 @@ function manualProxyCreation(
   }
 
   return [createProxy, proxyCreationChange$];
+}
+
+function manualAllowanceSetup(
+  theCalls$: Calls$,
+  gasPrice$: GasPrice$,
+  proxyAddress$: Observable<string>,
+  allowances$: Observable<Allowances>
+): [(token: string) => void, Observable<ManualAllowanceChange>] {
+  const manualAllowanceProgressChanges$ = new Subject<ManualAllowanceChange>();
+
+  function toggleAllowance(token: string) {
+    theCalls$.pipe(
+      first(),
+      switchMap((calls) =>
+        combineLatest(proxyAddress$, allowances$).pipe(
+          switchMap(([proxyAddress, allowances]) =>
+            combineLatest(calls.approveProxyEstimateGas({ token, proxyAddress }), gasPrice$).pipe(
+              switchMap(([estimation, gasPrice]) => {
+                const gasCost = {
+                  gasPrice,
+                  gasEstimation: estimation,
+                };
+
+                return allowances[token]
+                  ? calls.disapproveProxy({ proxyAddress, token, ...gasCost })
+                  : calls.approveProxy({ proxyAddress, token, ...gasCost });
+              })
+            )
+          )
+        )
+      ),
+    ).subscribe(progress => {
+      manualAllowanceProgressChanges$.next({
+        token,
+        kind: InstantFormChangeKind.manualAllowanceChange,
+        progress: {
+          kind: ProgressKind.onlyAllowance,
+          allowanceTxStatus: progress.status,
+          txHash: (progress as { txHash: string; }).txHash,
+          done: isDone(progress)
+        } as ManualAllowanceProgress
+      });
+    });
+  }
+
+  return [toggleAllowance, manualAllowanceProgressChanges$];
 }
 
 function toDustLimitsChange(dustLimits$: Observable<DustLimits>): Observable<DustLimitsChange> {
@@ -926,10 +1006,17 @@ export function createFormController$(
 
   const [submit, submitChange$] = prepareSubmit(params.calls$);
   const [createProxy, proxyCreationChange$] = manualProxyCreation(params.calls$, params.gasPrice$);
+  const [toggleAllowance, manualAllowanceProgressChanges$] = manualAllowanceSetup(
+    params.calls$,
+    params.gasPrice$,
+    params.proxyAddress$,
+    params.allowances$
+  );
 
   const initialState: InstantFormState = {
     submit,
     createProxy,
+    toggleAllowance,
     change: manualChange$.next.bind(manualChange$),
     buyToken: 'DAI',
     sellToken: 'ETH',
@@ -948,9 +1035,11 @@ export function createFormController$(
     manualChange$,
     submitChange$,
     proxyCreationChange$,
+    manualAllowanceProgressChanges$,
     environmentChange$,
   ).pipe(
     scan(applyChange, initialState),
+    tap((state: InstantFormState) => console.log(state.manualAllowancesProgress)),
     distinctUntilChanged(isEqual),
     switchSpread(
       evaluateTradeWithCalls(params.readCalls$),
