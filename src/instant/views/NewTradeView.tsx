@@ -26,7 +26,8 @@ import { Buying, Selling } from '../TradingSide';
 
 const inProgressMessages = new Map<ProgressKind, (msg: TxInProgressMessage) => string>(
   [
-    [ProgressKind.onlyProxy, (_: TxInProgressMessage) => `Your manual proxy creation is pending...`],
+    [ProgressKind.onlyProxy, (_: TxInProgressMessage) =>
+      `Your manual proxy creation is pending...`],
     [ProgressKind.onlyAllowance, (msg: TxInProgressMessage) => {
       const progress = msg.progress as ManualAllowanceProgress;
 
