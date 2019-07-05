@@ -11,7 +11,7 @@ import {
   scan,
   shareReplay,
   startWith,
-  switchMap, tap,
+  switchMap, take,
 } from 'rxjs/operators';
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';
@@ -72,6 +72,14 @@ export enum MessageKind {
   notConnected = 'notConnected',
   txInProgress = 'txInProgress',
 }
+export interface TxInProgressMessage{
+  kind: MessageKind.txInProgress;
+  progress: Progress;
+  field: string;
+  priority: number;
+  placement: Placement;
+  etherscan?: EtherscanConfig;
+}
 
 export type Message = {
   kind: MessageKind.dustAmount
@@ -96,20 +104,7 @@ export type Message = {
   field: string;
   priority: number;
   placement: Placement;
-} | {
-  kind: MessageKind.txInProgress;
-  progress: Progress;
-  field: string;
-  priority: number;
-  placement: Placement;
-  etherscan?: EtherscanConfig
-// } | {
-//   kind: MessageKind.custom
-//   field: string;
-//   priority: number;
-//   placement: Placement;
-//   error: any
-};
+} | TxInProgressMessage;
 
 export enum TradeEvaluationStatus {
   unset = 'unset',
@@ -147,15 +142,17 @@ interface GenericProgress {
   done: boolean;
 }
 
-interface ManualProxyProgress  extends GenericProgress{
+interface ManualProxyProgress extends GenericProgress {
   kind: ProgressKind.onlyProxy;
   proxyTxStatus: TxStatus;
   txHash?: string;
   tradeTxStatus?: TxStatus;
 }
 
-interface ManualAllowanceProgress extends GenericProgress{
+export interface ManualAllowanceProgress extends GenericProgress {
   kind: ProgressKind.onlyAllowance;
+  token: string;
+  direction: 'locking' | 'unlocking';
   allowanceTxStatus: TxStatus;
   txHash?: string;
   tradeTxStatus?: TxStatus;
@@ -691,6 +688,7 @@ function validate(state: InstantFormState): InstantFormState {
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
   const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
   const dustLimits = state.dustLimits;
+  const manualAllowancesProgress = state.manualAllowancesProgress;
 
   if (!state.user || !state.user.account) {
     message = prioritize(message, {
@@ -710,6 +708,23 @@ function validate(state: InstantFormState): InstantFormState {
       priority: 900,
       placement: Position.BOTTOM,
     });
+  }
+
+  if (manualAllowancesProgress) {
+    const settingAllowanceInProgress = Object.keys(manualAllowancesProgress).find((token) =>
+      manualAllowancesProgress[token] && !manualAllowancesProgress[token].done
+    );
+
+    if (settingAllowanceInProgress) {
+      message = prioritize(message, {
+        kind: MessageKind.txInProgress,
+        etherscan: state.context && state.context.etherscan,
+        progress: manualAllowancesProgress[settingAllowanceInProgress],
+        field: spendField,
+        priority: 900,
+        placement: Position.BOTTOM,
+      });
+    }
   }
 
   if (spendAmount && (
@@ -883,8 +898,10 @@ function manualAllowanceSetup(
       first(),
       switchMap((calls) =>
         combineLatest(proxyAddress$, allowances$).pipe(
+          take(1),
           switchMap(([proxyAddress, allowances]) =>
             combineLatest(calls.approveProxyEstimateGas({ token, proxyAddress }), gasPrice$).pipe(
+              take(1),
               switchMap(([estimation, gasPrice]) => {
                 const gasCost = {
                   gasPrice,
@@ -892,18 +909,32 @@ function manualAllowanceSetup(
                 };
 
                 return allowances[token]
-                  ? calls.disapproveProxy({ proxyAddress, token, ...gasCost })
-                  : calls.approveProxy({ proxyAddress, token, ...gasCost });
+                  ? calls.disapproveProxy({ proxyAddress, token, ...gasCost }).pipe(
+                    switchMap(progress => of({
+                      token,
+                      progress,
+                      direction: 'locking',
+                    }))
+                  )
+                  : calls.approveProxy({ proxyAddress, token, ...gasCost }).pipe(
+                    switchMap(progress => of({
+                      token,
+                      progress,
+                      direction: 'unlocking',
+                    }))
+                  );
               })
             )
           )
         )
       ),
-    ).subscribe(progress => {
+    ).subscribe(({ direction, progress }) => {
       manualAllowanceProgressChanges$.next({
         token,
         kind: InstantFormChangeKind.manualAllowanceChange,
         progress: {
+          token,
+          direction,
           kind: ProgressKind.onlyAllowance,
           allowanceTxStatus: progress.status,
           txHash: (progress as { txHash: string; }).txHash,
@@ -1039,7 +1070,6 @@ export function createFormController$(
     environmentChange$,
   ).pipe(
     scan(applyChange, initialState),
-    tap((state: InstantFormState) => console.log(state.manualAllowancesProgress)),
     distinctUntilChanged(isEqual),
     switchSpread(
       evaluateTradeWithCalls(params.readCalls$),

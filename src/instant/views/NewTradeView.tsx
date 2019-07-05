@@ -13,20 +13,27 @@ import { TradeDetails } from '../details/TradeDetails';
 import * as styles from '../Instant.scss';
 import {
   InstantFormChangeKind,
-  InstantFormState,
+  InstantFormState, ManualAllowanceProgress,
   ManualChange,
   Message,
   MessageKind,
   Position,
-  ProgressKind,
+  ProgressKind, TxInProgressMessage,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import { Buying, Selling } from '../TradingSide';
 
-const inProgressMessages = new Map<ProgressKind, string>([
-  [ProgressKind.onlyProxy, 'Your manual proxy creation is pending...'],
-]);
+const inProgressMessages = new Map<ProgressKind, (msg: TxInProgressMessage) => string>(
+  [
+    [ProgressKind.onlyProxy, (_: TxInProgressMessage) => `Your manual proxy creation is pending...`],
+    [ProgressKind.onlyAllowance, (msg: TxInProgressMessage) => {
+      const progress = msg.progress as ManualAllowanceProgress;
+
+      return `Your ${progress.token.toUpperCase()} ${progress.direction} is pending...`;
+    }]
+  ]
+);
 
 function error(msg: Message | undefined) {
   if (!msg) {
@@ -64,7 +71,13 @@ function error(msg: Message | undefined) {
         </>
       );
     case MessageKind.txInProgress:
-      const message = inProgressMessages.get(msg.progress.kind) || 'A transaction is pending...';
+      let message = 'A transaction is pending...';
+      const customize = inProgressMessages.get(msg.progress.kind);
+
+      if (customize) {
+        message = customize(msg)
+      }
+
       const txHash = (msg.progress as { txHash?: string }).txHash;
       return txHash
         ? (
