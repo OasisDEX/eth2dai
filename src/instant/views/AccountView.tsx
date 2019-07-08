@@ -81,7 +81,7 @@ export class AccountView extends React.Component<ViewProps> {
         <span className={styles.text}>{this.allowedTokens()} Tokens enabled for Trading</span>
         <Button
           size="sm"
-          color="greyWhite"
+          color="grey"
           className={styles.button}
           onClick={this.switchToAllowances}
         >
@@ -109,7 +109,7 @@ export class AccountView extends React.Component<ViewProps> {
                 : (
                   <Button
                     size="sm"
-                    color="greyWhite"
+                    color="grey"
                     className={styles.button}
                     onClick={this.props.createProxy}
                   >
