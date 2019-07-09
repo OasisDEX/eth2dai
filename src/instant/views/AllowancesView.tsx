@@ -6,14 +6,13 @@ import { Button, CloseButton } from '../../utils/forms/Buttons';
 import { SvgImage } from '../../utils/icons/utils';
 import { LoadingIndicator } from '../../utils/loadingIndicator/LoadingIndicator';
 import { TopRightCorner } from '../../utils/panel/TopRightCorner';
+import { InstantFormChangeKind, ManualChange } from '../apply';
 import * as instantStyles from '../Instant.scss';
 import {
-  InstantFormChangeKind,
-  ManualAllowanceProgressState,
-  ManualChange,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
+import { ManualAllowanceProgressState } from '../progress/progress';
 import * as styles from './AllowancesView.scss';
 
 interface AssetProps {

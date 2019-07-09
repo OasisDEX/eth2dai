@@ -9,20 +9,22 @@ import { formatAmount } from '../../utils/formatters/format';
 import { ButtonIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
 import { TopLeftCorner, TopRightCorner } from '../../utils/panel/TopRightCorner';
+import { InstantFormChangeKind, ManualChange } from '../apply';
 import { TradeDetails } from '../details/TradeDetails';
 import * as styles from '../Instant.scss';
 import {
-  InstantFormChangeKind,
-  InstantFormState, ManualAllowanceProgress,
-  ManualChange,
-  Message,
-  MessageKind,
-  Position,
-  ProgressKind, TxInProgressMessage,
+  InstantFormState,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
+import { ManualAllowanceProgress, ProgressKind } from '../progress/progress';
 import { Buying, Selling } from '../TradingSide';
+import {
+  Message,
+  MessageKind,
+  Position,
+  TxInProgressMessage,
+} from '../validate';
 
 const inProgressMessages = new Map<ProgressKind, (msg: TxInProgressMessage) => string>(
   [

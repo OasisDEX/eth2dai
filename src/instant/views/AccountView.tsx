@@ -10,9 +10,11 @@ import { ButtonIcon, ProgressIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
 import { TopLeftCorner } from '../../utils/panel/TopRightCorner';
 import { WarningTooltip, WarningTooltipType } from '../../utils/tooltip/Tooltip';
+import { InstantFormChangeKind, ManualChange } from '../apply';
 import * as instantStyles from '../Instant.scss';
-import { InstantFormChangeKind, ManualChange, Progress, ViewKind } from '../instantForm';
+import { ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
+import { Progress } from '../progress/progress';
 import * as styles from './AccountView.scss';
 
 // tslint:disable
