@@ -4,14 +4,14 @@ import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
-  distinctUntilChanged,
+  distinctUntilChanged, filter,
   first,
   flatMap,
   map,
   scan,
   shareReplay,
   startWith,
-  switchMap, take,
+  switchMap, take, takeUntil,
 } from 'rxjs/operators';
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';
@@ -20,7 +20,7 @@ import { eth2weth, weth2eth } from '../blockchain/calls/instant';
 import { NetworkConfig, tokens } from '../blockchain/config';
 import { EtherscanConfig } from '../blockchain/etherscan';
 import { GasPrice$ } from '../blockchain/network';
-import { isDone, TxStatus } from '../blockchain/transactions';
+import { isDone, isDoneButNotSuccessful, isSuccess, TxState, TxStatus } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
@@ -72,7 +72,8 @@ export enum MessageKind {
   notConnected = 'notConnected',
   txInProgress = 'txInProgress',
 }
-export interface TxInProgressMessage{
+
+export interface TxInProgressMessage {
   kind: MessageKind.txInProgress;
   progress: Progress;
   field: string;
@@ -892,6 +893,7 @@ function manualAllowanceSetup(
   allowances$: Observable<Allowances>
 ): [(token: string) => void, Observable<ManualAllowanceChange>] {
   const manualAllowanceProgressChanges$ = new Subject<ManualAllowanceChange>();
+  const pendingProgress$ = new Subject();
 
   function toggleAllowance(token: string) {
     theCalls$.pipe(
@@ -928,7 +930,18 @@ function manualAllowanceSetup(
           )
         )
       ),
-    ).subscribe(({ direction, progress }) => {
+    ).subscribe((txProgress) => {
+      pendingProgress$.next(txProgress);
+    });
+  }
+
+  combineLatest(allowances$, pendingProgress$).subscribe(
+    ([allowances, pendingProgress]) => {
+      const { token, direction, progress } = pendingProgress as {
+        token: string,
+        direction: 'locking' | 'unlocking',
+        progress: TxState
+      };
       manualAllowanceProgressChanges$.next({
         token,
         kind: InstantFormChangeKind.manualAllowanceChange,
@@ -938,11 +951,18 @@ function manualAllowanceSetup(
           kind: ProgressKind.onlyAllowance,
           allowanceTxStatus: progress.status,
           txHash: (progress as { txHash: string; }).txHash,
-          done: isDone(progress)
+          done: isSuccess(progress) && (
+            // If we are unlocking the given token, we wait until it's
+            // allowed which will be visible on the next block check.
+            (direction === 'unlocking' && allowances[token])
+            // If we are locking the given token, we wait until it's
+            // not allowed which will be visible on the next block check.
+            || (direction === 'locking' && !allowances[token])
+          ) || isDoneButNotSuccessful(progress)
         } as ManualAllowanceProgress
       });
-    });
-  }
+    }
+  );
 
   return [toggleAllowance, manualAllowanceProgressChanges$];
 }

@@ -75,28 +75,10 @@ export class AllowancesView extends React.Component<ViewProps> {
               .map(
                 (token: any, index: number) => {
                   const symbol = token.symbol;
-
                   const progress = manualAllowancesProgress && manualAllowancesProgress[symbol];
 
-                  const isInProgress =
-                    // up to the moment when the done property of progress is true
-                    (progress && !progress.done)
-                    // since there is inconsistency when the tx is marked as done and
-                    // when we check if anything has changed the following block
-                    // the tx should be still pending unless th change is confirmed on next block
-                    || (
-                    progress && progress.done
-                    && (
-                      // If we are unlocking the given token, we wait until it's
-                      // allowed which will be visible on the next block check.
-                      (progress.direction === 'unlocking' && !allowances[symbol])
-                      // If we are locking the given token, we wait until it's
-                      // not allowed which will be visible on the next block check.
-                      || (progress.direction === 'locking' && allowances[symbol])
-                    ));
-
                   return <AssetAllowance isAllowed={allowances[symbol]}
-                                         inProgress={isInProgress}
+                                         inProgress={progress && !progress.done}
                                          key={index}
                                          asset={token}
                                          onClick={() => {
