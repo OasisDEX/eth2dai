@@ -237,6 +237,17 @@ export function manualProxyCreation(
   return [createProxy, proxyCreationChange$];
 }
 
+enum AllowanceDirection {
+  locking = 'locking',
+  unlocking = 'unlocking',
+}
+
+interface UnidirectionalManualAllowanceStatus {
+  token: string;
+  direction: AllowanceDirection;
+  progress: TxState;
+}
+
 export function manualAllowanceSetup(
   theCalls$: Calls$,
   gasPrice$: GasPrice$,
@@ -244,7 +255,7 @@ export function manualAllowanceSetup(
   allowances$: Observable<Allowances>
 ): [(token: string) => void, Observable<ManualAllowanceChange>] {
   const manualAllowanceProgressChanges$ = new Subject<ManualAllowanceChange>();
-  const pendingProgress$ = new Subject();
+  const allowanceStatus$ = new Subject<UnidirectionalManualAllowanceStatus>();
 
   function toggleAllowance(token: string) {
     theCalls$.pipe(
@@ -266,14 +277,14 @@ export function manualAllowanceSetup(
                     switchMap(progress => of({
                       token,
                       progress,
-                      direction: 'locking',
+                      direction: AllowanceDirection.locking,
                     }))
                   )
                   : calls.approveProxy({ proxyAddress, token, ...gasCost }).pipe(
                     switchMap(progress => of({
                       token,
                       progress,
-                      direction: 'unlocking',
+                      direction: AllowanceDirection.unlocking
                     }))
                   );
               })
@@ -282,17 +293,13 @@ export function manualAllowanceSetup(
         )
       ),
     ).subscribe((txProgress) => {
-      pendingProgress$.next(txProgress);
+      allowanceStatus$.next(txProgress);
     });
   }
 
-  combineLatest(allowances$, pendingProgress$).subscribe(
-    ([allowances, pendingProgress]) => {
-      const { token, direction, progress } = pendingProgress as {
-        token: string,
-        direction: 'locking' | 'unlocking',
-        progress: TxState
-      };
+  combineLatest(allowances$, allowanceStatus$).subscribe(
+    ([allowances, allowanceStatus]) => {
+      const { token, direction, progress } = allowanceStatus;
       manualAllowanceProgressChanges$.next({
         token,
         kind: InstantFormChangeKind.manualAllowanceChange,
