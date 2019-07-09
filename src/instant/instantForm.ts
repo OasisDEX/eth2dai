@@ -4,14 +4,14 @@ import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
   catchError,
-  distinctUntilChanged, filter,
+  distinctUntilChanged,
   first,
   flatMap,
   map,
   scan,
   shareReplay,
   startWith,
-  switchMap, take, takeUntil,
+  switchMap, take,
 } from 'rxjs/operators';
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';

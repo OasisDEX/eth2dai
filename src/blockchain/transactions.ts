@@ -77,37 +77,37 @@ export type TxState = {
   dismissed: boolean;
 } & (
   | {
-  status: TxStatus.WaitingForApproval;
-}
+    status: TxStatus.WaitingForApproval;
+  }
   | {
-  status: TxStatus.CancelledByTheUser;
-  error: any;
-}
+    status: TxStatus.CancelledByTheUser;
+    error: any;
+  }
   | {
-  status: TxStatus.WaitingForConfirmation | TxStatus.Propagating;
-  txHash: string;
-  broadcastedAt: Date;
-}
+    status: TxStatus.WaitingForConfirmation | TxStatus.Propagating;
+    txHash: string;
+    broadcastedAt: Date;
+  }
   | {
-  status: TxStatus.Success;
-  txHash: string;
-  blockNumber: number;
-  receipt: any;
-  confirmations: number;
-  safeConfirmations: number;
-  rebroadcast?: TxRebroadcastStatus;
-}
+    status: TxStatus.Success;
+    txHash: string;
+    blockNumber: number;
+    receipt: any;
+    confirmations: number;
+    safeConfirmations: number;
+    rebroadcast?: TxRebroadcastStatus;
+  }
   | {
-  status: TxStatus.Failure;
-  txHash: string;
-  blockNumber: number;
-  receipt: any;
-}
+    status: TxStatus.Failure;
+    txHash: string;
+    blockNumber: number;
+    receipt: any;
+  }
   | {
-  status: TxStatus.Error;
-  txHash: string;
-  error: any;
-});
+    status: TxStatus.Error;
+    txHash: string;
+    error: any;
+  });
 
 let txCounter: number = 1;
 
@@ -313,7 +313,7 @@ export const transactions$: Observable<TxState[]> = combineLatest(
         default:
           throw new UnreachableCaseError(change);
       }
-    }, []),
+    },   []),
   ),
   account$,
   context$,
