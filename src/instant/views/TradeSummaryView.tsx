@@ -4,16 +4,14 @@ import { NetworkConfig } from '../../blockchain/config';
 import { amountFromWei } from '../../blockchain/utils';
 import { OfferType } from '../../exchange/orderbook/orderbook';
 import { calculateTradePrice } from '../../utils/price';
+import { InstantFormChangeKind, ManualChange } from '../apply';
 import { CurrentPrice } from '../CurrentPrice';
 import { TradeSummary } from '../details/TradeSummary';
 import {
-  InstantFormChangeKind,
-  ManualChange,
-  Progress,
-  ProgressKind,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
+import { Progress, ProgressKind } from '../progress/progress';
 
 interface ViewProps {
   change: (change: ManualChange) => void;

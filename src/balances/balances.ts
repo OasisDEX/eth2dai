@@ -143,6 +143,30 @@ export function createAllowances$(
   );
 }
 
+export function createProxyAllowances$(
+  context$: Observable<NetworkConfig>,
+  initializedAccount$: Observable<string>,
+  proxyAccount$: Observable<string>,
+  onEveryBlock$: Observable<number>,
+): Observable<Allowances> {
+  return combineLatest(context$, initializedAccount$, proxyAccount$, onEveryBlock$).pipe(
+    switchMap(([context, account, proxy]) =>
+      forkJoin(
+        Object.keys(context.tokens)
+          .filter(token => token !== 'ETH')
+          .map((token: string) =>
+            bindNodeCallback(context.tokens[token].contract.allowance as Allowance)(
+              account, proxy
+            ).pipe(
+              map((x: BigNumber) => ({ [token]: x.gte(MIN_ALLOWANCE) }))
+            )
+          )
+      ).pipe(concatAll(), scan((a, e) => ({ ...a, ...e }), {}), last())
+    ),
+    distinctUntilChanged(isEqual)
+  );
+}
+
 export interface CombinedBalance {
   name: string;
   balance: BigNumber;

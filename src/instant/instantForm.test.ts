@@ -11,7 +11,8 @@ import { setupFakeWeb3ForTesting } from '../blockchain/web3';
 import { createFakeOrderbook } from '../exchange/depthChart/fakeOrderBook';
 import { unpack } from '../utils/testHelpers';
 import { zero } from '../utils/zero';
-import { createFormController$, InstantFormChangeKind } from './instantForm';
+import { InstantFormChangeKind } from './apply';
+import { createFormController$ } from './instantForm';
 
 setupFakeWeb3ForTesting();
 
