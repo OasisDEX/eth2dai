@@ -1,18 +1,20 @@
 import { BigNumber } from 'bignumber.js';
 import { isEqual } from 'lodash';
 import { curry } from 'ramda';
-import { merge, Observable, Subject } from 'rxjs';
+import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
-  distinctUntilChanged,
+  distinctUntilChanged, first, flatMap,
   map,
   scan,
   shareReplay,
-  switchMap,
+  switchMap, take,
 } from 'rxjs/operators';
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';
 import { Calls, calls$, Calls$, ReadCalls, ReadCalls$ } from '../blockchain/calls/calls';
 import { NetworkConfig } from '../blockchain/config';
+import { GasPrice$ } from '../blockchain/network';
+import { isDone, isDoneButNotSuccessful, isSuccess, TxState } from '../blockchain/transactions';
 import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { combineAndMerge } from '../utils/combineAndMerge';
@@ -29,8 +31,11 @@ import {
 import { calculateTradePrice } from '../utils/price';
 import { switchSpread } from '../utils/switchSpread';
 import {
-  applyChange, InstantFormChangeKind, manualAllowanceSetup,
-  ManualChange, manualProxyCreation, prepareSubmit,
+  applyChange,
+  InstantFormChangeKind,
+  ManualAllowanceChange,
+  ManualChange,
+  ProgressChange,
   toAllowancesChange,
   toContextChange,
   toDustLimitsChange,
@@ -45,9 +50,14 @@ import { pluginDevModeHelpers } from './instantDevModeHelpers';
 import {
   estimateTradePayWithERC20,
   estimateTradePayWithETH,
-  estimateTradeReadonly,
+  estimateTradeReadonly, tradePayWithERC20, tradePayWithETH,
 } from './instantTransactions';
-import { ManualAllowanceProgressState, Progress } from './progress/progress';
+import {
+  ManualAllowanceProgress,
+  ManualAllowanceProgressState,
+  Progress,
+  ProgressKind
+} from './progress/progress';
 import { Message, validate } from './validate';
 
 export interface FormResetChange {
@@ -174,6 +184,153 @@ function freezeIfInProgress(previous: InstantFormState, state: InstantFormState)
     };
   }
   return state;
+}
+
+enum AllowanceDirection {
+  locking = 'locking',
+  unlocking = 'unlocking',
+}
+
+interface UnidirectionalManualAllowanceStatus {
+  token: string;
+  direction: AllowanceDirection;
+  progress: TxState;
+}
+
+export function manualAllowanceSetup(
+  theCalls$: Calls$,
+  gasPrice$: GasPrice$,
+  proxyAddress$: Observable<string>,
+  allowances$: Observable<Allowances>
+): [(token: string) => void, Observable<ManualAllowanceChange>] {
+  const manualAllowanceProgressChanges$ = new Subject<ManualAllowanceChange>();
+  const allowanceStatus$ = new Subject<UnidirectionalManualAllowanceStatus>();
+
+  function toggleAllowance(token: string) {
+    theCalls$.pipe(
+      first(),
+      switchMap((calls) =>
+        combineLatest(proxyAddress$, allowances$).pipe(
+          take(1),
+          switchMap(([proxyAddress, allowances]) =>
+            combineLatest(calls.approveProxyEstimateGas({ token, proxyAddress }), gasPrice$).pipe(
+              take(1),
+              switchMap(([estimation, gasPrice]) => {
+                const gasCost = {
+                  gasPrice,
+                  gasEstimation: estimation,
+                };
+
+                return allowances[token]
+                  ? calls.disapproveProxy({ proxyAddress, token, ...gasCost }).pipe(
+                    switchMap(progress => of({
+                      token,
+                      progress,
+                      direction: AllowanceDirection.locking,
+                    }))
+                  )
+                  : calls.approveProxy({ proxyAddress, token, ...gasCost }).pipe(
+                    switchMap(progress => of({
+                      token,
+                      progress,
+                      direction: AllowanceDirection.unlocking
+                    }))
+                  );
+              })
+            )
+          )
+        )
+      ),
+    ).subscribe((txProgress) => {
+      allowanceStatus$.next(txProgress);
+    });
+  }
+
+  combineLatest(allowances$, allowanceStatus$).subscribe(
+    ([allowances, allowanceStatus]) => {
+      const { token, direction, progress } = allowanceStatus;
+      manualAllowanceProgressChanges$.next({
+        token,
+        kind: InstantFormChangeKind.manualAllowanceChange,
+        progress: {
+          token,
+          direction,
+          kind: ProgressKind.onlyAllowance,
+          allowanceTxStatus: progress.status,
+          txHash: (progress as { txHash: string; }).txHash,
+          done: isSuccess(progress) && (
+            // If we are unlocking the given token, we wait until it's
+            // allowed which will be visible on the next block check.
+            (direction === 'unlocking' && allowances[token])
+            // If we are locking the given token, we wait until it's
+            // not allowed which will be visible on the next block check.
+            || (direction === 'locking' && !allowances[token])
+          ) || isDoneButNotSuccessful(progress)
+        } as ManualAllowanceProgress
+      });
+    }
+  );
+
+  return [toggleAllowance, manualAllowanceProgressChanges$];
+}
+
+export function manualProxyCreation(
+  theCalls$: Calls$,
+  gasPrice$: GasPrice$,
+): [() => void, Observable<ProgressChange>] {
+
+  const proxyCreationChange$ = new Subject<ProgressChange>();
+
+  function createProxy() {
+    theCalls$.pipe(
+      first(),
+      switchMap(calls =>
+        combineLatest(calls.setupProxyEstimateGas({}), gasPrice$)
+          .pipe(
+            switchMap(([estimatedGas, gasPrice]) =>
+              calls.setupProxy({
+                gasPrice,
+                gasEstimation: estimatedGas
+              })
+            )
+          )
+      ),
+    ).subscribe(progress => {
+      proxyCreationChange$.next({
+        kind: InstantFormChangeKind.progressChange,
+        progress: {
+          kind: ProgressKind.onlyProxy,
+          proxyTxStatus: progress.status,
+          txHash: (progress as { txHash: string; }).txHash,
+          done: isDone(progress)
+        }
+      });
+    });
+  }
+
+  return [createProxy, proxyCreationChange$];
+}
+
+export function prepareSubmit(
+  theCalls$: Calls$,
+): [(state: InstantFormState) => void, Observable<ProgressChange | FormResetChange>] {
+
+  const stageChange$ = new Subject<ProgressChange | FormResetChange>();
+
+  function submit(state: InstantFormState) {
+    theCalls$.pipe(
+      first(),
+      flatMap((calls) =>
+        calls.proxyAddress().pipe(
+          switchMap(proxyAddress => {
+            const sell = state.sellToken === 'ETH' ? tradePayWithETH : tradePayWithERC20;
+            return sell(calls, proxyAddress, state);
+          })
+        )
+      )).subscribe(change => stageChange$.next(change));
+  }
+
+  return [submit, stageChange$];
 }
 
 export function createFormController$(
