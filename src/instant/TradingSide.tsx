@@ -7,9 +7,10 @@ import { User } from '../blockchain/user';
 import { OfferType } from '../exchange/orderbook/orderbook';
 import { BigNumberInput } from '../utils/bigNumberInput/BigNumberInput';
 import { formatAmountInstant } from '../utils/formatters/format';
+import { InstantFormChangeKind, ManualChange } from './apply';
 import { Asset } from './asset/Asset';
 import * as styles from './Instant.scss';
-import { InstantFormChangeKind, ManualChange, ViewKind } from './instantForm';
+import { ViewKind } from './instantForm';
 
 interface TradingSideProps {
   placeholder: string;

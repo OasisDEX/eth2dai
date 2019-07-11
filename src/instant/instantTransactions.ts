@@ -6,14 +6,12 @@ import { GetOffersAmountData, InstantOrderData } from '../blockchain/calls/insta
 import { allowance$, maxGasPerBlock } from '../blockchain/network';
 import { getTxHash, isDone, isSuccess, TxState, TxStatus } from '../blockchain/transactions';
 import { amountFromWei } from '../blockchain/utils';
+import { InstantFormChangeKind, ProgressChange } from './apply';
 import {
   FormResetChange,
-  InstantFormChangeKind,
   InstantFormState,
-  Progress,
-  ProgressChange,
-  ProgressKind
 } from './instantForm';
+import { Progress, ProgressKind } from './progress/progress';
 
 function progressChange(progress?: Progress): ProgressChange {
   return { progress, kind: InstantFormChangeKind.progressChange };

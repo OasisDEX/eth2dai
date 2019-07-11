@@ -91,11 +91,19 @@ $panel-padding-vertical: 12px;
   position: absolute;
   top: 1.2rem;
   right: 1.5rem;
+
+  @include media-breakpoint-down(sm){
+    right: .5rem;
+  }
 }
 
 .topLeftCorner {
   position: absolute;
   top: 1.2rem;
   left: 1.5rem;
+
+  @include media-breakpoint-down(sm){
+    left: .5rem;
+  }
 }
 

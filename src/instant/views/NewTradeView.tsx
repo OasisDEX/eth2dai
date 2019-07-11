@@ -1,25 +1,42 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
+import { etherscan, EtherscanConfig } from '../../blockchain/etherscan';
+import accountSvg from '../../icons/account.svg';
 import cogWheelSvg from '../../icons/cog-wheel.svg';
 import swapArrowsSvg from '../../icons/swap-arrows.svg';
 import { formatAmount } from '../../utils/formatters/format';
 import { ButtonIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
-import { TopRightCorner } from '../../utils/panel/TopRightCorner';
+import { TopLeftCorner, TopRightCorner } from '../../utils/panel/TopRightCorner';
+import { InstantFormChangeKind, ManualChange } from '../apply';
 import { TradeDetails } from '../details/TradeDetails';
 import * as styles from '../Instant.scss';
 import {
-  InstantFormChangeKind,
   InstantFormState,
-  ManualChange,
-  Message,
-  MessageKind,
-  Position,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
+import { ManualAllowanceProgress, ProgressKind } from '../progress/progress';
 import { Buying, Selling } from '../TradingSide';
+import {
+  Message,
+  MessageKind,
+  Position,
+  TxInProgressMessage,
+} from '../validate';
+
+const inProgressMessages = new Map<ProgressKind, (msg: TxInProgressMessage) => string>(
+  [
+    [ProgressKind.onlyProxy, (_: TxInProgressMessage) =>
+      `Your manual proxy creation is pending...`],
+    [ProgressKind.onlyAllowance, (msg: TxInProgressMessage) => {
+      const progress = msg.progress as ManualAllowanceProgress;
+
+      return `Your ${progress.token.toUpperCase()} ${progress.direction} is pending...`;
+    }]
+  ]
+);
 
 function error(msg: Message | undefined) {
   if (!msg) {
@@ -56,6 +73,29 @@ function error(msg: Message | undefined) {
           Connect wallet to proceed with order
         </>
       );
+    case MessageKind.txInProgress:
+      let message = 'A transaction is pending...';
+      const customize = inProgressMessages.get(msg.progress.kind);
+
+      if (customize) {
+        message = customize(msg)
+      }
+
+      const txHash = (msg.progress as { txHash?: string }).txHash;
+      return txHash
+        ? (
+          <a href={etherscan(msg.etherscan || {} as EtherscanConfig).transaction(txHash).url}
+             rel='noreferrer noopener'
+             target='_blank'
+             style={{
+               color: '#80D8FF'
+             }}
+          >
+            {message}
+          </a>
+        )
+        : <> {message} </>
+
   }
 // tslint:enable
 }
@@ -92,19 +132,13 @@ export class NewTradeView extends React.Component<InstantFormState> {
             data-test-id="trade-settings"
           />
         </TopRightCorner>
-        {
-          /*
-          We plan to release basic instant version so people can trade with a single click
-          There are some design concerns that must be discussed so those two options are postponed
-
-          <TopLeftCorner>
-            <ButtonIcon
-              className={styles.cornerIcon}
-              onClick={this.showAccountSettings}
-              image={accountSvg}/>
-          </TopLeftCorner>
-          */
-        }
+        <TopLeftCorner>
+          <ButtonIcon
+            disabled={!(user && user.account)}
+            className={classnames(styles.cornerIcon, styles.accountIcon)}
+            onClick={this.showAccountSettings}
+            image={accountSvg}/>
+        </TopLeftCorner>
         <div className={styles.tradeDetails}>
           {
             message && message.placement === Position.TOP
@@ -143,10 +177,14 @@ export class NewTradeView extends React.Component<InstantFormState> {
         </div>
         <div data-test-id="error"
              className={classnames(
-               message && message.kind === MessageKind.notConnected
+               message && [
+                 MessageKind.txInProgress,
+                 MessageKind.notConnected
+               ].includes(message.kind)
                  ? styles.warnings
                  : styles.errors,
-               message && message.placement === Position.BOTTOM
+               message &&
+               message.placement === Position.BOTTOM
                  ? ''
                  : styles.hidden,
              )}>

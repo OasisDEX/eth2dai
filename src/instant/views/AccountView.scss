@@ -21,6 +21,13 @@
 }
 
 .proxy {
+  &Missing, &Available {
+    .text {
+      display: inline-block;
+      margin-right: 6px;
+    }
+  }
+
   &Missing {
     .text {
       color: white;
@@ -67,14 +74,14 @@
   }
 
   .warningIcon {
-    height: 1.375rem;
-    width: 1.375rem;
+    height: 1.5rem;
+    width: 1.5rem;
     flex-shrink: 0;
     margin-right: .8125rem;
     margin-left: 0;
 
     :global(.warning-icon) {
-      fill: $grey-lighter;
+      fill: white;
     }
   }
 }

@@ -8,9 +8,10 @@ import { OfferType } from '../../exchange/orderbook/orderbook';
 import { CloseButton } from '../../utils/forms/Buttons';
 import * as panelStyling from '../../utils/panel/Panel.scss';
 import { TopRightCorner } from '../../utils/panel/TopRightCorner';
+import { InstantFormChangeKind, ManualChange } from '../apply';
 import { Asset } from '../asset/Asset';
 import * as instantStyles from '../Instant.scss';
-import { InstantFormChangeKind, ManualChange, ViewKind } from '../instantForm';
+import { ViewKind } from '../instantForm';
 import * as styles from './AssetSelectorView.scss';
 
 interface ViewProps {

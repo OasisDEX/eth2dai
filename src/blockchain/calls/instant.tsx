@@ -361,7 +361,7 @@ export const setupProxy = {
   options: ({ gasPrice, gasEstimation }: SetupProxyData) =>
     ({ ...gasPrice ? gasPrice : {}, ...gasEstimation ? { gas: gasEstimation } : {} }),
   kind: TxMetaKind.setupProxy,
-  description: () => <React.Fragment>Setup proxy</React.Fragment>
+  description: () => <React.Fragment>Create Proxy</React.Fragment>
 };
 
 export interface SetOwnerData {
