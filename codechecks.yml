@@ -15,6 +15,6 @@ checks:
       buildPath: "./build"
 
 settings:
-  - branches:
-      - dev
-      - master
+  branches:
+    - dev
+    - master
