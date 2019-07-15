@@ -5,7 +5,7 @@ checks:
       files:
         - path: "./build/static/js/*.js"
         - path: "./build/static/css/*.css"
-        
+
   - name: type-coverage-watcher
     options:
       tsconfigPath: "tsconfig.prod.json"
@@ -13,3 +13,8 @@ checks:
   - name: commit-deployment
     options:
       buildPath: "./build"
+
+settings:
+  branches:
+    - dev
+    - master

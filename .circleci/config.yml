@@ -97,7 +97,7 @@ jobs:
             keys:
             - v3-dependencies-{{ checksum "package.json" }}
       - run: PUBLIC_URL=. ENV=dev yarn build
-      - run: yarn codechecks
+      - run: DEBUG=codechecks:* yarn codechecks
 
   codechecks-e2e:
     docker:
