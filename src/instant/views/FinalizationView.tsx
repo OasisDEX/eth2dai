@@ -10,16 +10,18 @@ import { formatAmountInstant } from '../../utils/formatters/format';
 import { Money } from '../../utils/formatters/Formatters';
 import { SvgImage } from '../../utils/icons/utils';
 import { WarningTooltipType } from '../../utils/tooltip/Tooltip';
-import { InstantFormChangeKind, ManualChange } from '../apply';
 import { CurrentPrice } from '../CurrentPrice';
 import { TradeData } from '../details/TradeData';
 import { TxStatusRow } from '../details/TxStatusRow';
 import * as styles from '../Instant.scss';
 import {
+  InstantFormChangeKind,
+  ManualChange,
+  Progress,
+  ProgressKind,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
-import { Progress, ProgressKind } from '../progress/progress';
 import { ProgressReport } from '../progress/ProgressReport';
 
 interface ViewProps {
