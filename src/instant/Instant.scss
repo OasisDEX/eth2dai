@@ -18,10 +18,6 @@
     font-size: 1em;
     margin: 0 0;
   }
-
-  @include media-breakpoint-down(sm){
-    padding: 1.5rem .5rem;
-  }
 }
 
 .header {
@@ -31,10 +27,6 @@
 
   h1, h2, h3, h4, h5, h6 {
     text-align: center;
-  }
-
-  @include media-breakpoint-down(sm) {
-    font-size: 14px;
   }
 }
 
@@ -57,10 +49,6 @@
 
   margin-top: 1.25rem;
   margin-bottom: 1rem;
-
-  &.account {
-    padding: 1rem;
-  }
 
   &.finalization {
     font-size: 0.75rem;
@@ -165,22 +153,12 @@
   border-radius: 100%;
 }
 
-.accountIcon {
-  border-color: $grey-light;
-
-  :global(.account-icon-background) {
-    fill: transparent;
-  }
-}
-
 .settingsIcon, .backIcon {
   padding: .25rem;
-}
 
-.settingsIcon, .backIcon, .accountIcon {
   border-color: $grey-light;
 
-  :global(.cog-wheel-icon), :global(.back-icon),  :global(.account-icon-body) {
+  :global(.cog-wheel-icon), :global(.back-icon) {
     fill: $white;
   }
 
@@ -189,7 +167,7 @@
   }
 
   &:disabled {
-    :global(.cog-wheel-icon), :global(.back-icon), :global(.account-icon-body) {
+    :global(.cog-wheel-icon), :global(.back-icon) {
       fill: $grey-light;
     }
   }
