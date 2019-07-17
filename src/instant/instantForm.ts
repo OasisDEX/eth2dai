@@ -7,7 +7,7 @@ import {
   map,
   scan,
   shareReplay,
-  switchMap, take,
+  switchMap, take, withLatestFrom,
 } from 'rxjs/operators';
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';
@@ -204,18 +204,18 @@ export function manualAllowanceSetup(
   allowances$: Observable<Allowances>
 ): [(token: string) => void, Observable<ManualAllowanceChange>] {
   const manualAllowanceProgressChanges$ = new Subject<ManualAllowanceChange>();
-  const allowanceStatus$ = new Subject<UnidirectionalManualAllowanceStatus>();
+  const transactionStatus$ = new Subject<UnidirectionalManualAllowanceStatus>();
 
   function toggleAllowance(token: string) {
     theCalls$.pipe(
       first(),
-      switchMap((calls) =>
+      flatMap((calls) =>
         combineLatest(proxyAddress$, allowances$).pipe(
           take(1),
-          switchMap(([proxyAddress, allowances]) =>
+          flatMap(([proxyAddress, allowances]) =>
             combineLatest(calls.approveProxyEstimateGas({ token, proxyAddress }), gasPrice$).pipe(
               take(1),
-              switchMap(([estimation, gasPrice]) => {
+              flatMap(([estimation, gasPrice]) => {
                 const gasCost = {
                   gasPrice,
                   gasEstimation: estimation,
@@ -223,14 +223,14 @@ export function manualAllowanceSetup(
 
                 return allowances[token]
                   ? calls.disapproveProxy({ proxyAddress, token, ...gasCost }).pipe(
-                    switchMap(progress => of({
+                    flatMap(progress => of({
                       token,
                       progress,
                       direction: AllowanceDirection.locking,
                     }))
                   )
                   : calls.approveProxy({ proxyAddress, token, ...gasCost }).pipe(
-                    switchMap(progress => of({
+                    flatMap(progress => of({
                       token,
                       progress,
                       direction: AllowanceDirection.unlocking
@@ -241,14 +241,17 @@ export function manualAllowanceSetup(
           )
         )
       ),
-    ).subscribe((txProgress) => {
-      allowanceStatus$.next(txProgress);
+    ).subscribe((txStatus) => {
+      transactionStatus$.next(txStatus);
     });
   }
 
-  combineLatest(allowances$, allowanceStatus$).subscribe(
-    ([allowances, allowanceStatus]) => {
-      const { token, direction, progress } = allowanceStatus;
+  transactionStatus$.pipe(
+    distinctUntilChanged(isEqual),
+    withLatestFrom(allowances$),
+    map(([status, allowances]) => {
+      const { token, direction, progress } = status;
+
       manualAllowanceProgressChanges$.next({
         token,
         kind: InstantFormChangeKind.manualAllowanceChange,
@@ -268,8 +271,8 @@ export function manualAllowanceSetup(
           ) || isDoneButNotSuccessful(progress)
         } as ManualAllowanceProgress
       });
-    }
-  );
+    })
+  ).subscribe();
 
   return [toggleAllowance, manualAllowanceProgressChanges$];
 }
