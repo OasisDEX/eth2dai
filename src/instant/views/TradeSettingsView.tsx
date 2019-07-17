@@ -9,10 +9,9 @@ import { formatPrice } from '../../utils/formatters/format';
 import { ButtonIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
 import { TopLeftCorner } from '../../utils/panel/TopRightCorner';
-import { InstantFormChangeKind } from '../apply';
 import { TradeDetails } from '../details/TradeDetails';
 import * as instantStyles from '../Instant.scss';
-import { InstantFormState, ViewKind } from '../instantForm';
+import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './TradeSettingsView.scss';
 

@@ -37,14 +37,6 @@ export function isDone(state: TxState) {
   ].indexOf(state.status) >= 0;
 }
 
-export function isDoneButNotSuccessful(state: TxState) {
-  return [
-    TxStatus.CancelledByTheUser,
-    TxStatus.Error,
-    TxStatus.Failure,
-  ].indexOf(state.status) >= 0;
-}
-
 export function isSuccess(state: TxState) {
   return TxStatus.Success === state.status;
 }
@@ -268,7 +260,7 @@ export function send(
       });
     }),
   );
-  result.subscribe(state => transactionObserver.next({ state, kind: 'newTx' }));
+  result.subscribe(state => transactionObserver.next({  state, kind: 'newTx' }));
 
   return result;
 }
@@ -310,8 +302,7 @@ export const transactions$: Observable<TxState[]> = combineLatest(
 
           return result;
         }
-        default:
-          throw new UnreachableCaseError(change);
+        default: throw new UnreachableCaseError(change);
       }
     },   []),
   ),
@@ -325,10 +316,7 @@ export const transactions$: Observable<TxState[]> = combineLatest(
   shareReplay(1),
 );
 
-interface ExternalNonce2tx {
-  [nonce: number]: { hash: string, callData: string };
-}
-
+interface ExternalNonce2tx { [nonce: number]: { hash: string, callData: string }; }
 const externalNonce2tx$: Observable<ExternalNonce2tx> = combineLatest(
   context$, account$, onEveryBlock$.pipe(first()), onEveryBlock$
 ).pipe(
@@ -348,7 +336,7 @@ const externalNonce2tx$: Observable<ExternalNonce2tx> = combineLatest(
       [
         tx.nonce,
         { hash: tx.hash, callData: tx.input }] as [string, { hash: string, callData: string }
-        ]
+      ]
     ))
   ),
   catchError(error => {

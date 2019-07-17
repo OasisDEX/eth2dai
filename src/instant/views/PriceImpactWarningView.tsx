@@ -3,9 +3,8 @@ import * as React from 'react';
 import { FormatPercent } from '../../utils/formatters/Formatters';
 import { CloseButton } from '../../utils/forms/Buttons';
 import { TopRightCorner } from '../../utils/panel/TopRightCorner';
-import { InstantFormChangeKind } from '../apply';
 import * as instantStyles from '../Instant.scss';
-import { InstantFormState, ViewKind } from '../instantForm';
+import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './PriceImpactWarningView.scss';
 

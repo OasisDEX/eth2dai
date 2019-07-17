@@ -43,7 +43,7 @@ export class TransactionNotifierView extends React.Component<{
                       txNo: transaction.txNo
                     })
                   }
-                />
+                  />
               </CSSTransition>
             )
           )}
@@ -52,21 +52,16 @@ export class TransactionNotifierView extends React.Component<{
   }
 }
 
-export type NotificationProps = TxState & {
-  etherscan: { url: string },
-  onDismiss: () => void
-};
+export type NotificationProps = TxState & {etherscan: { url: string }, onDismiss: () => void};
 
 export const Notification: React.SFC<NotificationProps> = ({
-                                                             onDismiss,
-                                                             etherscan,
-                                                             ...transaction
-                                                           }) => {
+    onDismiss,
+    etherscan,
+    ...transaction
+  }) => {
   const description = transaction.meta.description(transaction.meta.args);
   const icon =
-    transaction.meta.descriptionIcon
-    && typeof transaction.meta.descriptionIcon === 'function'
-    && transaction.meta.descriptionIcon(transaction.meta.args);
+    transaction.meta.descriptionIcon && transaction.meta.descriptionIcon(transaction.meta.args);
 
   return (
     <div key={transaction.txNo} className={styles.block}>
@@ -82,7 +77,7 @@ export const Notification: React.SFC<NotificationProps> = ({
          className={styles.cross}
          data-test-id="notification-cross"
       >
-        <SvgImage image={crossSvg}/>
+        <SvgImage image={crossSvg} />
       </a>
     </div>
   );
@@ -91,7 +86,7 @@ export const Notification: React.SFC<NotificationProps> = ({
 export function describeTxStatus(tx: TxState, etherscan: { url: string }) {
   switch (tx.status) {
     case TxStatus.Success:
-      const rebroadcast: { [key in TxRebroadcastStatus]: string } = {
+      const rebroadcast: {[key in TxRebroadcastStatus]: string} = {
         speedup: 'gas price increased',
         cancel: 'cancelled',
       };
@@ -112,7 +107,7 @@ export function describeTxStatus(tx: TxState, etherscan: { url: string }) {
     case TxStatus.Propagating:
       return (
         <>
-          Unconfirmed <Timer start={tx.broadcastedAt}/>
+          Unconfirmed <Timer start={tx.broadcastedAt} />
         </>
       );
     case TxStatus.WaitingForConfirmation:
@@ -122,7 +117,7 @@ export function describeTxStatus(tx: TxState, etherscan: { url: string }) {
            rel="noopener noreferrer"
            className={styles.link}
         >
-          Unconfirmed <Timer start={tx.broadcastedAt}/>
+          Unconfirmed <Timer start={tx.broadcastedAt} />
         </a>
       );
     case TxStatus.CancelledByTheUser:
