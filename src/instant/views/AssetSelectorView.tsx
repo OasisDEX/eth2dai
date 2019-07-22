@@ -33,25 +33,29 @@ class AssetSelectorView extends React.Component<ViewProps> {
                        onClick={this.hideAssets}
           />
         </TopRightCorner>
-        <ul className={styles.list}>
-          {
-            Object.values(tokens).map((token, index) => {
-              const balance = user && user.account ? balances[token.symbol] : new BigNumber(0);
+        <section className={styles.assetsContainer}>
+          <div className={styles.assets}>
+            <ul className={styles.list}>
+              {
+                Object.values(tokens).map((token, index) => {
+                  const balance = user && user.account ? balances[token.symbol] : new BigNumber(0);
 
-              return (
-                <li data-test-id={token.symbol.toLowerCase()}
-                    className={styles.listItem}
-                    key={index}
-                >
-                  <Asset currency={token.symbol}
-                         balance={balance}
-                         user={user}
-                         onClick={() => this.selectAsset(token.symbol, side)}/>
-                </li>
-              );
-            })
-          }
-        </ul>
+                  return (
+                    <li data-test-id={token.symbol.toLowerCase()}
+                        className={styles.listItem}
+                        key={index}
+                    >
+                      <Asset currency={token.symbol}
+                             balance={balance}
+                             user={user}
+                             onClick={() => this.selectAsset(token.symbol, side)}/>
+                    </li>
+                  );
+                })
+              }
+            </ul>
+          </div>
+        </section>
       </section>
     );
   }

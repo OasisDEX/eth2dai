@@ -31,6 +31,7 @@ describe('New trade', () => {
     TradeData.expectSlippageLimit(/5\.00%/);
     TradeData.expectPriceImpact(/0\.89%/);
 
+    cy.wait(500);
     makeScreenshots('instant-trade');
   });
 
@@ -157,6 +158,7 @@ describe('New trade', () => {
 
     cy.get(tid('notification-cross')).click();
 
+    cy.wait(500);
     makeScreenshots('price-impact-highlight');
   });
 

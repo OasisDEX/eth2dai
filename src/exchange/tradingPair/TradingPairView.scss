@@ -128,19 +128,29 @@
     align-items: center;
     padding: 12px 26px 12px 12px;
     width: 100%;
+    letter-spacing: 1px;
 }
 
 .activePairViewIcon {
-    height: 26px;
-    width: 26px;
-    margin-right: 20px;
+    height: 24px;
+    width: 24px;
+    margin-right: 12px;
     display: flex;
     align-items: center;
+    margin-bottom: -4px;
 }
 
-.activePairViewCurrency {
+.activePairViewTokenBase, .activePairViewTokenQuote {
     flex-basis: 50px;
     flex-grow: 1;
+    margin-bottom: -2px;
+}
+
+.activePairViewTokenBase {
+    @include media-breakpoint-down(md){
+        flex-basis: 4em;
+        flex-grow: 0;
+    }
 }
 
 // ------------ Pair view -----------------
@@ -159,20 +169,28 @@
     }
 
     .iconBase, .iconQuote {
-      padding: 7px 0 6px 5px;
+      padding: 8px 0 5px 8px;
     }
 
     .tokenBase {
-      padding: 13px;
+      padding: 13px 13px 13px 4px;
+      letter-spacing: 0.5px;
     }
 
     .tokenQuote {
-      padding: 13px 40px 13px 8px;
+      padding: 13px 32px 13px 4px;
+      letter-spacing: 0.5px;
+      @include media-breakpoint-down(md){
+          padding-right: 16px;
+      }
     }
 
     .price {
       text-align: right;
-      padding-right: 40px;
+      padding-right: 60px;
+      @include media-breakpoint-down(md){
+          padding-right: 40px;
+      }
     }
 
     .priceDiff {
