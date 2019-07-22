@@ -35,19 +35,16 @@ export function loadAggregatedTrades(
   const params = [
     new Placeholder('timeUnit', 'String!', unit),
     new Placeholder('tzOffset', 'IntervalInput!', { minutes: -new Date().getTimezoneOffset() }),
+    new Placeholder('dateFrom', 'Datetime!', borderline.toISOString()),
+    new Placeholder('baseGem', 'String!', base),
+    new Placeholder('quoteGem', 'String!', quote),
   ];
   const fields = ['date', 'open', 'close', 'min', 'max', 'volumeBase'];
-  const filter = {
-    baseGem: { equalTo: new Placeholder('baseGem', 'String', base) },
-    quoteGem: { equalTo: new Placeholder('quoteGem', 'String', quote) },
-    date: { greaterThan: new Placeholder('dateFrom', 'Datetime', borderline.toISOString()) },
-  };
 
   return combineLatest(context$$, onEveryBlock$$).pipe(
     switchMap(([context]) =>
       vulcan0x(context.oasisDataService.url, 'priceChart', 'tradesAggregated', fields, {
         params,
-        filter,
       })
     ),
     map(aggrs => aggrs.map(parseAggregatedData)),
