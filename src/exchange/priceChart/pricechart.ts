@@ -33,20 +33,18 @@ export function loadAggregatedTrades(
 ): Observable<PriceChartDataPoint[]> {
   const borderline = moment().subtract(interval, unit).startOf('day').toDate();
   const params = [
-    new Placeholder('timeUnit', 'String', unit),
-    new Placeholder('tzOffset', 'IntervalInput', { minutes: -new Date().getTimezoneOffset() }),
-    new Placeholder('dateFrom', 'Datetime', borderline.toISOString()),
+    new Placeholder('timeUnit', 'String!', unit),
+    new Placeholder('tzOffset', 'IntervalInput!', { minutes: -new Date().getTimezoneOffset() }),
+    new Placeholder('dateFrom', 'Datetime!', borderline.toISOString()),
+    new Placeholder('baseGem', 'String!', base),
+    new Placeholder('quoteGem', 'String!', quote),
   ];
   const fields = ['date', 'open', 'close', 'min', 'max', 'volumeBase'];
-  const filter = {
-    market: { equalTo: new Placeholder('market', 'String', `${base}${quote}`) },
-  };
 
   return combineLatest(context$$, onEveryBlock$$).pipe(
     switchMap(([context]) =>
       vulcan0x(context.oasisDataService.url, 'priceChart', 'tradesAggregated', fields, {
         params,
-        filter,
       })
     ),
     map(aggrs => aggrs.map(parseAggregatedData)),

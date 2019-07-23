@@ -47,6 +47,7 @@ export class TaxExporterView extends React.Component<TaxExporterViewProps, TaxEx
       this.props.export().pipe(take(1))
         .subscribe({
           next: (trades: TradeExport[]) => {
+            trades = trades.filter(trade => trade.exchange !== '');
             const url = 'data:text/csv;charset=utf-8,' + encodeURIComponent(toCSV(trades));
             downloadCSV(url);
           },
