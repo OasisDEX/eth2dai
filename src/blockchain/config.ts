@@ -28,6 +28,10 @@ export const tradingPairs: TradingPair[] = [
   ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [
     { base: 'MKR', quote: 'DAI' },
     { base: 'MKR', quote: 'WETH' },
+    { base: 'DGD', quote: 'DAI' },
+    { base: 'REP', quote: 'DAI' },
+    { base: 'OMG', quote: 'DAI' },
+    { base: 'ZRX', quote: 'DAI' }
   ]
 ];
 
@@ -84,6 +88,66 @@ export const tokens = asMap('symbol', [
     iconCircle: SvgImageSimple(daiCircleSvg),
     iconColor: SvgImageSimple(daiColorSvg),
   },
+  // {
+  //   symbol: 'DGX',
+  //   precision: 18,
+  //   digits: 5,
+  //   safeCollRatio: 1.5,
+  //   maxSell: '1000000000000000',
+  //   name: 'Digix',
+  //   icon: SvgImageSimple(mkrSvg),
+  //   iconInverse: SvgImageSimple(mkrInverseSvg),
+  //   iconCircle: SvgImageSimple(mkrSvg),
+  //   iconColor: SvgImageSimple(mkrInverseSvg),
+  // },
+  {
+    symbol: 'DGD',
+    precision: 18,
+    digits: 5,
+    safeCollRatio: 1.5,
+    maxSell: '1000000000000000',
+    name: 'DigixDAO',
+    icon: SvgImageSimple(mkrSvg),
+    iconInverse: SvgImageSimple(mkrInverseSvg),
+    iconCircle: SvgImageSimple(mkrSvg),
+    iconColor: SvgImageSimple(mkrInverseSvg),
+  },
+  {
+    symbol: 'REP',
+    precision: 18,
+    digits: 5,
+    safeCollRatio: 1.5,
+    maxSell: '1000000000000000',
+    name: 'Reputation',
+    icon: SvgImageSimple(mkrSvg),
+    iconInverse: SvgImageSimple(mkrInverseSvg),
+    iconCircle: SvgImageSimple(mkrSvg),
+    iconColor: SvgImageSimple(mkrInverseSvg),
+  },
+  {
+    symbol: 'OMG',
+    precision: 18,
+    digits: 5,
+    safeCollRatio: 1.5,
+    maxSell: '1000000000000000',
+    name: 'OmniseGO',
+    icon: SvgImageSimple(mkrSvg),
+    iconInverse: SvgImageSimple(mkrInverseSvg),
+    iconCircle: SvgImageSimple(mkrSvg),
+    iconColor: SvgImageSimple(mkrInverseSvg),
+  },
+  {
+    symbol: 'ZRX',
+    precision: 18,
+    digits: 5,
+    safeCollRatio: 1.5,
+    maxSell: '1000000000000000',
+    name: 'ZRX',
+    icon: SvgImageSimple(mkrSvg),
+    iconInverse: SvgImageSimple(mkrInverseSvg),
+    iconCircle: SvgImageSimple(mkrSvg),
+    iconColor: SvgImageSimple(mkrInverseSvg),
+  }
 ]);
 
 const load = memoize(
@@ -119,6 +183,10 @@ const protoMain = {
       loadToken('WETH', eth, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
       loadToken('DAI', erc20, '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'),
       loadToken('MKR', erc20, '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'),
+      loadToken('DGD', erc20, '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'),
+      loadToken('REP', erc20, '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'),
+      loadToken('OMG', erc20, '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'),
+      loadToken('ZRX', erc20, '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'),
     ]);
   },
   get otcSupportMethods() {
@@ -167,6 +235,10 @@ const kovan: NetworkConfig = {
       loadToken('WETH', eth, '0xd0a1e359811322d97991e03f863a0c30c2cf029c'),
       loadToken('DAI', erc20, '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'),
       loadToken('MKR', erc20, '0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd'),
+      loadToken('DGD', erc20, '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'),
+      loadToken('REP', erc20, '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'),
+      loadToken('OMG', erc20, '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'),
+      loadToken('ZRX', erc20, '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'),
     ]);
   },
   get otcSupportMethods() {

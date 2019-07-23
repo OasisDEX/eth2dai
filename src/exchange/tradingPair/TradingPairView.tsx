@@ -61,15 +61,19 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
         <WithLoadingIndicatorInline loadable={marketsDetailsLoadable}>
           {(marketsDetails) => {
             const { price, priceDiff } = marketsDetails[tradingPairResolver(pair)];
+            console.log('AAAAAAAAAAAAAAAAAAAAAAAAA')
+            console.log(base, price, priceDiff);
             return (<>
               <div className={styles.iconQuote}>{tokens[quote].icon}</div>
               <div className={styles.price}>{price &&
                 <FormatPrice value={price} token={quote} dontGroup={true} />
+                || '-'
               }</div>
               <div className={styles.priceDiff}>{priceDiff &&
                 <BoundarySpan value={priceDiff}>
                   <FormatPercent value={priceDiff} />
                 </BoundarySpan>
+                || '-'
               }</div>
             </>);
           }}
@@ -126,6 +130,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
       yesterdayPriceChange
     } = this.props;
     const dropdownDisabled = tradingPairs.length <= 1;
+
     return (
       <div className={styles.container}>
         <div className={styles.dropdown}>

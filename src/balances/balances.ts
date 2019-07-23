@@ -96,15 +96,16 @@ export function createDustLimits$(context$: Observable<NetworkConfig>): Observab
   return combineLatest(context$).pipe(
     switchMap(([context]) =>
       forkJoin(
-        Object.keys(tokens).filter(name => name !== 'ETH').map((token: string) =>
-          bindNodeCallback(context.otc.contract.getMinSell as Dust)(
-            context.tokens[token].address
+        Object.keys(tokens).filter(name => name !== 'ETH').map((token: string) => {
+          console.log(token, context.tokens[token]);
+          return bindNodeCallback(context.otc.contract.getMinSell as Dust)(
+           context.tokens[token].address
           ).pipe(
-            map(dustLimit => ({
-              [token]: amountFromWei(dustLimit, token)
-            }))
-          )
-        )
+           map(dustLimit => ({
+             [token]: amountFromWei(dustLimit, token)
+           }))
+          );
+        })
       ).pipe(concatAll(), scan((a, e) => ({ ...a, ...e }), {}), last())
     ),
     distinctUntilChanged(isEqual),
