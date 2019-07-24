@@ -313,6 +313,11 @@ const localnet: NetworkConfig =   {
       loadToken('WETH', eth, '0x28085cefa9103d3a55fb5afccf07ed2038d31cd4'),
       loadToken('DAI', erc20, '0xff500c51399a282f4563f2713ffcbe9e53cfb6fa'),
       loadToken('MKR', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
+      loadToken('DGD', erc20, '0x62aeec5fb140bb233b1c5612a8747ca1dc56dc1b'),
+      loadToken('REP', erc20, '0xc7aa227823789e363f29679f23f7e8f6d9904a9b'),
+      loadToken('OMG', erc20, '0x441b1a74c69ee6e631834b626b29801d42076d38'),
+      loadToken('ZRX', erc20, '0x18392097549390502069c17700d21403ea3c721a'),
+      loadToken('BAT', erc20, '0x9f8cfb61d3b2af62864408dd703f9c3beb55dff7'),
     ]);
   },
   get otcSupportMethods() {
