@@ -458,24 +458,26 @@ function evaluateBuy(calls: ReadCalls, state: InstantFormState) {
     return of(state);
   }
 
+  const errorItem = (error?: Error) => ({
+    sellAmount: undefined,
+    message: {
+      error,
+      kind: MessageKind.orderbookTotalExceeded,
+      amount: buyAmount,
+      side: 'buy',
+      token: buyToken,
+      placement: Position.TOP,
+      priority: 3
+    }
+  });
+
   return calls.otcGetPayAmount({
     sellToken,
     buyToken,
     amount: buyAmount,
   }).pipe(
-    map(sellAmount => ({ sellAmount })),
-    catchError(error => of({
-      sellAmount: undefined,
-      message: {
-        error,
-        kind: MessageKind.orderbookTotalExceeded,
-        amount: buyAmount,
-        side: 'buy',
-        token: buyToken,
-        placement: Position.TOP,
-        priority: 3
-      }
-    }))
+    switchMap(sellAmount => of(sellAmount.isZero() ? errorItem() : { sellAmount })),
+    catchError(error => of(errorItem(error))),
   );
 }
 
@@ -487,24 +489,26 @@ function evaluateSell(calls: ReadCalls, state: InstantFormState) {
     return of(state);
   }
 
+  const errorItem = (error?: Error) => ({
+    buyAmount: undefined,
+    message: {
+      error,
+      kind: MessageKind.orderbookTotalExceeded,
+      amount: sellAmount,
+      side: 'sell',
+      token: sellToken,
+      placement: Position.TOP,
+      priority: 3
+    }
+  });
+
   return calls.otcGetBuyAmount({
     sellToken,
     buyToken,
     amount: sellAmount,
   }).pipe(
-    map(buyAmount => ({ buyAmount })),
-    catchError(error => of({
-      buyAmount: undefined,
-      message: {
-        error,
-        kind: MessageKind.orderbookTotalExceeded,
-        amount: sellAmount,
-        side: 'sell',
-        token: sellToken,
-        placement: Position.TOP,
-        priority: 3
-      }
-    }))
+    switchMap(buyAmount => of(buyAmount.isZero() ? errorItem() : { buyAmount })),
+    catchError(error => of(errorItem(error))),
   );
 }
 

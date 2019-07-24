@@ -10,6 +10,8 @@ import ethColorInverseSvg from '../icons/coins/eth-color-inverse.svg';
 import ethColorSvg from '../icons/coins/eth-color.svg';
 import ethInverseSvg from '../icons/coins/eth-inverse.svg';
 import ethSvg from '../icons/coins/eth.svg';
+import mkrInverseSvg from '../icons/coins/mkr-inverse.svg';
+import mkrSvg from '../icons/coins/mkr.svg';
 import { SvgImageSimple } from '../utils/icons/utils';
 import * as eth from './abi/ds-eth-token.abi.json';
 import * as dsProxyFactory from './abi/ds-proxy-factory.abi.json';
@@ -23,6 +25,10 @@ import { web3 } from './web3';
 
 export const tradingPairs: TradingPair[] = [
   { base: 'WETH', quote: 'DAI' },
+  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [
+    { base: 'MKR', quote: 'DAI' },
+    { base: 'MKR', quote: 'WETH' },
+  ]
 ];
 
 function asMap<D>(key: string, data: D[]): { [key: string]: D } {
@@ -42,6 +48,18 @@ export const tokens = asMap('symbol', [
     iconCircle: SvgImageSimple(ethCircleSvg),
     iconColor: SvgImageSimple(ethColorSvg),
   },
+  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [{
+    symbol: 'MKR',
+    precision: 18,
+    digits: 5,
+    digitsInstant: 3,
+    maxSell: '10000000',
+    name: 'Maker',
+    icon: SvgImageSimple(mkrSvg),
+    iconInverse: SvgImageSimple(mkrInverseSvg),
+    iconCircle: SvgImageSimple(mkrSvg),
+    iconColor: SvgImageSimple(mkrInverseSvg),
+  }],
   {
     symbol: 'WETH',
     precision: 18,
@@ -100,6 +118,7 @@ const protoMain = {
     return asMap('token', [
       loadToken('WETH', eth, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
       loadToken('DAI', erc20, '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'),
+      loadToken('MKR', erc20, '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'),
     ]);
   },
   get otcSupportMethods() {
@@ -115,7 +134,7 @@ const protoMain = {
     return load(proxyCreationAndExecute, '0x793ebbe21607e4f04788f89c7a9b97320773ec59');
   },
   oasisDataService: {
-    url: 'https://oasisvulcan0x.makerfoundation.com/v1'
+    url: 'https://cache.eth2dai.com/api/v1'
   },
   etherscan: {
     url: 'https://etherscan.io',
@@ -147,6 +166,7 @@ const kovan: NetworkConfig = {
     return asMap('token', [
       loadToken('WETH', eth, '0xd0a1e359811322d97991e03f863a0c30c2cf029c'),
       loadToken('DAI', erc20, '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'),
+      loadToken('MKR', erc20, '0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd'),
     ]);
   },
   get otcSupportMethods() {
@@ -162,7 +182,7 @@ const kovan: NetworkConfig = {
     return load(proxyCreationAndExecute, '0xee419971e63734fed782cfe49110b1544ae8a773');
   },
   oasisDataService: {
-    url: 'https://kovan-oasisvulcan0x.makerfoundation.com/v1'
+    url: 'http://localhost:3001/v1'
   },
   etherscan: {
     url: 'https://kovan.etherscan.io',
@@ -190,6 +210,7 @@ const localnet: NetworkConfig =   {
     return asMap('token', [
       loadToken('WETH', eth, '0x28085cefa9103d3a55fb5afccf07ed2038d31cd4'),
       loadToken('DAI', erc20, '0xff500c51399a282f4563f2713ffcbe9e53cfb6fa'),
+      loadToken('MKR', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
     ]);
   },
   get otcSupportMethods() {
@@ -205,7 +226,7 @@ const localnet: NetworkConfig =   {
     return load(proxyCreationAndExecute, '0x99C7F543e310A4143D22ce840a348b4EcDbBA8Ce');
   },
   oasisDataService: {
-    url: 'http://localhost:4000/v1'
+    url: 'http://localhost:3001/v1'
   },
   etherscan: {
     url: 'https://kovan.etherscan.io',

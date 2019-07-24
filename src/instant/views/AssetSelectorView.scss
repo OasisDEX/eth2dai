@@ -1,21 +1,40 @@
 @import "../../utils/Variables";
 @import "../../utils/Mixins";
 
+.assetsContainer {
+  display: flex;
+  margin: auto;
+}
+
+.assets {
+  display: flex;
+  justify-content: flex-start;
+  max-height: 300px;
+  overflow: auto;
+}
+
 .list {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   list-style-type: none;
   padding: 0;
   margin: auto 0;
+  flex-wrap: wrap;
+  max-width: 404px;
 
   @include media-breakpoint-down(md) {
     flex-wrap: wrap;
+    max-width: 264px;
+  }
+
+  @include media-breakpoint-down(sm) {
+    max-width: 210px;
+    justify-content: center;
   }
 }
 
 .list-item {
-  width: 100%;
-  max-width: 7.75rem;
+  width: 7.75rem;
   margin: .25rem;
 }

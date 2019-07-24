@@ -1,6 +1,6 @@
 {
   "name": "Eth2Dai",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "license": "AGPL-3.0-or-later",
   "scripts": {
@@ -69,10 +69,10 @@
     "whatwg-fetch": "2.0.3"
   },
   "devDependencies": {
-    "@codechecks/build-size-watcher": "^0.0.13",
-    "@codechecks/client": "^0.0.55",
-    "@codechecks/commit-deployment": "^0.0.4",
-    "@codechecks/type-coverage-watcher": "^0.0.7",
+    "@codechecks/build-size-watcher": "^0.1.0",
+    "@codechecks/client": "^0.1.5",
+    "@codechecks/commit-deployment": "^0.1.0",
+    "@codechecks/type-coverage-watcher": "0.0.7",
     "@cypress/webpack-preprocessor": "^1.0.0",
     "@storybook/addon-actions": "^3.4.10",
     "@storybook/addon-links": "^3.4.10",

@@ -2,12 +2,14 @@ import { BigNumber } from 'bignumber.js';
 import { first, memoize } from 'lodash';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+
 import { tradingPairs } from '../../blockchain/config';
 import {
   Loadable,
   LoadableWithTradingPair,
   loadablifyLight
 } from '../../utils/loadable';
+import { MarketsDetails } from '../exchange';
 
 export interface TradingPair {
   readonly base: string;
@@ -58,6 +60,8 @@ export interface TradingPairsProps {
   currentPrice: Loadable<BigNumber | undefined>;
   yesterdayPriceChange: Loadable<BigNumber | undefined>;
   weeklyVolume: Loadable<BigNumber>;
+  marketsDetails: Loadable<MarketsDetails>;
+  setPairPickerOpen?: (open: boolean) => void;
 }
 
 export function createTradingPair$(
@@ -65,19 +69,24 @@ export function createTradingPair$(
   currentPrice$: Observable<BigNumber | undefined>,
   yesterdayPriceChange$: Observable<BigNumber | undefined>,
   weeklyVolume$: Observable<BigNumber>,
+  marketsDetails$: Observable<MarketsDetails>,
 ): Observable<TradingPairsProps> {
   return combineLatest(
     currentTradingPair$$,
     loadablifyLight(currentPrice$),
     loadablifyLight(yesterdayPriceChange$),
     loadablifyLight(weeklyVolume$),
+    loadablifyLight(marketsDetails$),
   ).pipe(
-    map(([currentTradingPair, currentPrice, yesterdayPriceChange, weeklyVolume]) => ({
-      ...currentTradingPair,
-      currentPrice,
-      yesterdayPriceChange,
-      weeklyVolume,
-      select: currentTradingPair$$.next.bind(currentTradingPair$$),
-    }))
+    map(
+      ([currentTradingPair, currentPrice, yesterdayPriceChange, weeklyVolume, marketsDetails]) => ({
+        ...currentTradingPair,
+        currentPrice,
+        yesterdayPriceChange,
+        weeklyVolume,
+        marketsDetails,
+        select: currentTradingPair$$.next.bind(currentTradingPair$$),
+      })
+    ),
   );
 }
