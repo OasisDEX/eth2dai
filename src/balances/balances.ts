@@ -97,7 +97,6 @@ export function createDustLimits$(context$: Observable<NetworkConfig>): Observab
     switchMap(([context]) =>
       forkJoin(
         Object.keys(tokens).filter(name => name !== 'ETH').map((token: string) => {
-          console.log(token, context.tokens[token]);
           return bindNodeCallback(context.otc.contract.getMinSell as Dust)(
            context.tokens[token].address
           ).pipe(
@@ -220,7 +219,6 @@ export function createCombinedBalances$(
 
 export function createWalletApprove(calls$: Calls$, gasPrice$: GasPrice$) {
   return (token: string): Observable<TxState> => {
-    console.log('approve');
     const r = calls$.pipe(
       first(),
       switchMap(calls => {
@@ -234,7 +232,6 @@ export function createWalletApprove(calls$: Calls$, gasPrice$: GasPrice$) {
 
 export function createWalletDisapprove(calls$: Calls$, gasPrice$: GasPrice$) {
   return (token: string): Observable<TxState> => {
-    console.log('disapprove');
     const r = calls$.pipe(
       first(),
       switchMap(calls => {

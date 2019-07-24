@@ -61,8 +61,6 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
         <WithLoadingIndicatorInline loadable={marketsDetailsLoadable}>
           {(marketsDetails) => {
             const { price, priceDiff } = marketsDetails[tradingPairResolver(pair)];
-            console.log('AAAAAAAAAAAAAAAAAAAAAAAAA')
-            console.log(base, price, priceDiff);
             return (<>
               <div className={styles.iconQuote}>{tokens[quote].icon}</div>
               <div className={styles.price}>{price &&
