@@ -77,7 +77,7 @@ export const tokens = asMap('symbol', [
     name: 'Maker',
     icon: SvgImageSimple(mkrSvg),
     // iconInverse: SvgImageSimple(mkrInverseSvg),
-    iconCircle: SvgImageSimple(mkrSvg),
+    iconCircle: SvgImageSimple(mkrInverseSvg),
     iconColor: SvgImageSimple(mkrInverseSvg),
   }],
   {
