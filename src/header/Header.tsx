@@ -110,7 +110,7 @@ class Header extends React.Component<HeaderProps> {
             <section className={section}>
               <a href="/" className={logo}>
                 {
-                  process.env.REACT_APP_MKR_TOKEN_ENABLED === '1' ?
+                  process.env.REACT_APP_OASIS_DEX_ENABLED === '1' ?
                     <SvgImage image={OasisDexLogo}/> :
                     <SvgImage image={Eth2DaiLogo}/>
                 }

@@ -19,7 +19,7 @@ export class LoadingState {
     return (
       <section className={styles.section}>
         {
-          process.env.REACT_APP_MKR_TOKEN_ENABLED === '1' ?
+          process.env.REACT_APP_OASIS_DEX_ENABLED === '1' ?
             <SvgImage image={OasisDexLogoSvg}/> :
             <SvgImage image={Eth2DaiLogoSvg}/>
         }

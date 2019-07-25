@@ -41,7 +41,7 @@ import { web3 } from './web3';
 
 export const tradingPairs: TradingPair[] = [
   { base: 'WETH', quote: 'DAI' },
-  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [
+  ...process.env.REACT_APP_OASIS_DEX_ENABLED !== '1' ? [] : [
     { base: 'MKR', quote: 'DAI' },
     { base: 'MKR', quote: 'WETH' },
     { base: 'DGD', quote: 'DAI' },
@@ -68,7 +68,7 @@ export const tokens = asMap('symbol', [
     iconCircle: SvgImageSimple(ethCircleSvg),
     iconColor: SvgImageSimple(ethColorSvg),
   },
-  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [{
+  ...process.env.REACT_APP_OASIS_DEX_ENABLED !== '1' ? [] : [{
     symbol: 'MKR',
     precision: 18,
     digits: 5,
