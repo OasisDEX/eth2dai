@@ -16,8 +16,8 @@ import ethCircleSvg from '../icons/coins/eth-circle.svg';
 import ethColorSvg from '../icons/coins/eth-color.svg';
 // import ethInverseSvg from '../icons/coins/eth-inverse.svg';
 import ethSvg from '../icons/coins/eth.svg';
-import mkrInverseSvg from '../icons/coins/mkr-inverse.svg';
-import mkrSvg from '../icons/coins/mkr.svg';
+// import mkrInverseSvg from '../icons/coins/mkr-inverse.svg';
+// import mkrSvg from '../icons/coins/mkr.svg';
 import omgCircleSvg from '../icons/coins/omg-circle.svg';
 import omgColorSvg from '../icons/coins/omg-color.svg';
 import omgSvg from '../icons/coins/omg.svg';
@@ -41,9 +41,9 @@ import { web3 } from './web3';
 
 export const tradingPairs: TradingPair[] = [
   { base: 'WETH', quote: 'DAI' },
-  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [
-    { base: 'MKR', quote: 'DAI' },
-    { base: 'MKR', quote: 'WETH' },
+  ...process.env.REACT_APP_OASIS_DEX_ENABLED !== '1' ? [] : [
+    // { base: 'MKR', quote: 'DAI' },
+    // { base: 'MKR', quote: 'WETH' },
     { base: 'DGD', quote: 'DAI' },
     { base: 'REP', quote: 'DAI' },
     { base: 'OMG', quote: 'DAI' },
@@ -68,18 +68,18 @@ export const tokens = asMap('symbol', [
     iconCircle: SvgImageSimple(ethCircleSvg),
     iconColor: SvgImageSimple(ethColorSvg),
   },
-  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [{
-    symbol: 'MKR',
-    precision: 18,
-    digits: 5,
-    digitsInstant: 3,
-    maxSell: '10000000',
-    name: 'Maker',
-    icon: SvgImageSimple(mkrSvg),
-    // iconInverse: SvgImageSimple(mkrInverseSvg),
-    iconCircle: SvgImageSimple(mkrSvg),
-    iconColor: SvgImageSimple(mkrInverseSvg),
-  }],
+  // ...process.env.REACT_APP_OASIS_DEX_ENABLED !== '1' ? [] : [{
+  //   symbol: 'MKR',
+  //   precision: 18,
+  //   digits: 5,
+  //   digitsInstant: 3,
+  //   maxSell: '10000000',
+  //   name: 'Maker',
+  //   icon: SvgImageSimple(mkrSvg),
+  //   // iconInverse: SvgImageSimple(mkrInverseSvg),
+  //   iconCircle: SvgImageSimple(mkrInverseSvg),
+  //   iconColor: SvgImageSimple(mkrInverseSvg),
+  // }],
   {
     symbol: 'WETH',
     precision: 18,
@@ -134,7 +134,7 @@ export const tokens = asMap('symbol', [
     digits: 5,
     safeCollRatio: 1.5,
     maxSell: '1000000000000000',
-    name: 'Reputation',
+    name: 'Augur',
     icon: SvgImageSimple(repSvg),
     // iconInverse: SvgImageSimple(repInverseSvg),
     iconCircle: SvgImageSimple(repCircleSvg),
@@ -158,7 +158,7 @@ export const tokens = asMap('symbol', [
     digits: 5,
     safeCollRatio: 1.5,
     maxSell: '1000000000000000',
-    name: 'ZRX',
+    name: '0x',
     icon: SvgImageSimple(zrxSvg),
     // iconInverse: SvgImageSimple(mkrInverseSvg),
     iconCircle: SvgImageSimple(zrxCircleSvg),
@@ -170,7 +170,7 @@ export const tokens = asMap('symbol', [
     digits: 5,
     safeCollRatio: 1.5,
     maxSell: '1000000000000000',
-    name: 'ZRX',
+    name: 'Basic Attention Token',
     icon: SvgImageSimple(batSvg),
     // iconInverse: SvgImageSimple(batInverseSvg),
     iconCircle: SvgImageSimple(batCircleSvg),
@@ -284,7 +284,7 @@ const kovan: NetworkConfig = {
     return load(proxyCreationAndExecute, '0xee419971e63734fed782cfe49110b1544ae8a773');
   },
   oasisDataService: {
-    url: 'http://localhost:3001/v1'
+    url: 'https://staging-cache.eth2dai.com/api/v1'
   },
   etherscan: {
     url: 'https://kovan.etherscan.io',

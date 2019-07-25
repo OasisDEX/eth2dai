@@ -23,8 +23,9 @@ import { Button } from '../utils/forms/Buttons';
 import { SvgImage } from '../utils/icons/utils';
 import { Loadable } from '../utils/loadable';
 import { WithLoadingIndicatorInline } from '../utils/loadingIndicator/LoadingIndicator';
+import Eth2DaiLogo from './Eth2DaiLogo.svg';
 import * as styles from './Header.scss';
-import Logo from './Logo.svg';
+import OasisDexLogo from './OasisDexLogo.svg';
 import {
   WalletConnectionViewKind,
   walletConnectionViewManual$,
@@ -108,7 +109,11 @@ class Header extends React.Component<HeaderProps> {
           <header className={header}>
             <section className={section}>
               <a href="/" className={logo}>
-                <SvgImage image={Logo}/>
+                {
+                  process.env.REACT_APP_OASIS_DEX_ENABLED === '1' ?
+                    <SvgImage image={OasisDexLogo}/> :
+                    <SvgImage image={Eth2DaiLogo}/>
+                }
               </a>
             </section>
             <section className={classnames(section, sectionNavigation)}>
