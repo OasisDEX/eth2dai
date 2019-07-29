@@ -182,32 +182,32 @@ export const tokens = asMap('symbol', [
     iconCircle: SvgImageSimple(batCircleSvg),
     iconColor: SvgImageSimple(batColorSvg),
   },
-  {
-    symbol: 'USDC',
-    precision: 6,
-    digits: 5,
-    safeCollRatio: 1.5,
-    maxSell: '1000000000000000',
-    name: 'USD Coin',
-    icon: SvgImageSimple(usdcSvg),
-    // iconInverse: SvgImageSimple(usdcInverseSvg),
-    iconCircle: SvgImageSimple(usdcCircleSvg),
-    iconColor: SvgImageSimple(usdcColorSvg),
-    // address: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-  },
-  {
-    symbol: 'WBTC',
-    precision: 8,
-    digits: 5,
-    safeCollRatio: 1.5,
-    maxSell: '1000000000000000',
-    name: 'Wrapped Bitcoin',
-    icon: SvgImageSimple(wbtcSvg),
-    // iconInverse: SvgImageSimple(wbtcInverseSvg),
-    iconCircle: SvgImageSimple(wbtcCircleSvg),
-    iconColor: SvgImageSimple(wbtcColorSvg),
-    // address: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
-  }
+  // {
+  //   symbol: 'USDC',
+  //   precision: 6,
+  //   digits: 5,
+  //   safeCollRatio: 1.5,
+  //   maxSell: '1000000000000000',
+  //   name: 'USD Coin',
+  //   icon: SvgImageSimple(usdcSvg),
+  //   // iconInverse: SvgImageSimple(usdcInverseSvg),
+  //   iconCircle: SvgImageSimple(usdcCircleSvg),
+  //   iconColor: SvgImageSimple(usdcColorSvg),
+  //   // address: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+  // },
+  // {
+  //   symbol: 'WBTC',
+  //   precision: 8,
+  //   digits: 5,
+  //   safeCollRatio: 1.5,
+  //   maxSell: '1000000000000000',
+  //   name: 'Wrapped Bitcoin',
+  //   icon: SvgImageSimple(wbtcSvg),
+  //   // iconInverse: SvgImageSimple(wbtcInverseSvg),
+  //   iconCircle: SvgImageSimple(wbtcCircleSvg),
+  //   iconColor: SvgImageSimple(wbtcColorSvg),
+  //   // address: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+  // }
 ]);
 
 const load = memoize(
