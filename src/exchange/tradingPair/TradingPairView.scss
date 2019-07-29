@@ -4,7 +4,6 @@
 .container {
     display: flex;
     flex-wrap: wrap;
-    //justify-content: space-between;
     align-items: center;
 
     width: 100%;
@@ -34,10 +33,15 @@
   }
 }
 
+.dropdownIcon {
+  margin: 0 16px 0 12px;
+  width: 20px;
+  padding: 0 4px;
+  content: url("../../icons/chevron-down.svg");
+}
+
 .dropdownBtn {
-    $width: 220px;
     height: 48px;
-    width: $width;
     border-right: 1px solid $grey-darken-darkest;
     border-top-left-radius: $border-radius;
     border-bottom-left-radius: $border-radius;
@@ -47,7 +51,6 @@
     align-items: center;
 
     cursor: pointer;
-    background: url("../../icons/chevron-down.svg") no-repeat ($width - 34px) center;
     background-size: 16px;
 
     @include media-breakpoint-down(md){
@@ -63,13 +66,18 @@
 
 .dropdownBtnDisabled {
     cursor: default;
-    background-image: none;
+    .dropdownIcon {
+      content: "";
+    }
 }
 
 .dropdownBtnActive {
     background-color: $grey-mid;
-    background-image: url("../../icons/chevron-up.svg");
     border-bottom-left-radius: unset;
+
+    .dropdownIcon {
+      content: url("../../icons/chevron-up.svg");
+    }
 }
 
 .dropdownListWrapper {
@@ -86,7 +94,7 @@
 .dropdownList {
     display: table;
     list-style: none;
-    padding: 10px 0 $border-radius 0;
+    padding: 14px 0;
     margin: 0 2px 2px 2px;
 
     background-color: $grey-mid;
@@ -124,26 +132,25 @@
 
 .activePairView {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px 26px 12px 12px;
     width: 100%;
     letter-spacing: 1px;
 }
 
 .activePairViewIcon {
-    height: 24px;
-    width: 24px;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    margin-bottom: -4px;
+    height: 26px;
+    width: 26px;
+    margin:0 12px;
+}
+
+.activePairViewTokenBase {
+  margin-right: 12px;
 }
 
 .activePairViewTokenBase, .activePairViewTokenQuote {
-    flex-basis: 50px;
-    flex-grow: 1;
-    margin-bottom: -2px;
+    width: 55px;
+    text-align: left;
+    line-height: 19px;
 }
 
 .activePairViewTokenBase {
@@ -173,12 +180,12 @@
     }
 
     .tokenBase {
-      padding: 13px 13px 13px 4px;
+      padding: 14px 13px 14px 4px;
       letter-spacing: 0.5px;
     }
 
     .tokenQuote {
-      padding: 13px 32px 13px 4px;
+      padding: 14px 32px 14px 4px;
       letter-spacing: 0.5px;
       @include media-breakpoint-down(md){
           padding-right: 16px;
@@ -188,6 +195,7 @@
     .price {
       text-align: right;
       padding-right: 60px;
+      padding-left: 4px;
       @include media-breakpoint-down(md){
           padding-right: 40px;
       }

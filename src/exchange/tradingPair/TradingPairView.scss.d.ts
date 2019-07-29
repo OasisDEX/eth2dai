@@ -1,6 +1,7 @@
 export const container: string;
 export const dropdown: string;
 export const mobileWrapper: string;
+export const dropdownIcon: string;
 export const dropdownBtn: string;
 export const dropdownBtnDisabled: string;
 export const dropdownBtnActive: string;

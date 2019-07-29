@@ -69,7 +69,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
               }</div>
               <div className={styles.priceDiff}>{priceDiff &&
                 <BoundarySpan value={priceDiff}>
-                  <FormatPercent value={priceDiff} />
+                  <FormatPercent value={priceDiff} plus={true} />
                 </BoundarySpan>
                 || '-'
               }</div>
@@ -84,8 +84,9 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
     return (
       <div className={styles.activePairView}>
         <div className={styles.activePairViewIcon}>{tokens[base].iconCircle}</div>
-        <div className={styles.activePairViewTokenBase}>{base}</div>
-        <div className={styles.activePairViewTokenQuote}><FormatQuoteToken token={quote} /></div>
+        <span className={styles.activePairViewTokenBase}>{base}</span>
+        <span className={styles.activePairViewTokenQuote}><FormatQuoteToken token={quote} /></span>
+        <span className={styles.dropdownIcon}/>
       </div>
     );
   }
