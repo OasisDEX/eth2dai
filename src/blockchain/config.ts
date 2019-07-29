@@ -24,6 +24,12 @@ import omgSvg from '../icons/coins/omg.svg';
 import repCircleSvg from '../icons/coins/rep-circle.svg';
 import repColorSvg from '../icons/coins/rep-color.svg';
 import repSvg from '../icons/coins/rep.svg';
+// import usdcCircleSvg from '../icons/coins/usdc-circle.svg';
+// import usdcColorSvg from '../icons/coins/usdc-color.svg';
+// import usdcSvg from '../icons/coins/usdc.svg';
+// import wbtcCircleSvg from '../icons/coins/wbtc-circle.svg';
+// import wbtcColorSvg from '../icons/coins/wbtc-color.svg';
+// import wbtcSvg from '../icons/coins/wbtc.svg';
 import zrxCircleSvg from '../icons/coins/zrx-circle.svg';
 import zrxColorSvg from '../icons/coins/zrx-color.svg';
 import zrxSvg from '../icons/coins/zrx.svg';
@@ -175,7 +181,33 @@ export const tokens = asMap('symbol', [
     // iconInverse: SvgImageSimple(batInverseSvg),
     iconCircle: SvgImageSimple(batCircleSvg),
     iconColor: SvgImageSimple(batColorSvg),
-  }
+  },
+  // {
+  //   symbol: 'USDC',
+  //   precision: 6,
+  //   digits: 5,
+  //   safeCollRatio: 1.5,
+  //   maxSell: '1000000000000000',
+  //   name: 'USD Coin',
+  //   icon: SvgImageSimple(usdcSvg),
+  //   // iconInverse: SvgImageSimple(usdcInverseSvg),
+  //   iconCircle: SvgImageSimple(usdcCircleSvg),
+  //   iconColor: SvgImageSimple(usdcColorSvg),
+  //   // address: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+  // },
+  // {
+  //   symbol: 'WBTC',
+  //   precision: 8,
+  //   digits: 5,
+  //   safeCollRatio: 1.5,
+  //   maxSell: '1000000000000000',
+  //   name: 'Wrapped Bitcoin',
+  //   icon: SvgImageSimple(wbtcSvg),
+  //   // iconInverse: SvgImageSimple(wbtcInverseSvg),
+  //   iconCircle: SvgImageSimple(wbtcCircleSvg),
+  //   iconColor: SvgImageSimple(wbtcColorSvg),
+  //   // address: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+  // }
 ]);
 
 const load = memoize(
