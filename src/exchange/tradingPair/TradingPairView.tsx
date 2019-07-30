@@ -62,9 +62,11 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
           {(marketsDetails) => {
             const { price, priceDiff } = marketsDetails[tradingPairResolver(pair)];
             return (<>
-              <div className={styles.iconQuote}>{tokens[quote].icon}</div>
               <div className={styles.price}>{price &&
-                <FormatPrice value={price} token={quote} dontGroup={true} />
+                <>
+                  <span className={styles.iconQuote}>{tokens[quote].icon}</span>
+                  <FormatPrice value={price} token={quote} dontGroup={true} />
+                </>
                 || '-'
               }</div>
               <div className={styles.priceDiff}>{priceDiff &&
@@ -131,7 +133,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
     const dropdownDisabled = tradingPairs.length <= 1;
 
     return (
-      <div className={styles.container}>
+      <>
         <div className={styles.dropdown}>
           <div tabIndex={dropdownDisabled ? undefined : -1}
                data-test-id="select-pair"
@@ -159,47 +161,48 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
             )
           }
         </div>
-
-        <TradingPairView.PairInfoVP label="Last price" value={
-          <WithLoadingIndicatorInline
-            error={<ServerUnreachableInline fallback="-"/>}
-            loadable={currentPrice}
-            className={styles.pairInfo}
-          >
-            {(currentPriceLoaded?: BigNumber) => (
-              currentPriceLoaded ?
-                <FormatPrice value={currentPriceLoaded} token={quote} /> :
-                <span>?</span>
-            )}
-          </WithLoadingIndicatorInline>
-        } />
-        <TradingPairView.PairInfoVP label="24h price" value={
-          <WithLoadingIndicatorInline
-            error={<ServerUnreachableInline fallback="-"/>}
-            loadable={yesterdayPriceChange}
-            className={styles.pairInfo}
-          >
-            {(yesterdayPriceChangeLoaded?: BigNumber) => (
-              yesterdayPriceChangeLoaded ?
-                <TradingPairView.YesterdayPriceVP
-                  yesterdayPriceChange={yesterdayPriceChangeLoaded}
-                /> :
-                <span>?</span>
-            )}
-          </WithLoadingIndicatorInline>
-        } />
-        <TradingPairView.PairInfoVP label="24h volume" value={
-          <WithLoadingIndicatorInline
-            loadable={weeklyVolume}
-            className={styles.pairInfo}
-            error={<ServerUnreachableInline fallback="-"/>}
-          >
-            {(weeklyVolumeLoaded: BigNumber) => (
-              <FormatAmount value={weeklyVolumeLoaded} token={quote} />
-            )}
-          </WithLoadingIndicatorInline>
-        } />
-      </div>
+        <div className={styles.container}>
+          <TradingPairView.PairInfoVP label="Last price" value={
+            <WithLoadingIndicatorInline
+              error={<ServerUnreachableInline fallback="-"/>}
+              loadable={currentPrice}
+              className={styles.pairInfo}
+            >
+              {(currentPriceLoaded?: BigNumber) => (
+                currentPriceLoaded ?
+                  <FormatPrice value={currentPriceLoaded} token={quote}/> :
+                  <span>?</span>
+              )}
+            </WithLoadingIndicatorInline>
+          }/>
+          <TradingPairView.PairInfoVP label="24h price" value={
+            <WithLoadingIndicatorInline
+              error={<ServerUnreachableInline fallback="-"/>}
+              loadable={yesterdayPriceChange}
+              className={styles.pairInfo}
+            >
+              {(yesterdayPriceChangeLoaded?: BigNumber) => (
+                yesterdayPriceChangeLoaded ?
+                  <TradingPairView.YesterdayPriceVP
+                    yesterdayPriceChange={yesterdayPriceChangeLoaded}
+                  /> :
+                  <span>?</span>
+              )}
+            </WithLoadingIndicatorInline>
+          }/>
+          <TradingPairView.PairInfoVP label="24h volume" value={
+            <WithLoadingIndicatorInline
+              loadable={weeklyVolume}
+              className={styles.pairInfo}
+              error={<ServerUnreachableInline fallback="-"/>}
+            >
+              {(weeklyVolumeLoaded: BigNumber) => (
+                <FormatAmount value={weeklyVolumeLoaded} token={quote}/>
+              )}
+            </WithLoadingIndicatorInline>
+          }/>
+        </div>
+      </>
     );
   }
 
