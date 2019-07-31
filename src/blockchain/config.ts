@@ -96,7 +96,7 @@ export const tokens = asMap('symbol', [
     icon: SvgImageSimple(ethSvg),
     // iconInverse: SvgImageSimple(ethCircleSvg),
     iconCircle: SvgImageSimple(ethCircleSvg),
-    iconColor: SvgImageSimple(ethColorSvg),
+    iconColor: SvgImageSimple(ethCircleSvg),
   },
   {
     symbol: 'DAI',
