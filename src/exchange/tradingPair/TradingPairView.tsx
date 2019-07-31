@@ -10,6 +10,7 @@ import {
 import { Loadable } from '../../utils/loadable';
 import { WithLoadingIndicatorInline } from '../../utils/loadingIndicator/LoadingIndicator';
 import { ServerUnreachableInline } from '../../utils/loadingIndicator/ServerUnreachable';
+import { Scrollbar } from '../../utils/Scrollbar/Scrollbar';
 import { BoundarySpan, InfoLabel } from '../../utils/text/Text';
 import { MarketsDetails } from '../exchange';
 import { TradingPair, tradingPairResolver, TradingPairsProps } from './tradingPair';
@@ -148,14 +149,16 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
             this.state.showMenu && (
               <div className={styles.dropdownListWrapper}>
                 <ul className={styles.dropdownList}>
-                  {tradingPairs.map((pair, i) => (
-                    <TradingPairView.PairVP
-                      key={i}
-                      parentMatch={parentMatch}
-                      pair={pair}
-                      marketsDetailsLoadable={this.props.marketsDetails}
-                    />
-                  ))}
+                  <Scrollbar autoHeight={true}>
+                    {tradingPairs.map((pair, i) => (
+                      <TradingPairView.PairVP
+                        key={i}
+                        parentMatch={parentMatch}
+                        pair={pair}
+                        marketsDetailsLoadable={this.props.marketsDetails}
+                      />
+                    ))}
+                  </Scrollbar>
                 </ul>
               </div>
             )
