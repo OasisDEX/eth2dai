@@ -24,6 +24,7 @@ export class Asset extends React.Component<AssetProps> {
     return (
       <button className={classnames(styles.asset, isLocked && styles.locked)}
               disabled={isLocked}
+              data-test-id="asset-button"
               onClick={onClick}>
         <span className={styles.icon}>
           {tokens[currency].iconColor}

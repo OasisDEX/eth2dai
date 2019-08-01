@@ -66,7 +66,7 @@ describe('Selecting an asset', () => {
       cy.get(tid('buying-token', tid('balance')), timeout(2000))
         .click();
 
-      cy.get(tid(token.toLowerCase())).find('.Asset_asset').should('be.disabled');
+      cy.get(tid(token.toLowerCase(), tid('asset-button'))).should('be.disabled');
     });
   });
 
@@ -128,7 +128,7 @@ describe('Selecting an asset', () => {
       cy.get(tid('selling-token', tid('balance')), timeout(2000))
         .click();
 
-      cy.get(tid(token.toLowerCase())).find('.Asset_asset').should('be.disabled');
+      cy.get(tid(token.toLowerCase(), tid('asset-button'))).should('be.disabled');
     });
   });
 });
