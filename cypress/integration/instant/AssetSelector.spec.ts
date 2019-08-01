@@ -1,3 +1,4 @@
+import * as styles from '../../../src/instant/views/AssetSelectorView.scss';
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
 import { WalletConnection } from '../../pages/WalletConnection';
@@ -66,7 +67,7 @@ describe('Selecting an asset', () => {
       cy.get(tid('buying-token', tid('balance')), timeout(2000))
         .click();
 
-      cy.get(tid(token.toLowerCase())).find('.Asset_asset').should('have.class', 'Asset_locked');
+      cy.get(tid(token.toLowerCase())).find('.Asset_asset').should('be.disabled');
     });
   });
 
@@ -128,7 +129,7 @@ describe('Selecting an asset', () => {
       cy.get(tid('selling-token', tid('balance')), timeout(2000))
         .click();
 
-      cy.get(tid(token.toLowerCase())).find('.Asset_asset').should('have.class', 'Asset_locked');
+      cy.get(tid(token.toLowerCase())).find('.Asset_asset').should('be.disabled');
     });
   });
 });

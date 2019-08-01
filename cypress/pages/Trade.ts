@@ -54,10 +54,10 @@ export class Trade {
     if (token) {
       cy.get(tid('selling-token', tid('balance')), timeout(2000))
         .click();
-    }
 
-    cy.get(tid(token.toLowerCase()), timeout(2000))
-      .click();
+      cy.get(tid(token.toLowerCase()), timeout(2000))
+        .click();
+    }
 
     cy.get(tid('selling-token', tid('amount')), timeout(2000)).as('sellInput');
 
@@ -68,10 +68,10 @@ export class Trade {
     if (token) {
       cy.get(tid('buying-token', tid('balance')), timeout(2000))
         .click();
-    }
 
-    cy.get(tid(token.toLowerCase()), timeout(2000))
-      .click();
+      cy.get(tid(token.toLowerCase()), timeout(2000))
+        .click();
+    }
 
     cy.get(tid('buying-token', tid('amount')), timeout(2000)).as('buyInput');
 
