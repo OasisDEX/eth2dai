@@ -1,7 +1,7 @@
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
 import { WalletConnection } from '../../pages/WalletConnection';
-import { cypressVisitWithWeb3 } from '../../utils';
+import { cypressVisitWithWeb3, tid, timeout } from '../../utils';
 
 describe('Selecting an asset', () => {
 
@@ -59,6 +59,15 @@ describe('Selecting an asset', () => {
       trade.expectReceiveToken(receiveIn);
     });
 
+    // tslint:disable-next-line:max-line-length
+    it('should not be able to select receive token that do not form a market with the deposit one', () => {
+      const token = 'BAT';
+
+      cy.get(tid('buying-token', tid('balance')), timeout(2000))
+        .click();
+
+      cy.get(tid(token.toLowerCase(), tid('asset-button'))).should('be.disabled');
+    });
   });
 
   context('for receive token', () => {
@@ -107,6 +116,19 @@ describe('Selecting an asset', () => {
 
       trade.expectPayToken(payIn);
       trade.expectReceiveToken(receiveIn);
+    });
+
+    // tslint:disable-next-line:max-line-length
+    it('should not be able to select deposit token that do not form a market with the receive one ', () => {
+      const token = 'BAT';
+
+      const trade = new Trade();
+      trade.buy('DGD');
+
+      cy.get(tid('selling-token', tid('balance')), timeout(2000))
+        .click();
+
+      cy.get(tid(token.toLowerCase(), tid('asset-button'))).should('be.disabled');
     });
   });
 });
