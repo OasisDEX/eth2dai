@@ -1,4 +1,5 @@
 import { BigNumber } from 'bignumber.js';
+import classnames from 'classnames';
 import * as React from 'react';
 
 import { tokens } from '../../blockchain/config';
@@ -13,14 +14,18 @@ export interface AssetProps {
   balance?: any;
   onClick?: () => void;
   user?: User;
+  isLocked?: boolean;
 }
 
 export class Asset extends React.Component<AssetProps> {
   public render() {
-    const { user, currency, onClick } = this.props;
+    const { user, currency, onClick, isLocked } = this.props;
     const balance = user && user.account ? this.props.balance : new BigNumber(0);
     return (
-      <div className={styles.asset} onClick={onClick}>
+      <button className={classnames(styles.asset, isLocked && styles.locked)}
+              disabled={isLocked}
+              data-test-id="asset-button"
+              onClick={onClick}>
         <span className={styles.icon}>
           {tokens[currency].iconColor}
         </span>
@@ -39,7 +44,7 @@ export class Asset extends React.Component<AssetProps> {
             <Currency value={currency} theme="medium"/>
           </div>
         }
-      </div>
+      </button>
     );
   }
 }
