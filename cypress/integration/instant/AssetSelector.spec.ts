@@ -1,4 +1,3 @@
-import * as styles from '../../../src/instant/views/AssetSelectorView.scss';
 import { Tab } from '../../pages/Tab';
 import { Trade } from '../../pages/Trade';
 import { WalletConnection } from '../../pages/WalletConnection';
