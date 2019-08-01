@@ -5,6 +5,7 @@ import * as styles from './Scrollbar.scss';
 export type ScrollState = positionValues;
 
 interface ScrollbarProps {
+  autoHeight?: boolean;
   onScroll?: () => void;
 }
 
@@ -30,9 +31,9 @@ export class Scrollbar extends React.Component<ScrollbarProps> {
   }
 
   public render() {
-
     return (
       <Scrollbars
+        autoHeight={this.props.autoHeight}
         ref={this.scroll}
         renderThumbVertical={(props: any) => <div {...props} className={styles.scrollbarThumb}/>}
         renderThumbHorizontal={(props: any) => <div {...props} className={styles.scrollbarThumb}/>}
