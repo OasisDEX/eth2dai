@@ -43,7 +43,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
           activeClassName={styles.active}
           className={classnames(styles.dropdownItemLink, styles.pairView)}
         >
-          <TradingPairView.PairView { ...{ pair, marketsDetailsLoadable } } />
+          <TradingPairView.PairView {...{ pair, marketsDetailsLoadable }} />
         </NavLink>
       </li>
     );
@@ -58,23 +58,24 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
       <>
         <div className={styles.iconBase}>{tokens[base].icon}</div>
         <div className={styles.tokenBase}>{base}</div>
-        <div className={styles.tokenQuote}><FormatQuoteToken token={quote} /></div>
+        <div className={styles.tokenQuote}><FormatQuoteToken token={quote}/></div>
         <WithLoadingIndicatorInline loadable={marketsDetailsLoadable}>
           {(marketsDetails) => {
             const { price, priceDiff } = marketsDetails[tradingPairResolver(pair)];
             return (<>
-              <div className={styles.price}>{price &&
-                <>
-                  <span className={styles.iconQuote}>{tokens[quote].icon}</span>
-                  <FormatPrice value={price} token={quote} dontGroup={true} />
-                </>
-                || '-'
-              }</div>
+              <div className={styles.price}>
+                <span className={styles.iconQuote}>{tokens[quote].icon}</span>
+                {
+                  price &&
+                  <FormatPrice value={price} token={quote} dontGroup={true}/>
+                  || <> - </>
+                }
+              </div>
               <div className={styles.priceDiff}>{priceDiff &&
-                <BoundarySpan value={priceDiff}>
-                  <FormatPercent value={priceDiff} plus={true} />
-                </BoundarySpan>
-                || '-'
+              <BoundarySpan value={priceDiff}>
+                <FormatPercent value={priceDiff} plus={true}/>
+              </BoundarySpan>
+              || <> - </>
               }</div>
             </>);
           }}
@@ -143,7 +144,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
                  [styles.dropdownBtnDisabled]: dropdownDisabled,
                  [styles.dropdownBtnActive]: this.state.showMenu
                })}>
-            <TradingPairView.ActivePairView base={base} quote={quote} />
+            <TradingPairView.ActivePairView base={base} quote={quote}/>
           </div>
           {
             this.state.showMenu && (

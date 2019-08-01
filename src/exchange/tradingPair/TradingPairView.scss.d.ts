@@ -19,6 +19,7 @@ export const iconBase: string;
 export const tokenBase: string;
 export const tokenQuote: string;
 export const price: string;
+export const center: string;
 export const priceDiff: string;
 export const active: string;
 export const pairInfo: string;

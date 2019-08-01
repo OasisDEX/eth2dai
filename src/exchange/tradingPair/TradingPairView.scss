@@ -201,7 +201,7 @@ $sm: 400px;
 .pairView {
     display: inline-flex;
     align-items: center;
-    padding: 7px 12px;
+    padding: 7px 0;
     width: 100%;
     background-color: $grey-mid;
     &:hover {
@@ -210,15 +210,11 @@ $sm: 400px;
     font-size: 14px;
 
     @include media-breakpoint-down($sm) {
-      padding: 7px 2px;
+      padding: 7px 8px;
     }
 
     .iconQuote {
       margin-right: 8px;
-
-      @include media-breakpoint-down($sm) {
-        margin: 0;
-      }
     }
 
     .iconBase, .iconQuote {
@@ -240,7 +236,11 @@ $sm: 400px;
       width: 120px;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+
+      &.center {
+        justify-content: center;
+      }
 
       @include media-breakpoint-down(md-lg){
         margin: auto;
@@ -253,7 +253,8 @@ $sm: 400px;
 
     .priceDiff {
       width: 58px;
-      text-align: center;
+      text-align: right;
+      padding-right: 20px;
     }
 }
 
