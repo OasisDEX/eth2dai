@@ -49,7 +49,7 @@ export class LoadingState {
           <div className={styles.containerBottomHalf}>
             <h4 style={{ color: '#8D8D96' }}>Please connect to the Ethereum Main Network</h4>
           </div>
-          <div style={styles.unsupported as React.CSSProperties}>
+          <div className={styles.unsupported}>
             <SvgImage image={networkSvg} />
           </div>
         </div>
