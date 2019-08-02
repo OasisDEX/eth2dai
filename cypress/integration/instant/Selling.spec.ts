@@ -12,6 +12,7 @@ describe('Selling', () => {
     cypressVisitWithWeb3();
     WalletConnection.connect();
     WalletConnection.isConnected();
+    cy.wait(1000);
     Tab.instant();
   });
 
