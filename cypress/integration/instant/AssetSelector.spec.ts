@@ -8,6 +8,7 @@ describe('Selecting an asset', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
     WalletConnection.connect();
+    WalletConnection.isConnected();
     Tab.instant();
   });
 

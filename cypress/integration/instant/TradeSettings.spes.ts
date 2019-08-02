@@ -15,6 +15,7 @@ describe('Trade Settings', () => {
   beforeEach(() => {
     cypressVisitWithWeb3();
     WalletConnection.connect();
+    WalletConnection.isConnected();
     Tab.instant();
   });
 
