@@ -19,6 +19,7 @@ const slippageLimitTooltip = {
   id: 'slippage-limit',
   text: 'The maximum allowed difference between the estimated price of the order and the actual price. The two may differ if the order book changes before your trade executes.'
 };
+
 // tslint:enable
 
 interface TradeDetailsProps {
@@ -33,9 +34,9 @@ interface TradeDetailsProps {
 
 export class TradeDetails extends React.Component<TradeDetailsProps> {
 
-  public static Error({ message }: { message: any }) {
+  public static Error({ message, dataTestId }: { message: any, dataTestId?: string }) {
     return (
-      <section className={classnames(styles.details, styles.errors)}>
+      <section data-test-id={dataTestId} className={classnames(styles.details, styles.errors)}>
         {message}
       </section>
     );

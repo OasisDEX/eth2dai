@@ -15,7 +15,6 @@ import {
   ManualChange,
   Message,
   MessageKind,
-  Position,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
@@ -47,7 +46,7 @@ function error(msg: Message | undefined) {
     case MessageKind.orderbookTotalExceeded:
       return (
         <>
-          No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
+          No orders available to {msg.side}&#32;{formatAmount(msg.amount, msg.token)}&#32;{msg.token.toUpperCase()}
         </>
       );
     case MessageKind.notConnected:
@@ -107,8 +106,10 @@ export class NewTradeView extends React.Component<InstantFormState> {
         }
         <div className={styles.tradeDetails}>
           {
-            message && message.placement === Position.TOP
-              ? <TradeDetails.Error message={error(message)}/>
+            message && message.top
+              ? <TradeDetails.Error dataTestId={'top-error'}
+                                    message={error(message.top)}
+              />
               : (
                 price
                   ? <TradeDetails {...this.props}/>
@@ -141,16 +142,16 @@ export class NewTradeView extends React.Component<InstantFormState> {
                   user={user}
                   approx={buyAmount && kind === 'sell'}/>
         </div>
-        <div data-test-id="error"
+        <div data-test-id="bottom-error"
              className={classnames(
-               message && message.kind === MessageKind.notConnected
+               message && message.bottom && message.bottom.kind === MessageKind.notConnected
                  ? styles.warnings
                  : styles.errors,
-               message && message.placement === Position.BOTTOM
+               message && message.bottom
                  ? ''
                  : styles.hidden,
              )}>
-          {error(message)}
+          { message && message.bottom && error(message.bottom)}
         </div>
       </InstantFormWrapper>
     );

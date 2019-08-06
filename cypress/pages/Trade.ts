@@ -83,7 +83,7 @@ export class Trade {
     return new Finalization();
   }
 
-  public resultsInError = (error: string | RegExp) => {
-    cy.get(tid('error')).contains(error);
+  public resultsInError = (error: string | RegExp, position: 'bottom' | 'top') => {
+    cy.get(tid(`${position}-error`)).contains(error);
   }
 }
