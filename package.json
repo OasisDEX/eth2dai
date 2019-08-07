@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "build:ci": "REACT_APP_ENV='test' node scripts/build.js",
+    "build:ci": "ENV=dev REACT_APP_ENV='test' node scripts/build.js",
     "test": "yarn tslint && yarn tsc &&  node scripts/test.js --env=jsdom",
     "test:unit": "tslint --project . &&  node scripts/test.js --env=jsdom",
     "test:coverage": "yarn tslint && yarn tsc && node scripts/test.js --env=jsdom --coverage",
