@@ -54,13 +54,6 @@ export interface FormResetChange {
   kind: InstantFormChangeKind.formResetChange;
 }
 
-export enum Position {
-  TOP = 'top',
-  BOTTOM = 'bottom'
-}
-
-export type Placement = Position.TOP | Position.BOTTOM;
-
 export enum MessageKind {
   noAllowance = 'noAllowance',
   insufficientAmount = 'insufficientAmount',
@@ -75,30 +68,18 @@ export type Message = {
     | MessageKind.insufficientAmount
     | MessageKind.incredibleAmount;
   field: string;
-  priority: number;
   token: string;
   amount: BigNumber;
-  placement: Placement;
 } | {
   kind: MessageKind.orderbookTotalExceeded
   field: string;
   side: OfferType
   amount: BigNumber,
   token: string;
-  priority: number;
-  placement: Placement;
   error: any
 } | {
   kind: MessageKind.notConnected;
   field: string;
-  priority: number;
-  placement: Placement;
-// } | {
-//   kind: MessageKind.custom
-//   field: string;
-//   priority: number;
-//   placement: Placement;
-//   error: any
 };
 
 export enum TradeEvaluationStatus {
@@ -175,7 +156,10 @@ export interface InstantFormState extends HasGasEstimation, TradeEvaluationState
   buyToken: string;
   sellToken: string;
   kind?: OfferType;
-  message?: Message;
+  message?: {
+    top?: Message;
+    bottom?: Message;
+  };
   submit: (state: InstantFormState) => void;
   createProxy: () => void;
   change: (change: ManualChange) => void;
@@ -461,13 +445,13 @@ function evaluateBuy(calls: ReadCalls, state: InstantFormState) {
   const errorItem = (error?: Error) => ({
     sellAmount: undefined,
     message: {
-      error,
-      kind: MessageKind.orderbookTotalExceeded,
-      amount: buyAmount,
-      side: 'buy',
-      token: buyToken,
-      placement: Position.TOP,
-      priority: 3
+      top: {
+        error,
+        kind: MessageKind.orderbookTotalExceeded,
+        amount: buyAmount,
+        side: 'buy',
+        token: buyToken,
+      }
     }
   });
 
@@ -492,13 +476,13 @@ function evaluateSell(calls: ReadCalls, state: InstantFormState) {
   const errorItem = (error?: Error) => ({
     buyAmount: undefined,
     message: {
-      error,
-      kind: MessageKind.orderbookTotalExceeded,
-      amount: sellAmount,
-      side: 'sell',
-      token: sellToken,
-      placement: Position.TOP,
-      priority: 3
+      top: {
+        error,
+        kind: MessageKind.orderbookTotalExceeded,
+        amount: sellAmount,
+        side: 'sell',
+        token: sellToken,
+      }
     }
   });
 
@@ -634,35 +618,43 @@ function validate(state: InstantFormState): InstantFormState {
     return state;
   }
 
-  let message: Message | undefined = state.message;
+  let message: {
+    top?: Message,
+    bottom?: Message
+  } | undefined = state.message;
 
   const [spendField, receiveField] = ['sellToken', 'buyToken'];
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
   const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
   const dustLimits = state.dustLimits;
 
+  // In case when the orderbook is not big enough to fill an order
+  // and the user hasn't connected his wallet, we have to display both errors
   if (!state.user || !state.user.account) {
-    message = prioritize(message, {
-      kind: MessageKind.notConnected,
-      field: spendField,
-      priority: 1000,
-      placement: Position.BOTTOM,
-    });
+    message = {
+      ...message,
+      bottom: {
+        kind: MessageKind.notConnected,
+        field: spendField,
+      }
+    };
+
+    return {
+      ...state,
+      message,
+    };
   }
 
-  if (spendAmount && (
-    spendToken === 'ETH' && state.etherBalance && state.etherBalance.lt(spendAmount) ||
-    state.balances && state.balances[spendToken] && state.balances[spendToken].lt(spendAmount)
-  )) {
-    message = prioritize(message, {
-      kind: MessageKind.insufficientAmount,
-      field: spendField,
-      amount: spendAmount,
-      priority: 1,
-      token: spendToken,
-      placement: Position.BOTTOM
-    });
+  // In case there is an error displayed at the top
+  // and the user has his wallet connected
+  // we don't care about potential errors displayed at the bottom
+  if (message && message.top) {
+    return state;
   }
+
+  // The rest of the errors are in order of importance.
+  // Only bottom error is set since if we got here
+  // that means we don't have any errors for the top
 
   if (
     spendAmount
@@ -670,14 +662,36 @@ function validate(state: InstantFormState): InstantFormState {
     && dustLimits[eth2weth(spendToken)]
     && dustLimits[eth2weth(spendToken)].gt(spendAmount)
   ) {
-    message = prioritize(message, {
-      kind: MessageKind.dustAmount,
-      amount: dustLimits[eth2weth(spendToken)],
-      field: spendField,
-      priority: 2,
-      token: spendToken,
-      placement: Position.BOTTOM
-    });
+    message = {
+      bottom: {
+        kind: MessageKind.dustAmount,
+        amount: dustLimits[eth2weth(spendToken)],
+        field: spendField,
+        token: spendToken,
+      }
+    };
+    return {
+      ...state,
+      message
+    };
+  }
+
+  if (
+    spendAmount
+    && new BigNumber(tokens[eth2weth(spendToken)].maxSell).lt(spendAmount)
+  ) {
+    message = {
+      bottom: {
+        kind: MessageKind.incredibleAmount,
+        field: spendField,
+        token: spendToken,
+        amount: new BigNumber(tokens[eth2weth(spendToken)].maxSell),
+      }
+    };
+    return {
+      ...state,
+      message
+    };
   }
 
   if (
@@ -686,44 +700,62 @@ function validate(state: InstantFormState): InstantFormState {
     && dustLimits[eth2weth(receiveToken)]
     && dustLimits[eth2weth(receiveToken)].gt(receiveAmount)
   ) {
-    message = prioritize(message, {
-      kind: MessageKind.dustAmount,
-      amount: dustLimits[eth2weth(receiveToken)],
-      field: receiveField,
-      priority: 2,
-      token: receiveToken,
-      placement: Position.BOTTOM
-    });
+    message = {
+      bottom: {
+        kind: MessageKind.dustAmount,
+        amount: dustLimits[eth2weth(receiveToken)],
+        field: receiveField,
+        token: receiveToken,
+      }
+    };
+    return {
+      ...state,
+      message
+    };
   }
 
   if (
-    spendAmount && new BigNumber(tokens[eth2weth(spendToken)].maxSell).lt(spendAmount)
+    receiveAmount
+    && new BigNumber(tokens[eth2weth(receiveToken)].maxSell).lt(receiveAmount)
   ) {
-    message = prioritize(message, {
-      kind: MessageKind.incredibleAmount,
-      field: spendField,
-      priority: 2,
-      token: spendToken,
-      amount: new BigNumber(tokens[eth2weth(spendToken)].maxSell),
-      placement: Position.BOTTOM
-    });
+    message = {
+      bottom: {
+        kind: MessageKind.incredibleAmount,
+        field: receiveField,
+        token: receiveToken,
+        amount: new BigNumber(tokens[eth2weth(receiveToken)].maxSell),
+      }
+    };
+    return {
+      ...state,
+      message
+    };
   }
 
-  if (receiveAmount && new BigNumber(tokens[eth2weth(receiveToken)].maxSell).lt(receiveAmount)) {
-    message = prioritize(message, {
-      kind: MessageKind.incredibleAmount,
-      field: receiveField,
-      priority: 2,
-      token: receiveToken,
-      amount: new BigNumber(tokens[eth2weth(receiveToken)].maxSell),
-      placement: Position.BOTTOM
-    });
+  if (spendAmount && (
+    spendToken === 'ETH'
+    && state.etherBalance
+    && state.etherBalance.lt(spendAmount)
+    ||
+    state.balances
+    && state.balances[spendToken]
+    && state.balances[spendToken].lt(spendAmount)
+  )) {
+    message = {
+      bottom: {
+        kind: MessageKind.insufficientAmount,
+        field: spendField,
+        amount: spendAmount,
+        token: spendToken,
+      }
+    };
+    return {
+      ...state,
+      message
+    };
   }
 
-  return {
-    ...state,
-    message
-  };
+  return state;
 }
 
 function calculatePriceAndImpact(state: InstantFormState): InstantFormState {
@@ -925,17 +957,3 @@ export function createFormController$(
     shareReplay(1),
   );
 }
-
-const prioritize = (current: Message = { priority: 0 } as Message, candidate: Message) => {
-  // Prioritize by priority first
-  if (current.priority < candidate.priority) {
-    return candidate;
-  }
-
-  // and if we have errors with same priority, the one for paying input is more important
-  if (current.priority === candidate.priority) {
-    return current.field === 'sellToken' ? current : candidate;
-  }
-
-  return current;
-};
