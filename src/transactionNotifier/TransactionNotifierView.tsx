@@ -64,7 +64,7 @@ export const Notification: React.SFC<NotificationProps> = ({
     transaction.meta.descriptionIcon && transaction.meta.descriptionIcon(transaction.meta.args);
 
   return (
-    <div key={transaction.txNo} className={styles.block}>
+    <div key={transaction.txNo} className={styles.block} data-vis-reg-hide={true}>
       {icon && (
         <div className={styles.icon}>
           <div className={styles.iconInner}>{icon}</div>

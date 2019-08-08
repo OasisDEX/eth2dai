@@ -197,7 +197,7 @@ describe('New trade', () => {
     const finalization = trade.execute();
 
     makeScreenshots('price-impact-warning');
-    finalization.shoulHavePriceImpactWarning();
+    finalization.shouldHavePriceImpactWarning();
     finalization.acceptPriceImpact();
 
     finalization.shouldCreateProxy();
@@ -232,7 +232,7 @@ describe('New trade', () => {
     trade.expectPriceImpact('19.28%', true);
 
     const finalization = trade.execute();
-    finalization.shoulHavePriceImpactWarning();
+    finalization.shouldHavePriceImpactWarning();
     finalization.dismissPriceImpact();
 
     trade.expectPriceImpact('19.28%', true);
