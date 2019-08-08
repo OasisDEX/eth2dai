@@ -4,7 +4,7 @@ import { Summary } from './Summary';
 export class Finalization {
   public currentTx: string = '';
 
-  public shoulHavePriceImpactWarning = () => {
+  public shouldHavePriceImpactWarning = () => {
     cy.get(tid('price-impact-text'))
       .contains(/Order has a significant .../);
 

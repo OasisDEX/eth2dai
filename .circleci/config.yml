@@ -51,7 +51,7 @@ jobs:
           command: |
             LOCALNODE_SHA=8e36f81989cd0e17c9e6de035c4dde58f0f12bd5
             docker login -u $DOCKER_USER -p $DOCKER_PASS && docker pull oasisdex/localnode:$LOCALNODE_SHA
-            docker run -d -p 8545:8545 oasisdex/localnode:$LOCALNODE_SHA master
+            docker run -d -p 8545:8545 oasisdexorg/localnode:$LOCALNODE_SHA master
       - run: 
           name: Wait for localnode to be up
           command: |

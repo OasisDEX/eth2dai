@@ -25,7 +25,7 @@ class Trade {
 export class Trades {
 
   public static countIs(number: number) {
-    cy.get(tid('my-trades'), { timeout: 10000 }).should('have.length', number);
+    cy.get(tid('my-trades'), { timeout: 15000 }).should('have.length', number);
   }
 
   public static first() {
