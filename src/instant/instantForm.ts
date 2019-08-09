@@ -3,11 +3,12 @@ import { isEqual } from 'lodash';
 import { curry } from 'ramda';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
+  catchError,
   distinctUntilChanged, first, flatMap,
   map,
   scan,
   shareReplay,
-  switchMap, take, withLatestFrom,
+  switchMap, take, tap, withLatestFrom,
 } from 'rxjs/operators';
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';
@@ -248,7 +249,10 @@ export function manualAllowanceSetup(
 
   transactionStatus$.pipe(
     distinctUntilChanged(isEqual),
-    withLatestFrom(allowances$),
+    switchMap((txStatus) => allowances$
+      .pipe(
+        switchMap(allowances => of([txStatus, allowances]))
+      )),
     map(([status, allowances]) => {
       const { token, direction, progress } = status;
 
@@ -271,6 +275,10 @@ export function manualAllowanceSetup(
           ) || isDoneButNotSuccessful(progress)
         } as ManualAllowanceProgress
       });
+    }),
+    catchError(err => {
+      console.log('Error caught:', err);
+      return of(undefined);
     })
   ).subscribe();
 

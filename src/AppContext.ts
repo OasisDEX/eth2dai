@@ -22,7 +22,8 @@ import {
   CombinedBalances,
   createBalances$,
   createCombinedBalances$,
-  createDustLimits$, createProxyAllowances$,
+  createDustLimits$,
+  createProxyAllowances$,
   createWalletApprove,
   createWalletDisapprove,
   createWethBalances$,
@@ -264,8 +265,8 @@ export function setupAppContext() {
     createTransactionNotifier$(transactions$, interval(5 * 1000), context$);
   const TransactionNotifierTxRx = connect(TransactionNotifierView, transactionNotifier$);
 
-  const proxyAddress$ = onEveryBlock$.pipe(
-    switchMap(() =>
+  const proxyAddress$ = interval(100).pipe(
+    flatMap(() =>
       calls$.pipe(
         flatMap(calls => calls.proxyAddress())
       )),
