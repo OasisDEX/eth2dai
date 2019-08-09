@@ -8,7 +8,7 @@ import {
   map,
   scan,
   shareReplay,
-  switchMap, take, tap, withLatestFrom,
+  switchMap, take
 } from 'rxjs/operators';
 
 import { Allowances, Balances, DustLimits } from '../balances/balances';
