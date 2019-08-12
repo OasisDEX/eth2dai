@@ -1,7 +1,6 @@
-import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
-import { NetworkConfig, tokens } from '../../blockchain/config';
+import { tokens } from '../../blockchain/config';
 import { TxStatus } from '../../blockchain/transactions';
 import accountSvg from '../../icons/account.svg';
 import doneSvg from '../../icons/done.svg';
@@ -16,25 +15,12 @@ import { TxStatusRow } from '../details/TxStatusRow';
 import * as styles from '../Instant.scss';
 import {
   InstantFormChangeKind,
-  ManualChange,
-  Progress,
+  InstantFormState,
   ProgressKind,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import { ProgressReport } from '../progress/ProgressReport';
-
-interface ViewProps {
-  change: (change: ManualChange) => void;
-  progress: Progress;
-  sellToken: string;
-  buyToken: string;
-  sellAmount: BigNumber;
-  buyAmount: BigNumber;
-  price: BigNumber;
-  quotation: string;
-  context: NetworkConfig;
-}
 
 // tslint:disable
 const proxyTooltip = {
@@ -50,7 +36,7 @@ const allowanceTooltip = {
 } as WarningTooltipType;
 // tslint:enable
 
-export class FinalizationView extends React.Component<ViewProps> {
+export class FinalizationView extends React.Component<InstantFormState> {
 
   public render() {
     const {
@@ -106,6 +92,10 @@ export class FinalizationView extends React.Component<ViewProps> {
   private _tradeTx = () => {
 
     const { sellToken, buyToken, sellAmount, buyAmount, progress } = this.props;
+
+    if (!progress) {
+      return <div />;
+    }
 
     return (
       <>
@@ -216,6 +206,6 @@ export class FinalizationView extends React.Component<ViewProps> {
   private _createReport = (txStatus: TxStatus, txHash: string) => ({
     txStatus,
     txHash,
-    etherscanURI: this.props.context.etherscan.url
+    etherscanURI: this.props.context!.etherscan.url
   })
 }
