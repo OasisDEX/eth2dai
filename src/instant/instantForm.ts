@@ -249,9 +249,9 @@ export function manualAllowanceSetup(
 
   transactionStatus$.pipe(
     distinctUntilChanged(isEqual),
-    switchMap((txStatus) => allowances$
+    flatMap((txStatus) => allowances$
       .pipe(
-        switchMap(allowances => of([txStatus, allowances]))
+        flatMap(allowances => of([txStatus, allowances]))
       )),
     map(([status, allowances]) => {
       const { token, direction, progress } = status;
