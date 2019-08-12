@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
+import { Balances } from '../../balances/balances';
 import { eth2weth } from '../../blockchain/calls/instant';
 import { tokens, tradingPairs } from '../../blockchain/config';
 import { OfferType } from '../../exchange/orderbook/orderbook';
@@ -29,13 +30,9 @@ class AssetSelectorView extends React.Component<InstantFormState & {side: OfferT
             <ul className={styles.list}>
               {
                 Object.values(tokens).map((token, index) => {
-                  if (!balances) {
-                    return < div/>;
-                  }
-
                   const asset = token.symbol;
                   const balance = user && user.account
-                    ? balances[asset]
+                    ? balances ? balances[asset] : new BigNumber(0)
                     : new BigNumber(0);
 
                   return (

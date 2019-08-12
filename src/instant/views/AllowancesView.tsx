@@ -13,10 +13,6 @@ export class AllowancesView extends React.Component<InstantFormState> {
   public render() {
     const allowances = this.props.allowances;
 
-    if (!allowances) {
-      return <div />;
-    }
-
     return (
       <InstantFormWrapper heading={'Enable Token for Trading'}>
         <TopRightCorner>
@@ -33,7 +29,9 @@ export class AllowancesView extends React.Component<InstantFormState> {
                     <span>{asset.name}</span>
                     <SvgImage className={classnames(
                       styles.doneIcon,
-                      allowances[asset.symbol] ? styles.isAllowed : ''
+                      (allowances ? allowances[asset.symbol] : false)
+                        ? styles.isAllowed
+                        : ''
                     )} image={doneSvg}/>
                   </li>
                 );
