@@ -15,12 +15,27 @@
 
   cursor: pointer;
 
+  color: white;
+  background: transparent;
+
   @include fontMontserratMedium;
   font-size: .75rem;
   letter-spacing: 1px;
 
   &:hover {
     border-color: $button-border-hover;
+  }
+
+  &.locked {
+    pointer-events: none;
+
+    border-color: $button-border-disabled;
+    color: $button-border-disabled;
+
+    @include iconsDisabled(
+        $button-border-disabled,
+        $grey-darkest
+    )
   }
 }
 

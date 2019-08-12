@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg height="26" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 22 22" fill="none">
   <path d="M11,0 C4.92380952,0 0,4.92380952 0,11 C0,17.0761905 4.92380952,22 11,22 C17.0761905,22 22,17.0761905 22,11 C22,4.92380952 17.0761905,0 11,0 Z"
     id="Shape" fill="#F7A600"/>
   <g id="icon" transform="translate(5.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">

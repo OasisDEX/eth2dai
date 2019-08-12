@@ -52,9 +52,7 @@ export class Trade {
 
   public sell = (token: string = '') => {
     if (token) {
-      cy.get(tid('selling-token', tid('balance')));
-
-      cy.get(tid('selling-token'), timeout(2000))
+      cy.get(tid('selling-token', tid('balance')), timeout(2000))
         .click();
 
       cy.get(tid(token.toLowerCase()), timeout(2000))
@@ -68,9 +66,7 @@ export class Trade {
 
   public buy = (token: string = '') => {
     if (token) {
-      cy.get(tid('buying-token', tid('balance')));
-
-      cy.get(tid('buying-token'), timeout(2000))
+      cy.get(tid('buying-token', tid('balance')), timeout(2000))
         .click();
 
       cy.get(tid(token.toLowerCase()), timeout(2000))
@@ -87,7 +83,7 @@ export class Trade {
     return new Finalization();
   }
 
-  public resultsInError = (error: string | RegExp) => {
-    cy.get(tid('error')).contains(error);
+  public resultsInError = (error: string | RegExp, position: 'bottom' | 'top') => {
+    cy.get(tid(`${position}-error`)).contains(error);
   }
 }

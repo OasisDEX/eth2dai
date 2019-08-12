@@ -3,9 +3,10 @@
   "projectId": "noiqfs",
   "videoUploadOnPasses": false,
   "defaultCommandTimeout": 40000,
+  "requestTimeout": 10000,
   "viewportWidth": 1024,
   "viewportHeight": 960,
   "env": {
     "ETH_PROVIDER": "http://localhost:8545"
   }
-}
+} 

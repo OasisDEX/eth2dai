@@ -196,7 +196,7 @@ $header-media-breakpoint: 800px;
 }
 
 :global(.Popover.noWallet) {
-  z-index: 5;
+  z-index: 20;
   padding-top: 8px;
   & :global(.Popover-tip) {
     display: none;

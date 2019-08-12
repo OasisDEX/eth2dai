@@ -1,5 +1,6 @@
 import * as React from 'react';
-import LogoSvg from '../header/Logo.svg';
+import Eth2DaiLogoSvg from '../header/Eth2DaiLogo.svg';
+import OasisDexLogoSvg from '../header/OasisDexLogo.svg';
 import networkSvg from '../icons/network.svg';
 import { SvgImage } from '../utils/icons/utils';
 import { Client } from './client/Client';
@@ -17,7 +18,11 @@ export class LoadingState {
   public static get MISSING_PROVIDER() {
     return (
       <section className={styles.section}>
-        <SvgImage image={LogoSvg} className={styles.logo} />
+        {
+          process.env.REACT_APP_OASIS_DEX_ENABLED === '1' ?
+            <SvgImage image={OasisDexLogoSvg}/> :
+            <SvgImage image={Eth2DaiLogoSvg}/>
+        }
         <div className={styles.container}>
           <div style={{ justifyContent: 'center' }} className={styles.containerTopHalf}>
             <h4>You have currently no Client in use</h4>
@@ -44,7 +49,7 @@ export class LoadingState {
           <div className={styles.containerBottomHalf}>
             <h4 style={{ color: '#8D8D96' }}>Please connect to the Ethereum Main Network</h4>
           </div>
-          <div style={styles.unsupported as React.CSSProperties}>
+          <div className={styles.unsupported}>
             <SvgImage image={networkSvg} />
           </div>
         </div>

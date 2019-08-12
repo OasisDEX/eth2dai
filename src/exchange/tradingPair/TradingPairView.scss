@@ -1,14 +1,28 @@
 @import "../../utils/Variables";
 @import "../../utils/Mixins";
 
+$sm: 400px;
+
 .container {
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
-    //justify-content: space-between;
     align-items: center;
+    z-index: 15;
+    height: 48px;
+    border: 1px solid $grey-darken-darkest;
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+    background: inherit;
 
     width: 100%;
-    padding: 0 30px 0 0;
+
+    @include media-breakpoint-down(md-lg) {
+      border: 0;
+      z-index: 0;
+      border-top: 1px solid $grey-darken-darkest;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
 
     @include media-breakpoint-down(md){
       padding: 0;
@@ -19,6 +33,7 @@
 // ---------- dropdown ---------------
 .dropdown {
     position: relative;
+    display: inline-flex;
 
     @include media-breakpoint-down(md) {
       width: 100%;
@@ -26,7 +41,7 @@
 }
 
 .mobileWrapper {
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(560px) {
     display: flex;
     flex-direction: column-reverse;
     margin: auto;
@@ -34,11 +49,21 @@
   }
 }
 
+.dropdownIcon {
+  margin: 0 16px 0 12px;
+  width: 20px;
+  padding: 0 4px;
+  content: url("../../icons/chevron-down.svg");
+
+  @include media-breakpoint-down(md-lg) {
+    margin-left: auto;
+  }
+}
+
 .dropdownBtn {
-    $width: 220px;
     height: 48px;
-    width: $width;
-    border-right: 1px solid $grey-darken-darkest;
+    border: 1px solid $grey-darken-darkest;
+    border-right: none;
     border-top-left-radius: $border-radius;
     border-bottom-left-radius: $border-radius;
 
@@ -47,62 +72,82 @@
     align-items: center;
 
     cursor: pointer;
-    background: url("../../icons/chevron-down.svg") no-repeat ($width - 34px) center;
     background-size: 16px;
 
-    @include media-breakpoint-down(md){
-      border-right: none;
-      width: calc(100% - 2px);
-      background-position: calc(100% - 17px);
-      margin-left: 1px;
+    @include media-breakpoint-down(md-lg) {
+      border: none;
+      width: 100%;
+      border-radius: unset;
     }
+
     &:focus {
       outline: none;
     }
+    user-select: none;
 }
 
 .dropdownBtnDisabled {
     cursor: default;
-    background-image: none;
+    .dropdownIcon {
+      content: "";
+    }
 }
 
 .dropdownBtnActive {
     background-color: $grey-mid;
-    background-image: url("../../icons/chevron-up.svg");
     border-bottom-left-radius: unset;
+    z-index: 15;
+    border-bottom-color: $grey-mid;
+
+    .dropdownIcon {
+      content: url("../../icons/chevron-up.svg");
+    }
+
+  @include media-breakpoint-down(md-lg){
+    border-top-left-radius: $border-radius;
+    border-top-right-radius: $border-radius;
+  }
 }
 
 .dropdownListWrapper {
     position: absolute;
-    z-index: 10;
+    top: 48px;
+    z-index: 5;
     overflow: hidden;
-    margin: 0 -2px -2px -3px;
-    @include media-breakpoint-down(md){
-      width: 100%;
-      margin: 0 -1px -1px -1px;
+    box-shadow: 0 0px 4px  rgba(0, 0, 0, .25);
+
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+
+    @include media-breakpoint-down(md-lg){
+      width: calc(100% + 2px);
+      margin-left: -1px;
     }
 }
 
 .dropdownList {
+    width: 344px;
     display: table;
     list-style: none;
-    padding: 10px 0 $border-radius 0;
-    margin: 0 2px 2px 2px;
+    padding: 14px 0;
+    margin: 0;
 
     background-color: $grey-mid;
     border: 1px solid $grey-darken-darkest;
     border-top: none;
-    box-shadow: 0 0 4px rgba(0,0,0,.25);
+
     border-bottom-left-radius: $border-radius;
     border-bottom-right-radius: $border-radius;
-    @include media-breakpoint-down(md){
+
+    @include media-breakpoint-down(md-lg){
       width: 100%;
-      margin: 0 1px 1px 1px;
+      margin-left: 0;
+      border-top: 1px solid $grey-darken-darkest;
     }
 }
 
 .dropdownItem {
-    display: table-row-group;
+  display: flex;
 }
 
 .dropdownItemLink {
@@ -124,26 +169,25 @@
 
 .activePairView {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px 26px 12px 12px;
     width: 100%;
     letter-spacing: 1px;
 }
 
 .activePairViewIcon {
-    height: 24px;
-    width: 24px;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    margin-bottom: -4px;
+    height: 26px;
+    width: 26px;
+    margin:0 12px;
+}
+
+.activePairViewTokenBase {
+  margin-right: 12px;
 }
 
 .activePairViewTokenBase, .activePairViewTokenQuote {
-    flex-basis: 50px;
-    flex-grow: 1;
-    margin-bottom: -2px;
+    width: 55px;
+    text-align: left;
+    line-height: 19px;
 }
 
 .activePairViewTokenBase {
@@ -156,46 +200,70 @@
 // ------------ Pair view -----------------
 
 .pairView {
-    display: table-row;
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 0;
+    width: 100%;
     background-color: $grey-mid;
     &:hover {
         background-color: $grey-mid-hover;
     }
     font-size: 14px;
 
-    & > * {
-      display: table-cell;
-      vertical-align: middle;
+    @include media-breakpoint-down($sm) {
+      padding: 7px 8px;
+    }
+
+    .iconQuote {
+      margin-right: 8px;
+      padding: 0;
+    }
+
+    .iconBase {
+      padding: 0 0 0 8px;
+
+      @include media-breakpoint-down($sm) {
+        padding: 0;
+      }
     }
 
     .iconBase, .iconQuote {
-      padding: 8px 0 5px 8px;
+      height: 26px;
     }
 
-    .tokenBase {
-      padding: 13px 13px 13px 4px;
+    .tokenBase, .tokenQuote {
+      padding-left: 4px;
+      width: 58px;
       letter-spacing: 0.5px;
-    }
 
-    .tokenQuote {
-      padding: 13px 32px 13px 4px;
-      letter-spacing: 0.5px;
-      @include media-breakpoint-down(md){
-          padding-right: 16px;
+      @include media-breakpoint-down($sm) {
+        width: 54px;
       }
     }
 
     .price {
-      text-align: right;
-      padding-right: 60px;
-      @include media-breakpoint-down(md){
-          padding-right: 40px;
+      width: 120px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      &.center {
+        justify-content: center;
+      }
+
+      @include media-breakpoint-down(md-lg){
+        margin: auto;
+      }
+
+      @include media-breakpoint-down($sm){
+        width: 74px;
       }
     }
 
     .priceDiff {
+      width: 58px;
       text-align: right;
-      padding-right: 20px;
+      padding-right: 10px;
     }
 }
 
@@ -216,7 +284,10 @@
       padding: 10px 16px;
       flex-direction: column-reverse;
       align-items: flex-end;
-      border-top: 1px solid $grey-darken-darkest;
+    }
+
+    @include media-breakpoint-down($sm){
+      padding: 10px;
     }
 }
 

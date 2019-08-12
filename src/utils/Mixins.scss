@@ -228,3 +228,13 @@ $inputFontSize: (
   -ms-text-overflow: ellipsis;
   text-overflow: ellipsis;
 }
+
+@mixin iconsDisabled($background, $content) {
+  :global(.icon-background){
+    fill :$background;
+  }
+
+  :global(.icon-content) {
+    fill: $content;
+  }
+}

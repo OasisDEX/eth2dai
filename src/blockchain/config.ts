@@ -1,17 +1,39 @@
 import { fromPairs, memoize, zip } from 'lodash';
 
 import { TradingPair } from '../exchange/tradingPair/tradingPair';
+import batCircleSvg from '../icons/coins/bat-circle.svg';
+import batColorSvg from '../icons/coins/bat-color.svg';
+import batSvg from '../icons/coins/bat.svg';
 import daiCircleSvg from '../icons/coins/dai-circle.svg';
 import daiColorSvg from '../icons/coins/dai-color.svg';
-import daiInverseSvg from '../icons/coins/dai-inverse.svg';
+// import daiInverseSvg from '../icons/coins/dai-inverse.svg';
 import daiSvg from '../icons/coins/dai.svg';
+import dgdCircleSvg from '../icons/coins/dgd-circle.svg';
+import dgdColorSvg from '../icons/coins/dgd-color.svg';
+import dgdSvg from '../icons/coins/dgd.svg';
 import ethCircleSvg from '../icons/coins/eth-circle.svg';
-import ethColorInverseSvg from '../icons/coins/eth-color-inverse.svg';
+// import ethColorInverseSvg from '../icons/coins/eth-color-inverse.svg';
 import ethColorSvg from '../icons/coins/eth-color.svg';
-import ethInverseSvg from '../icons/coins/eth-inverse.svg';
+// import ethInverseSvg from '../icons/coins/eth-inverse.svg';
 import ethSvg from '../icons/coins/eth.svg';
-import mkrInverseSvg from '../icons/coins/mkr-inverse.svg';
-import mkrSvg from '../icons/coins/mkr.svg';
+// import mkrInverseSvg from '../icons/coins/mkr-inverse.svg';
+// import mkrSvg from '../icons/coins/mkr.svg';
+import omgCircleSvg from '../icons/coins/omg-circle.svg';
+import omgColorSvg from '../icons/coins/omg-color.svg';
+import omgSvg from '../icons/coins/omg.svg';
+import repCircleSvg from '../icons/coins/rep-circle.svg';
+import repColorSvg from '../icons/coins/rep-color.svg';
+import repSvg from '../icons/coins/rep.svg';
+// import usdcCircleSvg from '../icons/coins/usdc-circle.svg';
+// import usdcColorSvg from '../icons/coins/usdc-color.svg';
+// import usdcSvg from '../icons/coins/usdc.svg';
+// import wbtcCircleSvg from '../icons/coins/wbtc-circle.svg';
+// import wbtcColorSvg from '../icons/coins/wbtc-color.svg';
+// import wbtcSvg from '../icons/coins/wbtc.svg';
+import zrxCircleSvg from '../icons/coins/zrx-circle.svg';
+import zrxColorSvg from '../icons/coins/zrx-color.svg';
+import zrxSvg from '../icons/coins/zrx.svg';
+
 import { SvgImageSimple } from '../utils/icons/utils';
 import * as eth from './abi/ds-eth-token.abi.json';
 import * as dsProxyFactory from './abi/ds-proxy-factory.abi.json';
@@ -25,9 +47,13 @@ import { web3 } from './web3';
 
 export const tradingPairs: TradingPair[] = [
   { base: 'WETH', quote: 'DAI' },
-  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [
-    { base: 'MKR', quote: 'DAI' },
-    { base: 'MKR', quote: 'WETH' },
+  ...process.env.REACT_APP_OASIS_DEX_ENABLED !== '1' ? [] : [
+    // { base: 'MKR', quote: 'DAI' },
+    // { base: 'MKR', quote: 'WETH' },
+    { base: 'DGD', quote: 'DAI' },
+    { base: 'REP', quote: 'DAI' },
+    { base: 'OMG', quote: 'DAI' },
+    { base: 'ZRX', quote: 'DAI' }
   ]
 ];
 
@@ -44,22 +70,10 @@ export const tokens = asMap('symbol', [
     maxSell: '10000000',
     name: 'Ether',
     icon: SvgImageSimple(ethSvg),
-    iconInverse: SvgImageSimple(ethInverseSvg),
+    // iconInverse: SvgImageSimple(ethInverseSvg),
     iconCircle: SvgImageSimple(ethCircleSvg),
     iconColor: SvgImageSimple(ethColorSvg),
   },
-  ...process.env.REACT_APP_MKR_TOKEN_ENABLED !== '1' ? [] : [{
-    symbol: 'MKR',
-    precision: 18,
-    digits: 5,
-    digitsInstant: 3,
-    maxSell: '10000000',
-    name: 'Maker',
-    icon: SvgImageSimple(mkrSvg),
-    iconInverse: SvgImageSimple(mkrInverseSvg),
-    iconCircle: SvgImageSimple(mkrSvg),
-    iconColor: SvgImageSimple(mkrInverseSvg),
-  }],
   {
     symbol: 'WETH',
     precision: 18,
@@ -68,9 +82,9 @@ export const tokens = asMap('symbol', [
     maxSell: '10000000',
     name: 'Wrapped Ether',
     icon: SvgImageSimple(ethSvg),
-    iconInverse: SvgImageSimple(ethCircleSvg),
-    iconCircle: SvgImageSimple(ethInverseSvg),
-    iconColor: SvgImageSimple(ethColorInverseSvg),
+    // iconInverse: SvgImageSimple(ethCircleSvg),
+    iconCircle: SvgImageSimple(ethCircleSvg),
+    iconColor: SvgImageSimple(ethCircleSvg),
   },
   {
     symbol: 'DAI',
@@ -80,11 +94,129 @@ export const tokens = asMap('symbol', [
     maxSell: '10000000',
     name: 'Dai',
     icon: SvgImageSimple(daiSvg),
-    iconInverse: SvgImageSimple(daiInverseSvg),
+    // iconInverse: SvgImageSimple(daiInverseSvg),
     iconCircle: SvgImageSimple(daiCircleSvg),
     iconColor: SvgImageSimple(daiColorSvg),
   },
-]);
+  ...process.env.REACT_APP_OASIS_DEX_ENABLED !== '1' ? [] : [
+    // {
+    //   symbol: 'MKR',
+    //   precision: 18,
+    //   digits: 5,
+    //   digitsInstant: 3,
+    //   maxSell: '10000000',
+    //   name: 'Maker',
+    //   icon: SvgImageSimple(mkrSvg),
+    //   iconCircle: SvgImageSimple(mkrInverseSvg),
+    //   iconColor: SvgImageSimple(mkrInverseSvg),
+    // },
+    // {
+    //   symbol: 'DGX',
+    //   precision: 18,
+    //   digits: 5,
+    //   digitsInstant: 3,
+    //   safeCollRatio: 1.5,
+    //   maxSell: '1000000000000000',
+    //   name: 'Digix',
+    //   icon: SvgImageSimple(dgdSvg),
+    //   // iconInverse: SvgImageSimple(mkrInverseSvg),
+    //   iconCircle: SvgImageSimple(dgdCircleSvg),
+    //   iconColor: SvgImageSimple(dgdColorSvg),
+    // },
+    {
+      symbol: 'DGD',
+      precision: 9,
+      digits: 5,
+      digitsInstant: 3,
+      safeCollRatio: 1.5,
+      maxSell: '1000000000000000',
+      name: 'DigixDAO',
+      icon: SvgImageSimple(dgdSvg),
+    // iconInverse: SvgImageSimple(dgdInverseSvg),
+      iconCircle: SvgImageSimple(dgdCircleSvg),
+      iconColor: SvgImageSimple(dgdColorSvg),
+    },
+    {
+      symbol: 'REP',
+      precision: 18,
+      digits: 5,
+      digitsInstant: 3,
+      safeCollRatio: 1.5,
+      maxSell: '1000000000000000',
+      name: 'Augur',
+      icon: SvgImageSimple(repSvg),
+    // iconInverse: SvgImageSimple(repInverseSvg),
+      iconCircle: SvgImageSimple(repCircleSvg),
+      iconColor: SvgImageSimple(repColorSvg),
+    },
+    {
+      symbol: 'OMG',
+      precision: 18,
+      digits: 5,
+      digitsInstant:3,
+      safeCollRatio: 1.5,
+      maxSell: '1000000000000000',
+      name: 'OmniseGO',
+      icon: SvgImageSimple(omgSvg),
+    // iconInverse: SvgImageSimple(mkrInverseSvg),
+      iconCircle: SvgImageSimple(omgCircleSvg),
+      iconColor: SvgImageSimple(omgColorSvg),
+    },
+    {
+      symbol: 'ZRX',
+      precision: 18,
+      digits: 5,
+      digitsInstant: 3,
+      safeCollRatio: 1.5,
+      maxSell: '1000000000000000',
+      name: '0x',
+      icon: SvgImageSimple(zrxSvg),
+    // iconInverse: SvgImageSimple(mkrInverseSvg),
+      iconCircle: SvgImageSimple(zrxCircleSvg),
+      iconColor: SvgImageSimple(zrxColorSvg),
+    },
+    {
+      symbol: 'BAT',
+      precision: 18,
+      digits: 5,
+      digitsInstant: 3,
+      safeCollRatio: 1.5,
+      maxSell: '1000000000000000',
+      name: 'Basic Attention Token',
+      icon: SvgImageSimple(batSvg),
+    // iconInverse: SvgImageSimple(batInverseSvg),
+      iconCircle: SvgImageSimple(batCircleSvg),
+      iconColor: SvgImageSimple(batColorSvg),
+    },
+  // {
+  //   symbol: 'USDC',
+  //   precision: 6,
+  //   digits: 5,
+  //   digitsInstant: 2,
+  //   safeCollRatio: 1.5,
+  //   maxSell: '1000000000000000',
+  //   name: 'USD Coin',
+  //   icon: SvgImageSimple(usdcSvg),
+  //   // iconInverse: SvgImageSimple(usdcInverseSvg),
+  //   iconCircle: SvgImageSimple(usdcCircleSvg),
+  //   iconColor: SvgImageSimple(usdcColorSvg),
+  //   // address: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+  // },
+  // {
+  //   symbol: 'WBTC',
+  //   precision: 8,
+  //   digits: 5,
+  //   digitsInstant: 3,
+  //   safeCollRatio: 1.5,
+  //   maxSell: '1000000000000000',
+  //   name: 'Wrapped Bitcoin',
+  //   icon: SvgImageSimple(wbtcSvg),
+  //   // iconInverse: SvgImageSimple(wbtcInverseSvg),
+  //   iconCircle: SvgImageSimple(wbtcCircleSvg),
+  //   iconColor: SvgImageSimple(wbtcColorSvg),
+  //   // address: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+  // }
+  ]]);
 
 const load = memoize(
   (abi: any, address: string) => {
@@ -119,6 +251,11 @@ const protoMain = {
       loadToken('WETH', eth, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'),
       loadToken('DAI', erc20, '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'),
       loadToken('MKR', erc20, '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'),
+      loadToken('DGD', erc20, '0xe0b7927c4af23765cb51314a0e0521a9645f0e2a'),
+      loadToken('REP', erc20, '0x1985365e9f78359a9B6AD760e32412f4a445E862'),
+      loadToken('OMG', erc20, '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07'),
+      loadToken('ZRX', erc20, '0xe41d2489571d322189246dafa5ebde1f4699f498'),
+      loadToken('BAT', erc20, '0x0d8775f648430679a709e98d2b0cb6250d2887ef'),
     ]);
   },
   get otcSupportMethods() {
@@ -167,6 +304,11 @@ const kovan: NetworkConfig = {
       loadToken('WETH', eth, '0xd0a1e359811322d97991e03f863a0c30c2cf029c'),
       loadToken('DAI', erc20, '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'),
       loadToken('MKR', erc20, '0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd'),
+      loadToken('DGD', erc20, '0x62aeec5fb140bb233b1c5612a8747ca1dc56dc1b'),
+      loadToken('REP', erc20, '0xc7aa227823789e363f29679f23f7e8f6d9904a9b'),
+      loadToken('OMG', erc20, '0x441b1a74c69ee6e631834b626b29801d42076d38'),
+      loadToken('ZRX', erc20, '0x18392097549390502069c17700d21403ea3c721a'),
+      loadToken('BAT', erc20, '0x9f8cfb61d3b2af62864408dd703f9c3beb55dff7'),
     ]);
   },
   get otcSupportMethods() {
@@ -182,7 +324,7 @@ const kovan: NetworkConfig = {
     return load(proxyCreationAndExecute, '0xee419971e63734fed782cfe49110b1544ae8a773');
   },
   oasisDataService: {
-    url: 'http://localhost:3001/v1'
+    url: 'https://staging-cache.eth2dai.com/api/v1'
   },
   etherscan: {
     url: 'https://kovan.etherscan.io',
@@ -211,6 +353,11 @@ const localnet: NetworkConfig =   {
       loadToken('WETH', eth, '0x28085cefa9103d3a55fb5afccf07ed2038d31cd4'),
       loadToken('DAI', erc20, '0xff500c51399a282f4563f2713ffcbe9e53cfb6fa'),
       loadToken('MKR', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
+      loadToken('DGD', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
+      loadToken('REP', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
+      loadToken('OMG', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
+      loadToken('ZRX', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
+      loadToken('BAT', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
     ]);
   },
   get otcSupportMethods() {
