@@ -19,6 +19,11 @@ export function createWeb3Provider(privKey: string, providerUrl: string) {
   return new Web3(provider);
 }
 
+cy.on('uncaught:exception', (err: Error) => {
+  console.log(`Error happened: ${err}`);
+  return false;
+});
+
 export function cypressVisitWithoutProvider(path = '') {
   return cy.then(() => {
     return cy.visit(path);
