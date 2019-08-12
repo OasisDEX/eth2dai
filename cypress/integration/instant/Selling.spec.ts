@@ -89,7 +89,7 @@ describe('Selling', () => {
     });
   });
 
-  context.skip('ERC20 for ETH', () => {
+  context('ERC20 for ETH', () => {
     it('without proxy and allowance', () => {
       const from = 'DAI';
       const to = 'ETH';
@@ -200,7 +200,7 @@ describe('Selling', () => {
     });
   });
 
-  context.skip('ERC20 for ERC20', () => {
+  context('ERC20 for ERC20', () => {
     it('without proxy and allowance', () => {
       const from = 'DAI';
       const to = 'WETH';
