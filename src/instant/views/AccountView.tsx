@@ -1,6 +1,5 @@
 import classnames from 'classnames';
 import * as React from 'react';
-import { Allowances } from '../../balances/balances';
 import accountSvg from '../../icons/account.svg';
 import backSvg from '../../icons/back.svg';
 import warningSvg from '../../icons/warning.svg';
@@ -9,24 +8,16 @@ import { ButtonIcon, ProgressIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
 import { TopLeftCorner } from '../../utils/panel/TopRightCorner';
 import * as instantStyles from '../Instant.scss';
-import { InstantFormChangeKind, ManualChange, Progress, ViewKind } from '../instantForm';
+import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './AccountView.scss';
-
-export interface ViewProps {
-  proxyAddress: string;
-  allowances: Allowances;
-  createProxy: () => void;
-  change: (change: ManualChange) => void;
-  progress: Progress;
-}
 
 const box = {
   display: 'inline-flex',
   alignItems: 'center',
 };
 
-export class AccountView extends React.Component<ViewProps> {
+export class AccountView extends React.Component<InstantFormState> {
   public render() {
     const { proxyAddress } = this.props;
 

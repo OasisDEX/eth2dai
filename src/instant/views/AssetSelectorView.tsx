@@ -1,10 +1,8 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
-import { Balances } from '../../balances/balances';
 import { eth2weth } from '../../blockchain/calls/instant';
 import { tokens, tradingPairs } from '../../blockchain/config';
-import { User } from '../../blockchain/user';
 import { OfferType } from '../../exchange/orderbook/orderbook';
 import { CloseButton } from '../../utils/forms/Buttons';
 import { marketsOf } from '../../utils/markets';
@@ -12,19 +10,10 @@ import * as panelStyling from '../../utils/panel/Panel.scss';
 import { TopRightCorner } from '../../utils/panel/TopRightCorner';
 import { Asset } from '../asset/Asset';
 import * as instantStyles from '../Instant.scss';
-import { InstantFormChangeKind, ManualChange, ViewKind } from '../instantForm';
+import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import * as styles from './AssetSelectorView.scss';
 
-interface ViewProps {
-  side: OfferType;
-  sellToken: string;
-  buyToken: string;
-  balances: Balances;
-  user: User;
-  change: (change: ManualChange) => void;
-}
-
-class AssetSelectorView extends React.Component<ViewProps> {
+class AssetSelectorView extends React.Component<InstantFormState> {
   public render() {
     const { balances, user } = this.props;
     return (
@@ -106,10 +95,10 @@ class AssetSelectorView extends React.Component<ViewProps> {
   }
 }
 
-export const SellAssetSelectorView = (props: any) => (
+export const SellAssetSelectorView: React.SFC<InstantFormState> = (props) => (
   <AssetSelectorView side={OfferType.sell} {...props}/>
 );
 
-export const BuyAssetSelectorView = (props: any) => (
+export const BuyAssetSelectorView: React.SFC<InstantFormState> = (props) => (
   <AssetSelectorView side={OfferType.buy} {...props}/>
 );

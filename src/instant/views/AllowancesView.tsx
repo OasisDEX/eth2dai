@@ -1,21 +1,15 @@
 import classnames from 'classnames';
 import * as React from 'react';
-import { Allowances } from '../../balances/balances';
 import { tokens } from '../../blockchain/config';
 import doneSvg from '../../icons/done.svg';
 import { CloseButton } from '../../utils/forms/Buttons';
 import { SvgImage } from '../../utils/icons/utils';
 import { TopRightCorner } from '../../utils/panel/TopRightCorner';
-import { InstantFormChangeKind, ManualChange, ViewKind } from '../instantForm';
+import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import * as styles from './AllowancesView.scss';
 
-interface ViewProps {
-  allowances: Allowances;
-  change: (change: ManualChange) => void;
-}
-
-export class AllowancesView extends React.Component<ViewProps> {
+export class AllowancesView extends React.Component<InstantFormState> {
   public render() {
     const allowances = this.props.allowances;
 
