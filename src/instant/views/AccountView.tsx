@@ -115,6 +115,10 @@ export class AccountView extends React.Component<InstantFormState> {
   })
 
   private allowedTokens = () => {
+    if (!this.props.allowances) {
+      return 0;
+    }
+
     return Object
       .values(this.props.allowances)
       .reduce((allowedTokensCount: number, isAllowed: boolean) => {

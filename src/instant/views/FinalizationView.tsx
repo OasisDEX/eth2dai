@@ -93,6 +93,10 @@ export class FinalizationView extends React.Component<InstantFormState> {
 
     const { sellToken, buyToken, sellAmount, buyAmount, progress } = this.props;
 
+    if (!progress) {
+      return <div />;
+    }
+
     return (
       <>
         <div className={classnames(styles.details, styles.transaction)}>
@@ -202,6 +206,6 @@ export class FinalizationView extends React.Component<InstantFormState> {
   private _createReport = (txStatus: TxStatus, txHash: string) => ({
     txStatus,
     txHash,
-    etherscanURI: this.props.context.etherscan.url
+    etherscanURI: this.props.context!.etherscan.url
   })
 }

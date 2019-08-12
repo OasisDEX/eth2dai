@@ -13,7 +13,7 @@ import * as instantStyles from '../Instant.scss';
 import { InstantFormChangeKind, InstantFormState, ViewKind } from '../instantForm';
 import * as styles from './AssetSelectorView.scss';
 
-class AssetSelectorView extends React.Component<InstantFormState> {
+class AssetSelectorView extends React.Component<InstantFormState & {side: OfferType}> {
   public render() {
     const { balances, user } = this.props;
     return (
@@ -29,6 +29,10 @@ class AssetSelectorView extends React.Component<InstantFormState> {
             <ul className={styles.list}>
               {
                 Object.values(tokens).map((token, index) => {
+                  if (!balances) {
+                    return < div/>;
+                  }
+
                   const asset = token.symbol;
                   const balance = user && user.account
                     ? balances[asset]

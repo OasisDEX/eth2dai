@@ -16,6 +16,10 @@ import { InstantFormWrapper } from '../InstantFormWrapper';
 export class TradeSummaryView extends React.Component<InstantFormState> {
   public render() {
     const { progress, kind, sellToken, buyToken, context, gasPrice, etherPriceUsd } = this.props;
+    if (!progress || !context || !gasPrice || !etherPriceUsd) {
+      return <div/>;
+    }
+
     const { sold, bought, gasUsed } = progress;
     let calcPrice = new BigNumber(0);
     let quotation = '';

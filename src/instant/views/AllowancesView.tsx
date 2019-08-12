@@ -13,6 +13,10 @@ export class AllowancesView extends React.Component<InstantFormState> {
   public render() {
     const allowances = this.props.allowances;
 
+    if (!allowances) {
+      return <div />;
+    }
+
     return (
       <InstantFormWrapper heading={'Enable Token for Trading'}>
         <TopRightCorner>
