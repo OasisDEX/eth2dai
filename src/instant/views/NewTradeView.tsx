@@ -13,10 +13,13 @@ import { TradeDetails } from '../details/TradeDetails';
 import * as styles from '../Instant.scss';
 import {
   InstantFormChangeKind,
-  InstantFormState, ManualAllowanceProgress,
+  InstantFormState,
+  ManualAllowanceProgress,
   ManualChange,
   Message,
-  MessageKind, ProgressKind, TxInProgressMessage,
+  MessageKind,
+  ProgressKind,
+  TxInProgressMessage,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
@@ -175,7 +178,9 @@ export class NewTradeView extends React.Component<InstantFormState> {
         </div>
         <div data-test-id="bottom-error"
              className={classnames(
-               message && message.bottom && message.bottom.kind === MessageKind.notConnected
+               message && message.bottom &&
+               (message.bottom.kind === MessageKind.notConnected
+                   || message.bottom.kind === MessageKind.txInProgress)
                  ? styles.warnings
                  : styles.errors,
                message && message.bottom

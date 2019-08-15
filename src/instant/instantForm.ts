@@ -682,6 +682,7 @@ function validate(state: InstantFormState): InstantFormState {
   const [spendToken, receiveToken] = [state.sellToken, state.buyToken];
   const [spendAmount, receiveAmount] = [state.sellAmount, state.buyAmount];
   const dustLimits = state.dustLimits;
+  const manualAllowancesProgress = state.manualAllowancesProgress;
 
   // In case when the orderbook is not big enough to fill an order
   // and the user hasn't connected his wallet, we have to display both errors
@@ -705,6 +706,46 @@ function validate(state: InstantFormState): InstantFormState {
   // we don't care about potential errors displayed at the bottom
   if (message && message.top) {
     return state;
+  }
+
+  if (state.progress && !state.progress.done) {
+    message = {
+      ...message,
+      bottom: {
+        kind: MessageKind.txInProgress,
+        etherscan: state.context && state.context.etherscan,
+        progress: state.progress,
+        field: spendField,
+      }
+    };
+
+    return {
+      ...state,
+      message
+    };
+  }
+
+  if (manualAllowancesProgress) {
+    const settingAllowanceInProgress = Object.keys(manualAllowancesProgress).find((token) =>
+      manualAllowancesProgress[token] && !manualAllowancesProgress[token].done
+    );
+
+    if (settingAllowanceInProgress) {
+      message = {
+        ...message,
+        bottom: {
+          kind: MessageKind.txInProgress,
+          etherscan: state.context && state.context.etherscan,
+          progress: manualAllowancesProgress[settingAllowanceInProgress],
+          field: spendField,
+        }
+      };
+    }
+
+    return {
+      ...state,
+      message
+    };
   }
 
   // The rest of the errors are in order of importance.
