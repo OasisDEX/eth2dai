@@ -5,6 +5,7 @@ export const tradeDetails: string;
 export const details: string;
 export const finalization: string;
 export const transaction: string;
+export const account: string;
 export const assets: string;
 export const errors: string;
 export const warnings: string;

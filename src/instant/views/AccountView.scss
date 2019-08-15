@@ -24,6 +24,7 @@
   &Missing {
     .text {
       color: white;
+      margin-right: 6px;
     }
 
     .accountIcon {
@@ -42,6 +43,7 @@
   &Available {
     .text {
       color: $soft-cyan;
+      margin-right: 6px;
     }
 
     .accountIcon {
