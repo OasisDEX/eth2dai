@@ -12,6 +12,7 @@ export const hidden: string;
 export const tradingSide: string;
 export const swapIcon: string;
 export const cornerIcon: string;
+export const accountIcon: string;
 export const settingsIcon: string;
 export const backIcon: string;
 export const input: string;

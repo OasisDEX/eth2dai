@@ -92,14 +92,13 @@ export class NewTradeView extends React.Component<InstantFormState> {
             data-test-id="trade-settings"
           />
         </TopRightCorner>
-        {
-          <TopLeftCorner>
-            <ButtonIcon
-              className={styles.cornerIcon}
-              onClick={this.showAccountSettings}
-              image={accountSvg}/>
-          </TopLeftCorner>
-        }
+        <TopLeftCorner>
+          <ButtonIcon
+            disabled={!(user && user.account)}
+            className={classnames(styles.cornerIcon, styles.accountIcon)}
+            onClick={this.showAccountSettings}
+            image={accountSvg}/>
+        </TopLeftCorner>
         <div className={styles.tradeDetails}>
           {
             message && message.top
