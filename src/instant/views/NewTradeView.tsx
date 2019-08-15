@@ -1,6 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
+import { etherscan, EtherscanConfig } from '../../blockchain/etherscan';
 import accountSvg from '../../icons/account.svg';
 import cogWheelSvg from '../../icons/cog-wheel.svg';
 import swapArrowsSvg from '../../icons/swap-arrows.svg';
@@ -12,14 +13,26 @@ import { TradeDetails } from '../details/TradeDetails';
 import * as styles from '../Instant.scss';
 import {
   InstantFormChangeKind,
-  InstantFormState,
+  InstantFormState, ManualAllowanceProgress,
   ManualChange,
   Message,
-  MessageKind,
+  MessageKind, ProgressKind, TxInProgressMessage,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import { Buying, Selling } from '../TradingSide';
+
+const inProgressMessages = new Map<ProgressKind, (msg: TxInProgressMessage) => string>(
+  [
+    [ProgressKind.onlyProxy, (_: TxInProgressMessage) =>
+      `Your manual proxy creation is pending...`],
+    [ProgressKind.onlyAllowance, (msg: TxInProgressMessage) => {
+      const progress = msg.progress as ManualAllowanceProgress;
+
+      return `Your ${progress.token.toUpperCase()} ${progress.direction} is pending...`;
+    }]
+  ]
+);
 
 function error(msg: Message | undefined) {
   if (!msg) {
@@ -47,7 +60,7 @@ function error(msg: Message | undefined) {
     case MessageKind.orderbookTotalExceeded:
       return (
         <>
-          No orders available to {msg.side}&#32;{formatAmount(msg.amount, msg.token)}&#32;{msg.token.toUpperCase()}
+          No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
         </>
       );
     case MessageKind.notConnected:
@@ -56,6 +69,29 @@ function error(msg: Message | undefined) {
           Connect wallet to proceed with order
         </>
       );
+    case MessageKind.txInProgress:
+      let message = 'A transaction is pending...';
+      const customize = inProgressMessages.get(msg.progress.kind);
+
+      if (customize) {
+        message = customize(msg)
+      }
+
+      const txHash = (msg.progress as { txHash?: string }).txHash;
+      return txHash
+        ? (
+          <a href={etherscan(msg.etherscan || {} as EtherscanConfig).transaction(txHash).url}
+             rel='noreferrer noopener'
+             target='_blank'
+             style={{
+               color: '#80D8FF'
+             }}
+          >
+            {message}
+          </a>
+        )
+        : <> {message} </>
+
   }
 // tslint:enable
 }
