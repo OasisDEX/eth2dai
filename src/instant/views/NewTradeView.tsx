@@ -1,12 +1,13 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
+import accountSvg from '../../icons/account.svg';
 import cogWheelSvg from '../../icons/cog-wheel.svg';
 import swapArrowsSvg from '../../icons/swap-arrows.svg';
 import { formatAmount } from '../../utils/formatters/format';
 import { ButtonIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
-import { TopRightCorner } from '../../utils/panel/TopRightCorner';
+import { TopLeftCorner, TopRightCorner } from '../../utils/panel/TopRightCorner';
 import { TradeDetails } from '../details/TradeDetails';
 import * as styles from '../Instant.scss';
 import {
@@ -92,17 +93,12 @@ export class NewTradeView extends React.Component<InstantFormState> {
           />
         </TopRightCorner>
         {
-          /*
-          We plan to release basic instant version so people can trade with a single click
-          There are some design concerns that must be discussed so those two options are postponed
-
           <TopLeftCorner>
             <ButtonIcon
               className={styles.cornerIcon}
               onClick={this.showAccountSettings}
               image={accountSvg}/>
           </TopLeftCorner>
-          */
         }
         <div className={styles.tradeDetails}>
           {
@@ -151,7 +147,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
                  ? ''
                  : styles.hidden,
              )}>
-          { message && message.bottom && error(message.bottom)}
+          {message && message.bottom && error(message.bottom)}
         </div>
       </InstantFormWrapper>
     );
