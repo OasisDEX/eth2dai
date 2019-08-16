@@ -64,7 +64,7 @@ export class AccountView extends React.Component<InstantFormState> {
       <div className={classnames(styles.row, styles.proxyAvailable)}>
         <div style={box}>
           <SvgImage className={styles.accountIcon} image={accountSvg}/>
-          <span className={styles.text}>Proxy available</span>
+          <span data-test-id="proxy-status" className={styles.text}>Proxy available</span>
           <WarningTooltip {...activeProxyTooltip}/>
         </div>
       </div>
@@ -90,7 +90,7 @@ export class AccountView extends React.Component<InstantFormState> {
         <div className={classnames(styles.row, styles.proxyMissing)}>
           <div style={box}>
             <SvgImage className={styles.accountIcon} image={accountSvg}/>
-            <span className={styles.text}>Proxy not created</span>
+            <span data-test-id="proxy-status" className={styles.text}>Proxy not created</span>
             <WarningTooltip {...proxyToolTip}/>
           </div>
           <div className={styles.placeholder}>
@@ -102,6 +102,7 @@ export class AccountView extends React.Component<InstantFormState> {
                     size="sm"
                     color="grey"
                     className={styles.button}
+                    data-test-id="create-proxy"
                     onClick={this.props.createProxy}
                   >
                     Create

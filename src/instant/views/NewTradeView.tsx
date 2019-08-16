@@ -135,6 +135,7 @@ export class NewTradeView extends React.Component<InstantFormState> {
           <ButtonIcon
             disabled={!(user && user.account)}
             className={classnames(styles.cornerIcon, styles.accountIcon)}
+            data-test-id="account-settings"
             onClick={this.showAccountSettings}
             image={accountSvg}/>
         </TopLeftCorner>
