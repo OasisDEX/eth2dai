@@ -37,6 +37,14 @@ export function isDone(state: TxState) {
   ].indexOf(state.status) >= 0;
 }
 
+export function isDoneButNotSuccessful(state: TxState) {
+  return [
+    TxStatus.CancelledByTheUser,
+    TxStatus.Error,
+    TxStatus.Failure,
+  ].indexOf(state.status) >= 0;
+}
+
 export function isSuccess(state: TxState) {
   return TxStatus.Success === state.status;
 }
