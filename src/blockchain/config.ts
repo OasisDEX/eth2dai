@@ -324,7 +324,7 @@ const kovan: NetworkConfig = {
     return load(proxyCreationAndExecute, '0xee419971e63734fed782cfe49110b1544ae8a773');
   },
   oasisDataService: {
-    url: 'https://staging-cache.eth2dai.com/api/v1'
+    url: 'https://kovan-cache.eth2dai.com/api/v1'
   },
   etherscan: {
     url: 'https://kovan.etherscan.io',
