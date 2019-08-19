@@ -44,6 +44,14 @@ export class Placeholder {
   }
 }
 
+const optionsMap = {
+  timeUnit: 'timeUnit',
+  tzOffset: 'tzOffset',
+  dateFrom: 'dateArg',
+  baseGem: 'baseGemArg',
+  quoteGem: 'quoteGemArg'
+} as { [param: string]: string };
+
 export function vulcan0x<R>(
   url: string, id: string, resource: string, fields: string[],
   { params, filter, order, limit, offset } : {
@@ -55,7 +63,7 @@ export function vulcan0x<R>(
   },
 ): Observable<R[]> {
   const options = toPairs({
-    ...params ? fromPairs(params.map(({ name }) => [name, `$${name}`]) as any) : {},
+    ...params ? fromPairs(params.map(({ name }) => [optionsMap[name], `$${name}`]) as any) : {},
     ...filter ? { filter: filterize(filter) } : {},
     ...order ? { orderBy: order } : {},
     ...limit ? { first: '$limit' } : {},
