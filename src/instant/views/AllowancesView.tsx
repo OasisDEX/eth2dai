@@ -29,6 +29,7 @@ class AssetAllowance extends React.Component<AssetProps> {
     return (
       <Button color="grey"
               disabled={inProgress}
+              data-test-id={asset.symbol}
               className={styles.asset}
               onClick={onClick}
       >
@@ -38,9 +39,11 @@ class AssetAllowance extends React.Component<AssetProps> {
           {
             inProgress
               ? <LoadingIndicator inline={true}/>
-              : <SvgImage className={
-                isAllowed ? styles.isAllowed : styles.disabled
-              } image={doneSvg}
+              : <SvgImage data-test-id={'status'}
+                          data-test-isallowed={isAllowed}
+                          className={
+                            isAllowed ? styles.isAllowed : styles.disabled
+                          } image={doneSvg}
               />
           }
         </span>
@@ -58,6 +61,7 @@ export class AllowancesView extends React.Component<InstantFormState> {
         <TopRightCorner>
           <CloseButton theme="danger"
                        className={instantStyles.closeButton}
+                       data-test-id="close"
                        onClick={this.close}
           />
         </TopRightCorner>
@@ -70,7 +74,7 @@ export class AllowancesView extends React.Component<InstantFormState> {
                   const symbol = token.symbol;
                   const progress = manualAllowancesProgress && manualAllowancesProgress[symbol];
 
-                  return <AssetAllowance isAllowed={ (allowances ? allowances[symbol] : false)}
+                  return <AssetAllowance isAllowed={(allowances ? allowances[symbol] : false)}
                                          inProgress={progress && !progress.done}
                                          key={index}
                                          asset={token}

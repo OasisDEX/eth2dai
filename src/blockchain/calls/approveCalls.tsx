@@ -62,7 +62,6 @@ export const approveProxy = {
 };
 
 export const disapproveProxy: TransactionDef<ApproveProxyData> = {
-  descriptionIcon: accountSvg,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: ({ proxyAddress }: ApproveProxyData) => [proxyAddress, 0],

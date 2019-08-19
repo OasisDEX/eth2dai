@@ -69,11 +69,16 @@ export class AccountView extends React.Component<InstantFormState> {
         </div>
       </div>
       <div className={classnames(styles.row, styles.allowances)}>
-        <span className={styles.text}>{this.allowedTokens()} Tokens enabled for Trading</span>
+        <span className={styles.text} data-test-id="active-allowances">
+          {
+            `${this.allowedTokens()} Tokens enabled for Trading`
+          }
+        </span>
         <Button
           size="sm"
           color="grey"
           className={styles.button}
+          data-test-id="set-allowances"
           onClick={this.switchToAllowances}
         >
           Enable Token
