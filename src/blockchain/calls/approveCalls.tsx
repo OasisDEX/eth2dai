@@ -1,7 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 
-import accountSvg from '../../icons/account.svg';
 import { Currency } from '../../utils/text/Text';
 import { NetworkConfig, tokens } from '../config';
 import { TransactionDef } from './callsHelpers';
@@ -62,7 +61,6 @@ export const approveProxy = {
 };
 
 export const disapproveProxy: TransactionDef<ApproveProxyData> = {
-  descriptionIcon: accountSvg,
   call: ({ token }: ApproveWalletData, context: NetworkConfig) =>
     context.tokens[token].contract.approve['address,uint256'],
   prepareArgs: ({ proxyAddress }: ApproveProxyData) => [proxyAddress, 0],

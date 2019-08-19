@@ -82,6 +82,10 @@
       padding-bottom: 3rem;
     }
   }
+
+  &.account {
+    padding: 1rem;
+  }
 }
 
 .assets {
@@ -153,12 +157,22 @@
   border-radius: 100%;
 }
 
-.settingsIcon, .backIcon {
-  padding: .25rem;
-
+.accountIcon {
   border-color: $grey-light;
 
-  :global(.cog-wheel-icon), :global(.back-icon) {
+  :global(.account-icon-background) {
+    fill: transparent;
+  }
+}
+
+.settingsIcon, .backIcon {
+  padding: .25rem;
+}
+
+.settingsIcon, .backIcon, .accountIcon {
+  border-color: $grey-light;
+
+  :global(.cog-wheel-icon), :global(.back-icon),  :global(.account-icon-body) {
     fill: $white;
   }
 
@@ -167,11 +181,12 @@
   }
 
   &:disabled {
-    :global(.cog-wheel-icon), :global(.back-icon) {
+    :global(.cog-wheel-icon), :global(.back-icon), :global(.account-icon-body) {
       fill: $grey-light;
     }
   }
 }
+
 
 .input {
   height: 2rem;
