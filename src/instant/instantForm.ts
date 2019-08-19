@@ -456,6 +456,9 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
     case InstantFormChangeKind.proxyChange:
       return {
         ...state,
+        view: state.view === ViewKind.allowances && !change.value
+          ? ViewKind.account
+          : state.view,
         proxyAddress: change.value
       };
     case InstantFormChangeKind.contextChange:
