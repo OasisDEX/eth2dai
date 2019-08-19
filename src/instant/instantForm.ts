@@ -470,6 +470,11 @@ function applyChange(state: InstantFormState, change: InstantFormChange): Instan
     case FormChangeKind.userChange:
       return {
         ...state,
+        view: !change.user.account && [
+          ViewKind.priceImpactWarning,
+          ViewKind.allowances,
+          ViewKind.account
+        ].includes(state.view) ? ViewKind.new : state.view,
         user: change.user
       };
     case InstantFormChangeKind.slippageLimitChange:
