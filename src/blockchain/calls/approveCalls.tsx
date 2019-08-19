@@ -1,7 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 
-import accountSvg from '../../icons/account.svg';
 import { Currency } from '../../utils/text/Text';
 import { NetworkConfig, tokens } from '../config';
 import { TransactionDef } from './callsHelpers';
