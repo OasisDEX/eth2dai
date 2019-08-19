@@ -1,0 +1,49 @@
+version: "3.2"
+services:
+  localnode:
+    image: oasisdexorg/localnode:8e36f81989cd0e17c9e6de035c4dde58f0f12bd5
+    command: master
+    ports:
+      - "8545:8545"
+
+  postgres:
+    image: postgres:10.6
+    container_name: postgres-vulcan2x
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=database
+    ports:
+      - "5432:5432"
+
+  oasis-cache-etl:
+    image: oasisdexorg/oasis-cache:fbd66ea3ea65f5dff8a65a6a1eefbe19c207d37a
+    environment:
+      VL_DB_DATABASE: database
+      VL_DB_USER: user
+      VL_DB_PASSWORD: password
+      VL_DB_HOST: postgres
+      VL_DB_PORT: 5432
+      VL_CHAIN_NAME: localnet
+      VL_CHAIN_HOST: http://localnode:8545
+    entrypoint: sh -c
+    command:
+      - sleep 10 && yarn migrate && yarn start-etl
+
+  oasis-cache-api:
+    image: oasisdexorg/oasis-cache:fbd66ea3ea65f5dff8a65a6a1eefbe19c207d37a
+    environment:
+      VL_DB_DATABASE: database
+      VL_DB_USER: user
+      VL_DB_PASSWORD: password
+      VL_DB_HOST: postgres
+      VL_DB_PORT: 5432
+      VL_CHAIN_NAME: localnet
+      VL_CHAIN_HOST: http://localnode:8545
+    ports:
+      - "3001:3001"
+    entrypoint: sh -c
+    command:
+      - sleep 15 && yarn start-api
