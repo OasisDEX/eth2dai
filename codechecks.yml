@@ -6,7 +6,7 @@ checks:
         - path: "./build/static/js/*.js"
         - path: "./build/static/css/*.css"
 
-  - name: type-coverage-watcher
+  - name: typecov
     options:
       tsconfigPath: "tsconfig.prod.json"
 
