@@ -18,9 +18,6 @@ import ethColorSvg from '../icons/coins/eth-color.svg';
 import ethSvg from '../icons/coins/eth.svg';
 // import mkrInverseSvg from '../icons/coins/mkr-inverse.svg';
 // import mkrSvg from '../icons/coins/mkr.svg';
-import omgCircleSvg from '../icons/coins/omg-circle.svg';
-import omgColorSvg from '../icons/coins/omg-color.svg';
-import omgSvg from '../icons/coins/omg.svg';
 import repCircleSvg from '../icons/coins/rep-circle.svg';
 import repColorSvg from '../icons/coins/rep-color.svg';
 import repSvg from '../icons/coins/rep.svg';
@@ -52,7 +49,6 @@ export const tradingPairs: TradingPair[] = [
     // { base: 'MKR', quote: 'WETH' },
     { base: 'DGD', quote: 'DAI' },
     { base: 'REP', quote: 'DAI' },
-    { base: 'OMG', quote: 'DAI' },
     { base: 'ZRX', quote: 'DAI' }
   ]
 ];
@@ -150,19 +146,6 @@ export const tokens = asMap('symbol', [
       iconColor: SvgImageSimple(repColorSvg),
     },
     {
-      symbol: 'OMG',
-      precision: 18,
-      digits: 5,
-      digitsInstant:3,
-      safeCollRatio: 1.5,
-      maxSell: '1000000000000000',
-      name: 'OmniseGO',
-      icon: SvgImageSimple(omgSvg),
-    // iconInverse: SvgImageSimple(mkrInverseSvg),
-      iconCircle: SvgImageSimple(omgCircleSvg),
-      iconColor: SvgImageSimple(omgColorSvg),
-    },
-    {
       symbol: 'ZRX',
       precision: 18,
       digits: 5,
@@ -253,7 +236,6 @@ const protoMain = {
       loadToken('MKR', erc20, '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'),
       loadToken('DGD', erc20, '0xe0b7927c4af23765cb51314a0e0521a9645f0e2a'),
       loadToken('REP', erc20, '0x1985365e9f78359a9B6AD760e32412f4a445E862'),
-      loadToken('OMG', erc20, '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07'),
       loadToken('ZRX', erc20, '0xe41d2489571d322189246dafa5ebde1f4699f498'),
       loadToken('BAT', erc20, '0x0d8775f648430679a709e98d2b0cb6250d2887ef'),
     ]);
@@ -306,7 +288,6 @@ const kovan: NetworkConfig = {
       loadToken('MKR', erc20, '0xaaf64bfcc32d0f15873a02163e7e500671a4ffcd'),
       loadToken('DGD', erc20, '0x62aeec5fb140bb233b1c5612a8747ca1dc56dc1b'),
       loadToken('REP', erc20, '0xc7aa227823789e363f29679f23f7e8f6d9904a9b'),
-      loadToken('OMG', erc20, '0x441b1a74c69ee6e631834b626b29801d42076d38'),
       loadToken('ZRX', erc20, '0x18392097549390502069c17700d21403ea3c721a'),
       loadToken('BAT', erc20, '0x9f8cfb61d3b2af62864408dd703f9c3beb55dff7'),
     ]);
@@ -353,24 +334,23 @@ const localnet: NetworkConfig =   {
       loadToken('WETH', eth, '0x28085cefa9103d3a55fb5afccf07ed2038d31cd4'),
       loadToken('DAI', erc20, '0xff500c51399a282f4563f2713ffcbe9e53cfb6fa'),
       loadToken('MKR', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
-      loadToken('DGD', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
-      loadToken('REP', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
-      loadToken('OMG', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
-      loadToken('ZRX', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
-      loadToken('BAT', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
+      loadToken('DGD', erc20, '0x7BBABcB1dA23089f6b20502D78B02C5A5cf39861'),
+      loadToken('ZRX', erc20, '0x2f42E9A9BA1A8BfE0a46a7b116aD5b0D16d2B105'),
+      loadToken('BAT', erc20, '0x30ed29c4C4bA30ECCcDd0c0D153E454BFCb0A4Dd'),
+      loadToken('REP', erc20, '0xE2ecCEEc6dEB8c7AFF9787E46FEA7078b89ab159'),
     ]);
   },
   get otcSupportMethods() {
     return load(otcSupport, '0x5de139dbbfd47dd1d2cd906348fd1887135b2804');
   },
   get instantProxyRegistry() {
-    return load(proxyRegistry, '0xA155A86E426CB136334F6B6B6DD2633B73fc0183');
+    return load(proxyRegistry, '0x947308140e877E8EeBcCED93B522407A24278c6A');
   },
   get instantProxyFactory() {
-    return load(dsProxyFactory, '0xCb84a6D7A6b708a5a32c33a03F435D3e10C3d7Ad');
+    return load(dsProxyFactory, '0xb45C4e325a3264a2D25E0A36f5B8431aF584A23D');
   },
   get instantProxyCreationAndExecute() {
-    return load(proxyCreationAndExecute, '0x99C7F543e310A4143D22ce840a348b4EcDbBA8Ce');
+    return load(proxyCreationAndExecute, '0x2aD8bbFBA09e2fe0a5394E6B4709323EeDbbFD19');
   },
   oasisDataService: {
     url: 'http://localhost:3001/v1'
