@@ -22,8 +22,7 @@ export const ServerUnreachable = ({ className, ...props }: {
         Please try again later or <a
           className={styles.link}
           target="_blank"
-          rel="noopener noreferrer"
-          href="https://chat.makerdao.com/channel/eth2dai">
+          rel="noopener noreferrer">
         Contact us
       </a>
       </Muted>

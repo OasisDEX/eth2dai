@@ -13,7 +13,7 @@ import * as styles from './TradeDetails.scss';
 // tslint:disable
 const priceImpactTooltip = {
   id: 'price-impact',
-  text: 'The difference between the best current price on the Eth2Dai order book and the estimated price of your order.'
+  text: 'The difference between the best current price on the OasisDEX order book and the estimated price of your order.'
 };
 const slippageLimitTooltip = {
   id: 'slippage-limit',

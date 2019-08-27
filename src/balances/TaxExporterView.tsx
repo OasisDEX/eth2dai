@@ -28,7 +28,7 @@ export class TaxExporterView extends React.Component<TaxExporterViewProps, TaxEx
         <PanelBody paddingVertical={true} className={styles.taxExporterPanelBody}>
         <Muted className={styles.taxExporterDescription}>
           <span>Export your trades from Oasis Contracts (2018-2019)</span>
-          From eth2dai.com, oasis.direct, oasisdex.com and cdp.makerdao.com
+          From oasis.direct, oasisdex.com and cdp.makerdao.com
         </Muted>
         <Button
           size="sm"

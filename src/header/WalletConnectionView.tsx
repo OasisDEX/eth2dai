@@ -160,8 +160,8 @@ class NotConnected extends React.Component<{}, { isChecked: boolean, selectedWal
         >
           I accept&nbsp;<a target="_blank"
                            rel="noopener noreferrer"
-                           href="/tos.pdf"
-        >
+                           onClick={() => false}>
+
           Terms of Service
         </a>
         </Checkbox>

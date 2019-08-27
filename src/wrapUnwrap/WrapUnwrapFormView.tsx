@@ -152,7 +152,7 @@ export class WrapUnwrapFormView
           'Be sure to keep some Ether to pay for transactions';
       case WrapUnwrapFormKind.unwrap:
         return 'You can unwrap your Wrapped Ether (WETH) back to ETH anytime. ' +
-          'Any WETH you convert back to ETH will no longer be usable on Eth2dai';
+          'Any WETH you convert back to ETH will no longer be usable on OasisDEX';
     }
   }
 

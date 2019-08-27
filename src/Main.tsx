@@ -42,11 +42,6 @@ export class MainContent extends React.Component<RouterProps> {
           </theAppContext.Consumer>
           <HeaderTxRx/>
           <RoutesRx/>
-          <theAppContext.Consumer>
-            {({ TheFooterTxRx }) =>
-              <TheFooterTxRx/>
-            }
-          </theAppContext.Consumer>
         </div>
       </routerContext.Provider>
     );
