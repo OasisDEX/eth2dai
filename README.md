@@ -16,6 +16,16 @@ yarn start
 
 [dev branch](http://eth2dai-dev.surge.sh/)
 
+### Local development
+
+To start localnode (ganache) with oasis-cache do:
+
+```
+./scripts/dev.sh
+```
+
+NOTE: you need to have access to private docker images from oasisdexorg.
+
 ### Unit tests
 
 ```

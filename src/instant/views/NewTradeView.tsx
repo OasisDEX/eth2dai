@@ -1,24 +1,41 @@
 import { BigNumber } from 'bignumber.js';
 import classnames from 'classnames';
 import * as React from 'react';
+import { etherscan, EtherscanConfig } from '../../blockchain/etherscan';
+import accountSvg from '../../icons/account.svg';
 import cogWheelSvg from '../../icons/cog-wheel.svg';
 import swapArrowsSvg from '../../icons/swap-arrows.svg';
 import { formatAmount } from '../../utils/formatters/format';
 import { ButtonIcon } from '../../utils/icons/Icons';
 import { SvgImage } from '../../utils/icons/utils';
-import { TopRightCorner } from '../../utils/panel/TopRightCorner';
+import { TopLeftCorner, TopRightCorner } from '../../utils/panel/TopRightCorner';
 import { TradeDetails } from '../details/TradeDetails';
 import * as styles from '../Instant.scss';
 import {
   InstantFormChangeKind,
   InstantFormState,
+  ManualAllowanceProgress,
   ManualChange,
   Message,
   MessageKind,
+  ProgressKind,
+  TxInProgressMessage,
   ViewKind
 } from '../instantForm';
 import { InstantFormWrapper } from '../InstantFormWrapper';
 import { Buying, Selling } from '../TradingSide';
+
+const inProgressMessages = new Map<ProgressKind, (msg: TxInProgressMessage) => string>(
+  [
+    [ProgressKind.onlyProxy, (_: TxInProgressMessage) =>
+      `Your manual proxy creation is pending...`],
+    [ProgressKind.onlyAllowance, (msg: TxInProgressMessage) => {
+      const progress = msg.progress as ManualAllowanceProgress;
+
+      return `Your ${progress.token.toUpperCase()} ${progress.direction} is pending...`;
+    }]
+  ]
+);
 
 function error(msg: Message | undefined) {
   if (!msg) {
@@ -46,7 +63,7 @@ function error(msg: Message | undefined) {
     case MessageKind.orderbookTotalExceeded:
       return (
         <>
-          No orders available to {msg.side}&#32;{formatAmount(msg.amount, msg.token)}&#32;{msg.token.toUpperCase()}
+          No orders available to {msg.side} {formatAmount(msg.amount, msg.token)} {msg.token.toUpperCase()}
         </>
       );
     case MessageKind.notConnected:
@@ -55,6 +72,29 @@ function error(msg: Message | undefined) {
           Connect wallet to proceed with order
         </>
       );
+    case MessageKind.txInProgress:
+      let message = 'A transaction is pending...';
+      const customize = inProgressMessages.get(msg.progress.kind);
+
+      if (customize) {
+        message = customize(msg)
+      }
+
+      const txHash = (msg.progress as { txHash?: string }).txHash;
+      return txHash
+        ? (
+          <a href={etherscan(msg.etherscan || {} as EtherscanConfig).transaction(txHash).url}
+             rel='noreferrer noopener'
+             target='_blank'
+             style={{
+               color: '#80D8FF'
+             }}
+          >
+            {message}
+          </a>
+        )
+        : <> {message} </>
+
   }
 // tslint:enable
 }
@@ -91,19 +131,14 @@ export class NewTradeView extends React.Component<InstantFormState> {
             data-test-id="trade-settings"
           />
         </TopRightCorner>
-        {
-          /*
-          We plan to release basic instant version so people can trade with a single click
-          There are some design concerns that must be discussed so those two options are postponed
-
-          <TopLeftCorner>
-            <ButtonIcon
-              className={styles.cornerIcon}
-              onClick={this.showAccountSettings}
-              image={accountSvg}/>
-          </TopLeftCorner>
-          */
-        }
+        <TopLeftCorner>
+          <ButtonIcon
+            disabled={!(user && user.account)}
+            className={classnames(styles.cornerIcon, styles.accountIcon)}
+            data-test-id="account-settings"
+            onClick={this.showAccountSettings}
+            image={accountSvg}/>
+        </TopLeftCorner>
         <div className={styles.tradeDetails}>
           {
             message && message.top
@@ -144,14 +179,16 @@ export class NewTradeView extends React.Component<InstantFormState> {
         </div>
         <div data-test-id="bottom-error"
              className={classnames(
-               message && message.bottom && message.bottom.kind === MessageKind.notConnected
+               message && message.bottom &&
+               (message.bottom.kind === MessageKind.notConnected
+                   || message.bottom.kind === MessageKind.txInProgress)
                  ? styles.warnings
                  : styles.errors,
                message && message.bottom
                  ? ''
                  : styles.hidden,
              )}>
-          { message && message.bottom && error(message.bottom)}
+          {message && message.bottom && error(message.bottom)}
         </div>
       </InstantFormWrapper>
     );
