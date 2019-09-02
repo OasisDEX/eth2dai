@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { fromPairs } from 'ramda';
-import { bindNodeCallback, combineLatest, Observable, of, Subject, timer } from 'rxjs';
+import { bindNodeCallback, combineLatest, interval, Observable, of, Subject } from 'rxjs';
 import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
 import { ajax } from 'rxjs/ajax';
 import {
@@ -11,7 +11,7 @@ import {
   mergeMap,
   scan,
   shareReplay, startWith,
-  switchMap, tap
+  switchMap,
 } from 'rxjs/operators';
 
 import { UnreachableCaseError } from '../utils/UnreachableCaseError';
@@ -122,6 +122,7 @@ interface TransactionLike {
   hash: string;
   nonce: number;
   input: string;
+  blockHash: string;
 }
 
 type GetTransaction = NodeCallback<string, TransactionLike | null>;
@@ -202,15 +203,12 @@ export function send(
   const result: Observable<TxState> = bindNodeCallback(method)(...args).pipe(
     mergeMap((txHash: string) => {
       const broadcastedAt = new Date();
-      return timer(0, 1000).pipe(
+      return interval(500).pipe(
         switchMap(() => bindNodeCallback(web3.eth.getTransaction as GetTransaction)(txHash)),
-        takeWhileInclusive(transaction => !transaction),
+        takeWhileInclusive(transaction => !transaction
+          || (transaction && !transaction.blockHash)
+        ),
         distinctUntilChanged(),
-        tap(transaction => {
-          if (!transaction) {
-            console.log(`Transaction ${txHash} not found in mempool yet!`);
-          }
-        }),
         mergeMap((transaction) => {
           if (!transaction) {
             return of({
@@ -220,6 +218,16 @@ export function send(
               status: TxStatus.Propagating,
             } as TxState);
           }
+
+          if (transaction && !transaction.blockHash) {
+            return of({
+              ...common,
+              broadcastedAt,
+              txHash,
+              status: TxStatus.WaitingForConfirmation,
+            } as TxState);
+          }
+
           return txRebroadcastStatus(transaction).pipe(
             switchMap(([hash, rebroadcast]) =>
               bindNodeCallback(web3.eth.getTransactionReceipt as GetTransactionReceipt)(hash).pipe(
@@ -246,7 +254,7 @@ export function send(
           ...common,
           broadcastedAt,
           txHash,
-          status: TxStatus.WaitingForConfirmation,
+          status: TxStatus.Propagating,
         } as TxState),
       );
     }),
