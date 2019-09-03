@@ -17,6 +17,10 @@
   text-decoration: none;
 }
 
+.description {
+ color: $grey-light
+}
+
 .failure {
   color: $errors;
 }

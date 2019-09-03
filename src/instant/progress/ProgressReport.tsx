@@ -28,11 +28,9 @@ const statuses = new Map<string, (params: Params) => React.ReactNode>([
       <ProgressIcon className={styles.progressIcon}/>
     </>
   )],
-  [TxStatus.Propagating, (params: Params) => (
+  [TxStatus.Propagating, () => (
     <>
-      <a href={params.txReport} target="_blank" rel="noreferrer noopener" className={styles.link}>
-        <span>View on Etherscan</span>
-      </a>
+      <span className={styles.description}>Pending</span>
       <ProgressIcon className={styles.progressIcon}/>
     </>
   )],
