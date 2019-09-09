@@ -49,7 +49,8 @@ export const tradingPairs: TradingPair[] = [
     // { base: 'MKR', quote: 'WETH' },
     { base: 'DGD', quote: 'DAI' },
     { base: 'REP', quote: 'DAI' },
-    { base: 'ZRX', quote: 'DAI' }
+    { base: 'ZRX', quote: 'DAI' },
+    { base: 'BAT', quote: 'DAI' }
   ]
 ];
 
@@ -222,7 +223,11 @@ const protoMain = {
   thresholds: {
     ethdai: 0.02,
     mkrdai: 0.01,
-    mkreth: 0.01
+    mkreth: 0.01,
+    dgddai: 0.02,
+    repdai: 0.02,
+    zrxdai: 0.02,
+    batdai: 0.02,
   },
   safeConfirmations: 0,
   avgBlocksPerDay: 5760 * 1.05,
@@ -274,7 +279,11 @@ const kovan: NetworkConfig = {
   thresholds: {
     ethdai: 0.025,
     mkrdai: 0.015,
-    mkreth: 0.015
+    mkreth: 0.015,
+    dgddai: 0.025,
+    repdai: 0.025,
+    zrxdai: 0.025,
+    batdai: 0.025,
   },
   safeConfirmations: 0,
   avgBlocksPerDay: 21600 * 0.55,
@@ -322,7 +331,11 @@ const localnet: NetworkConfig =   {
   thresholds: {
     ethdai: 0.05,
     mkrdai: 0.05,
-    mkreth: 0.05
+    mkreth: 0.05,
+    dgddai: 0.05,
+    repdai: 0.05,
+    zrxdai: 0.05,
+    batdai: 0.05,
   },
   safeConfirmations: 0,
   avgBlocksPerDay: 1000,
