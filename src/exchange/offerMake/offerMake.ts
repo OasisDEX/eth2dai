@@ -643,6 +643,12 @@ function prepareSubmit(calls$: Calls$): [
                   return of(formStageChange(FormStage.editing));
                 case TxStatus.WaitingForConfirmation:
                   return of({ kind: FormChangeKind.formResetChange });
+                // There is the case where the status stays in TxStats.Propagating
+                // which comes before the TxStatus.WaitingForConfirmation.
+                // Sometimes the TX is successful without
+                // going through TxStatus.WaitingForConfirmation.
+                case TxStatus.Propagating:
+                  return of({ kind: FormChangeKind.formStageChange });
                 default:
                   return of();
               }
