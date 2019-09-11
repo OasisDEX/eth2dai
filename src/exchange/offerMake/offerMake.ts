@@ -1,13 +1,12 @@
 import { BigNumber } from 'bignumber.js';
 import { curry } from 'ramda';
 import { merge, Observable, of, Subject } from 'rxjs';
-import {first, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import { first, map, scan, shareReplay, switchMap } from 'rxjs/operators';
 
 import { Balances, DustLimits } from '../../balances/balances';
 import { Calls, Calls$ } from '../../blockchain/calls/calls';
 import { OfferMakeData, OfferMakeDirectData } from '../../blockchain/calls/offerMake';
 import { tokens } from '../../blockchain/config';
-import { TxState, TxStatus } from '../../blockchain/transactions';
 import { User } from '../../blockchain/user';
 import { combineAndMerge } from '../../utils/combineAndMerge';
 import {
@@ -36,7 +35,8 @@ import {
   toEtherPriceUSDChange,
   toGasPriceChange,
   toOrderbookChange$,
-  toUserChange, transactionToX,
+  toUserChange,
+  transactionToX,
   UserChange,
 } from '../../utils/form';
 import { firstOfOrTrue } from '../../utils/operators';
