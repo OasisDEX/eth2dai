@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 import { curry } from 'ramda';
 import { merge, Observable, of, Subject } from 'rxjs';
-import { first, map, scan, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import {first, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 
 import { Balances, DustLimits } from '../../balances/balances';
 import { Calls, Calls$ } from '../../blockchain/calls/calls';
@@ -36,7 +36,7 @@ import {
   toEtherPriceUSDChange,
   toGasPriceChange,
   toOrderbookChange$,
-  toUserChange,
+  toUserChange, transactionToX,
   UserChange,
 } from '../../utils/form';
 import { firstOfOrTrue } from '../../utils/operators';
@@ -624,10 +624,11 @@ function isReadyToProceed(state: OfferFormState): OfferFormState {
 function prepareSubmit(calls$: Calls$): [
   (state: OfferFormState) => void, Observable<StageChange | FormResetChange>] {
 
-  const stageChange$ = new Subject<StageChange>();
+  const stageChange$ = new Subject<StageChange | FormResetChange>();
 
   function submit(state: OfferFormState) {
 
+    const formResetChange: FormResetChange = { kind: FormChangeKind.formResetChange };
     calls$.pipe(
       first(),
       switchMap((calls: Calls) => {
@@ -637,17 +638,12 @@ function prepareSubmit(calls$: Calls$): [
             calls.offerMake(offerMakeData(state)
             ))
           .pipe(
-            switchMap((transactionState: TxState) => {
-              switch (transactionState.status) {
-                case TxStatus.CancelledByTheUser:
-                  return of(formStageChange(FormStage.editing));
-                case TxStatus.WaitingForConfirmation:
-                  return of({ kind: FormChangeKind.formResetChange });
-                default:
-                  return of();
-              }
-            }),
-            startWith(formStageChange(FormStage.waitingForApproval)),
+            transactionToX<FormStageChange | FormResetChange>(
+              formStageChange(FormStage.waitingForApproval),
+              formResetChange,
+              formResetChange,
+              () => of(formResetChange)
+            )
           );
       })
     ).subscribe(change => stageChange$.next(change));
