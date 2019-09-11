@@ -641,7 +641,7 @@ function prepareSubmit(calls$: Calls$): [
             transactionToX<FormStageChange | FormResetChange>(
               formStageChange(FormStage.waitingForApproval),
               formResetChange,
-              formResetChange,
+              formStageChange(FormStage.editing),
               () => of(formResetChange)
             )
           );
