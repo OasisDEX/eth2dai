@@ -57,13 +57,15 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
     return (
       <>
         <div className={styles.iconBase}>{tokens[base].icon}</div>
-        <div className={styles.tokenBase}>{base}</div>
-        <div className={styles.tokenQuote}><FormatQuoteToken token={quote}/></div>
+        <div data-test-id="base" className={styles.tokenBase}>{base}</div>
+        <div data-test-id="quote" className={styles.tokenQuote}>
+          <FormatQuoteToken token={quote}/>
+        </div>
         <WithLoadingIndicatorInline loadable={marketsDetailsLoadable}>
           {(marketsDetails) => {
             const { price, priceDiff } = marketsDetails[tradingPairResolver(pair)];
             return (<>
-              <div className={styles.price}>
+              <div data-test-id="price" className={styles.price}>
                 <span className={styles.iconQuote}>{tokens[quote].icon}</span>
                 {
                   price &&
@@ -71,9 +73,9 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
                   || <> - </>
                 }
               </div>
-              <div className={styles.priceDiff}>{priceDiff &&
+              <div data-test-id="price-diff" className={styles.priceDiff}>{priceDiff &&
               <BoundarySpan value={priceDiff}>
-                <FormatPercent value={priceDiff} plus={true}/>
+                <FormatPercent  value={priceDiff} plus={true}/>
               </BoundarySpan>
               || <> - </>
               }</div>
@@ -86,10 +88,12 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
 
   public static ActivePairView({ base, quote }: any) {
     return (
-      <div className={styles.activePairView}>
+      <div  data-test-id="active-pair" className={styles.activePairView}>
         <div className={styles.activePairViewIcon}>{tokens[base].iconCircle}</div>
-        <span className={styles.activePairViewTokenBase}>{base}</span>
-        <span className={styles.activePairViewTokenQuote}><FormatQuoteToken token={quote} /></span>
+        <span data-test-id="base" className={styles.activePairViewTokenBase}>{base}</span>
+        <span data-test-id="quote" className={styles.activePairViewTokenQuote}>
+          <FormatQuoteToken token={quote} />
+        </span>
         <span className={styles.dropdownIcon}/>
       </div>
     );

@@ -21,7 +21,7 @@ class Orders {
   }
 
   public countIs(number: number) {
-    cy.get(tid(this.type), { timeout: 10000 }).should('have.length', number);
+    cy.get(tid(this.type), { timeout: 20000 }).should('have.length', number);
   }
 
   public first() {
