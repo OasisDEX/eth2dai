@@ -8,9 +8,9 @@ import daiCircleSvg from '../icons/coins/dai-circle.svg';
 import daiColorSvg from '../icons/coins/dai-color.svg';
 // import daiInverseSvg from '../icons/coins/dai-inverse.svg';
 import daiSvg from '../icons/coins/dai.svg';
-import dgdCircleSvg from '../icons/coins/dgd-circle.svg';
-import dgdColorSvg from '../icons/coins/dgd-color.svg';
-import dgdSvg from '../icons/coins/dgd.svg';
+// import dgdCircleSvg from '../icons/coins/dgd-circle.svg';
+// import dgdColorSvg from '../icons/coins/dgd-color.svg';
+// import dgdSvg from '../icons/coins/dgd.svg';
 import ethCircleSvg from '../icons/coins/eth-circle.svg';
 // import ethColorInverseSvg from '../icons/coins/eth-color-inverse.svg';
 import ethColorSvg from '../icons/coins/eth-color.svg';
@@ -47,7 +47,7 @@ export const tradingPairs: TradingPair[] = [
   ...process.env.REACT_APP_OASIS_DEX_ENABLED !== '1' ? [] : [
     // { base: 'MKR', quote: 'DAI' },
     // { base: 'MKR', quote: 'WETH' },
-    { base: 'DGD', quote: 'DAI' },
+    // { base: 'DGD', quote: 'DAI' },
     { base: 'REP', quote: 'DAI' },
     { base: 'ZRX', quote: 'DAI' },
     { base: 'BAT', quote: 'DAI' }
@@ -120,19 +120,19 @@ export const tokens = asMap('symbol', [
     //   iconCircle: SvgImageSimple(dgdCircleSvg),
     //   iconColor: SvgImageSimple(dgdColorSvg),
     // },
-    {
-      symbol: 'DGD',
-      precision: 9,
-      digits: 5,
-      digitsInstant: 3,
-      safeCollRatio: 1.5,
-      maxSell: '1000000000000000',
-      name: 'DigixDAO',
-      icon: SvgImageSimple(dgdSvg),
-    // iconInverse: SvgImageSimple(dgdInverseSvg),
-      iconCircle: SvgImageSimple(dgdCircleSvg),
-      iconColor: SvgImageSimple(dgdColorSvg),
-    },
+    // {
+    //   symbol: 'DGD',
+    //   precision: 9,
+    //   digits: 5,
+    //   digitsInstant: 3,
+    //   safeCollRatio: 1.5,
+    //   maxSell: '1000000000000000',
+    //   name: 'DigixDAO',
+    //   icon: SvgImageSimple(dgdSvg),
+    // // iconInverse: SvgImageSimple(dgdInverseSvg),
+    //   iconCircle: SvgImageSimple(dgdCircleSvg),
+    //   iconColor: SvgImageSimple(dgdColorSvg),
+    // },
     {
       symbol: 'REP',
       precision: 18,

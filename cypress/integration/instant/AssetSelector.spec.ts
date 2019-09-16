@@ -123,7 +123,7 @@ describe('Selecting an asset', () => {
       const token = 'BAT';
 
       const trade = new Trade();
-      trade.buy('DGD');
+      trade.buy('ZRX');
 
       cy.get(tid('selling-token', tid('balance')), timeout(2000))
         .click();
