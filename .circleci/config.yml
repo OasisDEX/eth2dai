@@ -54,6 +54,8 @@ jobs:
           name: Wait for localnode to be up
           command: |
             ./.circleci/wait-for-it.sh localhost:8545 -t 10
+            ./.circleci/wait-for-it.sh localhost:5432 -t 10
+            ./.circleci/wait-for-it.sh localhost:3001 -t 10
             sleep 10
       - run: 
           name: Run build & e2e tests
