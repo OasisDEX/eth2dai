@@ -47,11 +47,9 @@ jobs:
           - v3-dependencies-{{ checksum "package.json" }}
       - run: .circleci/install-yarn.sh
       - run: 
-          name: Get & run localnode image
+          name: Get & run locanode and cache image
           command: |
-            LOCALNODE_SHA=67a4d14fec30436afb67bb151e2ea76b3ea35443
-            docker login -u $DOCKER_USER -p $DOCKER_PASS && docker pull oasisdexorg/localnode:$LOCALNODE_SHA
-            docker run -d -p 8545:8545 oasisdexorg/localnode:$LOCALNODE_SHA master
+            docker login -u $DOCKER_USER -p $DOCKER_PASS && ./scripts/dev.sh
       - run: 
           name: Wait for localnode to be up
           command: |

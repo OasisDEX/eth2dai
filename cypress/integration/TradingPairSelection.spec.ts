@@ -57,7 +57,7 @@ describe('Trading pair dropdown', () => {
     selectPair(base, quote);
 
     cy.get(tid('create-order-widget', tid('base-balance'))).contains('1,000.00000 REP');
-    cy.get(tid('create-order-widget', tid('quote-balance'))).contains('9,170.00 DAI');
+    cy.get(tid('create-order-widget', tid('quote-balance'))).contains('170.00 DAI');
   });
 
   it('should display last price and weekly volume for the newly selected pair',  () => {
@@ -109,7 +109,7 @@ describe('Trading pair dropdown', () => {
     buyOrders.countIs(0);
 
     const amount = '2';
-    const price = '120';
+    const price = '70';
 
     new Order()
       .buy()
@@ -125,8 +125,8 @@ describe('Trading pair dropdown', () => {
     buyOrders = Orderbook.list(OrderType.BUY);
     buyOrders.countIs(1);
     buyOrders.first().amount().contains('2.00000');
-    buyOrders.first().price().contains('120.00');
-    buyOrders.first().total().contains('240.00');
+    buyOrders.first().price().contains('70.00');
+    buyOrders.first().total().contains('140.00');
   });
 
   it('should place new sell order for selected pair', () => {

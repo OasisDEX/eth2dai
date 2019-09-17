@@ -1,7 +1,7 @@
 version: "3.2"
 services:
   localnode:
-    image: oasisdexorg/localnode:8e36f81989cd0e17c9e6de035c4dde58f0f12bd5
+    image: oasisdexorg/localnode:1efd6e1204f725278e552d263c14cb4a7f0392bb
     command: master
     ports:
       - "8545:8545"
@@ -19,7 +19,7 @@ services:
       - "5432:5432"
 
   oasis-cache-etl:
-    image: oasisdexorg/oasis-cache:fbd66ea3ea65f5dff8a65a6a1eefbe19c207d37a
+    image: oasisdexorg/oasis-cache:726c3bbca40aa2647af0b0a6c8f0202badaa4639
     environment:
       VL_DB_DATABASE: database
       VL_DB_USER: user
@@ -33,7 +33,7 @@ services:
       - sleep 10 && yarn migrate && yarn start-etl
 
   oasis-cache-api:
-    image: oasisdexorg/oasis-cache:fbd66ea3ea65f5dff8a65a6a1eefbe19c207d37a
+    image: oasisdexorg/oasis-cache:726c3bbca40aa2647af0b0a6c8f0202badaa4639
     environment:
       VL_DB_DATABASE: database
       VL_DB_USER: user
