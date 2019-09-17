@@ -174,8 +174,16 @@ export class OrderbookView extends React.Component<Props> {
                 });
               };
             };
+
+            const { base, quote } = orderbook.tradingPair;
             return (
               <>
+                {/*
+                  This line exists only so that in e2e
+                  we wait the order book for a given pair
+                  to be loaded before we assert anything else.
+                */}
+                <span data-test-id={`${base}-${quote}-orderbook`}/>
                 <Scrollbar ref={el => this.scrollbar = el || undefined} onScroll={this.scrolled}>
                   <Table align="right" className={styles.orderbookTable}>
                     <TransitionGroup

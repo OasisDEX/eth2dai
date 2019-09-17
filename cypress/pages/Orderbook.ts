@@ -21,7 +21,7 @@ class Orders {
   }
 
   public countIs(number: number) {
-    cy.get(tid(this.type), { timeout: 10000 }).should('have.length', number);
+    cy.get(tid(this.type), { timeout: 60000 }).should('have.length', number);
   }
 
   public first() {
@@ -44,8 +44,8 @@ class Orders {
 }
 
 export enum OrderType {
-    BUY = 'buy',
-    SELL = 'sell'
+  BUY = 'buy',
+  SELL = 'sell'
 }
 
 export class Orderbook {

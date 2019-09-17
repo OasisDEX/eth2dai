@@ -326,7 +326,7 @@ const kovan: NetworkConfig = {
 
 const localnet: NetworkConfig =   {
   id: '420',
-  name: 'localnet',
+  name: '   localnet',
   label: 'Localnet',
   thresholds: {
     ethdai: 0.05,
@@ -347,23 +347,23 @@ const localnet: NetworkConfig =   {
       loadToken('WETH', eth, '0x28085cefa9103d3a55fb5afccf07ed2038d31cd4'),
       loadToken('DAI', erc20, '0xff500c51399a282f4563f2713ffcbe9e53cfb6fa'),
       loadToken('MKR', erc20, '0xe80C262f63df9376d2ce9eDd373832EDc9FCA46E'),
-      loadToken('DGD', erc20, '0x7BBABcB1dA23089f6b20502D78B02C5A5cf39861'),
-      loadToken('ZRX', erc20, '0x2f42E9A9BA1A8BfE0a46a7b116aD5b0D16d2B105'),
-      loadToken('BAT', erc20, '0x30ed29c4C4bA30ECCcDd0c0D153E454BFCb0A4Dd'),
-      loadToken('REP', erc20, '0xE2ecCEEc6dEB8c7AFF9787E46FEA7078b89ab159'),
+      loadToken('DGD', erc20, '0x2f42E9A9BA1A8BfE0a46a7b116aD5b0D16d2B105'),
+      loadToken('ZRX', erc20, '0xE2ecCEEc6dEB8c7AFF9787E46FEA7078b89ab159'),
+      loadToken('BAT', erc20, '0x2f8e256F2f9301d1992CDCCD85A513954C9dDB71'),
+      loadToken('REP', erc20, '0x30ed29c4C4bA30ECCcDd0c0D153E454BFCb0A4Dd'),
     ]);
   },
   get otcSupportMethods() {
     return load(otcSupport, '0x5de139dbbfd47dd1d2cd906348fd1887135b2804');
   },
   get instantProxyRegistry() {
-    return load(proxyRegistry, '0x947308140e877E8EeBcCED93B522407A24278c6A');
+    return load(proxyRegistry, '0x22b6C41D0b18193B20B182D8d5854fEFb744cC6A');
   },
   get instantProxyFactory() {
-    return load(dsProxyFactory, '0xb45C4e325a3264a2D25E0A36f5B8431aF584A23D');
+    return load(dsProxyFactory, '0x9c27f7553f12e0178c1D767265dFBD27CAEcec68');
   },
   get instantProxyCreationAndExecute() {
-    return load(proxyCreationAndExecute, '0x2aD8bbFBA09e2fe0a5394E6B4709323EeDbbFD19');
+    return load(proxyCreationAndExecute, '0x947308140e877E8EeBcCED93B522407A24278c6A');
   },
   oasisDataService: {
     url: 'http://localhost:3001/v1'
