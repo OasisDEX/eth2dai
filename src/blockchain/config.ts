@@ -326,7 +326,7 @@ const kovan: NetworkConfig = {
 
 const localnet: NetworkConfig =   {
   id: '420',
-  name: 'localnet',
+  name: '   localnet',
   label: 'Localnet',
   thresholds: {
     ethdai: 0.05,

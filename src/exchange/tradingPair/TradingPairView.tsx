@@ -19,6 +19,7 @@ import * as styles from './TradingPairView.scss';
 interface PairInfoVP {
   value: any;
   label: string;
+  dataTestId ?: string;
 }
 
 interface TradingPairViewState {
@@ -109,11 +110,11 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
     );
   }
 
-  public static PairInfoVP({ value, label }: PairInfoVP) {
+  public static PairInfoVP({ value, label, dataTestId }: PairInfoVP) {
     return (
       <div className={styles.pairInfo}>
-        <div className={styles.mobileWrapper}>
-          <span className={styles.pairInfoValue}>{value}</span>
+        <div data-test-id={dataTestId} className={styles.mobileWrapper}>
+          <span data-test-id="value" className={styles.pairInfoValue}>{value}</span>
           <InfoLabel className={styles.pairInfoLabel}>{label}</InfoLabel>
         </div>
       </div>
@@ -169,8 +170,8 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
             )
           }
         </div>
-        <div className={styles.container}>
-          <TradingPairView.PairInfoVP label="Last price" value={
+        <div className={styles.container} data-test-id="trading-pair-info">
+          <TradingPairView.PairInfoVP dataTestId="last-price" label="Last price" value={
             <WithLoadingIndicatorInline
               error={<ServerUnreachableInline fallback="-"/>}
               loadable={currentPrice}
@@ -183,7 +184,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
               )}
             </WithLoadingIndicatorInline>
           }/>
-          <TradingPairView.PairInfoVP label="24h price" value={
+          <TradingPairView.PairInfoVP dataTestId="24h-price" label="24h price" value={
             <WithLoadingIndicatorInline
               error={<ServerUnreachableInline fallback="-"/>}
               loadable={yesterdayPriceChange}
@@ -198,7 +199,7 @@ export class TradingPairView extends React.Component<TradingPairsProps, TradingP
               )}
             </WithLoadingIndicatorInline>
           }/>
-          <TradingPairView.PairInfoVP label="24h volume" value={
+          <TradingPairView.PairInfoVP dataTestId="24h-volume" label="24h volume" value={
             <WithLoadingIndicatorInline
               loadable={weeklyVolume}
               className={styles.pairInfo}
