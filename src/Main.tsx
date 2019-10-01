@@ -1,8 +1,8 @@
 import createBrowserHistory from 'history/createBrowserHistory';
 import * as React from 'react';
+import { default as MediaQuery } from 'react-responsive';
 import { Redirect, Route, Router, Switch } from 'react-router';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-
 import { map } from 'rxjs/operators';
 import { setupAppContext, theAppContext } from './AppContext';
 import { BalancesView } from './balances/BalancesView';
@@ -11,6 +11,7 @@ import { ExchangeViewTxRx } from './exchange/ExchangeView';
 import { HeaderTxRx } from './header/Header';
 import * as styles from './index.scss';
 import { InstantExchange } from './instant/InstantViewPanel';
+import { Banner } from './landingPage/Banner';
 import { connect } from './utils/connect';
 
 const browserHistoryInstance = createBrowserHistory();
@@ -34,6 +35,28 @@ export class MainContent extends React.Component<RouterProps> {
   public render() {
     return (
       <routerContext.Provider value={{ rootUrl: this.props.match.url }}>
+        <Banner buttonLabel={
+          <a href="https://oasis.app/trade"
+             target="_blank"
+             rel="noreferrer noopener">
+            <MediaQuery maxWidth={824}>
+              {
+                (match: boolean) => match
+                  ? 'Trade'
+                  : 'Trade On Oasis'
+              }
+            </MediaQuery></a>}
+                content={
+                  <span>
+                          {/*tslint:disable*/}
+                    We've recently launched Oasis Trade where you can now trade multiple tokens against DAI.
+                          <br/>
+                          <strong>Head there now to find out more...</strong>
+                        </span>
+                }
+                continue={
+                  () => false
+                }/>
         <div className={styles.container}>
           <theAppContext.Consumer>
             {({ TransactionNotifierTxRx }) =>
@@ -53,7 +76,8 @@ export class MainContent extends React.Component<RouterProps> {
   }
 }
 
-class Routes extends React.Component<{ status: WalletStatus }> {
+class Routes extends React.Component
+  <{ status: WalletStatus }> {
   public render() {
     return (
       <Switch>
