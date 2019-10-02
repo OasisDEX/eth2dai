@@ -12,7 +12,7 @@ jobs:
       - checkout
       - restore_cache:
             keys:
-            - v3-dependencies-{{ checksum "package.json" }}
+            - v4-dependencies-{{ checksum "package.json" }}
 
       - run: yarn install --frozen-lockfile
 
@@ -20,7 +20,7 @@ jobs:
           paths:
             - node_modules
             - ~/.cache
-          key: v3-dependencies-{{ checksum "package.json" }}
+          key: v4-dependencies-{{ checksum "package.json" }}
 
   test:
     docker:
@@ -29,7 +29,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v3-dependencies-{{ checksum "package.json" }}
+          - v4-dependencies-{{ checksum "package.json" }}
       - run: 
           name: Run linting & tests
           command: yarn test
@@ -44,18 +44,18 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - v3-dependencies-{{ checksum "package.json" }}
+          - v4-dependencies-{{ checksum "package.json" }}
       - run: .circleci/install-yarn.sh
       - run: 
-          name: Get & run localnode image
+          name: Get & run locanode and cache image
           command: |
-            LOCALNODE_SHA=5199916fa04ee9a8b68b285dfdaa262beb27366a
-            docker login -u $DOCKER_USER -p $DOCKER_PASS && docker pull oasisdexorg/localnode:$LOCALNODE_SHA
-            docker run -d -p 8545:8545 oasisdexorg/localnode:$LOCALNODE_SHA master
+            docker login -u $DOCKER_USER -p $DOCKER_PASS && ./scripts/dev.sh
       - run: 
           name: Wait for localnode to be up
           command: |
             ./.circleci/wait-for-it.sh localhost:8545 -t 10
+            ./.circleci/wait-for-it.sh localhost:5432 -t 10
+            ./.circleci/wait-for-it.sh localhost:3001 -t 10
             sleep 10
       - run: 
           name: Run build & e2e tests
@@ -95,7 +95,7 @@ jobs:
       - checkout
       - restore_cache:
             keys:
-            - v3-dependencies-{{ checksum "package.json" }}
+            - v4-dependencies-{{ checksum "package.json" }}
       - run: PUBLIC_URL=. ENV=dev yarn build
       - run: DEBUG=codechecks:* yarn codechecks
 
@@ -125,7 +125,7 @@ jobs:
       - checkout
       - restore_cache:
             keys:
-            - v3-dependencies-{{ checksum "package.json" }}
+            - v4-dependencies-{{ checksum "package.json" }}
       - attach_workspace:
           at: /tmp/workspace
       - run:
@@ -144,7 +144,7 @@ jobs:
       - checkout
       - restore_cache:
             keys:
-            - v3-dependencies-{{ checksum "package.json" }}
+            - v4-dependencies-{{ checksum "package.json" }}
       - run: yarn run deploy:dev
 
   deploy_stage:
@@ -154,7 +154,7 @@ jobs:
       - checkout
       - restore_cache:
             keys:
-            - v3-dependencies-{{ checksum "package.json" }}
+            - v4-dependencies-{{ checksum "package.json" }}
       - run: yarn run deploy:stage
 
   deploy_prod:
@@ -167,7 +167,7 @@ jobs:
       - checkout
       - restore_cache:
             keys:
-            - v3-dependencies-{{ checksum "package.json" }}
+            - v4-dependencies-{{ checksum "package.json" }}
       - run:
           name: Configure git defaults
           command:  git config user.email "circleci@makerdao.com" && git config user.name "CircleCI"

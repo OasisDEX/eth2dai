@@ -1,0 +1,109 @@
+@import '../utils/Variables.scss';
+@import '../utils/Mixins.scss';
+@import '../utils/forms/Buttons.scss';
+.section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  top: 0;
+  width: 100%;
+  margin-top: 12px;
+
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  a {
+    color: inherit;
+
+    &:hover {
+      background-color: inherit;
+    }
+
+    &:active {
+      color: inherit;
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #3c3c46;
+  }
+
+  font-size: 14px;
+}
+.contentPlaceholder {
+  display: flex;
+  width: 100%;
+}
+
+.content {
+  line-height: 1.5;
+  display: inline-block;
+  text-align: left;
+  width: 80%;
+}
+
+.pre {
+  margin: .5rem;
+  font-family: Montserrat, sans-serif;
+  font-weight: 500;
+}
+
+.panel {
+  display: flex;
+  color: #48495F;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 932px;
+  font-size: 12px;
+  padding: 5px 10px;
+  background-color: white;
+
+  border: 1px solid #D4D9E1;
+  box-sizing: border-box;
+  border-radius: 6px;
+
+  @include media-breakpoint-down(1000px) {
+    margin-left: -8px;
+  }
+}
+
+.headline {
+  font-size: 120%;
+}
+
+.btnPlaceholder {
+  display: inline-flex;
+  width: 20%;
+  justify-content: flex-end;
+}
+
+.btn {
+  font-size: 11px;
+  font-weight: 600;
+  max-width: 140px;
+
+  @include button((
+    color: $white,
+    bg: $green,
+    border-color: $green,
+
+    color-hover: $white,
+    bg-hover: #2DC1B1,
+    border-color-hover: #2DC1B1,
+  ));
+}
+
+.warningIcon {
+  width: 24px;
+  display: inline-flex;
+  margin-right: 10px;
+  :global(.warning-icon) {
+    fill: #F77249;
+  }
+}

@@ -173,7 +173,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
   }
 
   private formProper() {
-    return <div>
+    return <div data-test-id="create-order-widget">
       <PanelHeader bordered={true}>
         Create order
         { this.headerButtons() }
@@ -254,7 +254,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         className={styles.balanceBtn}
       >
         { this.props.baseToken && tokens[this.props.baseToken].icon }
-        <span style={{ lineHeight: 1 }}>
+        <span style={{ lineHeight: 1 }} data-test-id="base-balance">
                 { this.props.balances && this.props.balances[this.props.baseToken] &&
                 formatAmount(this.props.balances[this.props.baseToken], this.props.baseToken)
                 } <Currency value={this.props.baseToken} />
@@ -269,7 +269,7 @@ export class OfferMakeForm extends React.Component<OfferFormState> {
         className={styles.balanceBtn}
       >
         { this.props.quoteToken && tokens[this.props.quoteToken].icon }
-        <span style={{ lineHeight: 1 }}>
+        <span style={{ lineHeight: 1 }} data-test-id="quote-balance">
                 { this.props.balances && this.props.balances[this.props.quoteToken] &&
                 formatAmount(this.props.balances[this.props.quoteToken], this.props.quoteToken)
                 } <Currency value={this.props.quoteToken} />
