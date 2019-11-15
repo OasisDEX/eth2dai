@@ -48,11 +48,12 @@ export class MainContent extends React.Component<RouterProps> {
             </MediaQuery></a>}
                 content={
                   <span>
-                          {/*tslint:disable*/}
-                    We've recently launched Oasis Trade where you can now trade multiple tokens against DAI.
-                          <br/>
-                          <strong>Head there now to find out more...</strong>
-                        </span>
+                    {/*tslint:disable*/}
+                    Note: The Eth2Dai app is being shut down on Monday, November 18th, 2019, 10am UTC.
+                    <br/>
+                    <strong>Head to Oasis Trade where you now can trade multiple tokens.</strong>
+                    {/*tslint:enable*/}
+                  </span>
                 }
                 continue={
                   () => false
