@@ -49,9 +49,9 @@ export class MainContent extends React.Component<RouterProps> {
                 content={
                   <span>
                     {/*tslint:disable*/}
-                    We're officially closing Eth2Dai website on Monday, 18th of November, 10am UTC.
+                    Note: The Eth2Dai app is being shut down on Monday, November 18th, 2019, 10am UTC.
                     <br/>
-                    <strong>Head to Oasis Trade where you can now trade multiple tokens.</strong>
+                    <strong>Head to Oasis Trade where you now can trade multiple tokens.</strong>
                     {/*tslint:enable*/}
                   </span>
                 }
