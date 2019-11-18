@@ -32,6 +32,20 @@ body {
   }
 }
 
+.containerCentered {
+  display: flex;
+  width: 740px;
+  height: 100vh;
+  margin: 0 auto;
+  position: relative;
+
+  @include media-breakpoint-down(lg) {
+    width: auto;
+    margin-left: 1em;
+    margin-right: 1em;
+  }
+}
+
 
 // ----------- Scrollbar styling for webkit -----------
 ::-webkit-scrollbar {
